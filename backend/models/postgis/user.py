@@ -602,7 +602,7 @@ class UserNextLevel(Base):
             values={
                 "user_id": user_id,
                 "level_id": level_id,
-            }
+            },
         )
 
 
@@ -612,28 +612,39 @@ class UserLevelVote(Base):
     user_id = Column(BigInteger, nullable=False, primary_key=True)
     level_id = Column(Integer, nullable=False, primary_key=True)
     voter_id = Column(BigInteger, nullable=False, primary_key=True)
-    vote_date = Column(DateTime, nullable=False, default=timestamp, server_default=sa.text("current_timestamp"))
+    vote_date = Column(
+        DateTime,
+        nullable=False,
+        default=timestamp,
+        server_default=sa.text("current_timestamp"),
+    )
 
     @staticmethod
     async def vote(user_id: int, level_id: int, voter_id: int, db: Database):
-        await db.execute("""
+        await db.execute(
+            """
             INSERT INTO user_level_vote (user_id, level_id, voter_id)
             VALUES (:user_id, :level_id, :voter_id)
-        """, values={
-            "user_id": user_id,
-            "level_id": level_id,
-            "voter_id": voter_id,
-        })
+        """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+                "voter_id": voter_id,
+            },
+        )
 
     @staticmethod
     async def count(user_id: int, level_id: int, db: Database):
-        result = await db.fetch_one("""
+        result = await db.fetch_one(
+            """
             SELECT count(*)
             FROM user_level_vote
             WHERE user_id = :user_id AND level_id = :level_id
-        """, values={
-            "user_id": user_id,
-            "level_id": level_id,
-        })
+        """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            },
+        )
 
         return result[0]

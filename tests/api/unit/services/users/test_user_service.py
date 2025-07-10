@@ -280,13 +280,16 @@ class TestUserService:
 
     async def test_approve_level_needs_one_more(self):
         # Arrange
-        level = await MappingLevel.create(MappingLevelCreateDTO(
-            name="Super Mapper",
-            approvalsRequired=2,
-            color="#acabad",
-            isBeginner=False,
-            requiredBadges=[],
-        ), self.db)
+        level = await MappingLevel.create(
+            MappingLevelCreateDTO(
+                name="Super Mapper",
+                approvalsRequired=2,
+                color="#acabad",
+                isBeginner=False,
+                requiredBadges=[],
+            ),
+            self.db,
+        )
         await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
 
         # Act
@@ -299,13 +302,16 @@ class TestUserService:
 
     async def test_approve_level(self):
         # Arrange
-        level = await MappingLevel.create(MappingLevelCreateDTO(
-            name="Super Mapper",
-            approvalsRequired=1,
-            color="#acabad",
-            isBeginner=False,
-            requiredBadges=[],
-        ), self.db)
+        level = await MappingLevel.create(
+            MappingLevelCreateDTO(
+                name="Super Mapper",
+                approvalsRequired=1,
+                color="#acabad",
+                isBeginner=False,
+                requiredBadges=[],
+            ),
+            self.db,
+        )
         await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
 
         # Act
@@ -314,4 +320,6 @@ class TestUserService:
         # Assert
         user = await UserService.get_user_by_id(self.test_user.id, self.db)
         assert user.mapping_level == level.id
-        assert not await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
+        assert not await UserNextLevel.is_nominated(
+            self.test_user.id, level.id, self.db
+        )
