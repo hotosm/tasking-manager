@@ -24,4 +24,5 @@ export default defineMessages({
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
   waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways added' },
   changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
+  poi: { id: 'management.badges.poi', defaultMessage: 'Points of Interest' },
 });
