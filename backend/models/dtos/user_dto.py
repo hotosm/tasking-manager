@@ -163,6 +163,7 @@ class UserSearchQuery(BaseModel):
     page: Optional[int] = None
     pagination: bool = True
     per_page: Optional[int] = Field(default=20, alias="perPage")
+    voter_id: int
 
     class Config:
         populate_by_name = True
@@ -195,6 +196,7 @@ class ListedUser(BaseModel):
     stats_last_updated: Optional[datetime] = Field(None, alias="statsLastUpdated")
     stats: Optional[dict] = None
     requires_approval: Optional[bool] = None
+    user_has_voted: Optional[bool] = None
 
 
 class UserRegisterEmailDTO(BaseModel):

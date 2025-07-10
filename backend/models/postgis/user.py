@@ -176,10 +176,24 @@ class User(Base):
         """Search and filter all users"""
 
         base_query = """
-            SELECT u.id, u.username, u.mapping_level, u.role, u.picture_url, us.date_obtained, us.stats, un.level_id::bool as requires_approval
-            FROM users AS u
-            LEFT JOIN user_stats AS us ON u.id = us.user_id
-            LEFT JOIN user_next_level AS un ON u.id = un.user_id
+            SELECT
+                u.id,
+                u.username,
+                u.mapping_level,
+                u.role,
+                u.picture_url,
+                us.date_obtained,
+                us.stats,
+                un.level_id::bool as requires_approval,
+                uv.level_id::bool as user_has_voted
+            FROM
+                users AS u
+            LEFT JOIN
+                user_stats AS us ON u.id = us.user_id
+            LEFT JOIN
+                user_next_level AS un ON u.id = un.user_id
+            LEFT JOIN
+                user_level_vote AS uv ON u.id = uv.user_id AND uv.voter_id = :voter_id
         """
         filters = []
         params = {}
@@ -207,6 +221,7 @@ class User(Base):
         if query.pagination:
             base_query += " LIMIT :limit OFFSET :offset"
             base_params = params.copy()
+            base_params["voter_id"] = query.voter_id
             base_params["limit"] = query.per_page
             base_params["offset"] = (query.page - 1) * query.per_page
 
@@ -226,6 +241,7 @@ class User(Base):
             listed_user.stats_last_updated = result["date_obtained"]
             listed_user.stats = json.loads(result["stats"]) if result["stats"] else None
             listed_user.requires_approval = result["requires_approval"]
+            listed_user.user_has_voted = result["user_has_voted"]
             listed_user.role = UserRole(result["role"]).name
             dto.users.append(listed_user)
 

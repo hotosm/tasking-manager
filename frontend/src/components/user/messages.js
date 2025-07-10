@@ -397,4 +397,5 @@ export default defineMessages({
   tableApprove: { id: 'user.table.approve', defaultMessage: "Approve" },
   levelApproved: { id: 'user.levelApproved', defaultMessage: "User approved" },
   failedApprovingLevel: { id: 'user.failedApprovingLevel', defaultMessage: "Failed approving level" },
+  alreadyVoted: { id: 'user.alreadyVoted', defaultMessage: "You already voted" },
 });

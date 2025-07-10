@@ -279,10 +279,19 @@ export const UsersTable = ({ filters, setFilters }) => {
       {
         id: 'levelUpgrade',
         header: () => (<FormattedMessage {...messages.tableUpgrade} />),
-        cell: ({row}) => (row.original.requires_approval && userDetails.username !== row.original.username && <Button
-          className="bg-black-90 white"
-          onClick={() => handleApprove(row.original)}
-        ><FormattedMessage {...messages.tableApprove} /></Button>),
+        cell: ({row}) => {
+          if (userDetails.username !== row.original.username) {
+            // Can show approve UI only if viewer is not same as row
+            if (row.original.user_has_voted) {
+              return <FormattedMessage {...messages.alreadyVoted} />;
+            } else if (row.original.requires_approval) {
+              return <Button
+                className="bg-black-90 white"
+                onClick={() => handleApprove(row.original)}
+              ><FormattedMessage {...messages.tableApprove} /></Button>;
+            }
+          }
+        },
       },
       {
         id: 'statsLastUpdated',
