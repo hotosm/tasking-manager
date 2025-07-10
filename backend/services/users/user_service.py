@@ -933,6 +933,7 @@ class UserService:
                 user = await User.get_by_id(user_id, db)
                 await user.set_mapping_level(requested_level, db)
                 await UserNextLevel.clear(user_id, requested_level.id, db)
+                await UserLevelVote.clear(user_id, requested_level.id, db)
 
     @staticmethod
     async def notify_level_upgrade(

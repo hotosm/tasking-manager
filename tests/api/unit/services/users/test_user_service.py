@@ -9,7 +9,12 @@ from backend.services.users.user_service import (
     UserServiceError,
 )
 from tests.api.helpers.test_helpers import create_canned_user
-from backend.models.postgis.user import User, UserNextLevel, UserStats
+from backend.models.postgis.user import (
+    User,
+    UserNextLevel,
+    UserStats,
+    UserLevelVote,
+)
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
 from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO
@@ -319,7 +324,11 @@ class TestUserService:
 
         # Assert
         user = await UserService.get_user_by_id(self.test_user.id, self.db)
+        # Level is upgraded
         assert user.mapping_level == level.id
+        # user_next_level table is cleared
         assert not await UserNextLevel.is_nominated(
             self.test_user.id, level.id, self.db
         )
+        # votes are cleared
+        assert await UserLevelVote.count(self.test_user.id, level.id, self.db) == 0

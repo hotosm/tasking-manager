@@ -649,3 +649,13 @@ class UserLevelVote(Base):
         )
 
         return result[0]
+
+    @staticmethod
+    async def clear(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            "DELETE FROM user_level_vote WHERE user_id = :user_id AND level_id = :level_id",
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            },
+        )
