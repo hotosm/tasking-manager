@@ -536,7 +536,12 @@ class UserStats(Base):
     date_obtained = Column(DateTime, nullable=False, default=timestamp)
 
     @staticmethod
-    async def update(user_id: int, stats: str, db: Database):
+    async def update(user_id: int, stats: dict, db: Database):
+        new_stats = {}
+
+        for key, value in stats["result"]["topics"].items():
+            new_stats[key] = value["value"]
+
         await db.execute(
             """
             INSERT INTO user_stats (user_id, stats, date_obtained)
@@ -546,9 +551,11 @@ class UserStats(Base):
             """,
             values={
                 "user_id": user_id,
-                "stats": stats,
+                "stats": json.dumps(new_stats),
             },
         )
+
+        return new_stats
 
     @staticmethod
     async def get_for_user(user_id: int, db: Database):

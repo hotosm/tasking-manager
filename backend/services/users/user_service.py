@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from databases import Database
 from loguru import logger
@@ -175,12 +174,8 @@ class UserService:
             raise UserServiceError("External-Error in Ohsome API")
 
         json_data = response.json()
-        new_stats = {}
 
-        for key, value in json_data["result"]["topics"].items():
-            new_stats[key] = value["value"]
-
-        await UserStats.update(user_id, json.dumps(new_stats), db)
+        new_stats = await UserStats.update(user_id, json_data, db)
 
         return new_stats
 

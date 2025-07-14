@@ -174,7 +174,7 @@ async def get_period_user_stats(
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
     db: Database = Depends(get_db),
-    url: str = Query(None, description="Get user stats for OSM contributions"),
+    user_id: int = Query(None, alias="userId"),
     user: AuthUserDTO = Depends(login_required),
 ):
     """
@@ -201,23 +201,12 @@ async def get_ohsome_stats(
         500:
             description: Internal Server Error
     """
+    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+    # Make the GET request with headers
+    url = f"{settings.OHSOME_STATS_API_URL}/stats/user?userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+    response = requests.get(url, headers=headers)
+    json_data = response.json()
 
-    if not url:
-        return JSONResponse(
-            content={"Error": "URL is None", "SubCode": "URL not provided"},
-            status_code=400,
-        )
+    await UserStats.update(user.id, json_data, db)
 
-    try:
-        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        # Make the GET request with headers
-        response = requests.get(url, headers=headers)
-        json_data = response.json()
-
-        await UserStats.update(user.id, json.dumps(json_data["result"]), db)
-
-        return json_data
-    except Exception as e:
-        return JSONResponse(
-            content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
-        )
+    return json_data
