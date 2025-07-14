@@ -203,7 +203,7 @@ async def get_ohsome_stats(
     """
     headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
     # Make the GET request with headers
-    hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace('#', '')
+    hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
     url = f"{settings.OHSOME_STATS_API_URL}/stats/user?hashtag={hashtag}-%2A&userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
     response = requests.get(url, headers=headers)
     json_data = response.json()
