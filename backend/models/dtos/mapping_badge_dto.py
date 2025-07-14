@@ -12,6 +12,13 @@ class MappingBadgeDTO(BaseModel):
     is_internal: bool = Field(default=False, alias="isInternal")
 
 
+class MappingBadgePublicDTO(BaseModel):
+    id: int
+    name: str
+    description: str
+    image_path: Optional[str] = Field(default=None, alias="imagePath")
+
+
 class MappingBadgeCreateDTO(BaseModel):
     name: str
     description: str
@@ -33,3 +40,7 @@ class MappingBadgeUpdateDTO(BaseModel):
 
 class MappingBadgeListDTO(BaseModel):
     badges: List[MappingBadgeDTO]
+
+
+class MappingBadgePublicListDTO(BaseModel):
+    badges: List[MappingBadgePublicDTO]

@@ -7,7 +7,10 @@ from backend.models.dtos.mapping_badge_dto import (
 from backend.models.postgis.mapping_badge import MappingBadge
 from backend.services.mapping_badges import MappingBadgeService
 
-from tests.api.helpers.test_helpers import get_or_create_levels
+from tests.api.helpers.test_helpers import (
+    get_or_create_levels,
+    create_canned_user,
+)
 
 
 @pytest.mark.anyio
@@ -16,6 +19,7 @@ class TestMappingBadgeService:
     async def setup_test_data(self, db_connection_fixture, request):
         assert db_connection_fixture is not None, "Database connection is not available"
         await get_or_create_levels(db_connection_fixture)
+        request.cls.test_user = await create_canned_user(db_connection_fixture)
         request.cls.db = db_connection_fixture
 
     async def test_get_all(self):
@@ -104,9 +108,64 @@ class TestMappingBadgeService:
             requirements="{}",
             isEnabled=True,
         )
-        level = await MappingBadge.create(old_data, self.db)
+        badge = await MappingBadge.create(old_data, self.db)
 
         # Act
-        await MappingBadgeService.delete(level.id, self.db)
+        await MappingBadgeService.delete(badge.id, self.db)
 
-        assert await MappingBadge.get_by_id(level.id, self.db) is None
+        # Assert
+        assert await MappingBadge.get_by_id(badge.id, self.db) is None
+
+    async def test_get_for_user(self):
+        # Arrange
+        assigned_badge_dto = MappingBadgeCreateDTO(
+            name="assigned badge",
+            description="",
+            imagePath="",
+            requirements="{}",
+            isEnabled=True,
+        )
+        hidden_badge_dto = MappingBadgeCreateDTO(
+            name="hidden badge",
+            description="",
+            imagePath="",
+            requirements="{}",
+            isEnabled=True,
+            isInternal=True,
+        )
+        disabled_badge_dto = MappingBadgeCreateDTO(
+            name="disabled badge",
+            description="",
+            imagePath="",
+            requirements="{}",
+            isEnabled=False,
+            isInternal=False,
+        )
+        unassigned_badge_dto = MappingBadgeCreateDTO(
+            name="unassigned badge",
+            description="",
+            imagePath="",
+            requirements="{}",
+            isEnabled=True,
+        )
+        assigned_badge = await MappingBadge.create(assigned_badge_dto, self.db)
+        hidden_badge = await MappingBadge.create(hidden_badge_dto, self.db)
+        disabled_badge = await MappingBadge.create(disabled_badge_dto, self.db)
+        unassigned_badge = await MappingBadge.create(unassigned_badge_dto, self.db)
+
+        # assign them
+        await self.test_user.assign_badges(
+            [
+                assigned_badge.id,
+                hidden_badge.id,
+                disabled_badge.id,
+            ],
+            self.db,
+        )
+
+        # Act
+        badges = await MappingBadgeService.get_for_user(self.test_user.id, self.db)
+
+        # Assert
+        assert len(badges.badges) == 1
+        assert badges.badges[0].name == "assigned badge"

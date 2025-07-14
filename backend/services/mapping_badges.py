@@ -8,6 +8,7 @@ from backend.models.dtos.mapping_badge_dto import (
     MappingBadgeCreateDTO,
     MappingBadgeUpdateDTO,
     MappingBadgeListDTO,
+    MappingBadgePublicListDTO,
 )
 
 
@@ -33,3 +34,12 @@ class MappingBadgeService:
     @staticmethod
     async def delete(id: int, db: Database):
         await MappingBadge.delete(id, db)
+
+    @staticmethod
+    async def get_for_user(user_id: int, db: Database):
+        return MappingBadgePublicListDTO(
+            badges=[
+                badge.as_public_dto()
+                for badge in await MappingBadge.get_public_for_user(user_id, db)
+            ],
+        )

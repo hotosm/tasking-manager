@@ -7,6 +7,7 @@ from backend.models.dtos.mapping_badge_dto import (
     MappingBadgeCreateDTO,
     MappingBadgeUpdateDTO,
     MappingBadgeListDTO,
+    MappingBadgePublicListDTO,
 )
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_badges import MappingBadgeService
@@ -68,3 +69,11 @@ async def delete_mapping_badge(
     user: AuthUserDTO = Depends(pm_only),
 ):
     await MappingBadgeService.delete(badge_id, db)
+
+
+@router.get("/user/{user_id}/")
+async def get_for_user(
+    user_id: int,
+    db: Database = Depends(get_db),
+) -> MappingBadgePublicListDTO:
+    return await MappingBadgeService.get_for_user(user_id, db)

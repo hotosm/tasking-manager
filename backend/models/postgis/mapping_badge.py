@@ -6,6 +6,7 @@ from sqlalchemy import Integer, String, Column, ForeignKey, Boolean, JSON
 from backend.db import Base
 from backend.models.dtos.mapping_badge_dto import (
     MappingBadgeDTO,
+    MappingBadgePublicDTO,
     MappingBadgeCreateDTO,
     MappingBadgeUpdateDTO,
 )
@@ -48,6 +49,14 @@ class MappingBadge(Base):
             requirements=self.requirements,
             isEnabled=self.is_enabled,
             isInternal=self.is_internal,
+        )
+
+    def as_public_dto(self) -> MappingBadgeDTO:
+        return MappingBadgePublicDTO(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            imagePath=self.image_path,
         )
 
     @staticmethod
@@ -152,6 +161,25 @@ class MappingBadge(Base):
                 mapping_badges AS b ON b.id = ub.badge_id
             WHERE
                 user_id = :user_id
+        """
+        result = await db.fetch_all(query, values={"user_id": user_id})
+
+        return [MappingBadge(**row) for row in result]
+
+    @staticmethod
+    async def get_public_for_user(user_id: int, db: Database):
+        query = """
+            SELECT
+                b.id,
+                b.name,
+                b.description,
+                b.image_path
+            FROM
+                user_mapping_badge AS ub
+            LEFT JOIN
+                mapping_badges AS b ON b.id = ub.badge_id
+            WHERE
+                ub.user_id = :user_id AND b.is_enabled AND NOT b.is_internal
         """
         result = await db.fetch_all(query, values={"user_id": user_id})
 
