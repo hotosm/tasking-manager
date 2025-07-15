@@ -1,15 +1,16 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import Select from 'react-select';
 
 import messages from './messages.js';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { useTeamsQuery } from '../../api/teams';
 import { DEFAULT_VALIDATOR_TEAM_ID } from '../../config';
 
-const defaultValidatorPermissions = ['TEAMS', 'TEAMS_LEVEL'];
+const defaultValidatorPermissions = ['TEAMS'];
 const defaultValidatorTeamId = Number(DEFAULT_VALIDATOR_TEAM_ID);
 
-export const PermissionsBlock = ({ permissions, type }: Object) => {
+export const PermissionsBlock = ({ permissions, levels, type }: Object) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const { data: teamsData } = useTeamsQuery({ omitMemberList: true });
   const isDefaultValidatorAlreadyPresent = useRef(false);
@@ -49,11 +50,27 @@ export const PermissionsBlock = ({ permissions, type }: Object) => {
         teams = projectInfo.teams.filter((team) => team.teamId !== defaultValidatorTeamId);
       }
     }
-    // set project info
+
     setProjectInfo({
       ...projectInfo,
       [type]: value,
       teams,
+    });
+  };
+
+  const levelOptions = levels.map((l) => ({value: l.id, label: l.name}));
+  const levelValue = levelOptions.find((l) => {
+    if (type === 'mappingPermission') {
+      return l.value == projectInfo.mappingPermissionLevelId;
+    } else {
+      return l.value == projectInfo.validationPermissionLevelId;
+    }
+  });
+
+  const handlePermissionLevelChange = ({ value }) => {
+    setProjectInfo({
+      ...projectInfo,
+      [`${type}LevelId`]: value,
     });
   };
 
@@ -66,6 +83,7 @@ export const PermissionsBlock = ({ permissions, type }: Object) => {
           <FormattedMessage {...messages.validationPermission} />
         )}
       </label>
+
       <p className={styleClasses.pClass}>
         {type === 'mappingPermission' ? (
           <FormattedMessage {...messages.mappingPermissionDescription} />
@@ -73,6 +91,7 @@ export const PermissionsBlock = ({ permissions, type }: Object) => {
           <FormattedMessage {...messages.validationPermissionDescription} />
         )}
       </p>
+
       {permissions.map((permission) => (
         <label className="db pv2" key={permission.label.props.id}>
           <input
@@ -85,6 +104,20 @@ export const PermissionsBlock = ({ permissions, type }: Object) => {
           {permission.label}
         </label>
       ))}
+
+      <p className={styleClasses.pClass}>
+        {type === 'mappingPermission' ? (
+          <FormattedMessage {...messages.mappingPermissionLevelDescription} />
+        ) : (
+          <FormattedMessage {...messages.validationPermissionLevelDescription} />
+        )}
+      </p>
+
+      <Select
+        options={levelOptions}
+        value={levelValue}
+        onChange={handlePermissionLevelChange}
+      />
     </div>
   );
 };

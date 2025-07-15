@@ -796,11 +796,13 @@ class Project(Base):
             self.mapping_permission = MappingPermission[
                 project_dto.mapping_permission.upper()
             ].value
+        self.mapping_permission_level_id = project_dto.mapping_permission_level_id
 
         if project_dto.validation_permission:
             self.validation_permission = ValidationPermission[
                 project_dto.validation_permission.upper()
             ].value
+        self.validation_permission_level_id = project_dto.validation_permission_level_id
 
         # handle interests update
         try:
@@ -1654,8 +1656,11 @@ class Project(Base):
 
         # Raw SQL query to fetch project data with date formatting
         query = """
-            SELECT p.id as project_id, p.status as project_status, p.default_locale, p.priority as project_priority,
-                p.mapping_permission, p.validation_permission, p.enforce_random_task_selection, p.private,
+            SELECT
+                p.id as project_id, p.status as project_status, p.default_locale, p.priority as project_priority,
+                p.mapping_permission, p.mapping_permission_level_id,
+                p.validation_permission, p.validation_permission_level_id,
+                p.enforce_random_task_selection, p.private,
                 p.difficulty, p.changeset_comment, p.osmcha_filter_id,
                 TO_CHAR(COALESCE(p.due_date, NULL), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as due_date,
                 p.imagery, p.josm_preset, p.id_presets, p.extra_id_params, p.rapid_power_user, p.country,
@@ -1708,9 +1713,11 @@ class Project(Base):
             area_of_interest=area_of_interest,
             aoi_bbox=aoi_bbox,
             mapping_permission=MappingPermission(record.mapping_permission).name,
+            mapping_permission_level_id=record.mapping_permission_level_id,
             validation_permission=ValidationPermission(
                 record.validation_permission
             ).name,
+            validation_permission_level_id=record.validation_permission_level_id,
             enforce_random_task_selection=record.enforce_random_task_selection,
             private=record.private,
             difficulty=ProjectDifficulty(record.difficulty).name,

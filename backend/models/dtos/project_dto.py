@@ -226,7 +226,9 @@ class ProjectDTO(BaseModel):
     )
     difficulty: str = Field(alias="difficulty")
     mapping_permission: str = Field(alias="mappingPermission")
+    mapping_permission_level_id: int = Field(alias="mappingPermissionLevelId")
     validation_permission: str = Field(alias="validationPermission")
+    validation_permission_level_id: int = Field(alias="validationPermissionLevelId")
     enforce_random_task_selection: Optional[bool] = Field(
         False, alias="enforceRandomTaskSelection"
     )
