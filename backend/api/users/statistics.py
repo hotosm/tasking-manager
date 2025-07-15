@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-import requests
+import httpx
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse
@@ -174,10 +174,6 @@ async def get_period_user_stats(
 
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
-    url: str = Query(
-        ...,
-        description="Base OHSOME stats endpoint, e.g. https://stats.now.ohsome.org/api/stats/user",
-    ),
     userId: int = Query(..., description="OSM user ID"),
     topics: str = Query(
         ..., description="Comma-separated list of OSM topics, e.g. building,highway"
@@ -190,59 +186,10 @@ async def get_ohsome_stats(
     user: AuthUserDTO = Depends(login_required),
 ):
     """
-    Get HomePage Stats
-    ---
-    tags:
-      - system
-    produces:
-      - application/json
-    parameters:
-      - in: header
-        name: Authorization
-        description: Base64 encoded session token
-        required: true
-        type: string
-        default: Token sessionTokenHere==
-      - in: query
-        name: url
-        type: string
-        required: true
-        description: Base OHSOME stats URL
-      - in: query
-        name: userId
-        type: integer
-        required: true
-        description: OSM user ID
-      - in: query
-        name: topics
-        type: string
-        required: true
-        description: Comma-separated list of topics
-      - in: query
-        name: startdate
-        type: string
-        required: false
-        description: Start date (YYYY-MM-DD)
-      - in: query
-        name: enddate
-        type: string
-        required: false
-        description: End date (YYYY-MM-DD)
-      - in: query
-        name: hashtag
-        type: string
-        required: false
-        description: Hashtag filter
-    responses:
-      200:
-        description: User stats
-      400:
-        description: Bad Request
-      500:
-        description: Internal Server Error
+    Get OHSOME stats for a given user and topics.
     """
 
-    def format_date(date_str):
+    def format_date(date_str: str) -> str:
         try:
             return datetime.strptime(date_str, "%Y-%m-%d").strftime(
                 "%Y-%m-%dT00:00:00Z"
@@ -253,11 +200,13 @@ async def get_ohsome_stats(
                 detail=f"Invalid date format for '{date_str}', expected YYYY-MM-DD",
             )
 
+    raw_base = settings.OHSOME_STATS_API_URL
+    base_url = raw_base.rstrip("/") + "/stats/user"
+
     params = {
         "userId": userId,
         "topics": topics,
     }
-
     if startdate:
         params["startdate"] = format_date(startdate)
     if enddate:
@@ -265,10 +214,14 @@ async def get_ohsome_stats(
     if hashtag:
         params["hashtag"] = hashtag
 
+    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
     try:
-        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        response = requests.get(url, headers=headers, params=params)
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(base_url, params=params, headers=headers)
+            response.raise_for_status()
+
         return JSONResponse(content=response.json(), status_code=response.status_code)
+
     except Exception as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
