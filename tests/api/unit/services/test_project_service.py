@@ -130,7 +130,7 @@ class TestProjectService:
         stub_project.status = ProjectStatus.PUBLISHED.value
         stub_project.license_id = 11
         stub_project.mapping_permission = MappingPermission.ANY.value
-        stub_project.mapping_permission_level_id = 3 # Advanced
+        stub_project.mapping_permission_level_id = 3  # Advanced
         get_project_by_id.return_value = stub_project
 
         test_user = await create_canned_user(self.db)
@@ -138,13 +138,17 @@ class TestProjectService:
         get_mapping_level.return_value = await MappingLevel.get_by_id(1, self.db)
 
         # Act
-        allowed, reason = await ProjectService.is_user_permitted_to_map(stub_project.id, test_user.id, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_map(
+            stub_project.id, test_user.id, self.db
+        )
 
         assert not allowed
 
         # With permission
         get_mapping_level.return_value = await MappingLevel.get_by_id(3, self.db)
-        allowed, reason = await ProjectService.is_user_permitted_to_map(stub_project.id, test_user.id, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_map(
+            stub_project.id, test_user.id, self.db
+        )
 
         assert allowed
 
@@ -167,7 +171,7 @@ class TestProjectService:
         stub_project.status = ProjectStatus.PUBLISHED.value
         stub_project.license_id = 11
         stub_project.validation_permission = ValidationPermission.ANY.value
-        stub_project.validation_permission_level_id = 3 # Advanced
+        stub_project.validation_permission_level_id = 3  # Advanced
         get_project_by_id.return_value = stub_project
 
         test_user = await create_canned_user(self.db)
@@ -175,13 +179,17 @@ class TestProjectService:
         get_mapping_level.return_value = await MappingLevel.get_by_id(1, self.db)
 
         # Act
-        allowed, reason = await ProjectService.is_user_permitted_to_validate(stub_project.id, test_user.id, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_validate(
+            stub_project.id, test_user.id, self.db
+        )
 
         assert not allowed
 
         # With permission
         get_mapping_level.return_value = await MappingLevel.get_by_id(3, self.db)
-        allowed, reason = await ProjectService.is_user_permitted_to_validate(stub_project.id, test_user.id, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_validate(
+            stub_project.id, test_user.id, self.db
+        )
 
         assert allowed
 

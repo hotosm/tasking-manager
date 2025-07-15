@@ -357,7 +357,9 @@ class ProjectService:
         if mapping_permission == MappingPermission.TEAMS.value and not is_team_member:
             return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
-        level_required = await MappingLevel.get_by_id(project.mapping_permission_level_id, db)
+        level_required = await MappingLevel.get_by_id(
+            project.mapping_permission_level_id, db
+        )
         user_level = await UserService.get_mapping_level(user_id, db)
 
         if user_level.ordering < level_required.ordering:
@@ -398,7 +400,10 @@ class ProjectService:
         mapping_permission = project.mapping_permission
         if not is_manager_permission:
             has_permission, reason = await ProjectService.has_mapping_permission(
-                project, user_id, mapping_permission, db,
+                project,
+                user_id,
+                mapping_permission,
+                db,
             )
             if not has_permission:
                 return False, reason
@@ -427,10 +432,15 @@ class ProjectService:
             project.id, allowed_roles, user_id, db
         )
 
-        if validation_permission == ValidationPermission.TEAMS.value and not is_team_member:
+        if (
+            validation_permission == ValidationPermission.TEAMS.value
+            and not is_team_member
+        ):
             return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
-        level_required = await MappingLevel.get_by_id(project.validation_permission_level_id, db)
+        level_required = await MappingLevel.get_by_id(
+            project.validation_permission_level_id, db
+        )
         user_level = await UserService.get_mapping_level(user_id, db)
 
         if user_level.ordering < level_required.ordering:
@@ -472,7 +482,10 @@ class ProjectService:
         validation_permission = project.validation_permission
         if not is_manager_permission:
             has_permission, reason = await ProjectService.has_validation_permission(
-                project, user_id, validation_permission, db,
+                project,
+                user_id,
+                validation_permission,
+                db,
             )
             if not has_permission:
                 return False, reason
