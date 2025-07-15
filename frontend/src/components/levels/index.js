@@ -119,7 +119,7 @@ function RequiredBadgesField({input, badges}) {
         <FormattedMessage {...messages.add} />
       </Button>
     </div>
-    <div className="flex mt2" style={{gap: ".5rem"}}>
+    <div className="flex flex-wrap mt2" style={{gap: ".5rem"}}>
       {(input.value || []).map((badge) => <div className="bg-silver ph3 pv2 flex items-center br1 white" style={{gap: ".5rem"}}>
         <div>
           { badge.name }
