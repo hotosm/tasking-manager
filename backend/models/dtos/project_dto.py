@@ -120,7 +120,7 @@ def is_known_mapping_permission(value: str) -> str:
             detail=(
                 f"Unknown mappingPermission: {value}. Valid values are: "
                 f"{MappingPermission.ANY.name}, "
-                f"{MappingPermission.LEVEL.name}."
+                f"{MappingPermission.TEAMS.name}."
             ),
         )
     return value
@@ -136,9 +136,7 @@ def is_known_validation_permission(value: str) -> str:
             detail=(
                 f"Unknown validationPermission: {value}. Valid values are: "
                 f"{ValidationPermission.ANY.name}, "
-                f"{ValidationPermission.LEVEL.name}, "
                 f"{ValidationPermission.TEAMS.name}, "
-                f"{ValidationPermission.TEAMS_LEVEL.name}."
             ),
         )
     return value

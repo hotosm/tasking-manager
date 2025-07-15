@@ -149,9 +149,12 @@ class Project(Base):
         Integer, default=2, nullable=False, index=True
     )  # Mapper level project is suitable for
     mapping_permission = Column(Integer, default=MappingPermission.ANY.value)
+    mapping_permission_level_id = Column(Integer, nullable=False, default=1, server_default="1")
     validation_permission = Column(
-        Integer, default=ValidationPermission.LEVEL.value
-    )  # Means only users with validator role can validate
+        Integer, default=ValidationPermission.ANY.value
+    )  # By default validation is not restricted by team
+    # By default validation is restricted by level intermediate
+    validation_permission_level_id = Column(Integer, nullable=False, default=2, server_default="2")
     enforce_random_task_selection = Column(
         Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
