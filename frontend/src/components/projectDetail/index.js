@@ -24,6 +24,7 @@ import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
+import { useFetch } from '../../hooks/UseFetch';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
@@ -159,6 +160,13 @@ export const ProjectDetail = (props) => {
     </Link>
   );
 
+  const [_error, _loading, result] = useFetch('levels/');
+  const levels = (result?.levels || []);
+  const minimumMappingLevel = levels
+    .find((l) => l.id === props.project.mappingPermissionLevelId);
+  const minimumValidationLevel = levels
+    .find((l) => l.id === props.project.validationPermissionLevelId);
+
   return (
     <div className={`${props.className || 'blue-dark'}`}>
       <div className="db flex-l tasks-map-height">
@@ -253,6 +261,14 @@ export const ProjectDetail = (props) => {
           </div>
           <div className="w-100 w-30-l">
             <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanMapLevel} />
+            </h4>
+            <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+              {minimumMappingLevel && minimumMappingLevel.name}
+            </div>
+          </div>
+          <div className="w-100 w-30-l">
+            <h4 className="mb2 mt0 fw6">
               <FormattedMessage {...messages.whoCanValidate} />
             </h4>
             <PermissionBox
@@ -260,6 +276,14 @@ export const ProjectDetail = (props) => {
               validation
               className="dib pv2 ph3 red"
             />
+          </div>
+          <div className="w-100 w-30-l">
+            <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanValidateLevel} />
+            </h4>
+            <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+              {minimumValidationLevel && minimumValidationLevel.name}
+            </div>
           </div>
         </div>
         <div className="mt3">
