@@ -24,6 +24,14 @@ export const updatedOhsomeStats = {
         topic: 'road',
         value: 2380562.9900000077,
       },
+      poi: {
+        topis: 'poi',
+        value: 183011,
+      },
+      waterway: {
+        topis: 'waterway',
+        value: 350906,
+      },
     },
   },
 };
