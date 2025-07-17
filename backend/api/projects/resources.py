@@ -16,7 +16,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
 )
 from backend.models.dtos.user_dto import AuthUserDTO
-from backend.models.postgis.statuses import UserRole
+from backend.models.postgis.statuses import ProjectStatus, UserRole
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_admin_service import (
     InvalidData,
@@ -1104,7 +1104,10 @@ async def get_mapped_projects(
 
 @router.get("/{project_id}/queries/summary/")
 async def get_project_summary(
-    request: Request, project_id: int, db: Database = Depends(get_db)
+    request: Request,
+    project_id: int,
+    user: Optional[AuthUserDTO] = Depends(login_required_optional),
+    db: Database = Depends(get_db),
 ):
     """
     Gets project summary
@@ -1135,6 +1138,37 @@ async def get_project_summary(
             description: Internal Server Error
     """
     preferred_locale = request.headers.get("accept-language")
+
+    is_private, status = await ProjectService.get_project_privacy_and_status(
+        project_id, db
+    )
+    # If private or draft, enforce login + permission
+    if is_private or status == ProjectStatus.DRAFT.value:
+        user_id = user.id if user else None
+        if user is None:
+            return JSONResponse(
+                content={
+                    "Error": "User not permitted: Private Project",
+                    "SubCode": "PrivateProject",
+                },
+                status_code=403,
+            )
+
+        project_dto = await ProjectService.get_project_dto_for_mapper(
+            project_id,
+            user_id,
+            db,
+        )
+        if not project_dto:
+
+            return JSONResponse(
+                content={
+                    "Error": "User not permitted: Private Project",
+                    "SubCode": "PrivateProject",
+                },
+                status_code=403,
+            )
+
     summary = await ProjectService.get_project_summary(project_id, db, preferred_locale)
     return summary
 
