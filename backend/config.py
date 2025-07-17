@@ -269,6 +269,8 @@ class Settings(BaseSettings):
 
     # Ohsome Stats Token
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", None)
+    OHSOME_STATS_API_URL: str = os.getenv("OHSOME_STATS_API_URL", None)
+    OHSOME_STATS_TOPICS: str = os.getenv("OHSOME_STATS_TOPICS", None)
 
 
 class TestEnvironmentConfig(Settings):

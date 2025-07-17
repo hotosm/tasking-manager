@@ -138,41 +138,41 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
           subDescription="Created - Deleted"
-          mapped={osmStats?.building?.value}
-          created={osmStats?.building?.added}
-          modified={osmStats?.building?.modified?.count_modified}
-          deleted={osmStats?.building?.deleted}
+          mapped={osmStats?.topics?.building?.value}
+          created={osmStats?.topics?.building?.added}
+          modified={osmStats?.topics?.building?.modified?.count_modified}
+          deleted={osmStats?.topics?.building?.deleted}
         />
         <DetailedStatsCard
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
           subDescription="Created + Modified - Deleted"
-          mapped={osmStats?.highway?.value}
-          created={osmStats?.highway?.added}
-          modified={osmStats?.highway?.modified?.count_modified}
-          deleted={osmStats?.highway?.deleted}
-          unitMore={osmStats?.highway?.modified?.unit_more}
-          unitLess={osmStats?.highway?.modified?.unit_less}
+          mapped={osmStats?.topics?.highway?.value}
+          created={osmStats?.topics?.highway?.added}
+          modified={osmStats?.topics?.highway?.modified?.count_modified}
+          deleted={osmStats?.topics?.highway?.deleted}
+          unitMore={osmStats?.topics?.highway?.modified?.unit_more}
+          unitLess={osmStats?.topics?.highway?.modified?.unit_less}
         />
         <DetailedStatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
           subDescription="Created - Deleted"
-          mapped={osmStats?.poi?.value}
-          created={osmStats?.poi?.added}
-          modified={osmStats?.poi?.modified?.count_modified}
-          deleted={osmStats?.poi?.deleted}
+          mapped={osmStats?.topics?.poi?.value}
+          created={osmStats?.topics?.poi?.added}
+          modified={osmStats?.topics?.poi?.modified?.count_modified}
+          deleted={osmStats?.topics?.poi?.deleted}
         />
         <DetailedStatsCard
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
           subDescription="Created + Modified - Deleted"
-          mapped={osmStats?.waterway?.value}
-          created={osmStats?.waterway?.added}
-          modified={osmStats?.waterway?.modified?.count_modified}
-          deleted={osmStats?.waterway?.deleted}
-          unitMore={osmStats?.waterway?.modified?.unit_more}
-          unitLess={osmStats?.waterway?.modified?.unit_less}
+          mapped={osmStats?.topics?.waterway?.value}
+          created={osmStats?.topics?.waterway?.added}
+          modified={osmStats?.topics?.waterway?.modified?.count_modified}
+          deleted={osmStats?.topics?.waterway?.deleted}
+          unitMore={osmStats?.topics?.waterway?.modified?.unit_more}
+          unitLess={osmStats?.topics?.waterway?.modified?.unit_less}
         />
       </div>
     </div>

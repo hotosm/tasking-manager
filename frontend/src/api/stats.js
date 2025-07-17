@@ -4,11 +4,6 @@ import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../config';
 
-const ohsomeProxyAPI = (url) => {
-  const token = localStorage.getItem('token');
-  return api(token).get(`users/statistics/ohsome/?url=${url}`);
-};
-
 export const useSystemStatisticsQuery = () => {
   const fetchSystemStats = ({ signal }) => {
     return api().get(`system/statistics/`, {
@@ -70,9 +65,8 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return ohsomeProxyAPI(
-      `${OHSOME_STATS_API_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
-    );
+    const token = localStorage.getItem('token');
+    return api(token).get(`users/statistics/ohsome/?userId=${id}`);
   };
 
   return useQuery({

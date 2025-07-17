@@ -7,6 +7,7 @@ import { TwitterIcon, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/topBar';
 import { UserOrganisations } from './userTeamsOrgs';
+import { UserBadges } from './userBadges';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
@@ -167,6 +168,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
           </div>
           <div className="pt1 dib fl w-50-l w-100 v-btm">
             <UserOrganisations userId={user.id} />
+            <UserBadges userId={user.id} />
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ export const UsersList = () => {
         <FormattedMessage {...messages.manageUsers} />
       </h3>
       <SearchNav filters={filters} setFilters={setFilters} initialFilters={initialFilters} />
-      <div className="w-50-l w-70-m w-100 mb4">
+      <div className="w-100 mb4">
         <UsersTable filters={filters} setFilters={setFilters} />
       </div>
     </div>
