@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
+import maplibregl from 'maplibre-gl';
 import { latLngToCell, cellToBoundary } from 'h3-js';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
 import messages from './messages';
 import './contributionsHeatmap.css';
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
+maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   const mapContainer = useRef(null);
@@ -18,7 +18,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   useEffect(() => {
     if (map.current) return; // initialize map only once
 
-    map.current = new mapboxgl.Map({
+    map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: MAP_STYLE,
       center: [0, 0],
@@ -26,7 +26,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
     });
 
     map.current.scrollZoom.disable();
-    map.current.addControl(new mapboxgl.NavigationControl());
+    map.current.addControl(new maplibregl.NavigationControl());
 
     const getStyle = (row) => {
       const styles = [
