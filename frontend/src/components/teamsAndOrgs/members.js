@@ -30,6 +30,7 @@ export function Members({
   setMemberJoinTeamError,
   managerJoinTeamError,
   setManagerJoinTeamError,
+  totalMembersOnTeam,
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const [editMode, setEditMode] = useState(false);
@@ -85,10 +86,10 @@ export function Members({
   );
 
   const enableMemberEditMode = useCallback(() => {
-    if (type === 'members' && editMode) return true;
+    if (type === 'members' && editMode && totalMembersOnTeam > 1) return true;
     if (!type && members.length > 1 && editMode) return true;
     return false;
-  }, [members, type, editMode]);
+  }, [members, type, editMode, totalMembersOnTeam]);
 
   const removeTeamMember = (username) => {
     if (members.length > 1) return removeMembers(username);
