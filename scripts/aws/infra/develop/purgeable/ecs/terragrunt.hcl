@@ -76,7 +76,7 @@ inputs = {
   container_commands = [
     "sh",
     "-c",
-    "alembic -c migrations/alembic.ini upgrade head && NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program uvicorn backend.main:api --host 0.0.0.0 --port 5000 --workers 8  --log-level critical --no-access-log"
+    "alembic -c migrations/alembic.ini upgrade head && newrelic-admin run-program uvicorn backend.main:api --host 0.0.0.0 --port 5000 --workers 8  --log-level critical --no-access-log"
   ]
 
   ## Task count for ECS services.
