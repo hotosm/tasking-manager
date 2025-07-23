@@ -1,0 +1,28 @@
+import { defineMessages } from 'react-intl';
+
+export default defineMessages({
+  add: { id: 'management.fields.managers.add', defaultMessage: 'Add' },
+  badgeInfo: { id: 'management.titles.badge_information', defaultMessage: 'Badge information' },
+  badges: { id: 'management.badges', defaultMessage: 'Badges' },
+  building: { id: 'management.badges.building', defaultMessage: 'buildings mapped' },
+  cancel: { id: 'management.button.cancel', defaultMessage: 'Cancel' },
+  changesets: { id: 'management.badges.changesets', defaultMessage: 'Changesets' },
+  description: { id: 'management.fields.description', defaultMessage: 'Description' },
+  hidden: { id: 'management.badges.hidden', defaultMessage: 'Hide this badge from users' },
+  highway: { id: 'management.badges.highway', defaultMessage: 'km of highways mapped' },
+  image: { id: 'management.fields.organisation.image', defaultMessage: 'Image' },
+  imageError: { id: 'management.badges.imageError', defaultMessage: 'Error uploading image' },
+  manage: { id: 'management.link.manage', defaultMessage: 'Manage {entity}' },
+  metric: { id: 'management.badges.metric', defaultMessage: 'Metric' },
+  name: { id: 'management.fields.name', defaultMessage: 'Name' },
+  noBadges: { id: 'management.no_badges', defaultMessage: 'There are no badges yet.' },
+  remove: { id: 'management.remove', defaultMessage: 'Remove' },
+  requirements: { id: 'management.badges.requirements', defaultMessage: 'Requirements' },
+  save: { id: 'management.button.save', defaultMessage: 'Save' },
+  uploadNew: { id: 'management.badges.uploadNew', defaultMessage: 'Upload new' },
+  uploading: { id: 'management.badges.uploading', defaultMessage: 'Uploading...' },
+  value: { id: 'management.badges.value', defaultMessage: 'Value' },
+  waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways mapped' },
+  changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
+  poi: { id: 'management.badges.poi', defaultMessage: 'Points of Interest' },
+});

@@ -4,9 +4,9 @@ from unittest.mock import AsyncMock, patch
 from fastapi import HTTPException
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.project_service import (
-    MappingLevel,
     MappingNotAllowed,
     Project,
     ProjectAdminService,
@@ -14,6 +14,11 @@ from backend.services.project_service import (
     ProjectStatus,
     UserService,
     ValidatingNotAllowed,
+)
+from backend.models.postgis.statuses import MappingPermission, ValidationPermission
+
+from tests.api.helpers.test_helpers import (
+    create_canned_user,
 )
 
 
@@ -34,28 +39,6 @@ class TestProjectService:
         # Act / Assert
         with pytest.raises(HTTPException):
             await ProjectService.get_project_by_id(123, self.db)
-
-    @patch.object(UserService, "get_mapping_level")
-    async def test_user_not_allowed_to_map_if_level_enforced(self, mock_level):
-        # Arrange
-        mock_level.return_value = MappingLevel.BEGINNER
-
-        # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
-
-        # Assert
-        assert not allowed
-
-    @patch.object(UserService, "get_mapping_level")
-    async def test_user_is_allowed_to_map_if_level_enforced(self, mock_level):
-        # Arrange
-        mock_level.return_value = MappingLevel.ADVANCED
-
-        # Act
-        allowed = await ProjectService._is_user_intermediate_or_advanced(1, self.db)
-
-        # Assert
-        assert allowed
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(UserService, "is_user_blocked")
@@ -127,6 +110,88 @@ class TestProjectService:
         allowed, reason = await ProjectService.is_user_permitted_to_map(1, 1, self.db)
         assert not allowed
         assert reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
+    @patch.object(ProjectService, "get_project_by_id")
+    @patch.object(UserService, "get_mapping_level")
+    @patch.object(UserService, "has_user_accepted_license")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    async def test_user_allowed_to_map_by_mapping_level(
+        self,
+        is_user_action_permitted_on_project,
+        has_user_accepted_license,
+        get_mapping_level,
+        get_project_by_id,
+    ):
+        # Arrange
+        is_user_action_permitted_on_project.return_value = False
+        has_user_accepted_license.return_value = True
+
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        stub_project.license_id = 11
+        stub_project.mapping_permission = MappingPermission.ANY.value
+        stub_project.mapping_permission_level_id = 3  # Advanced
+        get_project_by_id.return_value = stub_project
+
+        test_user = await create_canned_user(self.db)
+
+        get_mapping_level.return_value = await MappingLevel.get_by_id(1, self.db)
+
+        # Act
+        allowed, reason = await ProjectService.is_user_permitted_to_map(
+            stub_project.id, test_user.id, self.db
+        )
+
+        assert not allowed
+
+        # With permission
+        get_mapping_level.return_value = await MappingLevel.get_by_id(3, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_map(
+            stub_project.id, test_user.id, self.db
+        )
+
+        assert allowed
+
+    @patch.object(ProjectService, "get_project_by_id")
+    @patch.object(UserService, "get_mapping_level")
+    @patch.object(UserService, "has_user_accepted_license")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    async def test_user_allowed_to_validate_by_mapping_level(
+        self,
+        is_user_action_permitted_on_project,
+        has_user_accepted_license,
+        get_mapping_level,
+        get_project_by_id,
+    ):
+        # Arrange
+        is_user_action_permitted_on_project.return_value = False
+        has_user_accepted_license.return_value = True
+
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        stub_project.license_id = 11
+        stub_project.validation_permission = ValidationPermission.ANY.value
+        stub_project.validation_permission_level_id = 3  # Advanced
+        get_project_by_id.return_value = stub_project
+
+        test_user = await create_canned_user(self.db)
+
+        get_mapping_level.return_value = await MappingLevel.get_by_id(1, self.db)
+
+        # Act
+        allowed, reason = await ProjectService.is_user_permitted_to_validate(
+            stub_project.id, test_user.id, self.db
+        )
+
+        assert not allowed
+
+        # With permission
+        get_mapping_level.return_value = await MappingLevel.get_by_id(3, self.db)
+        allowed, reason = await ProjectService.is_user_permitted_to_validate(
+            stub_project.id, test_user.id, self.db
+        )
+
+        assert allowed
 
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(UserService, "is_user_blocked")

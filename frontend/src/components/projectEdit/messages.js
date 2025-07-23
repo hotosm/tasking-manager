@@ -69,25 +69,25 @@ export default defineMessages({
     id: 'projects.formInputs.permissions.any',
     defaultMessage: 'Any user',
   },
-  permissions_LEVEL: {
-    id: 'projects.formInputs.permissions.level',
-    defaultMessage: 'Only users with intermediate or advanced level',
-  },
   permissions_TEAMS: {
     id: 'projects.formInputs.permissions.teams',
     defaultMessage: 'Only team members',
-  },
-  permissions_TEAMS_LEVEL: {
-    id: 'projects.formInputs.permissions.teamsAndLevel',
-    defaultMessage: 'Only intermediate and advanced team members',
   },
   mappingPermissionDescription: {
     id: 'projects.formInputs.permissions.mapping.description',
     defaultMessage: 'Define which users can map this project.',
   },
+  mappingPermissionLevelDescription: {
+    id: 'projects.formInputs.permissions.mapping.levelDescription',
+    defaultMessage: 'Choose a minimum level required to map this project.',
+  },
   validationPermissionDescription: {
     id: 'projects.formInputs.permissions.validation.description',
     defaultMessage: 'Define which users can validate this project.',
+  },
+  validationPermissionLevelDescription: {
+    id: 'projects.formInputs.permissions.validation.levelDescription',
+    defaultMessage: 'Choose a minimum level required to validate this project.',
   },
   mappingPermission: {
     id: 'projects.formInputs.permissions.mapping.title',

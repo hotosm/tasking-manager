@@ -165,9 +165,17 @@ export default defineMessages({
     id: 'project.detail.mapping_permissions',
     defaultMessage: 'Who can map?',
   },
+  whoCanMapLevel: {
+    id: 'project.detail.mapping_permissions_level',
+    defaultMessage: 'Minimum mapper level',
+  },
   whoCanValidate: {
     id: 'project.detail.validation_permissions',
     defaultMessage: 'Who can validate?',
+  },
+  whoCanValidateLevel: {
+    id: 'project.detail.validation_permission_level',
+    defaultMessage: 'Minimum validator level',
   },
   zoomToTasks: {
     id: 'project.detail.zoomToTasks',
