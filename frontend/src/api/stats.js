@@ -6,7 +6,9 @@ import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../config';
 
 const ohsomeProxyAPI = (userId, topics) => {
   const token = localStorage.getItem('token');
-  return api(token).get(`users/statistics/ohsome/?userId=${userId}&topics=${topics}`);
+  return api(token).get(
+    `users/statistics/ohsome/?hashtag=${defaultChangesetComment}-%2A&userId=${userId}&topics=${topics}`,
+  );
 };
 
 export const useSystemStatisticsQuery = () => {
