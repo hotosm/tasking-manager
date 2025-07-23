@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import { supported } from 'mapbox-gl';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
@@ -25,6 +24,7 @@ import NavButtons from './navButtons';
 import Review from './review';
 import { Alert } from '../alert';
 import { makeGrid } from '../../utils/taskGrid';
+import isWebglSupported from '../../utils/isWebglSupported';
 import { MAX_AOI_AREA } from '../../config';
 import {
   verifyGeometry,
@@ -303,7 +303,7 @@ const ProjectCreate = () => {
             showProjectsAOILayer={showProjectsAOILayer}
           />
         </Suspense>
-        {supported() && (
+        {isWebglSupported() && (
           <>
             <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">
               {cloneFromId && (

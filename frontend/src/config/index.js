@@ -174,7 +174,7 @@ export const MAP_STYLE = MAPBOX_TOKEN
   ? `mapbox://styles/mapbox/${BASEMAP_OPTIONS[0].value}`
   : BASEMAP_OPTIONS[1].value;
 export const MAPBOX_RTL_PLUGIN_URL =
-  'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
+  'https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js';
 
 export const DROPZONE_SETTINGS = {
   accept: {
