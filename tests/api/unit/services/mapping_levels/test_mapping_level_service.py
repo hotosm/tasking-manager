@@ -32,7 +32,7 @@ class TestMappingLevelService:
                 name="a badge",
                 description="...",
                 imagePath="/",
-                requirements="{}",
+                requirements='{"roads": 10}',
             ),
             self.db,
         )
@@ -74,7 +74,7 @@ class TestMappingLevelService:
                 name="a badge",
                 description="...",
                 imagePath="/",
-                requirements="{}",
+                requirements='{"roads": 10}',
             ),
             self.db,
         )
@@ -100,7 +100,7 @@ class TestMappingLevelService:
                 name="one",
                 description="...",
                 imagePath="/",
-                requirements="{}",
+                requirements='{"roads": 10}',
             ),
             self.db,
         )
@@ -109,7 +109,7 @@ class TestMappingLevelService:
                 name="two",
                 description="...",
                 imagePath="/",
-                requirements="{}",
+                requirements='{"roads": 10}',
             ),
             self.db,
         )

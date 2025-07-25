@@ -6,6 +6,7 @@ export default defineMessages({
   badges: { id: 'management.badges', defaultMessage: 'Badges' },
   building: { id: 'management.badges.building', defaultMessage: 'buildings mapped' },
   cancel: { id: 'management.button.cancel', defaultMessage: 'Cancel' },
+  changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
   changesets: { id: 'management.badges.changesets', defaultMessage: 'Changesets' },
   description: { id: 'management.fields.description', defaultMessage: 'Description' },
   hidden: { id: 'management.badges.hidden', defaultMessage: 'Hide this badge from users' },
@@ -16,6 +17,7 @@ export default defineMessages({
   metric: { id: 'management.badges.metric', defaultMessage: 'Metric' },
   name: { id: 'management.fields.name', defaultMessage: 'Name' },
   noBadges: { id: 'management.no_badges', defaultMessage: 'There are no badges yet.' },
+  poi: { id: 'management.badges.poi', defaultMessage: 'Points of Interest' },
   remove: { id: 'management.remove', defaultMessage: 'Remove' },
   requirements: { id: 'management.badges.requirements', defaultMessage: 'Requirements' },
   save: { id: 'management.button.save', defaultMessage: 'Save' },
@@ -23,6 +25,5 @@ export default defineMessages({
   uploading: { id: 'management.badges.uploading', defaultMessage: 'Uploading...' },
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
   waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways mapped' },
-  changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
-  poi: { id: 'management.badges.poi', defaultMessage: 'Points of Interest' },
+  needsRequirements: { id: 'management.badges.needsRequirements', defaultMessage: 'Needs at least one requirement' },
 });

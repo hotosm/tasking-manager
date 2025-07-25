@@ -67,6 +67,24 @@ export const BadgeInformation = ({ badge }) => {
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const intl = useIntl();
 
+  const validateRequirements = (value) => {
+    let isError = false;
+
+    try {
+      const v = JSON.parse(value);
+
+      if (Object.keys(v).length === 0) {
+        isError = true;
+      }
+    } catch (e) {
+      isError = true;
+    }
+
+    if (isError) {
+      return <FormattedMessage {...messages.needsRequirements} />;
+    }
+  };
+
   return (
     <div className="cf badge-info">
       <label className={labelClasses}>
@@ -102,7 +120,7 @@ export const BadgeInformation = ({ badge }) => {
       <label className={labelClasses}>
         <FormattedMessage {...messages.requirements} />
       </label>
-      <Field name="requirements">
+      <Field name="requirements" validate={validateRequirements}>
         {({input}) => BadgeRequirementsField({ input })}
       </Field>
     </div>

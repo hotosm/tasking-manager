@@ -52,7 +52,7 @@ class TestMappingBadgeService:
             name="new badge",
             description="",
             imagePath="",
-            requirements="{}",
+            requirements='{"roads": 100}',
             isEnabled=True,
             isInternal=True,
         )
@@ -67,13 +67,35 @@ class TestMappingBadgeService:
         assert new_badge.id == badges.badges[2].id
         assert new_badge.is_internal == badges.badges[2].is_internal
 
+    async def test_create_validates_requirements(self):
+        with pytest.raises(ValueError):
+            MappingBadgeCreateDTO(
+                name="new badge",
+                description="",
+                imagePath="",
+                requirements="{}",
+                isEnabled=True,
+                isInternal=True,
+            )
+
+    async def test_update_validates_requirements(self):
+        with pytest.raises(ValueError):
+            MappingBadgeUpdateDTO(
+                name="new badge",
+                description="",
+                imagePath="",
+                requirements="{}",
+                isEnabled=True,
+                isInternal=True,
+            )
+
     async def test_update(self):
         # Arrange
         old_data = MappingBadgeCreateDTO(
             name="old name",
             description="old description",
             imagePath="https://old.com/path.jpg",
-            requirements="{}",
+            requirements='{"waterways":10}',
             isEnabled=True,
             isInternal=False,
         )
@@ -83,7 +105,7 @@ class TestMappingBadgeService:
             name="new name",
             description="new description",
             imagePath="https://new.com/path.jpg",
-            requirements="{}",
+            requirements='{"buildings":10}',
             isEnabled=False,
         )
 
@@ -105,7 +127,7 @@ class TestMappingBadgeService:
             name="old name",
             description="old description",
             imagePath="https://old.com/path.jpg",
-            requirements="{}",
+            requirements='{"roads": 10}',
             isEnabled=True,
         )
         badge = await MappingBadge.create(old_data, self.db)
@@ -122,14 +144,14 @@ class TestMappingBadgeService:
             name="assigned badge",
             description="",
             imagePath="",
-            requirements="{}",
+            requirements='{"roads": 10}',
             isEnabled=True,
         )
         hidden_badge_dto = MappingBadgeCreateDTO(
             name="hidden badge",
             description="",
             imagePath="",
-            requirements="{}",
+            requirements='{"roads": 10}',
             isEnabled=True,
             isInternal=True,
         )
@@ -137,7 +159,7 @@ class TestMappingBadgeService:
             name="disabled badge",
             description="",
             imagePath="",
-            requirements="{}",
+            requirements='{"roads": 10}',
             isEnabled=False,
             isInternal=False,
         )
@@ -145,7 +167,7 @@ class TestMappingBadgeService:
             name="unassigned badge",
             description="",
             imagePath="",
-            requirements="{}",
+            requirements='{"roads": 10}',
             isEnabled=True,
         )
         assigned_badge = await MappingBadge.create(assigned_badge_dto, self.db)
