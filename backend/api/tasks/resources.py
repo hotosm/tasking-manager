@@ -1,6 +1,8 @@
 import io
 import json
+from typing import Optional
 
+from backend.models.dtos.user_dto import AuthUserDTO
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import JSONResponse, Response, StreamingResponse
@@ -9,12 +11,12 @@ from starlette.authentication import requires
 
 from backend.db import get_db
 from backend.models.dtos.grid_dto import GridDTO
-from backend.models.postgis.statuses import UserRole
+from backend.models.postgis.statuses import ProjectStatus, UserRole
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.mapping_service import MappingService
 from backend.services.project_service import ProjectService, ProjectServiceError
-from backend.services.users.authentication_service import tm
+from backend.services.users.authentication_service import login_required_optional, tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
 
@@ -75,6 +77,7 @@ async def get_project_tasks(
     project_id: int,
     tasks: str = Query(default=None),
     as_file: bool = Query(default=False, alias="as_file"),
+    user: Optional[AuthUserDTO] = Depends(login_required_optional),
     db: Database = Depends(get_db),
 ):
     """
@@ -112,8 +115,38 @@ async def get_project_tasks(
             description: Internal Server Error
     """
     try:
-        tasks_json = await ProjectService.get_project_tasks(db, project_id, tasks)
 
+        is_private, status = await ProjectService.get_project_privacy_and_status(
+            project_id, db
+        )
+        # If private or draft, enforce login + permission
+        if is_private or status == ProjectStatus.DRAFT.value:
+            user_id = user.id if user else None
+            if user is None:
+                return JSONResponse(
+                    content={
+                        "Error": "User not permitted: Private Project",
+                        "SubCode": "PrivateProject",
+                    },
+                    status_code=403,
+                )
+
+            project_dto = await ProjectService.get_project_dto_for_mapper(
+                project_id,
+                user_id,
+                db,
+            )
+            if not project_dto:
+
+                return JSONResponse(
+                    content={
+                        "Error": "User not permitted: Private Project",
+                        "SubCode": "PrivateProject",
+                    },
+                    status_code=403,
+                )
+
+        tasks_json = await ProjectService.get_project_tasks(db, project_id, tasks)
         if as_file:
             tasks_str = json.dumps(tasks_json, indent=4)
             return Response(
