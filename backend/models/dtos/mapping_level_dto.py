@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 
 class AssociatedBadge(BaseModel):
@@ -17,12 +17,24 @@ class MappingLevelDTO(BaseModel):
     required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
 
 
+def has_badges(value: list) -> list:
+    if len(value) == 0:
+        raise ValueError('needs at least one badge')
+
+    return value
+
+
 class MappingLevelCreateDTO(BaseModel):
     name: str
     approvals_required: int = Field(default=0, alias="approvalsRequired")
     color: Optional[str] = Field(default=None)
     is_beginner: bool = Field(default=False, alias="isBeginner")
     required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
+
+    @field_validator('required_badges')
+    @classmethod
+    def has_badges(cls, value: str, info: ValidationInfo):
+        return has_badges(value)
 
 
 class MappingLevelUpdateDTO(BaseModel):
@@ -32,6 +44,11 @@ class MappingLevelUpdateDTO(BaseModel):
     color: Optional[str] = Field(default=None)
     is_beginner: Optional[bool] = Field(default=False, alias="isBeginner")
     required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
+
+    @field_validator('required_badges')
+    @classmethod
+    def has_badges(cls, value: str, info: ValidationInfo):
+        return has_badges(value)
 
 
 class MappingLevelListDTO(BaseModel):

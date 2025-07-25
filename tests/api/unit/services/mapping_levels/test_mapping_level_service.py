@@ -67,6 +67,20 @@ class TestMappingLevelService:
         assert levels.levels[1].name == "INTERMEDIATE"
         assert levels.levels[2].name == "ADVANCED"
 
+    async def test_create_requires_badges(self):
+        with pytest.raises(ValueError):
+            MappingLevelCreateDTO(
+                name="name",
+                requiredBadges=[],
+            )
+
+    async def test_update_requires_badges(self):
+        with pytest.raises(ValueError):
+            MappingLevelUpdateDTO(
+                name="name",
+                requiredBadges=[],
+            )
+
     async def test_create(self):
         # Arrange
         badge = await MappingBadgeService.create(

@@ -17,7 +17,8 @@ from backend.models.postgis.user import (
 )
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
-from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO
+from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
+from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO, AssociatedBadge
 
 
 @pytest.mark.anyio
@@ -285,13 +286,22 @@ class TestUserService:
 
     async def test_approve_level_needs_one_more(self):
         # Arrange
+        badge = await MappingBadge.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements='{"roads": 10}',
+            ),
+            self.db,
+        )
         level = await MappingLevel.create(
             MappingLevelCreateDTO(
                 name="Super Mapper",
                 approvalsRequired=2,
                 color="#acabad",
                 isBeginner=False,
-                requiredBadges=[],
+                requiredBadges=[AssociatedBadge(id=badge.id)],
             ),
             self.db,
         )
@@ -307,13 +317,22 @@ class TestUserService:
 
     async def test_approve_level(self):
         # Arrange
+        badge = await MappingBadge.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements='{"roads": 10}',
+            ),
+            self.db,
+        )
         level = await MappingLevel.create(
             MappingLevelCreateDTO(
                 name="Super Mapper",
                 approvalsRequired=1,
                 color="#acabad",
                 isBeginner=False,
-                requiredBadges=[],
+                requiredBadges=[AssociatedBadge(id=badge.id)],
             ),
             self.db,
         )

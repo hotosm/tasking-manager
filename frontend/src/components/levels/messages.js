@@ -13,4 +13,5 @@ export default defineMessages({
   peer_review: { id: 'management.levels.peer_review', defaultMessage: 'Require peer review' },
   required_badges: { id: 'management.levels.required_badges', defaultMessage: 'Required badges' },
   save: { id: 'management.button.save', defaultMessage: 'Save' },
+  needsBadges: { id: 'management.levels.needsBadges', defaultMessage: 'Needs at least one badge' },
 });

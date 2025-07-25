@@ -16,6 +16,7 @@ export default defineMessages({
   manage: { id: 'management.link.manage', defaultMessage: 'Manage {entity}' },
   metric: { id: 'management.badges.metric', defaultMessage: 'Metric' },
   name: { id: 'management.fields.name', defaultMessage: 'Name' },
+  needsRequirements: { id: 'management.badges.needsRequirements', defaultMessage: 'Needs at least one requirement' },
   noBadges: { id: 'management.no_badges', defaultMessage: 'There are no badges yet.' },
   poi: { id: 'management.badges.poi', defaultMessage: 'Points of Interest' },
   remove: { id: 'management.remove', defaultMessage: 'Remove' },
@@ -25,5 +26,4 @@ export default defineMessages({
   uploading: { id: 'management.badges.uploading', defaultMessage: 'Uploading...' },
   value: { id: 'management.badges.value', defaultMessage: 'Value' },
   waterway: { id: 'management.badges.waterway', defaultMessage: 'km of waterways mapped' },
-  needsRequirements: { id: 'management.badges.needsRequirements', defaultMessage: 'Needs at least one requirement' },
 });

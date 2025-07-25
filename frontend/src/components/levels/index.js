@@ -58,6 +58,12 @@ export const LevelInformation = ({ badges }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
+  const validateBadges = (value) => {
+    if (value && value.length === 0) {
+      return <FormattedMessage {...messages.needsBadges} />;
+    }
+  }
+
   return <div className="cf">
     <label className={labelClasses}>
       <FormattedMessage {...messages.name} />
@@ -78,7 +84,7 @@ export const LevelInformation = ({ badges }) => {
     <label className={labelClasses}>
       <FormattedMessage {...messages.required_badges} />
     </label>
-    <Field name="requiredBadges" className={fieldClasses} required>
+    <Field name="requiredBadges" className={fieldClasses} required validate={validateBadges}>
       {({input}) => RequiredBadgesField({input, badges})}
     </Field>
   </div>;
