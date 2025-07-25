@@ -325,6 +325,8 @@
   "project.permissions.level": "Usuarios con nivel intermedio o avanzado",
   "project.permissions.teams": "{team} miembros",
   "project.permissions.teamsAndLevel": "Miembros {team} intermedios y avanzados",
+  "project.permissions.having": "que tengan nivel",
+  "project.permissions.levelOrAbove": "o superior",
   "projects.data.download.aoi": "Descargar AOI",
   "projects.data.download.taskGrid": "Descargar cuadrícula de tareas",
   "projects.link.stats": "Más estadísticas",

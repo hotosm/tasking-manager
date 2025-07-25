@@ -348,4 +348,12 @@ export default defineMessages({
     id: 'project.viewProjectSpecificInstructions',
     defaultMessage: 'View project specific instructions',
   },
+  having: {
+    id: 'project.permissions.having',
+    defaultMessage: 'having',
+  },
+  levelOrAbove: {
+    id: 'project.permissions.levelOrAbove',
+    defaultMessage: 'level or above',
+  },
 });
