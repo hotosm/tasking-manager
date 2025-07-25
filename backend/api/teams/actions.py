@@ -407,3 +407,39 @@ async def message_team(
         )
     except ValueError as e:
         return JSONResponse(content={"Error": str(e)}, status_code=400)
+
+
+@router.delete("/{project_id}/teams/{team_id}/")
+async def remove_team_from_project(
+    project_id: int,
+    team_id: int,
+    request: Request,
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Unlink a Team from a Project.
+    """
+    permitted = await TeamService.is_user_team_manager(team_id, user.id, db)
+    if not permitted:
+        return JSONResponse(
+            {
+                "Error": "User is not a manager of the team",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
+
+    try:
+        deleted = await TeamService.unlink_team(project_id, team_id, db)
+        if not deleted:
+            return JSONResponse(
+                {"Error": "No such team linked to project", "SubCode": "NotFoundError"},
+                status_code=404,
+            )
+        return JSONResponse({"Success": True}, status_code=200)
+    except Exception as e:
+        return JSONResponse(
+            {"Error": "Internal server error", "Details": str(e)},
+            status_code=500,
+        )
