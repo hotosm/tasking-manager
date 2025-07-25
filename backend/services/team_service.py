@@ -817,3 +817,24 @@ class TeamService:
             logger.info("Messages sent successfully.")
         except Exception as e:
             logger.error(f"Error sending messages in background task: {str(e)}")
+
+    @staticmethod
+    async def unlink_team(project_id: int, team_id: int, db: Database) -> bool:
+        """
+        Delete the project_teams row matching project_id & team_id.
+        Returns True if a row was deleted, False otherwise.
+        """
+        query = """
+            DELETE FROM project_teams
+            WHERE project_id = :project_id
+              AND team_id    = :team_id
+            RETURNING team_id
+        """
+        row = await db.fetch_one(
+            query,
+            values={
+                "project_id": project_id,
+                "team_id": team_id,
+            },
+        )
+        return row is not None
