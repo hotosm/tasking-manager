@@ -153,7 +153,7 @@ class Project(Base):
         Integer, nullable=False, default=1, server_default="1"
     )
     validation_permission = Column(
-        Integer, default=ValidationPermission.ANY.value
+        Integer, default=ValidationPermission.TEAMS.value
     )  # By default validation is not restricted by team
     # By default validation is restricted by level intermediate
     validation_permission_level_id = Column(
