@@ -169,4 +169,8 @@ export default defineMessages({
     id: 'deleteModal.error.levelBeginner',
     defaultMessage: 'You can\'t delete the beginner level',
   },
+  MAPPING_BADGE_HAS_USERS: {
+    id: 'deleteModal.error.badgeHasUsersError',
+    defaultMessage: 'You can\'t delete a badge that users have earned',
+  },
 });
