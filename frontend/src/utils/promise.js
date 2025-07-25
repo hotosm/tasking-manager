@@ -24,8 +24,9 @@ export async function handleErrors(response) {
     .clone()
     .json()
     .then((res) => {
-      text = res.SubCode || response.statusText;
+      text = res.SubCode || res.error?.sub_code || response.statusText;
     });
+
   throw Error(text);
 }
 

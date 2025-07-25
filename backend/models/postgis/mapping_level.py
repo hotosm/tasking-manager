@@ -113,6 +113,11 @@ class MappingLevel(Base):
 
     @staticmethod
     async def delete(id: int, db: Database):
+        # Beginner level must not be deleted as id 1 is the row default for
+        # users
+        if id == 1:
+            raise Conflict("MAPPING_LEVEL_BEGINNER")
+
         async with db.transaction():
             clear_badges_query = (
                 "DELETE FROM mapping_level_badges WHERE level_id = :level_id"

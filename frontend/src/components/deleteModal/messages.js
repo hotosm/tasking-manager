@@ -161,4 +161,12 @@ export default defineMessages({
     id: 'deleteModal.error.OrgHasProjectsError',
     defaultMessage: 'Organisation has some projects. Please delete them first.',
   },
+  MAPPING_LEVEL_HAS_USERS: {
+    id: 'deleteModal.error.levelHasUsersError',
+    defaultMessage: 'Some users have this level so it can\'t be deleted',
+  },
+  MAPPING_LEVEL_BEGINNER: {
+    id: 'deleteModal.error.levelBeginner',
+    defaultMessage: 'You can\'t delete the beginner level',
+  },
 });

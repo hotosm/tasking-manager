@@ -183,3 +183,10 @@ class TestMappingLevelService:
             await MappingLevelService.delete(level.id, self.db)
 
         assert e.value.sub_code == "MAPPING_LEVEL_HAS_USERS"
+
+    async def test_delete_fails_if_beginner(self):
+        # Act
+        with pytest.raises(Conflict) as e:
+            await MappingLevelService.delete(1, self.db)
+
+        assert e.value.sub_code == "MAPPING_LEVEL_BEGINNER"
