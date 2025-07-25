@@ -97,7 +97,7 @@ const MapperLevelFilter = ({ filters, updateFilters }) => {
 
   useEffect(() => {
     (async () => {
-      const res = await fetchLocalJSONAPI(`levels`);
+      const res = await fetchLocalJSONAPI(`levels/`);
 
       setLevels(res.levels);
     })();
