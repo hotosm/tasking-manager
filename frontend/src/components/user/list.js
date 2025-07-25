@@ -269,7 +269,7 @@ export const UsersTable = ({ filters, setFilters }) => {
         accessorFn: (row) => {
           const topics = row.stats || {};
 
-          return topics[topic];
+          return topics[topic] && topics[topic].toFixed(1);
         },
         header: () => (<FormattedMessage {...messages[`tableCol_${topic}`]} />),
       };
