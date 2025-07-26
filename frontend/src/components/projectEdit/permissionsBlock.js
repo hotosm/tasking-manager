@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Select from 'react-select';
 
@@ -61,9 +61,9 @@ export const PermissionsBlock = ({ permissions, levels, type }: Object) => {
   const levelOptions = levels.map((l) => ({value: l.id, label: l.name}));
   const levelValue = levelOptions.find((l) => {
     if (type === 'mappingPermission') {
-      return l.value == projectInfo.mappingPermissionLevelId;
+      return l.value === projectInfo.mappingPermissionLevelId;
     } else {
-      return l.value == projectInfo.validationPermissionLevelId;
+      return l.value === projectInfo.validationPermissionLevelId;
     }
   });
 

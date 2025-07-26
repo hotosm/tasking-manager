@@ -5,7 +5,7 @@ import { useBadgesQuery } from '../../api/badges';
 export const UserBadges = ({ userId }) => {
   const { data: badges } = useBadgesQuery(userId);
 
-  if (!badges || badges.length == 0) {
+  if (!badges || badges.length === 0) {
     return '';
   }
 

@@ -91,17 +91,8 @@ const RoleFilter = ({ filters, updateFilters }) => {
   );
 };
 
-const MapperLevelFilter = ({ filters, updateFilters }) => {
+const MapperLevelFilter = ({ filters, updateFilters, levels }) => {
   const intl = useIntl();
-  const [levels, setLevels] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      const res = await fetchLocalJSONAPI(`levels/`);
-
-      setLevels(res.levels);
-    })();
-  }, []);
 
   const options = levels.map((l) => {
     return { value: l.id, label: l.name };
@@ -119,7 +110,7 @@ const MapperLevelFilter = ({ filters, updateFilters }) => {
   );
 };
 
-export const SearchNav = ({ filters, setFilters, initialFilters }) => {
+export const SearchNav = ({ filters, setFilters, initialFilters, levels }) => {
   const updateFilters = (field, value) => {
     setFilters((f) => {
       return { ...f, [field]: value };
@@ -140,6 +131,7 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
           filters={filters}
           setFilters={setFilters}
           updateFilters={updateFilters}
+          levels={levels}
         />
       </div>
       <div className="tr mr3">
@@ -154,7 +146,7 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
   );
 };
 
-export const UsersTable = ({ filters, setFilters }) => {
+export const UsersTable = ({ filters, setFilters, levels }) => {
   const token = useSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
   const userDetails = useSelector((state) => state.auth.userDetails);
@@ -318,12 +310,18 @@ export const UsersTable = ({ filters, setFilters }) => {
                 <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
               </span>
             }
-            position="right center"
+            position="left center"
             closeOnDocumentClick
             className="user-popup"
           >
             {(close) => (
-              <UserEditMenu user={row.original} token={token} close={close} setStatus={setStatus} />
+              <UserEditMenu
+                user={row.original}
+                token={token}
+                close={close}
+                setStatus={setStatus}
+                levels={levels}
+              />
             )}
           </Popup>}
 
@@ -412,14 +410,17 @@ export const UsersTable = ({ filters, setFilters }) => {
   );
 };
 
-export const UserEditMenu = ({ user, token, close, setStatus }) => {
+export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
   const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
   const iconClass = 'h1 w1 red';
 
-  const updateRole = (attributeValue) => {
-    const endpoint = `users/${user.username}/actions/set-role/${attributeValue}/`;
+  const updateAttribute = (attribute, attributeValue) => {
+    const endpoint = {
+      role: `users/${user.username}/actions/set-role/${attributeValue}/`,
+      mapperLevel: `users/${user.username}/actions/set-level/${attributeValue}/`,
+    };
 
-    fetchLocalJSONAPI(endpoint, token, 'PATCH')
+    fetchLocalJSONAPI(endpoint[attribute], token, 'PATCH')
       .then(() => {
         close();
         setStatus({ success: true });
@@ -437,14 +438,14 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           <FormattedMessage
             {...messages.userAttributeUpdationFailure}
             values={{
-              attribute: "role",
+              attribute,
             }}
           />,
         ),
       );
   };
 
-  return (
+  return <>
     <div className="w-100 bb b--tan">
       <p className="b mv3">
         <FormattedMessage {...messages.setRole} />
@@ -454,7 +455,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           <div
             key={role}
             role="button"
-            onClick={() => updateRole(role)}
+            onClick={() => updateAttribute('role', role)}
             className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
           >
             <p className="ma0">
@@ -465,5 +466,25 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
         );
       })}
     </div>
-  );
+    <div className="w-100">
+      <p className="b mv3">
+        <FormattedMessage {...messages.setLevel} />
+      </p>
+      {levels.map((level) => {
+        return (
+          <div
+            key={level.id}
+            role="button"
+            onClick={() => updateAttribute('mapperLevel', level.name)}
+            className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+          >
+            <p className="ma0">
+              { level.name }
+            </p>
+            {level.name === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
+          </div>
+        );
+      })}
+    </div>
+  </>;
 };
