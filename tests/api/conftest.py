@@ -1,29 +1,35 @@
+# conftest.py
 import logging
-import os
 import pytest
 import asyncpg
 from databases import Database
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.sql import text
 from httpx import ASGITransport, AsyncClient
+
 from backend.config import test_settings as settings
 from backend.db import Base, db_connection
-from backend.main import api as fastapi_app
+from backend.routes import add_api_end_points
 
-# Configure logging
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.middleware.authentication import AuthenticationMiddleware
+from backend.services.users.authentication_service import TokenAuthBackend
+
+# Logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# DB URLs
 db_url = settings.SQLALCHEMY_DATABASE_URI.unicode_string()
-pfx, name = db_url.rsplit("/", 1)
-
-ASYNC_TEST_DB_URL = f"{pfx}/{name}_test"
-
+pfx, db_name = db_url.rsplit("/", 1)
+ASYNC_TEST_DB_URL = f"{pfx}/{db_name}_test"
 SYNCPG_DB_URL = str(settings.SQLALCHEMY_DATABASE_URI).replace(
     "postgresql+asyncpg://", "postgresql://"
 )
-TEST_DB_NAME = f"{settings.POSTGRES_TEST_DB}_test"
-DUMP_PATH = os.path.join("tests", "test_db_dump", "tm_sample_db.sql")
+TEST_DB_NAME = f"{db_name}_test"  # Use the same name consistently
 
 
 @pytest.fixture(scope="session")
@@ -32,61 +38,36 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="session")
-async def create_test_database():
-    logger.info("Creating test database: %s", TEST_DB_NAME)
-    conn = await asyncpg.connect(dsn=SYNCPG_DB_URL)
-    await conn.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
-    await conn.execute(f"CREATE DATABASE {TEST_DB_NAME}")
-    await conn.close()
+async def test_database():
+    """Fixture to create and drop test database"""
+    # Connect to default postgres database to create test db
+    conn = await asyncpg.connect(dsn=SYNCPG_DB_URL.rsplit("/", 1)[0] + "/postgres")
+    try:
+        await conn.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
+        await conn.execute(f"CREATE DATABASE {TEST_DB_NAME}")
+    finally:
+        await conn.close()
 
-    test_db_url = SYNCPG_DB_URL.replace(settings.POSTGRES_TEST_DB, TEST_DB_NAME)
-    logger.info("Using test database URL: %s", test_db_url)
-
-    # Create tables
+    # Create tables and extensions
     engine = create_async_engine(ASYNC_TEST_DB_URL)
     async with engine.begin() as conn:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
         await conn.run_sync(Base.metadata.create_all)
     await engine.dispose()
-    logger.info("Tables created successfully in test database.")
 
-    # Restore SQL dump if available
-    # if os.path.isfile(DUMP_PATH):
-    #     logger.info("Restoring SQL dump from %s", DUMP_PATH)
-    #     command = f"psql {test_db_url} -f {DUMP_PATH}"
-    #     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
-    #     if result.returncode != 0:
-    #         logger.error("SQL restore failed: %s", result.stderr)
-    #         raise RuntimeError("SQL restore failed")
-    #     logger.info("SQL dump restored successfully.")
-    # else:
-    #     logger.warning("SQL dump file not found: %s", DUMP_PATH)
-    #     raise FileNotFoundError(f"SQL dump file not found: {DUMP_PATH}")
+    yield  # Test run happens here
 
-    yield  # Allow tests to run
-
-    # Cleanup: Drop test database
-    logger.info("Dropping test database: %s", TEST_DB_NAME)
-    conn = await asyncpg.connect(dsn=SYNCPG_DB_URL)
-    await conn.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
-    await conn.close()
-    logger.info("Test database dropped.")
-
-
-@pytest.fixture(scope="session")
-async def app(create_test_database):
-    logger.info("Setting up FastAPI app for testing.")
-    test_db = Database(ASYNC_TEST_DB_URL, min_size=4, max_size=8, force_rollback=True)
-    await test_db.connect()
-    db_connection.database = test_db
-    yield fastapi_app
-    logger.info("Disconnecting test database.")
-    await test_db.disconnect()
+    # Cleanup
+    conn = await asyncpg.connect(dsn=SYNCPG_DB_URL.rsplit("/", 1)[0] + "/postgres")
+    try:
+        await conn.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
+    finally:
+        await conn.close()
 
 
 @pytest.fixture
-async def db_connection_fixture(app):
-    """Provides a test database connection for each test."""
+async def db_connection_fixture(test_database):
+    """Database connection fixture with automatic rollback"""
     test_db = Database(ASYNC_TEST_DB_URL, min_size=4, max_size=8, force_rollback=True)
     await test_db.connect()
     try:
@@ -95,11 +76,85 @@ async def db_connection_fixture(app):
         await test_db.disconnect()
 
 
+def create_test_app():
+    """Create a FastAPI app specifically for testing without lifespan events."""
+
+    _app = FastAPI(
+        title=settings.APP_NAME,
+        description="HOTOSM Tasking Manager - Test Mode",
+        version="0.1.0-test",
+        debug=True,
+        openapi_url="/api/openapi.json",
+        docs_url="/api/docs",
+    )
+
+    @_app.exception_handler(HTTPException)
+    async def custom_http_exception_handler(request: Request, exc: HTTPException):
+        if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
+            return JSONResponse(
+                content={
+                    "Error": exc.detail["Error"],
+                    "SubCode": exc.detail["SubCode"],
+                },
+                status_code=exc.status_code,
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        if isinstance(exc.detail, dict) and "error" in exc.detail:
+            error_response = exc.detail
+        else:
+            error_response = {
+                "error": {
+                    "code": exc.status_code,
+                    "sub_code": "UNKNOWN_ERROR",
+                    "message": str(exc.detail),
+                    "details": {},
+                }
+            }
+
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=error_response,
+        )
+
+    # Add middleware
+    _app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.EXTRA_CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["Content-Disposition"],
+    )
+
+    _app.add_middleware(
+        AuthenticationMiddleware, backend=TokenAuthBackend(), on_error=None
+    )
+
+    # Add API endpoints
+    add_api_end_points(_app)
+    return _app
+
+
+@pytest.fixture(scope="session")
+def test_app():
+    """Session-scoped test app"""
+    return create_test_app()
+
+
+@pytest.fixture
+async def app(test_app, db_connection_fixture):
+    """Reuse session app with test-specific connection"""
+
+    # Inject test connection
+    db_connection.database = db_connection_fixture
+    yield test_app
+
+
 @pytest.fixture
 async def client(app):
-    logger.info("Creating test client for FastAPI app.")
+    """Test client fixture"""
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="https://test"
     ) as ac:
         yield ac
-    logger.info("Test client closed.")

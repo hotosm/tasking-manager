@@ -33,7 +33,9 @@ export const StatsColumn = ({ label, value }: Object) => {
 
 export const StatsSection = () => {
   const { data: tmStatsData, isSuccess: hasTmStatsLoaded } = useSystemStatisticsQuery();
-  const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery();
+  const { data: osmStatsData, isSuccess: hasOsmStatsLoaded } = useOsmStatsQuery({
+    topics: ['building', 'road', 'edit'],
+  });
 
   // Mount all stats simultaneously
   const hasStatsLoaded = hasTmStatsLoaded && hasOsmStatsLoaded;
@@ -45,15 +47,15 @@ export const StatsSection = () => {
       <div className="flex justify-around flex-wrap flex-nowrap-ns stats-container">
         <StatsColumn
           label={messages.buildingsStats}
-          value={hasStatsLoaded ? osmStatsData?.buildings : undefined}
+          value={hasStatsLoaded ? osmStatsData?.topics?.building?.value : undefined}
         />
         <StatsColumn
           label={messages.roadsStats}
-          value={hasStatsLoaded ? osmStatsData?.roads : undefined}
+          value={hasStatsLoaded ? osmStatsData?.topics?.road?.value : undefined}
         />
         <StatsColumn
           label={messages.editsStats}
-          value={hasStatsLoaded ? osmStatsData?.edits : undefined}
+          value={hasStatsLoaded ? osmStatsData?.topics?.edit?.value : undefined}
         />
         <StatsColumn
           label={messages.communityStats}

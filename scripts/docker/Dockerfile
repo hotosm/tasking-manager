@@ -105,6 +105,7 @@ COPY --chown=appuser:appuser --chmod=755 scripts/world scripts/world/
 COPY --chown=appuser:appuser --chmod=755 scripts/database scripts/database/
 COPY --chown=appuser:appuser --chmod=755 scripts/commands scripts/commands/
 COPY --chown=appuser:appuser --chmod=755 manage.py .
+COPY --chown=appuser:appuser --chmod=755 newrelic.ini .
 
 RUN chown -R appuser:appuser ./
 

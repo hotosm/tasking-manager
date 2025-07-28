@@ -35,7 +35,7 @@ locals {
     TM_DEFAULT_CHANGESET_COMMENT  = get_env("TM_DEFAULT_CHANGESET_COMMENT", "#hot-tm-stage-project")
     TM_ENVIRONMENT                = get_env("TM_ENVIRONMENT", "tasking-manager-staging")
     NEW_RELIC_ENVIRONMENT         = get_env("NEW_RELIC_ENVIRONMENT", "tasking-manager-staging")
-    NEW_RELIC_CONFIG_FILE         = get_env("NEW_RELIC_CONFIG_FILE", "./scripts/aws/cloudformation/newrelic.ini")
+    NEW_RELIC_CONFIG_FILE         = get_env("NEW_RELIC_CONFIG_FILE", "newrelic.ini")
     USE_SENTRY                    = get_env("USE_SENTRY", "true")
     # Uncomment the following as needed.
     # TM_TASK_AUTOUNLOCK_AFTER    = get_env("TM_TASK_AUTOUNLOCK_AFTER", "2h")
