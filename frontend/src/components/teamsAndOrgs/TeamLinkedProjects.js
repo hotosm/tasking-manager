@@ -24,7 +24,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
   const [selectedProjectStatus, setSelectedProjectStatus] = useState('PUBLISHED');
 
   // eslint-disable-next-line no-unused-vars
-  const [projectsError, projectsLoading, projects, refetch] = useFetchWithAbort(
+  const [, , projects, refetch] = useFetchWithAbort(
     `projects/?teamId=${id}&omitMapResults=true&projectStatuses=${selectedProjectStatus}`,
     id,
   );
@@ -47,7 +47,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
       </h3>
       <ViewAllLink link={viewAllEndpoint} />
       <div className="pv2">
-        <div style={{ width: '230px' }}>
+        <div style={{ width: '280px' }}>
           <CustomMenu
             items={items}
             activeMenuItem={selectedProjectStatus}
@@ -63,6 +63,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
           >
             {projects?.results?.map((card) => (
               <TeamLinkedProjectCard
+                key={card.projectId}
                 projectId={card.projectId}
                 projectName={card.name}
                 unLinkFunc={canUserEditTeam ? unLinkProjectFromTeam : () => {}}
