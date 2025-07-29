@@ -18,7 +18,7 @@ import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
 
-const maxFileSize = 256000;
+const maxFileSize = 1 * 1024 * 1024; // 1MB
 
 function CommentInputField({
   comment,
@@ -98,7 +98,7 @@ function CommentInputField({
           errors: [
             {
               code: 'file-too-large',
-              message: 'File is larger than 256000 bytes',
+              message: 'File is larger than 1MB',
             },
           ],
         },
@@ -118,6 +118,17 @@ function CommentInputField({
     setFileRejectionFromIconClick([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment]);
+
+  const decorateFileRejections = (fileRejections) => {
+    return fileRejections.map(({ file, errors }) => {
+      const messages = errors.map((error) => {
+        if (error.code === 'file-too-large')
+          return { message: ' is too large. Maximum size allowed is 1MB.' };
+        return error.message;
+      });
+      return { file, errors: messages };
+    });
+  };
 
   return (
     <div {...getRootProps()}>
@@ -215,7 +226,9 @@ function CommentInputField({
         uploading={uploading || fileuploading}
         uploadError={uploadError || fileuploadError}
       />
-      <FileRejections files={[...fileRejections, ...fileRejectionFromIconClick]} />
+      <FileRejections
+        files={decorateFileRejections([...fileRejections, ...fileRejectionFromIconClick])}
+      />
     </div>
   );
 }
