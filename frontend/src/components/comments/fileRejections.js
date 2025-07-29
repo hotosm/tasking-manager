@@ -4,13 +4,13 @@ const FileRejections = ({ files }: Object) => {
     <ul>
       {files.map(({ file, errors }) => (
         <li key={file.path} className="red">
-          {file.path} (
+          {file.path}
           {errors.map((e) => (
-            <span key={e.code} className="dib pr2">
-              {e.message},
+            <span key={e.code} className="dib pr2 pl2">
+              {e.message}
+              {errors?.length ? ',' : ''}
             </span>
           ))}
-          )
         </li>
       ))}
     </ul>

@@ -105,7 +105,7 @@ it('exports DROPZONE_SETTINGS', () => {
   expect(config.DROPZONE_SETTINGS.accept).toStrictEqual({
     'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
   });
-  expect(config.DROPZONE_SETTINGS.maxSize).toBe(256000);
+  expect(config.DROPZONE_SETTINGS.maxSize).toBe(1048576);
   expect(config.DROPZONE_SETTINGS.multiple).toBeFalsy();
 });
 it('exports OSM_REGISTER_URL', () => {
