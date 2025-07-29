@@ -6,7 +6,7 @@ export const useBadgesQuery = (userId) => {
   const token = useSelector((state) => state.auth.token);
 
   const fetchBadges = ({ signal }) => {
-    return api(token).get(`badges/user/${userId}`, {
+    return api(token).get(`badges/user/${userId}/`, {
       signal,
     });
   };
