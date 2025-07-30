@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.project_dto.LockedTasksForUser" name="backend.models.dtos.project_dto.LockedTasksForUser">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,163,207,243"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="12,5,99,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,83,96,162,91,163,67,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="123,5,193,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="150,72,126,148,121,146,145,70"/>
+</map>

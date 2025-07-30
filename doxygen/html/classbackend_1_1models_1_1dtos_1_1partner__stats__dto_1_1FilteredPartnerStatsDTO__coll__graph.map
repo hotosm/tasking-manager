@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.partner_stats_dto.FilteredPartnerStatsDTO" name="backend.models.dtos.partner_stats_dto.FilteredPartnerStatsDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="31,324,272,404"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,83,142,323,137,325,60,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,308,149,308,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="294,5,331,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="321,71,326,119,325,179,313,243,302,274,286,302,274,315,270,311,281,298,297,271,308,242,319,179,320,119,316,71"/>
+</map>

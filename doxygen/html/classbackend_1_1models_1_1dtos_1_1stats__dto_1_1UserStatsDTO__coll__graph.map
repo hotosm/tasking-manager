@@ -1,0 +1,8 @@
+<map id="backend.models.dtos.stats_dto.UserStatsDTO" name="backend.models.dtos.stats_dto.UserStatsDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,323,193,503"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="51,5,137,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,85,101,322,95,322,92,85"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1dtos_1_1stats__dto_1_1GenderStatsDTO.html" title=" " alt="" coords="116,120,304,260"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="129,80,158,118,154,121,125,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="178,262,154,309,149,307,173,259"/>
+</map>

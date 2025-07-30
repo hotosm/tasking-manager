@@ -1,0 +1,15 @@
+<map id="backend.exceptions.BaseException" name="backend.exceptions.BaseException">
+<area shape="rect" id="Node000001" title=" " alt="" coords="459,119,702,224"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1exceptions_1_1BadRequest.html" title=" " alt="" coords="5,272,231,337"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="447,213,230,274,229,269,445,208"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1exceptions_1_1Conflict.html" title=" " alt="" coords="255,272,451,337"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="480,233,409,274,406,270,478,229"/>
+<area shape="rect" id="Node000005" href="$classbackend_1_1exceptions_1_1Forbidden.html" title=" " alt="" coords="475,272,686,337"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="583,238,583,272,578,272,578,238"/>
+<area shape="rect" id="Node000006" href="$classbackend_1_1exceptions_1_1NotFound.html" title=" " alt="" coords="711,272,920,337"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="686,228,760,270,758,274,684,233"/>
+<area shape="rect" id="Node000007" href="$classbackend_1_1exceptions_1_1Unauthorized.html" title=" " alt="" coords="945,272,1179,337"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="716,207,947,269,946,275,714,212"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="525,5,637,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="583,85,583,118,578,118,578,85"/>
+</map>

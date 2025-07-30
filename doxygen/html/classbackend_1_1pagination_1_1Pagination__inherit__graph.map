@@ -1,0 +1,7 @@
+<map id="backend.pagination.Pagination" name="backend.pagination.Pagination">
+<area shape="rect" id="Node000001" title=" " alt="" coords="95,5,308,451"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1pagination_1_1QueryPagination.html" title=" " alt="" coords="5,499,189,619"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="130,465,119,499,114,497,124,463"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1pagination_1_1SelectPagination.html" title=" " alt="" coords="214,509,399,609"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="279,463,293,507,288,509,274,464"/>
+</map>

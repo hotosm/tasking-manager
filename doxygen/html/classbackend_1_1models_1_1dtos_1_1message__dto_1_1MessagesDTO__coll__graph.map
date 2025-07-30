@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.message_dto.MessagesDTO" name="backend.models.dtos.message_dto.MessagesDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,148,220,228"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="19,5,105,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="80,83,102,147,97,149,75,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="130,5,199,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="156,72,134,133,129,132,151,70"/>
+</map>
