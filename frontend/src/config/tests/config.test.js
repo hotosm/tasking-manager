@@ -97,7 +97,7 @@ it('exports BASEMAP_OPTIONS and type is object or string', () => {
 });
 it('exports MAPBOX_RTL_PLUGIN_URL', () => {
   expect(config.MAPBOX_RTL_PLUGIN_URL).toBe(
-    'https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.3.0/dist/mapbox-gl-rtl-text.js',
+    'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
   );
 });
 it('exports DROPZONE_SETTINGS', () => {

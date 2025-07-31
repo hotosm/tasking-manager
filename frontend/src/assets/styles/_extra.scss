@@ -295,6 +295,12 @@ div.messageBodyLinks {
   width: calc(100% - 4rem);
 }
 
+.mapbox-improve-map,
+a[href="https://www.mapbox.com/map-feedback/"]
+{
+  display: none;
+}
+
 .object-fit-cover {
   object-fit: cover;
 }
@@ -360,7 +366,7 @@ div.messageBodyLinks {
 
 #project-creation-map,
 #priority-area-map {
-  .maplibregl-ctrl-top-right {
+  .mapboxgl-ctrl-top-right {
     top: 2.5rem;
   }
 }

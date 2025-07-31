@@ -60,7 +60,7 @@ import {
   teamDeletionSuccess,
 } from './mockData/teams';
 import { userTasks } from './mockData/tasksStats';
-import { homepageStats, updatedOhsomeStats } from './mockData/homepageStats';
+import { homepageStats } from './mockData/homepageStats';
 import {
   banner,
   countries,
@@ -366,10 +366,6 @@ const handlers = [
   rest.get(`${OHSOME_STATS_API_URL}/metadata`, (req, res, ctx) => {
     return res(ctx.json(ohsomeNowMetadata));
   }),
-  rest.get(`${OHSOME_STATS_API_URL}/stats`, (req, res, ctx) => {
-    return res(ctx.json(updatedOhsomeStats));
-  }),
-
   rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
     return res(ctx.json(josmRemote));
   }),

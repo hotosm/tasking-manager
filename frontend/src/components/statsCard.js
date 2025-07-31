@@ -12,13 +12,7 @@ export const StatsCard = ({ icon, description, value, className, invertColors = 
     >
       <div className="w-30 fl ml2">{icon}</div>
       <StatsCardContent
-        value={
-          Number(value) || value === 0 ? (
-            <FormattedNumber value={value < 1 ? value?.toFixed(3) : Math.trunc(value)} />
-          ) : (
-            value
-          )
-        }
+        value={Number(value) || value === 0 ? <FormattedNumber value={Math.trunc(value)} /> : value}
         label={description}
         className="w-70 pt3-m mb1 fl"
         invertColors={invertColors}

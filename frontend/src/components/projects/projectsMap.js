@@ -1,25 +1,28 @@
 import { createRef, useLayoutEffect, useState, useCallback } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import WebglUnsupported from '../webglUnsupported';
-import isWebglSupported from '../../utils/isWebglSupported';
-import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let markerIcon = new Image(17, 20);
 markerIcon.src = mapMarker;
 
-maplibregl.accessToken = MAPBOX_TOKEN;
+mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 const licensedFonts = MAPBOX_TOKEN
   ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
   : ['Open Sans Semibold'];
 
-export const maplibreLayerDefn = (map, mapResults, clickOnProjectID, disablePoiClick = false) => {
+export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiClick = false) => {
   map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
   map.addSource('projects', {
     type: 'geojson',
@@ -96,7 +99,6 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
   const mapRef = createRef();
   const [map, setMapObj] = useState(null);
   const mapboxSupportedLanguage = useMapboxSupportedLanguage();
-  useSetRTLTextPlugin();
 
   const clickOnProjectID = useCallback(
     (projectIdSearch) =>
@@ -119,16 +121,16 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
      https://github.com/openmaptiles/fonts/tree/gh-pages/Open%20Sans%20Regular */
 
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    isWebglSupported() &&
+    mapboxgl.supported() &&
       setMapObj(
-        new maplibregl.Map({
+        new mapboxgl.Map({
           container: mapRef.current,
           style: MAP_STYLE,
           center: [0, 0],
           zoom: 0.5,
           attributionControl: false,
         })
-          .addControl(new maplibregl.AttributionControl({ compact: false }))
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
           .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
       );
 
@@ -156,9 +158,9 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
 
     /* set up style/sources for the map, either immediately or on base load */
     if (mapReadyProjectsReady) {
-      maplibreLayerDefn(map, mapResults, clickOnProjectID);
+      mapboxLayerDefn(map, mapResults, clickOnProjectID);
     } else if (projectsReadyMapLoading) {
-      map.on('load', () => maplibreLayerDefn(map, mapResults, clickOnProjectID));
+      map.on('load', () => mapboxLayerDefn(map, mapResults, clickOnProjectID));
     }
 
     /* refill the source on mapResults changes */
@@ -167,7 +169,7 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
     }
   }, [map, mapResults, clickOnProjectID]);
 
-  if (!isWebglSupported()) {
+  if (!mapboxgl.supported()) {
     return <WebglUnsupported className={`h-100 w-100  ${className || ''}`} />;
   } else {
     return <div id="map" className={`h-100 w-100 ${className || ''}`} ref={mapRef}></div>;

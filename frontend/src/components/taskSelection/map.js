@@ -1,16 +1,14 @@
 import { createRef, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import WebglUnsupported from '../webglUnsupported';
-import isWebglSupported from '../../utils/isWebglSupported';
-import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import messages from './messages';
-import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE } from '../../config';
+import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
@@ -21,7 +19,12 @@ lockIcon.src = lock;
 let redlockIcon = new Image(17, 20);
 redlockIcon.src = redlock;
 
-maplibregl.accessToken = MAPBOX_TOKEN;
+mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 export const TasksMap = ({
   className,
@@ -46,22 +49,20 @@ export const TasksMap = ({
 
   const [map, setMapObj] = useState(null);
 
-  useSetRTLTextPlugin();
-
   useLayoutEffect(() => {
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    isWebglSupported() &&
+    mapboxgl.supported() &&
       setMapObj(
-        new maplibregl.Map({
+        new mapboxgl.Map({
           container: mapRef.current,
           style: MAP_STYLE,
           center: [0, 0],
           zoom: 1,
           attributionControl: false,
         })
-          .addControl(new maplibregl.AttributionControl({ compact: false }))
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
           .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
       );
 
@@ -131,7 +132,7 @@ export const TasksMap = ({
       }
     };
 
-    const maplibreLayerDefn = () => {
+    const mapboxLayerDefn = () => {
       map.once('load', () => {
         map.resize();
       });
@@ -144,7 +145,7 @@ export const TasksMap = ({
           data: mapResults,
         });
 
-        map.addControl(new maplibregl.NavigationControl());
+        map.addControl(new mapboxgl.NavigationControl());
         if (disableScrollZoom) {
           // disable map zoom when using scroll
           map.scrollZoom.disable();
@@ -351,7 +352,7 @@ export const TasksMap = ({
           'point-tasks-centroid-inner',
         );
       }
-      const popup = new maplibregl.Popup({
+      const popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
         offset: {
@@ -414,7 +415,7 @@ export const TasksMap = ({
         // Cursor style won't change to original state with trackPointer()
         // https://github.com/mapbox/mapbox-gl-js/issues/12223
         if (map._canvasContainer) {
-          map._canvasContainer.classList.remove('maplibregl-track-pointer');
+          map._canvasContainer.classList.remove('mapboxgl-track-pointer');
         }
       });
       updateTMZoom();
@@ -436,9 +437,9 @@ export const TasksMap = ({
 
     /* set up style/sources for the map, either immediately or on base load */
     if (mapReadyTasksReady && !mapLayersAlreadyDefined) {
-      maplibreLayerDefn();
+      mapboxLayerDefn();
     } else if (tasksReadyMapLoading && !mapLayersAlreadyDefined) {
-      map.on('load', maplibreLayerDefn);
+      map.on('load', mapboxLayerDefn);
     } else if (tasksReadyMapLoading || mapReadyTasksReady) {
       console.error('One of the hook dependencies changed and try to redefine the map');
     }
@@ -496,7 +497,7 @@ export const TasksMap = ({
     intl,
   ]);
 
-  if (!isWebglSupported()) {
+  if (!mapboxgl.supported()) {
     return <WebglUnsupported className={`w-100 h-100 fr ${className || ''}`} />;
   } else {
     return (

@@ -818,10 +818,10 @@ export default defineMessages({
     id: 'management.partners.stats.mapswipe.swipes',
     defaultMessage: 'Swipes',
   },
-  // timeSpentContributing: {
-  //   id: 'management.partners.stats.mapswipe.timeSpentContributing',
-  //   defaultMessage: 'Time Spent Contributing',
-  // },
+  timeSpentContributing: {
+    id: 'management.partners.stats.mapswipe.timeSpentContributing',
+    defaultMessage: 'Time Spent Contributing',
+  },
   partnersMapswipeStatsError: {
     id: 'management.partners.stats.mapswipe.page.error',
     defaultMessage: 'Something went wrong! Could not load data.',

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
+import { supported } from 'mapbox-gl';
 import PropTypes from 'prop-types';
 
 import messages from './messages';
@@ -28,7 +29,6 @@ import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
 import { DownloadOsmData } from './downloadOsmData.js';
 import { ENABLE_EXPORT_TOOL } from '../../config/index.js';
-import isWebglSupported from '../../utils/isWebglSupported';
 
 /* lazy imports must be last import */
 const ProjectTimeline = lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
@@ -77,7 +77,7 @@ export const ProjectDetailMap = (props) => {
         loading={props.projectLoading}
         className="w-100 vh-75 h-100-l"
       />
-      {taskBordersOnly && isWebglSupported() && (
+      {taskBordersOnly && supported() && (
         <div
           className="cf left-1 top-1 absolute zoom-to-task"
           style={{

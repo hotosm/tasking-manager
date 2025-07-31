@@ -399,7 +399,6 @@ export function EditTeam(props) {
           type="members"
           memberJoinTeamError={memberJoinTeamError}
           setMemberJoinTeamError={setMemberJoinTeamError}
-          totalMembersOnTeam={[...members, ...managers].length}
         />
         <div className="h1"></div>
         <JoinRequests

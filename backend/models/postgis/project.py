@@ -435,21 +435,10 @@ class Project(Base):
         if not orig:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
 
-        raw = orig.changeset_comment or ""
-
-        default_comment = settings.DEFAULT_CHANGESET_COMMENT
-        if default_comment:
-            old_prefix = f"{default_comment}-{project_id}"
-            leftover = raw.replace(old_prefix, "").strip()
-        else:
-            leftover = raw
-
         orig_metadata = dict(orig)
         items_to_remove = ["id", "allowed_users"]
         for item in items_to_remove:
             orig_metadata.pop(item, None)
-
-        orig_metadata["changeset_comment"] = leftover or None
 
         # Update metadata for the new project
         orig_metadata.update(

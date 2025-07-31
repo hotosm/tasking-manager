@@ -1,6 +1,6 @@
 import { useState, useContext, useLayoutEffect, createRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
@@ -13,7 +13,7 @@ import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
+import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
 import {
   verifyGeometry,
@@ -21,22 +21,23 @@ import {
   verifyFileFormat,
   verifyFileSize,
 } from '../../utils/geoFileFunctions';
-import isWebglSupported from '../../utils/isWebglSupported';
-import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
 import WebglUnsupported from '../webglUnsupported';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
-maplibregl.accessToken = MAPBOX_TOKEN;
+mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const mapRef = createRef();
   const [error, setError] = useState({ error: false, message: null });
-
-  useSetRTLTextPlugin();
 
   const modes = MapboxDraw.modes;
   modes.draw_rectangle = DrawRectangle;
@@ -119,17 +120,17 @@ export const PriorityAreasForm = () => {
 
   useLayoutEffect(() => {
     const map =
-      isWebglSupported() &&
-      new maplibregl.Map({
+      mapboxgl.supported() &&
+      new mapboxgl.Map({
         container: mapRef.current,
         style: MAP_STYLE,
         center: [0, 0],
         zoom: 1,
         attributionControl: false,
       })
-        .addControl(new maplibregl.AttributionControl({ compact: false }))
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
         .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
-        .addControl(new maplibregl.NavigationControl());
+        .addControl(new mapboxgl.NavigationControl());
 
     setMapObj({ ...mapObj, map: map });
 
@@ -226,7 +227,7 @@ export const PriorityAreasForm = () => {
   };
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null && isWebglSupported()) {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
@@ -253,7 +254,7 @@ export const PriorityAreasForm = () => {
     setProjectInfo({ ...projectInfo, priorityAreas: [] });
   };
 
-  if (!isWebglSupported()) {
+  if (!mapboxgl.supported()) {
     return <WebglUnsupported className="vh-75 w-100 bg-white" />;
   } else {
     return (

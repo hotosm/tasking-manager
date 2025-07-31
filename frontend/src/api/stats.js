@@ -4,11 +4,9 @@ import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
 import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../config';
 
-const ohsomeProxyAPI = (userId, topics) => {
+const ohsomeProxyAPI = (url) => {
   const token = localStorage.getItem('token');
-  return api(token).get(
-    `users/statistics/ohsome/?hashtag=${defaultChangesetComment}-%2A&userId=${userId}&topics=${topics}`,
-  );
+  return api(token).get(`users/statistics/ohsome/?url=${url}`);
 };
 
 export const useSystemStatisticsQuery = () => {
@@ -39,17 +37,11 @@ export const useProjectStatisticsQuery = (projectId) => {
   });
 };
 
-export const useOsmStatsQuery = ({ topics = [] }) => {
-  // Converts the 'topics' array into a query string like '&topics=building&topics=road'
-  const topicQueryParams = topics?.reduce((acc, curr) => `${acc}&topics=${curr}`, '');
-
+export const useOsmStatsQuery = () => {
   const fetchOsmStats = ({ signal }) => {
-    return api().get(
-      `${OHSOME_STATS_API_URL}/stats?hashtag=${defaultChangesetComment}-%2A${topicQueryParams}`,
-      {
-        signal,
-      },
-    );
+    return api().get(`${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`, {
+      signal,
+    });
   };
 
   return useQuery({
@@ -78,7 +70,9 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return ohsomeProxyAPI(id, 'poi,highway,building,waterway');
+    return ohsomeProxyAPI(
+      `${OHSOME_STATS_API_URL}/topic/poi,highway,building,waterway/user?userId=${id}`,
+    );
   };
 
   return useQuery({

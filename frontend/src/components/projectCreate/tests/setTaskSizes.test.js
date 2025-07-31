@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import maplibregl from 'maplibre-gl';
+import mapboxgl from 'mapbox-gl';
 
 import SetTaskSizes from '../setTaskSizes';
 import { projectMetadata } from '../../../utils/tests/snippets/projectMetadata';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
-jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
+jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
   GeolocateControl: jest.fn(),
   Map: jest.fn(() => ({
     addControl: jest.fn(),
@@ -20,7 +20,7 @@ jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
   NavigationControl: jest.fn(),
 }));
 
-const map = new maplibregl.Map({
+const map = new mapboxgl.Map({
   container: '',
   style: {},
   center: [0, 0],
