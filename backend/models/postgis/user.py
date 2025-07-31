@@ -540,7 +540,7 @@ class UserStats(Base):
         new_stats = {}
 
         for key, value in stats["result"]["topics"].items():
-            new_stats[key] = value["value"]
+            new_stats[key] = value["added"] if "added" in value else value["value"]
 
         await db.execute(
             """
