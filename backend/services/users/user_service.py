@@ -958,7 +958,9 @@ class UserService:
 
         stats = await UserStats.get_for_user(user_id, db)
 
-        aggregatedProgress = sum(v for k, v in json.loads(stats.stats).items() if k in relevant_keys)
+        aggregatedProgress = sum(
+            v for k, v in json.loads(stats.stats).items() if k in relevant_keys
+        )
 
         return UserNextLevelDTO(
             nextLevel=next_level.name,

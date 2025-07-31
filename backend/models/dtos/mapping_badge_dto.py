@@ -26,9 +26,9 @@ def has_valid_requirements(value: str) -> str:
         v = json.loads(value)
 
         if len(v.keys()) == 0:
-            raise ValueError('needs at least one requirement')
+            raise ValueError("needs at least one requirement")
     except json.decoder.JSONDecodeError:
-        raise ValueError('invalid json')
+        raise ValueError("invalid json")
 
     return value
 
@@ -41,7 +41,7 @@ class MappingBadgeCreateDTO(BaseModel):
     is_enabled: bool = Field(default=True, alias="isEnabled")
     is_internal: bool = Field(default=False, alias="isInternal")
 
-    @field_validator('requirements')
+    @field_validator("requirements")
     @classmethod
     def has_valid_requirements(cls, value: str, info: ValidationInfo):
         return has_valid_requirements(value)
@@ -56,7 +56,7 @@ class MappingBadgeUpdateDTO(BaseModel):
     is_enabled: Optional[bool] = Field(default=None, alias="isEnabled")
     is_internal: bool = Field(default=False, alias="isInternal")
 
-    @field_validator('requirements')
+    @field_validator("requirements")
     @classmethod
     def has_valid_requirements(cls, value: str, info: ValidationInfo):
         return has_valid_requirements(value)

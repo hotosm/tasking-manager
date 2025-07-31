@@ -257,6 +257,7 @@ class UserTaskDTOs(BaseModel):
 
 class UserNextLevelDTO(BaseModel):
     """Informs about progress towards the next level"""
+
     next_level: str = Field(None, alias="nextLevel")
     aggregated_progress: float = Field(None, alias="aggregatedProgress")
     aggregated_goal: float = Field(None, alias="aggregatedGoal")

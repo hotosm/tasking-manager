@@ -19,7 +19,7 @@ class MappingLevelDTO(BaseModel):
 
 def has_badges(value: list) -> list:
     if len(value) == 0:
-        raise ValueError('needs at least one badge')
+        raise ValueError("needs at least one badge")
 
     return value
 
@@ -31,7 +31,7 @@ class MappingLevelCreateDTO(BaseModel):
     is_beginner: bool = Field(default=False, alias="isBeginner")
     required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
 
-    @field_validator('required_badges')
+    @field_validator("required_badges")
     @classmethod
     def has_badges(cls, value: str, info: ValidationInfo):
         return has_badges(value)
@@ -45,7 +45,7 @@ class MappingLevelUpdateDTO(BaseModel):
     is_beginner: Optional[bool] = Field(default=False, alias="isBeginner")
     required_badges: List[AssociatedBadge] = Field(default=[], alias="requiredBadges")
 
-    @field_validator('required_badges')
+    @field_validator("required_badges")
     @classmethod
     def has_badges(cls, value: str, info: ValidationInfo):
         return has_badges(value)
