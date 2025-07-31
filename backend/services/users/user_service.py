@@ -1,3 +1,4 @@
+import json
 import datetime
 
 from databases import Database
@@ -22,6 +23,7 @@ from backend.models.dtos.user_dto import (
     UserSearchQuery,
     UserStatsDTO,
     UserTaskDTOs,
+    UserNextLevelDTO,
 )
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.mapping_level import MappingLevel
@@ -930,6 +932,39 @@ class UserService:
                 await user.set_mapping_level(requested_level, db)
                 await UserNextLevel.clear(user_id, requested_level.id, db)
                 await UserLevelVote.clear(user_id, requested_level.id, db)
+
+    @staticmethod
+    async def next_level(user_id: int, db: Database) -> UserNextLevelDTO:
+        user = await UserService.get_user_by_id(user_id, db)
+        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+        next_level = await MappingLevel.get_next(user_level.ordering, db)
+
+        if not next_level:
+            return UserNextLevelDTO(
+                nextLevel=None,
+                aggregatedGoal=None,
+                aggregatedProgress=None,
+            )
+
+        badges = await MappingBadge.get_related_to_level(next_level.id, db)
+
+        aggregatedGoal = 0
+        relevant_keys = set()
+
+        for badge in badges:
+            requirements = json.loads(badge.requirements)
+            aggregatedGoal += sum(v for v in requirements.values())
+            relevant_keys.update(requirements.keys())
+
+        stats = await UserStats.get_for_user(user_id, db)
+
+        aggregatedProgress = sum(v for k, v in json.loads(stats.stats).items() if k in relevant_keys)
+
+        return UserNextLevelDTO(
+            nextLevel=next_level.name,
+            aggregatedGoal=aggregatedGoal,
+            aggregatedProgress=aggregatedProgress,
+        )
 
     @staticmethod
     async def notify_level_upgrade(

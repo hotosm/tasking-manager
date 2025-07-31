@@ -211,3 +211,15 @@ async def get_ohsome_stats(
     await UserStats.update(user.id, json_data, db)
 
     return json_data
+
+
+@router.get("/statistics/nextlevel/")
+async def get_next_level(
+    db: Database = Depends(get_db),
+    user_id: int = Query(None, alias="userId"),
+    user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Get next level and stats towards it
+    """
+    return await UserService.next_level(user_id, db)

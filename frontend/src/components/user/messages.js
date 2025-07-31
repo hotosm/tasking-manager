@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   nextLevel: {
     id: 'user.nextLevel',
-    defaultMessage: '{changesets} / {nextLevelThreshold} changesets to {level}',
+    defaultMessage: '{changesets} / {nextLevelThreshold} items to level {level}',
   },
   personalInfo: {
     id: 'user.personalInfo',

@@ -854,7 +854,7 @@
   "management.stats.new_users.active": "Mapeó al menos una tarea",
   "management.stats.new_users.email_verified": "Dirección de correo electrónico confirmada",
   "management.stats.title": "Estadísticas",
-  "user.nextLevel": "{changesets} / {nextLevelThreshold} changesets para {level}",
+  "user.nextLevel": "{changesets} / {nextLevelThreshold} items para el nivel {level}",
   "user.personalInfo": "Informacion personal",
   "user.name": "Nombre",
   "user.organisations": "Organizaciones",

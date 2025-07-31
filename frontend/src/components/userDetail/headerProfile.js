@@ -14,6 +14,7 @@ import SlackLogo from '../../assets/img/icons/slack.png';
 import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
 import HdycNeisOneLogo from '../../assets/img/icons/hdyc-neis-one.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
+import { useUserNextLevelQuery } from '../../api/stats';
 
 export const SocialMedia = ({ data }) => {
   const intl = useIntl();
@@ -125,7 +126,7 @@ export const MyContributionsNav = ({ username, authUser }) => {
   );
 };
 
-export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
+export const HeaderProfile = ({ userDetails, selfProfile }) => {
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
@@ -163,7 +164,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
             <p className="f125 ma0 mb2 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
-            <NextMappingLevel changesetsCount={changesets} />
+            <NextMappingLevel userId={userDetails.id} />
             <SocialMedia data={user} />
           </div>
           <div className="pt1 dib fl w-50-l w-100 v-btm">

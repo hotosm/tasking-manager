@@ -255,6 +255,13 @@ class UserTaskDTOs(BaseModel):
     pagination: Pagination = Field(None, alias="pagination")
 
 
+class UserNextLevelDTO(BaseModel):
+    """Informs about progress towards the next level"""
+    next_level: str = Field(None, alias="nextLevel")
+    aggregated_progress: float = Field(None, alias="aggregatedProgress")
+    aggregated_goal: float = Field(None, alias="aggregatedGoal")
+
+
 class AuthUserDTO(BaseModel):
     """A minimal user model with only id."""
 

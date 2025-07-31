@@ -91,3 +91,16 @@ export const useOsmStatsMetadataQuery = () => {
     select: (data) => data.result,
   });
 };
+
+export const useUserNextLevelQuery = (userId) => {
+  const fetchUserNextLevel = () => {
+    const token = localStorage.getItem('token');
+    return api(token).get(`users/statistics/nextlevel/?userId=${userId}`);
+  };
+
+  return useQuery({
+    queryKey: ['user-next-level', userId],
+    queryFn: fetchUserNextLevel,
+    select: (data) => data.data,
+  });
+};
