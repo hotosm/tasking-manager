@@ -11,7 +11,7 @@ describe('BaseMapMenu component', () => {
         <BasemapMenu map={{}} />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText(/humanitarian/)).toBeInTheDocument();
+    expect(screen.getByText(/Default/)).toBeInTheDocument();
     expect(screen.getByText(/bing/)).toBeInTheDocument();
     expect(screen.getByText(/density/)).toBeInTheDocument();
   });
