@@ -216,7 +216,7 @@ class User(Base):
         if filters:
             base_query += " WHERE " + " AND ".join(filters)
 
-        base_query += " ORDER BY username"
+        base_query += " ORDER BY requires_approval, username"
 
         if query.pagination:
             base_query += " LIMIT :limit OFFSET :offset"
