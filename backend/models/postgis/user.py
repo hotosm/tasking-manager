@@ -217,7 +217,11 @@ class User(Base):
             base_query += " WHERE " + " AND ".join(filters)
 
         if query.sort:
-            base_query += " ORDER BY (us.stats ->> :sort)::float " + query.sort_dir + " NULLS LAST"
+            base_query += (
+                " ORDER BY (us.stats ->> :sort)::float "
+                + query.sort_dir
+                + " NULLS LAST"
+            )
         else:
             base_query += " ORDER BY requires_approval, username"
 

@@ -165,7 +165,7 @@ class UserSearchQuery(BaseModel):
     per_page: Optional[int] = Field(default=20, alias="perPage")
     voter_id: int
     sort: Optional[str] = None
-    sort_dir: str = Field(default='desc')
+    sort_dir: str = Field(default="desc")
 
     class Config:
         populate_by_name = True
