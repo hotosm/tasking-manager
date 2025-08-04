@@ -176,9 +176,21 @@ class UserService:
         if response.status_code != 200:
             raise UserServiceError("External-Error in Ohsome API")
 
-        json_data = response.json()
+        topic_data = response.json()
 
-        new_stats = await UserStats.update(user_id, json_data, db)
+        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
+        changeset_response = requests.get(osm_user_details_url)
+
+        if changeset_response.status_code != 200:
+            raise UserServiceError("External-Error in Ohsome API")
+
+        changeset_data = changeset_response.json()
+
+        topic_data["result"]["topics"]["changeset"] = {
+            "value": changeset_data["user"]["changesets"]["count"],
+        }
+
+        new_stats = await UserStats.update(user_id, topic_data, db)
 
         return new_stats
 
