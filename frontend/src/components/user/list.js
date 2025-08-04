@@ -17,6 +17,7 @@ import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
 import { OHSOME_STATS_TOPICS } from '../../config';
 import { Button } from '../button';
+import { ChevronUpIcon, ChevronDownIcon } from '../svgIcons';
 
 const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
@@ -153,11 +154,31 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
   const [status, setStatus] = useState({ status: null, message: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ sortState, setSortState ] = useState({});
+
+  const handleSort = (topic) => {
+    let newState = {};
+
+    if (sortState[topic] === 'desc') {
+      newState[topic] = 'asc';
+    } else if (!sortState[topic]) {
+      newState[topic] = 'desc';
+    }
+
+    setSortState(newState);
+  };
+
+  const getSort = () => {
+    return Object.entries(sortState).map(([key, val]) => {
+      return `&sort=${key}&sort_dir=${val}`;
+    }).join('');
+  };
 
   useEffect(() => {
     const fetchUsers = async (filters) => {
       setLoading(true);
-      const url = `users/?${filters}`;
+      const sort = getSort();
+      const url = `users/?${filters}${sort}`;
       fetchLocalJSONAPI(url, token)
         .then((res) => {
           setResponse(res);
@@ -186,7 +207,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
       .join('&');
 
     fetchUsers(urlFilters);
-  }, [filters, token, status]);
+  }, [filters, token, status, sortState]);
 
   const handleStatsUpdate = (user) => {
     const endpoint = `users/${user.username}/actions/update-stats`;
@@ -263,7 +284,14 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
 
           return topics[topic] && topics[topic].toFixed(1);
         },
-        header: () => (<FormattedMessage {...messages[`tableCol_${topic}`]} />),
+        header: () => <button
+          onClick={() => handleSort(topic)}
+          className="flex align-center bn bg-transparent pointer"
+          style={{gap: ".5rem"}}
+        >
+          <FormattedMessage {...messages[`tableCol_${topic}`]} />
+          {sortState[topic] === 'asc' ? <ChevronUpIcon /> : sortState[topic] === 'desc' ? <ChevronDownIcon /> : ''}
+        </button>,
       };
     }),
 

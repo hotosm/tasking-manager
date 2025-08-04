@@ -216,7 +216,10 @@ class User(Base):
         if filters:
             base_query += " WHERE " + " AND ".join(filters)
 
-        base_query += " ORDER BY requires_approval, username"
+        if query.sort:
+            base_query += " ORDER BY (us.stats ->> :sort)::float " + query.sort_dir + " NULLS LAST"
+        else:
+            base_query += " ORDER BY requires_approval, username"
 
         if query.pagination:
             base_query += " LIMIT :limit OFFSET :offset"
@@ -224,6 +227,8 @@ class User(Base):
             base_params["voter_id"] = query.voter_id
             base_params["limit"] = query.per_page
             base_params["offset"] = (query.page - 1) * query.per_page
+            if query.sort:
+                base_params["sort"] = query.sort
 
             results = await db.fetch_all(base_query, base_params)
         else:
