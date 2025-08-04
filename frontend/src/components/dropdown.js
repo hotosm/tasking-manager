@@ -1,4 +1,4 @@
-import { createRef, forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
@@ -120,8 +120,8 @@ const DropdownContent = forwardRef((props, ref) => {
 export function Dropdown(props) {
   const [display, setDisplay] = useState(false);
 
-  const contentRef = createRef();
-  const buttonRef = createRef();
+  const contentRef = useRef();
+  const buttonRef = useRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
