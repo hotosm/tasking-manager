@@ -2,6 +2,8 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 import requests
 import pytest
+from httpx import AsyncClient
+
 from backend.services.users.user_service import (
     NotFound,
     UserRole,
@@ -109,15 +111,18 @@ class TestUserService:
             == (await MappingLevel.get_by_name("BEGINNER", self.db)).id
         )
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_get_and_save_stats(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
                     "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
                 },
             },
         )
@@ -130,10 +135,10 @@ class TestUserService:
         stats = await UserStats.get_for_user(self.test_user.id, self.db)
         assert stats.stats == '{"changeset": 251.0}'
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_get_and_save_stats_error(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 500
         mock_response.json = MagicMock(
             return_value={
@@ -149,15 +154,18 @@ class TestUserService:
             # Act
             await UserService.get_and_save_stats(self.test_user.id, self.db)
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_happy_path(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
                     "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
                 },
             }
         )
@@ -177,15 +185,18 @@ class TestUserService:
         assert new_level.id == 2
         assert new_level.name == "INTERMEDIATE"
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_no_level_upgrade(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
                     "topics": {"changeset": {"value": 249.0}},
+                },
+                "user": {
+                    "changesets": {"count": 249.0},
                 },
             }
         )
@@ -204,15 +215,18 @@ class TestUserService:
         assert new_level.id == 1
         assert new_level.name == "BEGINNER"
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_pool_of_approval(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
                     "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
                 },
             }
         )
@@ -236,10 +250,10 @@ class TestUserService:
         # user is added to the waiting queue
         assert await UserNextLevel.is_nominated(user.id, 2, self.db)
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_max_level(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
@@ -263,15 +277,18 @@ class TestUserService:
         assert new_level.id == 3
         assert new_level.name == "ADVANCED"
 
-    @patch.object(requests, "get")
+    @patch.object(AsyncClient, "get")
     async def test_get_user_dto_by_username(self, mock_get):
         # Arrange
-        mock_response = MagicMock()
+        mock_response = AsyncMock()
         mock_response.status_code = 200
         mock_response.json = MagicMock(
             return_value={
                 "result": {
                     "topics": {"changeset": {"value": 2000.0}},
+                },
+                "user": {
+                    "changesets": {"count": 2000.0},
                 },
             }
         )

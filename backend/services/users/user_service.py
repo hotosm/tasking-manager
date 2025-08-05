@@ -4,7 +4,7 @@ import datetime
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
-import requests
+from httpx import AsyncClient
 
 from backend.config import Settings
 from backend.exceptions import NotFound
@@ -170,16 +170,17 @@ class UserService:
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
         hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
         url = f"{settings.OHSOME_STATS_API_URL}/stats/user?hashtag={hashtag}-%2A&userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        response = requests.get(url, headers=headers)
+
+        async with AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, headers=headers)
+            changeset_response = await client.get(osm_user_details_url)
 
         if response.status_code != 200:
             raise UserServiceError("External-Error in Ohsome API")
 
         topic_data = response.json()
-
-        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
-        changeset_response = requests.get(osm_user_details_url)
 
         if changeset_response.status_code != 200:
             raise UserServiceError("External-Error in Ohsome API")
