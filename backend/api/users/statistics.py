@@ -190,6 +190,7 @@ async def get_ohsome_stats(
     Get OHSOME stats for a given user and topics.
     """
     headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+
     def format_date(date_str: str) -> str:
         try:
             return datetime.strptime(date_str, "%Y-%m-%d").strftime(
