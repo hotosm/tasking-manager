@@ -37,7 +37,7 @@ export default defineMessages({
   },
   badges: { id: 'management.badges', defaultMessage: 'Badges' },
   levels: { id: 'management.levels', defaultMessage: 'Levels' },
-  resourcesButton:{
+  resourcesButton: {
     id: 'management.edit.resourcesButton',
     defaultMessage: 'Resources link',
   },
@@ -593,5 +593,13 @@ export default defineMessages({
   totalFeatures: {
     id: 'management.stats.features',
     defaultMessage: 'Total features',
+  },
+  memberRemoveConfirmationHeader: {
+    id: 'management.members.remove_confirmation_header',
+    defaultMessage: 'Are you sure you want to remove?',
+  },
+  memberRemoveConfirmationDescription: {
+    id: 'management.members.remove_confirmation_description',
+    defaultMessage: 'This team will have only managers and no members.',
   },
 });

@@ -71,8 +71,9 @@ export const useProjectSummaryQuery = (projectId, otherOptions = {}) => {
 };
 
 export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
   const fetchProjectContributions = ({ signal }) => {
-    return api().get(`projects/${projectId}/contributions/`, {
+    return api(token).get(`projects/${projectId}/contributions/`, {
       signal,
     });
   };
@@ -86,9 +87,10 @@ export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
 };
 
 export const useActivitiesQuery = (projectId) => {
+  const token = useSelector((state) => state.auth.token);
   const ACTIVITIES_REFETCH_INTERVAL = 1000 * 60;
   const fetchProjectActivities = ({ signal }) => {
-    return api().get(`projects/${projectId}/activities/latest/`, {
+    return api(token).get(`projects/${projectId}/activities/latest/`, {
       signal,
     });
   };
@@ -105,8 +107,9 @@ export const useActivitiesQuery = (projectId) => {
 };
 
 export const useTasksQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
   const fetchProjectTasks = ({ signal }) => {
-    return api().get(`projects/${projectId}/tasks/`, {
+    return api(token).get(`projects/${projectId}/tasks/`, {
       signal,
     });
   };

@@ -1,11 +1,12 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from typing import Optional
 import json
 
-import requests
+import httpx
 from databases import Database
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Request, Query, HTTPException
 from fastapi.responses import JSONResponse
-from typing import Optional
+
 from backend.api.utils import validate_date_input
 from backend.config import settings
 from backend.db import get_db
@@ -174,43 +175,61 @@ async def get_period_user_stats(
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
     db: Database = Depends(get_db),
-    user_id: int = Query(None, alias="userId"),
+    userId: int = Query(..., description="OSM user ID"),
+    topics: str = Query(
+        ..., description="Comma-separated list of OSM topics, e.g. building,highway"
+    ),
+    startdate: Optional[str] = Query(
+        None, description="YYYY-MM-DD, start of time range"
+    ),
+    enddate: Optional[str] = Query(None, description="YYYY-MM-DD, end of time range"),
+    hashtag: Optional[str] = Query(None, description="Filter by hashtag"),
     user: AuthUserDTO = Depends(login_required),
 ):
     """
-    Get HomePage Stats
-    ---
-    tags:
-        - system
-    produces:
-        - application/json
-    parameters:
-    - in: header
-        name: Authorization
-        description: Base64 encoded session token
-        required: true
-        type: string
-        default: Token sessionTokenHere==
-    - in: query
-        name: url
-        type: string
-        description: get user stats for osm contributions
-    responses:
-        200:
-            description: User stats
-        500:
-            description: Internal Server Error
+    Get OHSOME stats for a given user and topics.
     """
     headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-    # Make the GET request with headers
-    hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
-    url = f"{settings.OHSOME_STATS_API_URL}/stats/user?hashtag={hashtag}-%2A&userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
-    response = requests.get(url, headers=headers)
-    json_data = response.json()
+    def format_date(date_str: str) -> str:
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").strftime(
+                "%Y-%m-%dT00:00:00Z"
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid date format for '{date_str}', expected YYYY-MM-DD",
+            )
 
-    await UserStats.update(user.id, json_data, db)
+    raw_base = settings.OHSOME_STATS_API_URL
+    base_url = raw_base.rstrip("/") + "/stats/user"
 
-    return json_data
+    params = {
+        "userId": userId,
+        "topics": topics,
+    }
+
+    if startdate:
+        params["startdate"] = format_date(startdate)
+    if enddate:
+        params["enddate"] = format_date(enddate)
+    if hashtag:
+        params["hashtag"] = hashtag
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(base_url, params=params, headers=headers)
+            response.raise_for_status()
+
+        json_data = response.json()
+
+        await UserStats.update(user.id, json_data, db)
+
+        return JSONResponse(content=json_data, status_code=response.status_code)
+    except Exception as e:
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
+        )
 
 
 @router.get("/statistics/nextlevel/")

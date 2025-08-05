@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import Popup from 'reactjs-popup';
 import { useIntl, FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';
 import toast from 'react-hot-toast';
@@ -29,10 +30,12 @@ export function Members({
   setMemberJoinTeamError,
   managerJoinTeamError,
   setManagerJoinTeamError,
+  totalMembersOnTeam,
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const [editMode, setEditMode] = useState(false);
   const [membersBackup, setMembersBackup] = useState(null);
+  const [lastRemovingUsername, setLastRemovingUsername] = useState(null);
   const selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
   let title = <FormattedMessage {...messages.managers} />;
   if (type === 'members') {
@@ -82,6 +85,17 @@ export function Members({
     </div>
   );
 
+  const enableMemberEditMode = useCallback(() => {
+    if (type === 'members' && editMode && totalMembersOnTeam > 1) return true;
+    if (!type && members.length > 1 && editMode) return true;
+    return false;
+  }, [members, type, editMode, totalMembersOnTeam]);
+
+  const removeTeamMember = (username) => {
+    if (members.length > 1) return removeMembers(username);
+    setLastRemovingUsername(username);
+  };
+
   return (
     <>
       <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
@@ -119,8 +133,8 @@ export function Members({
               picture={user.pictureUrl}
               size="large"
               colorClasses="white bg-blue-grey mv1"
-              removeFn={members.length > 1 && removeMembers}
-              editMode={members.length > 1 && editMode}
+              removeFn={removeTeamMember}
+              editMode={enableMemberEditMode()}
             />
           ))}
           {members.length === 0 && (
@@ -159,6 +173,44 @@ export function Members({
           </div>
         </div>
       )}
+      <Popup
+        modal
+        open={!!lastRemovingUsername}
+        closeOnEscape
+        closeOnDocumentClick
+        onClose={() => {
+          setLastRemovingUsername(null);
+        }}
+      >
+        <div className="ph3 pv3">
+          <h2 className="f4 mb3">
+            <FormattedMessage {...messages.memberRemoveConfirmationHeader} />
+          </h2>
+          <p className="dark-gray mb4">
+            {' '}
+            <FormattedMessage {...messages.memberRemoveConfirmationDescription} />
+          </p>
+          <div className="flex justify-end">
+            <Button
+              className="pv2 ph3 ba b--red white bg-black-40 mv1 mr2"
+              onClick={() => {
+                setLastRemovingUsername(null);
+              }}
+            >
+              <FormattedMessage {...messages.cancel} />
+            </Button>
+            <Button
+              className="pv2 ph3 ba b--red white bg-red mv1"
+              onClick={() => {
+                removeMembers(lastRemovingUsername);
+                setLastRemovingUsername(null);
+              }}
+            >
+              <FormattedMessage {...messages.remove} />
+            </Button>
+          </div>
+        </div>
+      </Popup>
     </>
   );
 }

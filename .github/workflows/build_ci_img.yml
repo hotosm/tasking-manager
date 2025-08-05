@@ -6,11 +6,11 @@ on:
     branches:
       - main
       - staging
-      - development
+      - develop
     paths:
       # Workflow is triggered only if deps change
-      - "src/backend/pyproject.toml"
-      - "src/backend/Dockerfile"
+      - "pyproject.toml"
+      - "scripts/docker/Dockerfile"
   # Allow manual trigger
   workflow_dispatch:
 
@@ -20,6 +20,7 @@ jobs:
     with:
       context: .
       build_target: ci
+      dockerfile: scripts/docker/Dockerfile
       image_tags: |
         "ghcr.io/${{ github.repository }}/backend:ci-${{ github.ref_name }}"
 

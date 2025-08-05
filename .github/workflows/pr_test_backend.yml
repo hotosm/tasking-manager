@@ -31,7 +31,7 @@ jobs:
 
       - name: Run PEP8 checks
         run: |
-          flake8 manage.py backend tests migrations
+          flake8 manage.py backend tests migrations --ignore=E203,W503
           black --check manage.py backend tests migrations
 
   pytest:

@@ -20,7 +20,7 @@ export function SelectTask() {
     error: projectSummaryError,
     status: projectSummaryStatus,
   } = useProjectSummaryQuery(id, {
-    useErrorBoundary: (error) => error.response.status !== 404,
+    useErrorBoundary: (error) => error.response.status !== 403,
     enabled: !!token,
   });
   const {
