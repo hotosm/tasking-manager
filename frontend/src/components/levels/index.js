@@ -42,7 +42,7 @@ export const LevelsManagement = ({levels, isFetched}) => {
       >
         {levels?.length ? (
           <div className="levels-container">
-            { levels.map((l, n) => <LevelCard key={l.id} level={l} number={n+1} />) }
+            { levels.map((level, n) => <LevelCard key={level.id} level={level} number={n+1} />) }
           </div>
         ) : (
           <div className="pv3">
@@ -92,7 +92,7 @@ export const LevelInformation = ({ badges }) => {
 
 function RequiredBadgesField({input, badges}) {
   const badge_options = (badges || [])
-    .filter((b) => (input.value || []).find((ib) => ib.id === b.id) === undefined)
+    .filter((badge) => (input.value || []).find((inputBadge) => inputBadge.id === badge.id) === undefined)
     .map((b) => ({ value: b.id, label: b.name}));
 
   const [selectedBadge, setSelectedBadge] = useState(null);

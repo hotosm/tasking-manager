@@ -163,9 +163,9 @@ export const ProjectDetail = (props) => {
   const [_error, _loading, result] = useFetch('levels/');
   const levels = (result?.levels || []);
   const minimumMappingLevel = levels
-    .find((l) => l.id === props.project.mappingPermissionLevelId);
+    .find((level) => level.id === props.project.mappingPermissionLevelId);
   const minimumValidationLevel = levels
-    .find((l) => l.id === props.project.validationPermissionLevelId);
+    .find((level) => level.id === props.project.validationPermissionLevelId);
 
   return (
     <div className={`${props.className || 'blue-dark'}`}>
