@@ -119,7 +119,9 @@ class MappingLevel(Base):
     async def delete(id: int, db: Database):
         # Beginner level must not be deleted as id 1 is the row default for
         # users
-        if id == 1:
+        level = await MappingLevel.get_by_id(id, db)
+
+        if level.is_beginner:
             raise Conflict("MAPPING_LEVEL_BEGINNER")
 
         async with db.transaction():
