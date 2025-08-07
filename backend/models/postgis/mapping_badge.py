@@ -132,17 +132,17 @@ class MappingBadge(Base):
     async def get_related_to_level(level_id: int, db: Database):
         query = """
             SELECT
-                b.id,
-                b.name,
-                b.description,
-                b.image_path,
-                b.requirements,
-                b.is_enabled,
-                b.is_internal
+                badge.id,
+                badge.name,
+                badge.description,
+                badge.image_path,
+                badge.requirements,
+                badge.is_enabled,
+                badge.is_internal
             FROM
-                mapping_level_badges AS lb
+                mapping_level_badges AS level_badge
             LEFT JOIN
-                mapping_badges AS b ON b.id = lb.badge_id
+                mapping_badges AS badge ON badge.id = level_badge.badge_id
             WHERE
                 level_id = :level_id
         """
@@ -154,17 +154,17 @@ class MappingBadge(Base):
     async def get_related_to_user(user_id: int, db: Database):
         query = """
             SELECT
-                b.id,
-                b.name,
-                b.description,
-                b.image_path,
-                b.requirements,
-                b.is_enabled,
-                b.is_internal
+                badge.id,
+                badge.name,
+                badge.description,
+                badge.image_path,
+                badge.requirements,
+                badge.is_enabled,
+                badge.is_internal
             FROM
-                user_mapping_badge AS ub
+                user_mapping_badge AS user_badge
             LEFT JOIN
-                mapping_badges AS b ON b.id = ub.badge_id
+                mapping_badges AS badge ON badge.id = user_badge.badge_id
             WHERE
                 user_id = :user_id
         """
@@ -176,16 +176,16 @@ class MappingBadge(Base):
     async def get_public_for_user(user_id: int, db: Database):
         query = """
             SELECT
-                b.id,
-                b.name,
-                b.description,
-                b.image_path
+                badge.id,
+                badge.name,
+                badge.description,
+                badge.image_path
             FROM
-                user_mapping_badge AS ub
+                user_mapping_badge AS user_badge
             LEFT JOIN
-                mapping_badges AS b ON b.id = ub.badge_id
+                mapping_badges AS badge ON badge.id = user_badge.badge_id
             WHERE
-                ub.user_id = :user_id AND b.is_enabled AND NOT b.is_internal
+                user_badge.user_id = :user_id AND badge.is_enabled AND NOT badge.is_internal
         """
         result = await db.fetch_all(query, values={"user_id": user_id})
 
