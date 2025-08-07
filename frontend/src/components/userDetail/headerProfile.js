@@ -14,7 +14,6 @@ import SlackLogo from '../../assets/img/icons/slack.png';
 import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
 import HdycNeisOneLogo from '../../assets/img/icons/hdyc-neis-one.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
-import { useUserNextLevelQuery } from '../../api/stats';
 
 export const SocialMedia = ({ data }) => {
   const intl = useIntl();
