@@ -508,7 +508,7 @@ export const router = createBrowserRouter(
           path="levels/:id/"
           lazy={async () => {
             const { EditLevel } = await import(
-              './views/levels' /* webpackChunkName: "licenses" */
+              './views/levels' /* webpackChunkName: "levels" */
             );
             return { Component: EditLevel };
           }}
