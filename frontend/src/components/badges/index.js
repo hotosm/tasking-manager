@@ -20,7 +20,11 @@ export const BadgeCard = ({ badge }) => {
   return (
     <Link to={`${badge.id}/`} className="bg-white shadow-4 w-100 pa3 black-90 no-underline badge-item">
       <div>
-        <img src={ badge.imagePath } className="w3" />
+        <img
+          src={ badge.imagePath }
+          className="w3"
+          alt={`${badge.name} badge icon`}
+        />
       </div>
       <div>
         <strong className="ttu">{ badge.name }</strong>
@@ -155,7 +159,7 @@ function BadgeImageField({ input }) {
   }
 
   return <div className="badge-info__img-container">
-    { input.value && <img src={input.value} /> }
+    { input.value && <img src={input.value} alt="previous image for badge" /> }
     <div
       className={"badge-info__uploader" + (uploading?" uploading":"") + (error?" error":"")}
       {...getRootProps()}
