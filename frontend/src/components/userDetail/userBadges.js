@@ -13,7 +13,7 @@ export const UserBadges = ({ userId }) => {
     <h4 className="ttu"><FormattedMessage {...messages.achievements} /></h4>
 
     <div className="flex flex-wrap" style={{gap: "1rem"}}>
-      {badges?.map((badge) => <img className="w3 h3" title={badge.name} src={badge.imagePath} />)}
+      {badges?.map((badge) => <img className="w3 h3" title={badge.name} src={badge.imagePath} alt={`image for badge ${badge.name}`} />)}
     </div>
   </div>;
 }
