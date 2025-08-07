@@ -183,7 +183,7 @@ class UserService:
         topic_data = response.json()
 
         if changeset_response.status_code != 200:
-            raise UserServiceError("External-Error in Ohsome API")
+            raise UserServiceError("External-Error in OSM API")
 
         changeset_data = changeset_response.json()
 
