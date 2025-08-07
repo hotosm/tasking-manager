@@ -21,6 +21,14 @@ router = APIRouter(
 async def get_mapping_levels(
     db: Database = Depends(get_db),
 ):
+    """
+    List mapping levels
+    ---
+    tags:
+      - levels
+    produces:
+      - application/json
+    """
     return await MappingLevelService.get_all(db)
 
 
@@ -30,6 +38,14 @@ async def create_mapping_level(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
+    """
+    Create a new mapping level
+    ---
+    tags:
+      - levels
+    produces:
+      - application/json
+    """
     return await MappingLevelService.create(data, db)
 
 
@@ -38,6 +54,14 @@ async def get_mapping_level(
     level_id: int,
     db: Database = Depends(get_db),
 ):
+    """
+    Get a mapping level by its id
+    ---
+    tags:
+      - levels
+    produces:
+      - application/json
+    """
     return await MappingLevelService.get_by_id(level_id, db)
 
 
@@ -48,6 +72,14 @@ async def update_mapping_level(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
+    """
+    Update a given mapping level
+    ---
+    tags:
+      - levels
+    produces:
+      - application/json
+    """
     data.id = level_id
 
     return await MappingLevelService.update(data, db)
@@ -59,4 +91,12 @@ async def delete_mapping_level(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
+    """
+    Delete the specified mapping level
+    ---
+    tags:
+      - levels
+    produces:
+      - application/json
+    """
     await MappingLevelService.delete(level_id, db)

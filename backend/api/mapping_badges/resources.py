@@ -26,6 +26,11 @@ async def get_mapping_badges(
 ) -> MappingBadgeListDTO:
     """
     List mapping badges
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
     """
     return await MappingBadgeService.get_all(db)
 
@@ -38,6 +43,11 @@ async def create_mapping_badge(
 ) -> MappingBadgeDTO:
     """
     Creates a new MappingBadge
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
     """
     return await MappingBadgeService.create(data, db)
 
@@ -47,6 +57,14 @@ async def get_mapping_badge(
     badge_id: int,
     db: Database = Depends(get_db),
 ) -> MappingBadgeDTO:
+    """
+    Gets information for a single badge
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
+    """
     return await MappingBadgeService.get_by_id(badge_id, db)
 
 
@@ -57,6 +75,14 @@ async def update_mapping_badge(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ) -> MappingBadgeDTO:
+    """
+    Updates a mapping badge
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
+    """
     data.id = badge_id
 
     return await MappingBadgeService.update(data, db)
@@ -68,6 +94,14 @@ async def delete_mapping_badge(
     db: Database = Depends(get_db),
     user: AuthUserDTO = Depends(pm_only),
 ):
+    """
+    Deletes a mapping badge
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
+    """
     await MappingBadgeService.delete(badge_id, db)
 
 
@@ -76,4 +110,12 @@ async def get_for_user(
     user_id: int,
     db: Database = Depends(get_db),
 ) -> MappingBadgePublicListDTO:
+    """
+    Get all mapping badges that a user has earned
+    ---
+    tags:
+      - badges
+    produces:
+      - application/json
+    """
     return await MappingBadgeService.get_for_user(user_id, db)
