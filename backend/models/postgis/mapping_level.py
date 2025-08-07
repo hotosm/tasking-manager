@@ -29,6 +29,10 @@ class MappingLevel(Base):
     approvals_required = Column(Integer, nullable=False, default=0)
     color = Column(String, nullable=True)
     ordering = Column(Integer, nullable=False)
+    # Used to mark the first (beginner) level which is a fundamental part of the
+    # design of the new mapping levels. This level is very special, for example
+    # it is the only level that doesn't have requirements and the one that is
+    # automatically assigned when a user registers. It cannot be deleted also.
     is_beginner = Column(Boolean, nullable=False, default=False)
 
     def as_dto(self) -> MappingLevelDTO:
