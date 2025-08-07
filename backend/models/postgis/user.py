@@ -668,8 +668,8 @@ class UserLevelVote(Base):
 
     @staticmethod
     async def count(user_id: int, level_id: int, db: Database):
-        """ Returns the number of votes a user has received to get access to a
-        level. """
+        """Returns the number of votes a user has received to get access to a
+        level."""
         result = await db.fetch_one(
             """
             SELECT count(user_id)

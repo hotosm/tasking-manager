@@ -45,7 +45,7 @@ class MappingLevel(Base):
 
     @staticmethod
     async def create(data: MappingLevelCreateDTO, db: Database):
-        """ Creates a new level with its requried badges assigned. """
+        """Creates a new level with its requried badges assigned."""
         async with db.transaction():
             # compute a number that is the minimum number that is higher than
             # all previous ordering numbers. This is so that the newly created
