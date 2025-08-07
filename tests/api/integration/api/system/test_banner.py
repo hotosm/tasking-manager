@@ -13,7 +13,6 @@ logging.basicConfig(level=logging.INFO)
 
 @pytest.mark.anyio
 class TestBannerAPI:
-
     @pytest.fixture(autouse=True)
     def _setup(self):
         self.url = "/api/v2/system/banner/"

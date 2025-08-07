@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_API_URL, defaultChangesetComment } from '../config';
+import { OHSOME_STATS_API_URL, OHSOME_STATS_TOPICS, defaultChangesetComment } from '../config';
 
 const ohsomeProxyAPI = (userId, topics) => {
   const token = localStorage.getItem('token');
@@ -78,7 +78,7 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
 export const useUserOsmStatsQuery = (id) => {
   const fetchUserOsmStats = () => {
-    return ohsomeProxyAPI(id, 'poi,highway,building,waterway');
+    return ohsomeProxyAPI(id, OHSOME_STATS_TOPICS);
   };
 
   return useQuery({
@@ -101,5 +101,18 @@ export const useOsmStatsMetadataQuery = () => {
     queryFn: fetchOsmStatsMetadata,
     useErrorBoundary: true,
     select: (data) => data.result,
+  });
+};
+
+export const useUserNextLevelQuery = (userId) => {
+  const fetchUserNextLevel = () => {
+    const token = localStorage.getItem('token');
+    return api(token).get(`users/statistics/nextlevel/?userId=${userId}`);
+  };
+
+  return useQuery({
+    queryKey: ['user-next-level', userId],
+    queryFn: fetchUserNextLevel,
+    select: (data) => data.data,
   });
 };

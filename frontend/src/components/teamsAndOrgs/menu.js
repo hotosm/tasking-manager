@@ -13,17 +13,22 @@ export function ManagementMenu({ isAdmin }: Object) {
     'categories',
     'users',
     'licenses',
+    'badges',
+    'levels',
   ];
+
   // non admin users can only see the three first items
   if (!isAdmin) {
     links = links.slice(0, 3);
   }
+
   let items = links.map((item) => ({
     url: `/manage/${item}/${
       item === 'projects' ? '?status=PUBLISHED&managedByMe=1&action=any' : ''
     }`,
     label: <FormattedMessage {...messages[item]} />,
   }));
+
   items.push({
     url: '/manage/stats/',
     label: <FormattedMessage {...messages.statistics} />,
@@ -32,5 +37,6 @@ export function ManagementMenu({ isAdmin }: Object) {
     url: '/manage',
     label: <FormattedMessage {...messages.overview} />,
   });
+
   return <SectionMenu items={items} />;
 }

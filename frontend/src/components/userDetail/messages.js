@@ -129,4 +129,8 @@ export default defineMessages({
     id: 'users.header.organisations.error',
     defaultMessage: "Couldn't load organisations at this time",
   },
+  achievements: {
+    id: 'users.header.achievements',
+    defaultMessage: "Achievements",
+  },
 });

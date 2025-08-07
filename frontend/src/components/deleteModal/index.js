@@ -1,7 +1,7 @@
 import { forwardRef, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Popup from 'reactjs-popup';
 
 import messages from './messages';
@@ -18,13 +18,14 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
   const token = useSelector((state) => state.auth.token);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
+  const intl = useIntl();
 
   const deleteURL = endpointURL ? endpointURL : `${type}/${id}/`;
 
   const deleteEntity = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(deleteURL, token, 'DELETE')
-      .then((success) => {
+      .then(() => {
         setDeleteStatus('success');
         if (type === 'notifications') {
           setTimeout(() => navigate(`/inbox`), 750);
@@ -39,8 +40,14 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
         }
       })
       .catch((e) => {
+        let errorMessage = e.message;
+
+        if (Object.prototype.hasOwnProperty.call(messages, errorMessage)) {
+          errorMessage = intl.formatMessage({...messages[e.message]});
+        }
+
         setDeleteStatus('failure');
-        setErrorMessage(e.message);
+        setErrorMessage(errorMessage);
       });
   };
 

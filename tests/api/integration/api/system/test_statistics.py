@@ -15,7 +15,6 @@ logging.basicConfig(level=logging.INFO)
 
 @pytest.mark.anyio
 class TestSystemStatisticsAPI:
-
     @pytest.fixture(autouse=True)
     def _setup(self):
         self.url = "/api/v2/system/statistics/"

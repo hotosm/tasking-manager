@@ -9,7 +9,6 @@ logging.basicConfig(level=logging.INFO)
 
 @pytest.mark.anyio
 class TestSystemHeartbeatAPI:
-
     @pytest.fixture(autouse=True)
     def _setup(self):
         self.url = "/api/v2/system/heartbeat/"
@@ -27,7 +26,6 @@ class TestSystemHeartbeatAPI:
 
 @pytest.mark.anyio
 class TestSystemLanguagesAPI:
-
     @pytest.fixture(autouse=True)
     def _setup(self):
         self.url = "/api/v2/system/languages/"
@@ -48,7 +46,6 @@ class TestSystemLanguagesAPI:
 
 @pytest.mark.anyio
 class TestSystemContactAdminRestAPI:
-
     @pytest.fixture(autouse=True)
     def _setup(self):
         self.url = "/api/v2/system/contact-admin/"

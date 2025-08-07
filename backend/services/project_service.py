@@ -26,7 +26,6 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
     EncouragingEmailType,
-    MappingLevel,
     MappingNotAllowed,
     MappingPermission,
     TeamRoles,
@@ -34,6 +33,7 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
 )
 from backend.models.postgis.task import Task
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_search_service import ProjectSearchService
@@ -359,8 +359,8 @@ class ProjectService:
         return result > 0
 
     @staticmethod
-    async def evaluate_mapping_permission(
-        project_id: int, user_id: int, mapping_permission: int, db: Database
+    async def has_mapping_permission(
+        project: Project, user_id: int, mapping_permission: int, db: Database
     ):
         allowed_roles = [
             TeamRoles.MAPPER.value,
@@ -368,28 +368,28 @@ class ProjectService:
             TeamRoles.PROJECT_MANAGER.value,
         ]
         is_team_member = await TeamService.check_team_membership(
-            project_id, allowed_roles, user_id, db
+            project.id, allowed_roles, user_id, db
         )
 
-        # mapping_permission = 1(level),2(teams),3(teamsAndLevel)
-        if mapping_permission == MappingPermission.TEAMS.value:
-            if not is_team_member:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+        if mapping_permission == MappingPermission.TEAMS.value and not is_team_member:
+            return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
-        elif mapping_permission == MappingPermission.LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
-                return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
+        level_required = await MappingLevel.get_by_id(
+            project.mapping_permission_level_id, db
+        )
+        user_level = await UserService.get_mapping_level(user_id, db)
 
-        elif mapping_permission == MappingPermission.TEAMS_LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
-                return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
-            if not is_team_member:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+        if user_level.ordering < level_required.ordering:
+            return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
+
+        # Validate the level
+        return True, ""
 
     @staticmethod
     async def is_user_permitted_to_map(project_id: int, user_id: int, db: Database):
         """Check if the user is allowed to map the on the project in scope"""
 
+        # Evaluate elegibility of user to map
         if await UserService.is_user_blocked(user_id, db):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
@@ -400,14 +400,12 @@ class ProjectService:
             ):
                 return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
-        mapping_permission = project.mapping_permission
-        is_manager_permission = (
-            False  # is_admin or is_author or is_org_manager or is_manager_team
-        )
+        is_manager_permission = False
         if await ProjectAdminService.is_user_action_permitted_on_project(
             user_id, project_id, db
         ):
             is_manager_permission = True
+
         # Draft (public/private) accessible only for is_manager_permission
         if (
             ProjectStatus(project.status) == ProjectStatus.DRAFT
@@ -415,64 +413,58 @@ class ProjectService:
         ):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        is_restriction = None
-        if not is_manager_permission and mapping_permission:
-            is_restriction = await ProjectService.evaluate_mapping_permission(
-                project_id, user_id, mapping_permission, db
+        # Evaluate team membership and mapping level
+        mapping_permission = project.mapping_permission
+        if not is_manager_permission:
+            has_permission, reason = await ProjectService.has_mapping_permission(
+                project,
+                user_id,
+                mapping_permission,
+                db,
             )
+            if not has_permission:
+                return False, reason
+
         tasks = await Task.get_locked_tasks_for_user(user_id, db)
         if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
-        is_allowed_user = None
+        # Evaluate allowed list
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
             is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
                 project.id, user_id, db
             )
-            if is_allowed_user:
-                return True, "User allowed to map"
+            if not is_allowed_user:
+                return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        if not is_manager_permission and is_restriction:
-            return is_restriction
-
-        elif project.private and not (
-            is_manager_permission or is_allowed_user or not is_restriction
-        ):
-            return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
         return True, "User allowed to map"
 
     @staticmethod
-    async def _is_user_intermediate_or_advanced(user_id, db: Database):
-        """Helper method to determine if user level is not beginner"""
-        user_mapping_level = await UserService.get_mapping_level(user_id, db)
-        if user_mapping_level not in [MappingLevel.INTERMEDIATE, MappingLevel.ADVANCED]:
-            return False
-
-        return True
-
-    @staticmethod
-    async def evaluate_validation_permission(
-        project_id: int, user_id: int, validation_permission: int, db: Database
+    async def has_validation_permission(
+        project: Project, user_id: int, validation_permission: int, db: Database
     ):
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         is_team_member = await TeamService.check_team_membership(
-            project_id, allowed_roles, user_id, db
+            project.id, allowed_roles, user_id, db
         )
-        # validation_permission = 1(level),2(teams),3(teamsAndLevel)
-        if validation_permission == ValidationPermission.TEAMS.value:
-            if not is_team_member:
-                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
-        elif validation_permission == ValidationPermission.LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
-                return False, ValidatingNotAllowed.USER_IS_BEGINNER
+        if (
+            validation_permission == ValidationPermission.TEAMS.value
+            and not is_team_member
+        ):
+            return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
-        elif validation_permission == ValidationPermission.TEAMS_LEVEL.value:
-            if not await ProjectService._is_user_intermediate_or_advanced(user_id, db):
-                return False, ValidatingNotAllowed.USER_IS_BEGINNER
-            if not is_team_member:
-                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
+        level_required = await MappingLevel.get_by_id(
+            project.validation_permission_level_id, db
+        )
+        user_level = await UserService.get_mapping_level(user_id, db)
+
+        if user_level.ordering < level_required.ordering:
+            return False, ValidatingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
+
+        # Validate the level
+        return True, ""
 
     @staticmethod
     async def is_user_permitted_to_validate(
@@ -489,8 +481,6 @@ class ProjectService:
             ):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
 
-        validation_permission = project.validation_permission
-
         # is_admin or is_author or is_org_manager or is_manager_team
         is_manager_permission = False
         if await ProjectAdminService.is_user_action_permitted_on_project(
@@ -505,32 +495,31 @@ class ProjectService:
         ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        is_restriction = None
-        if not is_manager_permission and validation_permission:
-            is_restriction = await ProjectService.evaluate_validation_permission(
-                project_id, user_id, validation_permission, db
+        # Evaluate team membership and mapping level
+        validation_permission = project.validation_permission
+        if not is_manager_permission:
+            has_permission, reason = await ProjectService.has_validation_permission(
+                project,
+                user_id,
+                validation_permission,
+                db,
             )
+            if not has_permission:
+                return False, reason
 
         tasks = await Task.get_locked_tasks_for_user(user_id, db)
         if len(tasks.locked_tasks) > 0:
             return False, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
-        is_allowed_user = None
+        # Evaluate allowed list
         if project.private and not is_manager_permission:
             # Check if user is in allowed user list
             is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
                 project_id, user_id, db
             )
 
-            if is_allowed_user:
-                return True, "User allowed to validate"
-
-        if not is_manager_permission and is_restriction:
-            return is_restriction
-        elif project.private and not (
-            is_manager_permission or is_allowed_user or not is_restriction
-        ):
-            return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+            if not is_allowed_user:
+                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to validate"
 

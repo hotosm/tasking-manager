@@ -1,7 +1,10 @@
 import pytest
 
-from backend.models.postgis.user import MappingLevel, UserRole
+from backend.models.postgis.user import UserRole
 from backend.services.users.user_service import UserService
+from backend.models.dtos.user_dto import UserSearchQuery
+
+from tests.api.helpers.test_helpers import get_or_create_levels
 
 
 @pytest.mark.anyio
@@ -10,10 +13,12 @@ class TestUser:
     async def setup_test_data(self, db_connection_fixture, request):
         """Setup test user asynchronously before each test."""
         assert db_connection_fixture is not None, "Database connection is not available"
+        await get_or_create_levels(db_connection_fixture)
+
         test_user_data = {
             "id": 12,
             "role": UserRole.MAPPER.value,
-            "mapping_level": MappingLevel.BEGINNER.value,
+            "mapping_level": 1,
             "username": "Thinkwhere Test",
             "email_address": "thinkwheretest@test.com",
             "tasks_mapped": 0,
@@ -63,7 +68,7 @@ class TestUser:
         assert result["username"] == "Thinkwhere Test"
         assert result["email_address"] == "thinkwheretest@test.com"
         assert result["role"] == UserRole.MAPPER.value
-        assert result["mapping_level"] == MappingLevel.BEGINNER.value
+        assert result["mapping_level"] == 1
         assert result["default_editor"] == "ID"
 
     async def test_update_username(self):
@@ -91,3 +96,14 @@ class TestUser:
         result = await self.db.fetch_one(select_query, {"id": self.test_user_id})
 
         assert result["picture_url"] == test_picture_url
+
+    async def test_get_all_users(self):
+        query = UserSearchQuery(page=1, mappingLevel="1", voter_id=6800)
+        users = await UserService.get_all_users(query, self.db)
+
+        assert users.users[0].mapping_level == "BEGINNER"
+
+        query = UserSearchQuery(page=1, mappingLevel="3", voter_id=6800)
+        users = await UserService.get_all_users(query, self.db)
+
+        assert len(users.users) == 0

@@ -272,6 +272,7 @@ class Settings(BaseSettings):
     OHSOME_STATS_API_URL: str = os.getenv(
         "OHSOME_STATS_API_URL", "https://stats.now.ohsome.org/api"
     )
+    OHSOME_STATS_TOPICS: str = os.getenv("OHSOME_STATS_TOPICS", None)
 
 
 class TestEnvironmentConfig(Settings):

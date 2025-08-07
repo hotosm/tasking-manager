@@ -1,7 +1,11 @@
+from datetime import date
+
 import pytest
+
 from backend.models.postgis.project import Project
 from backend.models.postgis.user import User
 from backend.services.stats_service import StatsService, TaskStatus
+from tests.api.helpers.test_helpers import create_canned_project
 
 
 @pytest.mark.anyio
@@ -248,3 +252,46 @@ class TestStatsService:
         assert test_admin.tasks_mapped == 0
         assert test_admin.tasks_validated == 0
         assert test_admin.tasks_invalidated == 0
+
+    async def test_get_user_contributions(self):
+        # Arrange
+        project, user, project_id = await create_canned_project(self.db, "test project")
+
+        await self.db.execute(
+            """
+        INSERT INTO task_history (project_id, task_id, action, action_text, action_date, user_id)
+        VALUES (:project_id, :task_id, :action, :action_text, current_timestamp, :user_id)
+        """,
+            {
+                "project_id": project_id,
+                "task_id": 1,
+                "action": "STATE_CHANGE",
+                "action_text": "state change",
+                "user_id": user.id,
+            },
+        )
+
+        # Act
+        contributions = await StatsService.get_user_contributions(project_id, self.db)
+
+        # Assert
+        assert contributions.user_contributions[0].mapping_level == "BEGINNER"
+
+    async def test_get_all_users_statistics(self):
+        # Arrange
+        project, user, project_id = await create_canned_project(self.db, "test project")
+
+        # Act
+        start_date = date(2025, 1, 12)
+        end_date = date(2025, 1, 13)
+        stats = await StatsService.get_all_users_statistics(
+            start_date, end_date, self.db
+        )
+
+        # Assert
+        assert stats.by_level[0].name == "BEGINNER"
+        assert stats.by_level[0].count == 0
+        assert stats.by_level[1].name == "INTERMEDIATE"
+        assert stats.by_level[1].count == 0
+        assert stats.by_level[2].name == "ADVANCED"
+        assert stats.by_level[2].count == 0
