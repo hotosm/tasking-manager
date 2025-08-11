@@ -23,6 +23,7 @@ import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useProjectContributionsQuery, useProjectTimelineQuery } from '../../api/projects';
 import { Alert } from '../alert';
+import { useFetch } from '../../hooks/UseFetch';
 
 import './styles.scss';
 import { useWindowSize } from '../../hooks/UseWindowSize';
@@ -159,6 +160,13 @@ export const ProjectDetail = (props) => {
     </Link>
   );
 
+  const [_error, _loading, result] = useFetch('levels/');
+  const levels = (result?.levels || []);
+  const minimumMappingLevel = levels
+    .find((level) => level.id === props.project.mappingPermissionLevelId);
+  const minimumValidationLevel = levels
+    .find((level) => level.id === props.project.validationPermissionLevelId);
+
   return (
     <div className={`${props.className || 'blue-dark'}`}>
       <div className="db flex-l tasks-map-height">
@@ -241,27 +249,40 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.teamsAndPermissions} />
       </h3>
       <div className="ph4 mb3 db">
-        <div className=" flex flex-column flex-row-l gap-1">
-          <div className="w-100 w-30-l">
-            <h4 className="mb2 mt0 fw6">
-              <FormattedMessage {...messages.whoCanMap} />
-            </h4>
-            <PermissionBox
-              permission={props.project.mappingPermission}
-              className="dib pv2 ph3 red"
-            />
+        <div className="" style={{
+          display: "grid",
+          gridTemplateColumns: "auto auto auto auto 1fr",
+          alignItems: "baseline",
+          gap: "1rem",
+        }}>
+          <h4 className="mb2 mt0 fw6">
+            <FormattedMessage {...messages.whoCanMap} />
+          </h4>
+          <PermissionBox
+            permission={props.project.mappingPermission}
+            className="dib pv2 ph3 red"
+          />
+          <FormattedMessage {...messages.having} />
+          <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+            {minimumMappingLevel && minimumMappingLevel.name}
           </div>
-          <div className="w-100 w-30-l">
-            <h4 className="mb2 mt0 fw6">
-              <FormattedMessage {...messages.whoCanValidate} />
-            </h4>
-            <PermissionBox
-              permission={props.project.validationPermission}
-              validation
-              className="dib pv2 ph3 red"
-            />
+          <FormattedMessage {...messages.levelOrAbove} />
+
+          <h4 className="mb2 mt0 fw6">
+            <FormattedMessage {...messages.whoCanValidate} />
+          </h4>
+          <PermissionBox
+            permission={props.project.validationPermission}
+            validation
+            className="dib pv2 ph3 red"
+          />
+          <FormattedMessage {...messages.having} />
+          <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+            {minimumValidationLevel && minimumValidationLevel.name}
           </div>
+          <FormattedMessage {...messages.levelOrAbove} />
         </div>
+
         <div className="mt3">
           {props.project.teams && <TeamsBoxList teams={props.project.teams} />}
         </div>

@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, Suspense } from 'react';
+import { lazy, useEffect, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -12,8 +12,6 @@ import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { ContributionTimeline } from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { OSM_SERVER_URL } from '../config';
-import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useUserOsmStatsQuery } from '../api/stats';
@@ -30,7 +28,6 @@ export const UserDetail = ({ withHeader = true }) => {
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.token);
   const currentUser = useSelector((state) => state.auth.userDetails);
-  const [userOsmDetails, setUserOsmDetails] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
     username !== undefined,
@@ -51,14 +48,6 @@ export const UserDetail = ({ withHeader = true }) => {
     }
   }, [navigate, token]);
 
-  useEffect(() => {
-    if (userDetails.id) {
-      fetchExternalJSONAPI(`${OSM_SERVER_URL}/api/0.6/user/${userDetails.id}.json`)
-        .then((res) => setUserOsmDetails(res?.user))
-        .catch((e) => console.log(e));
-    }
-  }, [userDetails.id]);
-
   const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
 
   return errorDetails ? (
@@ -73,10 +62,7 @@ export const UserDetail = ({ withHeader = true }) => {
             rows={5}
             ready={!errorDetails && !loadingDetails}
           >
-            <HeaderProfile
-              userDetails={userDetails}
-              changesets={userOsmDetails?.changesets?.count}
-            />
+            <HeaderProfile userDetails={userDetails} />
           </ReactPlaceholder>
         </div>
       )}

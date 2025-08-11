@@ -7,18 +7,14 @@ import messages from './messages';
 import { CurrentUserAvatar } from './avatar';
 import { ProfileCompleteness } from './completeness';
 import { MappingLevelMessage } from '../mappingLevel';
-import { INTERMEDIATE_LEVEL_COUNT, ADVANCED_LEVEL_COUNT } from '../../config';
+import { useUserNextLevelQuery } from '../../api/stats';
 
-export function NextMappingLevel({ changesetsCount }: Object) {
-  changesetsCount = Number(changesetsCount);
-  let nextLevelThreshold, nextLevel;
-  if (changesetsCount < INTERMEDIATE_LEVEL_COUNT) {
-    nextLevelThreshold = <FormattedNumber value={INTERMEDIATE_LEVEL_COUNT} />;
-    nextLevel = <MappingLevelMessage level="INTERMEDIATE" className="ttl " />;
-  } else if (changesetsCount < ADVANCED_LEVEL_COUNT) {
-    nextLevelThreshold = <FormattedNumber value={ADVANCED_LEVEL_COUNT} />;
-    nextLevel = <MappingLevelMessage level="ADVANCED" className="ttl" />;
-  }
+export function NextMappingLevel({ userId }: Object) {
+  const { data } = useUserNextLevelQuery(userId);
+  const nextLevel = data?.nextLevel;
+  const nextLevelThreshold = data?.aggregatedGoal;
+  const changesetsCount = data?.aggregatedProgress;
+
   if (nextLevel) {
     return (
       <span className="blue-grey">
@@ -38,6 +34,7 @@ export function NextMappingLevel({ changesetsCount }: Object) {
       </span>
     );
   }
+
   return '';
 }
 
@@ -72,7 +69,7 @@ export function UserTopBar() {
             <p className="f4 blue-dark mv3 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
-            <NextMappingLevel changesetsCount={osmUserInfo ? osmUserInfo.changesetCount : 0} />
+            <NextMappingLevel userId={user.id} />
           </div>
         </ReactPlaceholder>
       </div>

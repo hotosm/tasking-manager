@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   nextLevel: {
     id: 'user.nextLevel',
-    defaultMessage: '{changesets} / {nextLevelThreshold} changesets to {level}',
+    defaultMessage: '{changesets} / {nextLevelThreshold} items to level {level}',
   },
   personalInfo: {
     id: 'user.personalInfo',
@@ -380,4 +380,22 @@ export default defineMessages({
     id: 'user.nav.clearFilters',
     defaultMessage: 'Clear filters',
   },
+  failedUdatingStats: { id: 'user.table.failedUdatingStats', defaultMessage: "Failed updating stats" },
+  never: { id: 'user.table.never', defaultMessage: "Never" },
+  statsUpdated: { id: 'user.table.statsUpdated', defaultMessage: "Stats updated" },
+  tableActions: { id: 'user.table.actions', defaultMessage: "Actions" },
+  tableLastUpdated: { id: 'user.table.lastUpdated', defaultMessage: "Last updated" },
+  tableLevel: { id: 'user.table.level', defaultMessage: "Mapper level" },
+  tableRole: { id: 'user.table.role', defaultMessage: "Role" },
+  tableUpgrade: { id: 'user.table.upgrade', defaultMessage: "Level upgrade" },
+  tableUsername: { id: 'user.table.username', defaultMessage: "Username" },
+  tableCol_highway: { id: 'user.table.highway', defaultMessage: "Highways" },
+  tableCol_waterway: { id: 'user.table.waterway', defaultMessage: "Waterways" },
+  tableCol_building: { id: 'user.table.building', defaultMessage: "Buildings" },
+  tableCol_changeset: { id: 'user.table.changeset', defaultMessage: "Changesets" },
+  tableCol_poi: { id: 'user.table.poi', defaultMessage: "PoI" },
+  tableApprove: { id: 'user.table.approve', defaultMessage: "Approve" },
+  levelApproved: { id: 'user.levelApproved', defaultMessage: "User approved" },
+  failedApprovingLevel: { id: 'user.failedApprovingLevel', defaultMessage: "Failed approving level" },
+  alreadyVoted: { id: 'user.alreadyVoted', defaultMessage: "You already voted" },
 });

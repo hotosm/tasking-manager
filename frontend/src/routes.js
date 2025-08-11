@@ -459,6 +459,60 @@ export const router = createBrowserRouter(
             return { Component: EditLicense };
           }}
         />
+        <Route
+          path="badges/"
+          lazy={async () => {
+            const { ListBadges } = await import(
+              './views/badges' /* webpackChunkName: "badges" */
+            );
+            return { Component: ListBadges };
+          }}
+        />
+        <Route
+          path="badges/new"
+          lazy={async () => {
+            const { CreateBadge } = await import(
+              './views/badges' /* webpackChunkName: "badges" */
+            );
+            return { Component: CreateBadge };
+          }}
+        />
+        <Route
+          path="badges/:id/"
+          lazy={async () => {
+            const { EditBadge } = await import(
+              './views/badges' /* webpackChunkName: "licenses" */
+            );
+            return { Component: EditBadge };
+          }}
+        />
+        <Route
+          path="levels/"
+          lazy={async () => {
+            const { ListLevels } = await import(
+              './views/levels' /* webpackChunkName: "levels" */
+            );
+            return { Component: ListLevels };
+          }}
+        />
+        <Route
+          path="levels/new"
+          lazy={async () => {
+            const { CreateLevel } = await import(
+              './views/levels' /* webpackChunkName: "levels" */
+            );
+            return { Component: CreateLevel };
+          }}
+        />
+        <Route
+          path="levels/:id/"
+          lazy={async () => {
+            const { EditLevel } = await import(
+              './views/levels' /* webpackChunkName: "levels" */
+            );
+            return { Component: EditLevel };
+          }}
+        />
       </Route>
       <Route
         path="teams/:id/membership"

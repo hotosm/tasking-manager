@@ -1,3 +1,5 @@
+from typing import Optional
+
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query, Path
 from fastapi.responses import JSONResponse
@@ -61,6 +63,8 @@ async def get_user(
 async def list_users(
     page: int = Query(1, description="Page of results user requested"),
     pagination: bool = Query(True, description="Whether to return paginated results"),
+    sort: Optional[str] = Query(None, description="sort by this metric"),
+    sort_dir: str = Query(default="asc", description="sort direction"),
     per_page: int = Query(
         20, alias="perPage", description="Number of results per page"
     ),
@@ -125,9 +129,12 @@ async def list_users(
             pagination=pagination,
             page=page if pagination else None,
             per_page=per_page,
+            sort=sort,
+            sort_dir=sort_dir,
             username=username,
             mapping_level=level,
             role=role,
+            voter_id=user.id,
         )
     except Exception as e:
         logger.error(f"Error validating request: {str(e)}")
