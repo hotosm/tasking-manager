@@ -28,8 +28,9 @@ describe('ResourcesTab', () => {
     expect(container.querySelectorAll('a')[2].href).toContain(
       '/projects/1/queries/aoi/?as_file=true',
     );
-    expect(screen.getByText('Download Tasks Grid')).toBeInTheDocument();
-    expect(container.querySelectorAll('a')[3].href).toContain('/projects/1/tasks/?as_file=true');
+    // Replaced by function based download function
+    // expect(screen.getByText('Download Tasks Grid')).toBeInTheDocument();
+    // expect(container.querySelectorAll('a')[3].href).toContain('/projects/1/tasks/?as_file=true');
 
     const selectInput = container.querySelector('input');
     await selectInput.focus();
