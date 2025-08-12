@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { getPastMonths } from '../utils/date';
 
-export function useFilterContributors(contributors, level, username) {
+export function useFilterContributors(contributors, level, username, sortBy) {
   const [filteredContributors, setFilter] = useState([]);
 
   useEffect(() => {
@@ -19,7 +19,12 @@ export function useFilterContributors(contributors, level, username) {
     if (username) {
       users = users.filter((user) => user.username === username);
     }
+    if (sortBy && users?.length) {
+      users = [...users]?.sort((a, b) => b?.[sortBy] - a?.[sortBy]);
+    }
+
     setFilter(users);
-  }, [contributors, level, username]);
+  }, [contributors, level, username, sortBy]);
+
   return filteredContributors;
 }
