@@ -263,6 +263,7 @@ class UserNextLevelDTO(BaseModel):
     next_level: str = Field(None, alias="nextLevel")
     aggregated_progress: float = Field(None, alias="aggregatedProgress")
     aggregated_goal: float = Field(None, alias="aggregatedGoal")
+    metrics: List[str]
 
 
 class AuthUserDTO(BaseModel):

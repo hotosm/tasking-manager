@@ -957,6 +957,7 @@ class UserService:
                 nextLevel=None,
                 aggregatedGoal=None,
                 aggregatedProgress=None,
+                noun='',
             )
 
         badges = await MappingBadge.get_related_to_level(next_level.id, db)
@@ -979,6 +980,7 @@ class UserService:
             nextLevel=next_level.name,
             aggregatedGoal=aggregatedGoal,
             aggregatedProgress=aggregatedProgress,
+            metrics=list(relevant_keys),
         )
 
     @staticmethod
