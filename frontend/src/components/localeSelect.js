@@ -38,7 +38,7 @@ function LocaleSelect({
   if (!supportedLanguages.length) return <></>;
 
   return (
-    <div className={`settings-width ml-auto ${className || ''}`}>
+    <div className={`ml-auto ${className || ''}`}>
       <Select
         classNamePrefix="react-select"
         styles={{
