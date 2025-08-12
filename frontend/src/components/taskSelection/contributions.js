@@ -42,6 +42,44 @@ export const MappingLevelIcon = ({ mappingLevel }) => {
   return null;
 };
 
+const sortByLits = [
+  {
+    sortId: 'mapped',
+    tooltipMessage: 'Sort by total number of mapped task',
+    icon: <MappedIcon className="h1 w1 blue-grey" />,
+  },
+  {
+    sortId: 'validated',
+    tooltipMessage: 'Sort by total number of validated task',
+    icon: <ValidatedIcon className="h1 w1 blue-grey" />,
+  },
+  {
+    sortId: 'total',
+    tooltipMessage: 'Sort by total number of mapped and validated (both combined) tasks',
+    icon: <AsteriskIcon className="h1 w1 blue-grey" />,
+  },
+];
+
+const SortingHeader = ({ sortBy, setSortBy }) => {
+  return (
+    <div className="flex justify-end items-center">
+      {sortByLits?.map((sortByItem) => (
+        <div className="w-20 fl tr dib truncate" title={sortByItem.tooltipMessage}>
+          <div
+            className={`dib pt2 mr4 pointer ph2 pv2 hover-bg-black-10 br3 ${
+              sortBy === sortByItem?.sortId ? 'bg-black-10' : ''
+            }`}
+            role="button"
+            onClick={() => setSortBy(sortByItem?.sortId)}
+          >
+            {sortByItem?.icon}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
   const intl = useIntl();
   const checkActiveUserAndStatus = (status, username) =>
@@ -132,12 +170,14 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   };
   const [level, setLevel] = useState(mappingLevels[0]);
   const [userFilter, setUserFilter] = useState(defaultUserFilter);
+  const [sortBy, setSortBy] = useState('total');
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
   const contributors = useFilterContributors(
     contribsData || [],
     level && level.value,
     userFilter && userFilter.value,
+    sortBy,
   );
 
   const displayTasks = (taskIds, status, user) => {
@@ -194,6 +234,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
           delay={50}
           ready={contributors !== undefined}
         >
+          <SortingHeader sortBy={sortBy} setSortBy={setSortBy} />
           {contributors.map((user, k) => (
             <Contributor
               user={user}
