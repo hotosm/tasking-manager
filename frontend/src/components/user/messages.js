@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   nextLevel: {
     id: 'user.nextLevel',
-    defaultMessage: '{changesets} / {nextLevelThreshold} items to level {level}',
+    defaultMessage: '{changesets} / {nextLevelThreshold} {metric} to level {level}',
   },
   personalInfo: {
     id: 'user.personalInfo',
@@ -398,4 +398,9 @@ export default defineMessages({
   levelApproved: { id: 'user.levelApproved', defaultMessage: "User approved" },
   failedApprovingLevel: { id: 'user.failedApprovingLevel', defaultMessage: "Failed approving level" },
   alreadyVoted: { id: 'user.alreadyVoted', defaultMessage: "You already voted" },
+  progress_changeset: { id: 'user.progress.changeset', defaultMessage: "changesets" },
+  progress_waterway: { id: 'user.progress.waterway', defaultMessage: "km of waterways" },
+  progress_highway: { id: 'user.progress.highway', defaultMessage: "km of highways" },
+  progress_poi: { id: 'user.progress.poi', defaultMessage: "points of interest" },
+  progress_building: { id: 'user.progress.building', defaultMessage: "buildings" },
 });

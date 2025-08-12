@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { TextRow } from 'react-placeholder/lib/placeholders';
 
@@ -14,8 +14,10 @@ export function NextMappingLevel({ userId }: Object) {
   const nextLevel = data?.nextLevel;
   const nextLevelThreshold = data?.aggregatedGoal;
   const changesetsCount = data?.aggregatedProgress;
+  const metrics = data?.metrics || [];
+  const intl = useIntl();
 
-  if (nextLevel) {
+  if (nextLevel && metrics.length === 1) {
     return (
       <span className="blue-grey">
         <FormattedMessage
@@ -29,6 +31,7 @@ export function NextMappingLevel({ userId }: Object) {
             ),
             nextLevelThreshold: <span className="blue-dark f4">{nextLevelThreshold}</span>,
             level: nextLevel,
+            metric: intl.formatMessage(messages[`progress_${metrics[0]}`]),
           }}
         />
       </span>
