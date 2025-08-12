@@ -17,7 +17,7 @@ export const PermissionsForm = () => {
 
   const [error, loading, result] = useFetch('levels/');
 
-  return (
+  return !error && !loading && (
     <div className="w-100">
       {result?.levels ? <>
         <PermissionsBlock permissions={permissions} levels={result.levels} type="mappingPermission" />

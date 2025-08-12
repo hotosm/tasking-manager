@@ -207,6 +207,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
       .join('&');
 
     fetchUsers(urlFilters);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, token, status, sortState]);
 
   const handleStatsUpdate = (user) => {
