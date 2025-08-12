@@ -957,7 +957,7 @@ class UserService:
                 nextLevel=None,
                 aggregatedGoal=None,
                 aggregatedProgress=None,
-                noun='',
+                noun="",
             )
 
         badges = await MappingBadge.get_related_to_level(next_level.id, db)
