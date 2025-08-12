@@ -159,7 +159,7 @@ function BadgeImageField({ input }) {
   }
 
   return <div className="badge-info__img-container">
-    { input.value && <img src={input.value} alt="previous image for badge" /> }
+    { input.value && <img src={input.value} alt="previous badge" /> }
     <div
       className={"badge-info__uploader" + (uploading?" uploading":"") + (error?" error":"")}
       {...getRootProps()}

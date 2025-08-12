@@ -160,7 +160,7 @@ export const ProjectDetail = (props) => {
     </Link>
   );
 
-  const [_error, _loading, result] = useFetch('levels/');
+  const [error, loading, result] = useFetch('levels/');
   const levels = (result?.levels || []);
   const minimumMappingLevel = levels
     .find((level) => level.id === props.project.mappingPermissionLevelId);
@@ -249,7 +249,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.teamsAndPermissions} />
       </h3>
       <div className="ph4 mb3 db">
-        <div className="" style={{
+        {!error && !loading && <div className="" style={{
           display: "grid",
           gridTemplateColumns: "auto auto auto auto 1fr",
           alignItems: "baseline",
@@ -281,7 +281,7 @@ export const ProjectDetail = (props) => {
             {minimumValidationLevel && minimumValidationLevel.name}
           </div>
           <FormattedMessage {...messages.levelOrAbove} />
-        </div>
+        </div>}
 
         <div className="mt3">
           {props.project.teams && <TeamsBoxList teams={props.project.teams} />}
