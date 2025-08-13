@@ -85,6 +85,8 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
   const checkActiveUserAndStatus = (status, username) =>
     activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
 
+  console.log(user.mappedTasks, 'tasks');
+
   return (
     <div
       className={`w-100 cf pv3 ph3-ns ph1 bw1 mb2 ${

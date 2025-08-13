@@ -23,6 +23,9 @@ describe('Contributions', () => {
         />
       </ReduxIntlProviders>,
     );
+
+    console.log(selectTask.mock.calls);
+
     // render user list with correct user link
     expect(screen.getByText('test')).toBeInTheDocument();
     expect(screen.getByText('test_1').href).toContain('/users/test_1');
