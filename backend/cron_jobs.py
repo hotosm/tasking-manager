@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import datetime
 
@@ -146,6 +147,10 @@ async def setup_cron_jobs():
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--immediate-exit', action='store_true', help='Exit immediately after jobs finish')
+    args = parser.parse_args()
+
     try:
         # Initialize the connection pool
         logger.info("Connecting to the database...")
@@ -154,9 +159,6 @@ async def main():
 
         await setup_cron_jobs()
 
-        # Keeping the process alive.
-        while True:
-            await asyncio.sleep(3600)
     except (KeyboardInterrupt, SystemExit):
         logger.info("Shutting down...")
     except Exception as e:
@@ -166,6 +168,11 @@ async def main():
         logger.info("Disconnecting from the database...")
         await db_connection.database.disconnect()
         logger.info("Database connection closed.")
+
+    if not args.immediate_exit:
+        # Keeping the process alive.
+        while True:
+            await asyncio.sleep(3600)
 
 
 if __name__ == "__main__":
