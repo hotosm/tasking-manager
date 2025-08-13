@@ -185,7 +185,7 @@ export const DROPZONE_SETTINGS = {
     'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
   },
   multiple: false,
-  maxSize: 256000,
+  maxSize: 1 * 1024 * 1024, // 1MB
   // noClick is needed to avoid file picker dialogs when switching between `Write` and `Preview` in `CommentInputField`
   // At time of writing, this workaround is only needed on Chromium based browsers.
   noClick: true,

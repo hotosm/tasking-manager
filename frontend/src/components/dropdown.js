@@ -1,4 +1,5 @@
-import { createRef, forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
@@ -51,8 +52,8 @@ const DropdownContent = forwardRef((props, ref) => {
     <div
       ref={ref}
       className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
-        props.toTop ? ' bottom-3' : ''
-      }${props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
+        props?.toRight ? ' right-0' : ''
+      }${props.toTop ? ' bottom-3' : ''}${props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
     >
       {props.options.map((i, k) => (
         <span
@@ -119,8 +120,8 @@ const DropdownContent = forwardRef((props, ref) => {
 export function Dropdown(props) {
   const [display, setDisplay] = useState(false);
 
-  const contentRef = createRef();
-  const buttonRef = createRef();
+  const contentRef = useRef();
+  const buttonRef = useRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -178,3 +179,10 @@ export function Dropdown(props) {
     </div>
   );
 }
+
+DropdownContent.propTypes = {
+  toTop: PropTypes.bool,
+  toRight: PropTypes.bool,
+  toggleDropdown: PropTypes.func.isRequired,
+  eventTypes: PropTypes.arrayOf(PropTypes.string),
+};

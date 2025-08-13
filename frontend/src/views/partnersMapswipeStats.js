@@ -20,6 +20,7 @@ import { ProjectTypeAreaStats } from '../components/partnerMapswipeStats/project
 import { SwipesByProjectType } from '../components/partnerMapswipeStats/swipesByProjectType';
 import { SwipesByOrganization } from '../components/partnerMapswipeStats/swipesByOrganization';
 import messages from './messages';
+import mapSwipeMessages from '../components/partnerMapswipeStats/messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 
 import './partnersMapswipeStats.scss';
@@ -157,7 +158,7 @@ export const PartnersMapswipeStats = () => {
               <div className="pa4 shadow-6 bg-white" style={{ flexBasis: '100%' }}>
                 <span className="red fw6">{getTimeSpentContributing()}</span>
                 <span className="silver fw2 ml3">
-                  <FormattedMessage {...messages.timeSpentContributing} />
+                  <FormattedMessage {...mapSwipeMessages.timeSpentContributing} />
                 </span>
               </div>
             </div>
