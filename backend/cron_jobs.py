@@ -157,7 +157,17 @@ async def main():
         await db_connection.database.connect()
         logger.info("Database connection established.")
 
-        await setup_cron_jobs()
+        if args.immediate_exit:
+            # Run each job once, and that's it
+            await auto_unlock_tasks()
+            await update_all_project_stats()
+            await update_recent_updated_project_stats()
+        else:
+            # Set up a scheduler and run it indefinitely
+            await setup_cron_jobs()
+            # Keeping the process alive.
+            while True:
+                await asyncio.sleep(3600)
 
     except (KeyboardInterrupt, SystemExit):
         logger.info("Shutting down...")
@@ -168,11 +178,6 @@ async def main():
         logger.info("Disconnecting from the database...")
         await db_connection.database.disconnect()
         logger.info("Database connection closed.")
-
-    if not args.immediate_exit:
-        # Keeping the process alive.
-        while True:
-            await asyncio.sleep(3600)
 
 
 if __name__ == "__main__":
