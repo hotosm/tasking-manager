@@ -8,7 +8,7 @@ import '@hotosm/id/dist/iD.css';
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
 
-export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
+export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
   const intl = useIntl();
   const session = useSelector((state) => state.auth.session);
@@ -26,6 +26,15 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
         window.iD.prefs('background-custom-template', imagery);
+        // this line is needed to keep the extraIdParams when custom imagery is set
+        if (extraIdParams) {
+          const params = new URLSearchParams(extraIdParams);
+          const offsetStr = params.get('offset'); // "10,-10"
+          if (!offsetStr) return;
+          const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
+          const offset = window.iD.geoMetersToOffset(offsetInMeters);
+          iDContext.background().offset(offset);
+        }
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
@@ -33,7 +42,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         }
       }
     }
-  }, [customImageryIsSet, imagery, iDContext, customSource]);
+  }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
   useEffect(() => {
     if (windowInit) {
