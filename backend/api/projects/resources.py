@@ -602,6 +602,7 @@ async def get_projects(
     difficulty: Optional[str] = Query(None),
     action: Optional[str] = Query(None),
     organisation_name: Optional[str] = Query(None, alias="organisationName"),
+    database: Optional[str] = Query(None),
     organisation_id: Optional[int] = Query(None, alias="organisationId"),
     team_id: Optional[int] = Query(None, alias="teamId"),
     campaign: Optional[str] = Query(None),
@@ -620,6 +621,7 @@ async def get_projects(
     partnership_to: Optional[str] = Query(None, alias="partnershipTo"),
     download_as_csv: Optional[bool] = Query(None, alias="downloadAsCSV"),
     created_by_me: bool = Query(False, alias="createdByMe"),
+    sandbox: bool = Query(False),
     mapped_by_me: bool = Query(False, alias="mappedByMe"),
     favorited_by_me: bool = Query(False, alias="favoritedByMe"),
     managed_by_me: bool = Query(False, alias="managedByMe"),
@@ -796,6 +798,8 @@ async def get_projects(
             partnership_from=partnership_from,
             partnership_to=partnership_to,
             download_as_csv=download_as_csv,
+            sandbox=sandbox,
+            database=database,
             mapping_types=(
                 list(map(str, mapping_types_str.split(",")))
                 if mapping_types_str

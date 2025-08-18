@@ -22,14 +22,12 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingPermission,
     MappingTypes,
     ProjectDifficulty,
     ProjectPriority,
     ProjectStatus,
     TeamRoles,
     UserRole,
-    ValidationPermission,
 )
 from backend.services.users.user_service import UserService
 
@@ -67,6 +65,8 @@ class ProjectSearchService:
                     p.difficulty,
                     p.default_locale,
                     p.status,
+                    p.sandbox,
+                    p.database,
                     p.last_updated,
                     p.due_date,
                     p.total_tasks,
@@ -111,6 +111,8 @@ class ProjectSearchService:
                 p.tasks_mapped,
                 p.tasks_validated,
                 p.status,
+                p.sandbox,
+                p.database,
                 p.total_tasks,
                 p.last_updated,
                 p.due_date,
@@ -211,6 +213,8 @@ class ProjectSearchService:
         list_dto.active_mappers = await Project.get_active_mappers(project.id, db)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
+        list_dto.sandbox = project.sandbox
+        list_dto.database = project.database
         list_dto.author = project.author_name or project.author_username
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
@@ -546,6 +550,14 @@ class ProjectSearchService:
         if search_dto.created_by:
             filters.append("p.author_id = :created_by")
             params["created_by"] = search_dto.created_by
+
+        if search_dto.sandbox:
+            filters.append("p.sandbox = :sandbox")
+            params["sandbox"] = search_dto.sandbox
+
+            if search_dto.database:
+                filters.append("p.database = :database")
+                params["database"] = search_dto.database
 
         if search_dto.mapped_by:
             mapped_projects = await UserService.get_projects_mapped(

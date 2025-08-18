@@ -29,6 +29,7 @@ from sqlalchemy import (
     orm,
     select,
     update,
+    text,
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -137,6 +138,7 @@ class Project(Base):
     # Columns
     id = Column(Integer, primary_key=True)
     status = Column(Integer, default=ProjectStatus.DRAFT.value, nullable=False)
+    database = Column(String, nullable=False, default="OSM", server_default="OSM")
     created = Column(DateTime, default=timestamp(), nullable=False)
     priority = Column(Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = Column(
@@ -163,6 +165,9 @@ class Project(Base):
         Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
     private = Column(Boolean, default=False)  # Only allowed users can validate
+    sandbox = Column(
+        Boolean, nullable=False, default=False, server_default=text("false")
+    )  # Is sandbox project or not
     featured = Column(Boolean, default=False)  # Only PMs can set a project as featured
     changeset_comment = Column(String)
     osmcha_filter_id = Column(
@@ -1662,7 +1667,7 @@ class Project(Base):
         query = """
             SELECT
                 p.id as project_id, p.status as project_status, p.default_locale, p.priority as project_priority,
-                p.mapping_permission, p.mapping_permission_level_id,
+                p.mapping_permission, p.mapping_permission_level_id, p.sandbox, p.database,
                 p.validation_permission, p.validation_permission_level_id,
                 p.enforce_random_task_selection, p.private,
                 p.difficulty, p.changeset_comment, p.osmcha_filter_id,
@@ -1739,6 +1744,8 @@ class Project(Base):
             created=record.created,
             last_updated=record.last_updated,
             author=record.author,
+            sandbox=record.sandbox,
+            database=record.database,
             active_mappers=active_mappers,
             task_creation_mode=TaskCreationMode(record.task_creation_mode).name,
             mapping_types=(
