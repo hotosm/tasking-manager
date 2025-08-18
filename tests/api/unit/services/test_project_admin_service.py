@@ -159,7 +159,8 @@ class TestProjectAdminService:
             )
             assert task.task_status == TaskStatus.READY.value
             if task_history:
-                assert task_history[0].action_text == "Task reset"
+                assert task_history[0].action_text == TaskStatus.READY.name
+                assert task_history[1].action_text == "Task reset"
         query = """
             SELECT id, tasks_mapped, tasks_validated
             FROM projects

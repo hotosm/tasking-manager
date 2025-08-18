@@ -1096,7 +1096,7 @@ class Task(Base):
         # Log the state change in the task history
         await Task.set_task_history(
             task_id=task_id,
-            project_id=None,  # Assuming project_id is not needed here or is passed earlier
+            project_id=project_id,
             user_id=user_id,
             action=TaskAction.STATE_CHANGE,
             db=db,
