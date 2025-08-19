@@ -48,6 +48,9 @@ class MappingLevelUpdateDTO(BaseModel):
     @field_validator("required_badges")
     @classmethod
     def has_badges(cls, value: str, info: ValidationInfo):
+        if info.data["is_beginner"]:
+            return value
+
         return has_badges(value)
 
 
