@@ -794,7 +794,7 @@ class ProjectSearchService:
             WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
             AND p.status = :published_status AND l.ordering <= :user_level_ordering
         """
-        user_level = await MappingLevel.get_by_id(user.mapping_level)
+        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
         params = {
             "published_status": ProjectStatus.PUBLISHED.value,
             "user_level_ordering": user_level.ordering,
@@ -824,7 +824,7 @@ class ProjectSearchService:
             WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
             AND p.status = :published_status AND l.ordering <= :user_level_ordering
         """
-        user_level = await MappingLevel.get_by_id(user.mapping_level)
+        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
         params = {
             "published_status": ProjectStatus.PUBLISHED.value,
             "user_level_ordering": user_level.ordering,
