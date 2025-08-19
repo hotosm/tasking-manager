@@ -117,6 +117,7 @@ export const PermissionsBlock = ({ permissions, levels, type }: Object) => {
         options={levelOptions}
         value={levelValue}
         onChange={handlePermissionLevelChange}
+        className="z-5"
       />
     </div>
   );
