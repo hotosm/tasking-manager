@@ -54,15 +54,9 @@ export const LevelsManagement = ({levels, isFetched}) => {
   );
 };
 
-export const LevelInformation = ({ badges }) => {
+export const LevelInformation = ({ level, badges }) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-
-  const validateBadges = (value) => {
-    if (value && value.length === 0) {
-      return <FormattedMessage {...messages.needsBadges} />;
-    }
-  }
 
   return <div className="cf">
     <label className={labelClasses}>
@@ -81,12 +75,14 @@ export const LevelInformation = ({ badges }) => {
       {({input}) => ColorField({ input })}
     </Field>
 
-    <label className={labelClasses}>
-      <FormattedMessage {...messages.required_badges} />
-    </label>
-    <Field name="requiredBadges" className={fieldClasses} required validate={validateBadges}>
-      {({input}) => RequiredBadgesField({input, badges})}
-    </Field>
+    {((level && !level.isBeginner) || !level) && <>
+      <label className={labelClasses}>
+        <FormattedMessage {...messages.required_badges} />
+      </label>
+      <Field name="requiredBadges" className={fieldClasses}>
+        {({input}) => RequiredBadgesField({input, badges})}
+      </Field>
+    </>}
   </div>;
 };
 
@@ -226,7 +222,7 @@ export const LevelForm = ({ level, badges, updateLevel }) => {
               </h3>
               <form id="level-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
-                  <LevelInformation badges={badges} />
+                  <LevelInformation level={level} badges={badges} />
                 </fieldset>
               </form>
             </div>

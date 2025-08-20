@@ -102,6 +102,7 @@ const MapperLevelFilter = ({ filters, updateFilters, levels }) => {
   return (
     <div>
       <Select
+        isClearable={true}
         placeholder={intl.formatMessage(messages.mapperLevelALL)}
         options={options}
         onChange={(value) => updateFilters('level', value?.value)}
