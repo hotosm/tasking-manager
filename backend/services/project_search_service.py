@@ -551,14 +551,6 @@ class ProjectSearchService:
             filters.append("p.author_id = :created_by")
             params["created_by"] = search_dto.created_by
 
-        if search_dto.sandbox:
-            filters.append("p.sandbox = :sandbox")
-            params["sandbox"] = search_dto.sandbox
-
-            if search_dto.database:
-                filters.append("p.database = :database")
-                params["database"] = search_dto.database
-
         if search_dto.mapped_by:
             mapped_projects = await UserService.get_projects_mapped(
                 search_dto.mapped_by, db
@@ -661,6 +653,14 @@ class ProjectSearchService:
         if search_dto.created_lte:
             filters.append("p.created <= :created_lte")
             params["created_lte"] = validate_date_input(search_dto.created_lte)
+
+        if search_dto.sandbox is not None:
+            filters.append("p.sandbox = :sandbox")
+            params["sandbox"] = search_dto.sandbox
+
+            if search_dto.database:
+                filters.append("p.database = :database")
+                params["database"] = search_dto.database
 
         if search_dto.partner_id:
             partner_conditions = ["pp.partner_id = :partner_id"]

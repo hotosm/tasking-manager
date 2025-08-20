@@ -558,11 +558,13 @@ class ProjectSummary(BaseModel):
     difficulty: Optional[str] = Field(None, alias="difficulty")
     mapping_permission: Optional[str] = Field(None, alias="mappingPermission")
     validation_permission: Optional[str] = Field(None, alias="validationPermission")
+    database: Optional[str] = Field(None)
     allowed_usernames: List[str] = Field(default_factory=list, alias="allowedUsernames")
     random_task_selection_enforced: bool = Field(
         default=False, alias="enforceRandomTaskSelection"
     )
     private: Optional[bool] = Field(None, alias="private")
+    sandbox: Optional[bool] = Field(None)
     allowed_users: List[str] = Field(default_factory=list, alias="allowedUsernames")
     project_teams: List[ProjectTeamDTO] = Field(default_factory=list, alias="teams")
     project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")

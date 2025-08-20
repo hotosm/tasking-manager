@@ -621,7 +621,7 @@ async def get_projects(
     partnership_to: Optional[str] = Query(None, alias="partnershipTo"),
     download_as_csv: Optional[bool] = Query(None, alias="downloadAsCSV"),
     created_by_me: bool = Query(False, alias="createdByMe"),
-    sandbox: bool = Query(False),
+    sandbox: Optional[bool] = Query(None),
     mapped_by_me: bool = Query(False, alias="mappedByMe"),
     favorited_by_me: bool = Query(False, alias="favoritedByMe"),
     managed_by_me: bool = Query(False, alias="managedByMe"),

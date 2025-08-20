@@ -560,6 +560,8 @@ class ProjectService:
             p.country,
             p.changeset_comment,
             p.created,
+            p.database,
+            p.sandbox,
             p.osmcha_filter_id,
             p.mapping_permission,
             p.validation_permission,

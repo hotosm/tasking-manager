@@ -1438,6 +1438,8 @@ class Project(Base):
         summary.extra_id_params = project_row.extra_id_params
         summary.rapid_power_user = project_row.rapid_power_user
         summary.imagery = project_row.imagery
+        summary.database = project_row.database
+        summary.sandbox = project_row.sandbox
 
         # Handle organisation details if available
         if project_row.organisation_id:
