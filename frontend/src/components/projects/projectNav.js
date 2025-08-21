@@ -151,6 +151,32 @@ const DifficultyDropdown = (props) => {
   );
 };
 
+const DatabaseDropdown = (props) => {
+  return (
+    <Dropdown
+      onChange={(n) => {
+        const value = n && n[0] && n[0].value;
+        props.setQuery(
+          {
+            ...props.fullProjectsQuery,
+            page: undefined,
+            sandbox: value,
+          },
+          'pushIn',
+        );
+      }}
+      value={props.fullProjectsQuery.sandbox || []}
+      options={[
+        { label: <DifficultyMessage level="ALL" className="" />, value: undefined },
+        { label: <DifficultyMessage level="Sandbox" className="" />, value: 'true' },
+        { label: <DifficultyMessage level="OpenStreetMap" className="" />, value: 'false' },
+      ]}
+      display={<FormattedMessage {...messages.mappingDatabse} />}
+      className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
+    />
+  );
+};
+
 export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -208,6 +234,9 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
       <div className="mt2 mb1 ph3 dib lh-copy w-100 cf">
         <div className="w-80-l w-90-m w-100 fl dib">
           <div className="dib">
+             <div className="mv2 dib">
+              <DatabaseDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+            </div>
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
