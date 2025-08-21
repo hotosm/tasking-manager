@@ -38,6 +38,7 @@ import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
 
 const Editor = lazy(() => import('../editor'));
 const RapidEditor = lazy(() => import('../rapidEditor'));
+const SandboxEditor = lazy(()=> import('../sandboxEditor'))
 
 const MINUTES_BEFORE_DIALOG = 5;
 
@@ -219,25 +220,41 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   </div>
                 }
               >
-                {editor === 'ID' ? (
-                  <Editor
-                    setDisable={setDisable}
-                    comment={project.changesetComment}
-                    presets={project.idPresets}
-                    imagery={formatImageryUrlCallback(project.imagery)}
-                    gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
-                  />
-                ) : (
-                  <RapidEditor
-                    setDisable={setDisable}
-                    comment={project.changesetComment}
-                    presets={project.idPresets}
-                    imagery={formatImageryUrlCallback(project.imagery)}
-                    gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
-                    powerUser={project.rapidPowerUser}
-                    showSidebar={showSidebar}
-                  />
-                )}
+                {project.sandbox && project.database !== 'OSM' ? (
+                  editor === 'ID' ? (
+                    <SandboxEditor
+                      setDisable={setDisable}
+                      comment={project.changesetComment}
+                      presets={project.idPresets}
+                      imagery={formatImageryUrlCallback(project.imagery)}
+                      sandboxId={project.database}
+                      gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                    />
+                  ) : (
+                   <div>Rapid sandbox editor is under developemnt</div>
+                  )
+                ): (
+                  editor === 'ID' ? (
+                    <Editor
+                      setDisable={setDisable}
+                      comment={project.changesetComment}
+                      presets={project.idPresets}
+                      imagery={formatImageryUrlCallback(project.imagery)}
+                      gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                    />
+                  ) : (
+                    <RapidEditor
+                      setDisable={setDisable}
+                      comment={project.changesetComment}
+                      presets={project.idPresets}
+                      imagery={formatImageryUrlCallback(project.imagery)}
+                      gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                      powerUser={project.rapidPowerUser}
+                      showSidebar={showSidebar}
+                    />
+                  )
+                ) 
+              }
               </Suspense>
             ) : (
               <ReactPlaceholder
