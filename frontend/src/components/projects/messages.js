@@ -12,6 +12,10 @@ export default defineMessages({
     id: 'project.nav.mappingDifficulty',
     defaultMessage: 'Difficulty level',
   },
+  mappingDatabse: {
+    id: 'project.nav.mappingDatabase',
+    defaultMessage: 'Database',
+  },
   moreFilters: {
     id: 'project.nav.moreFilters',
     defaultMessage: 'More filters',
