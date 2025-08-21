@@ -1,3 +1,0 @@
-[submodule "frontend/sandbox-id"]
-	path = frontend/sandbox-id
-	url = https://github.com/osm-sandbox/sandbox-iD.git
