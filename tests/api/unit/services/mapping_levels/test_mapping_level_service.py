@@ -8,8 +8,10 @@ from backend.models.dtos.mapping_level_dto import (
 )
 from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
 from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.user import UserNextLevel, UserLevelVote
 from backend.services.mapping_levels import MappingLevelService
 from backend.services.mapping_badges import MappingBadgeService
+from backend.exceptions import NotFound
 
 from tests.api.helpers.test_helpers import (
     get_or_create_levels,
@@ -190,3 +192,24 @@ class TestMappingLevelService:
             await MappingLevelService.delete(1, self.db)
 
         assert e.value.sub_code == "MAPPING_LEVEL_BEGINNER"
+
+    async def test_delete_possible_if_votes_or_approval_pending_but_no_users_assigned(
+        self,
+    ):
+        # Arrange
+        level_data = MappingLevelCreateDTO(
+            name="name",
+            imagePath="some",
+        )
+        level = await MappingLevel.create(level_data, self.db)
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+        await UserLevelVote.vote(
+            self.test_user.id, level.id, self.test_user.id, self.db
+        )
+
+        # Act
+        await MappingLevelService.delete(level.id, self.db)
+
+        # Assert
+        with pytest.raises(NotFound):
+            await MappingLevelService.get_by_id(level.id, self.db)

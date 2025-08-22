@@ -589,8 +589,14 @@ class UserMappingBadge(Base):
 class UserNextLevel(Base):
     __tablename__ = "user_next_level"
 
-    user_id = Column(BigInteger, nullable=False, primary_key=True)
-    level_id = Column(Integer, nullable=False, primary_key=True)
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    level_id = Column(
+        ForeignKey("mapping_levels.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
+    )
     nomination_date = Column(DateTime, nullable=False, default=timestamp)
 
     @staticmethod
@@ -642,9 +648,17 @@ class UserNextLevel(Base):
 class UserLevelVote(Base):
     __tablename__ = "user_level_vote"
 
-    user_id = Column(BigInteger, nullable=False, primary_key=True)
-    level_id = Column(Integer, nullable=False, primary_key=True)
-    voter_id = Column(BigInteger, nullable=False, primary_key=True)
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    level_id = Column(
+        ForeignKey("mapping_levels.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
+    )
+    voter_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
     vote_date = Column(
         DateTime,
         nullable=False,

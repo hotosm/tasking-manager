@@ -324,8 +324,27 @@ class TestUserService:
         )
         await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
 
+        other_user = User()
+        other_user.id = 24934
+        other_user.role = 0
+        other_user.mapping_level = 1
+        other_user.tasks_mapped = 0
+        other_user.tasks_validated = 0
+        other_user.tasks_invalidated = 0
+        other_user.is_email_verified = False
+        other_user.is_expert = False
+        other_user.default_editor = "ID"
+        other_user.mentions_notifications = True
+        other_user.projects_comments_notifications = False
+        other_user.projects_notifications = True
+        other_user.tasks_notifications = True
+        other_user.tasks_comments_notifications = False
+        other_user.teams_announcement_notifications = True
+
+        other_user = await create_canned_user(self.db, other_user)
+
         # Act
-        await UserService.approve_level(self.test_user.id, 234, self.db)
+        await UserService.approve_level(self.test_user.id, other_user.id, self.db)
 
         # Assert
         user = await UserService.get_user_by_id(self.test_user.id, self.db)
@@ -355,8 +374,27 @@ class TestUserService:
         )
         await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
 
+        other_user = User()
+        other_user.id = 24934
+        other_user.role = 0
+        other_user.mapping_level = 1
+        other_user.tasks_mapped = 0
+        other_user.tasks_validated = 0
+        other_user.tasks_invalidated = 0
+        other_user.is_email_verified = False
+        other_user.is_expert = False
+        other_user.default_editor = "ID"
+        other_user.mentions_notifications = True
+        other_user.projects_comments_notifications = False
+        other_user.projects_notifications = True
+        other_user.tasks_notifications = True
+        other_user.tasks_comments_notifications = False
+        other_user.teams_announcement_notifications = True
+
+        other_user = await create_canned_user(self.db, other_user)
+
         # Act
-        await UserService.approve_level(self.test_user.id, 234, self.db)
+        await UserService.approve_level(self.test_user.id, other_user.id, self.db)
 
         # Assert
         user = await UserService.get_user_by_id(self.test_user.id, self.db)
