@@ -1,3 +1,4 @@
+from typing import Optional
 from databases import Database
 from fastapi.responses import JSONResponse
 from loguru import logger
@@ -18,11 +19,13 @@ from backend.models.dtos.team_dto import (
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.statuses import (
+    MappingPermission,
     TeamJoinMethod,
     TeamMemberFunctions,
     TeamRoles,
     TeamVisibility,
     UserRole,
+    ValidationPermission,
 )
 from backend.models.postgis.team import Team, TeamMembers
 from backend.services.messaging.message_service import MessageService
@@ -838,3 +841,103 @@ class TeamService:
             },
         )
         return row is not None
+
+    async def ensure_unlink_allowed(
+        project_id: int, team_id: int, db: Database
+    ) -> Optional[JSONResponse]:
+        """
+        Ensure it's allowed to unlink `team_id` from `project_id`.
+
+        Returns a JSONResponse with a single sentence Error message when unlinking should
+        be rejected, or None when it's allowed.
+        """
+        project_row = await db.fetch_one(
+            "SELECT id, mapping_permission, validation_permission FROM projects WHERE id = :pid",
+            {"pid": project_id},
+        )
+        if not project_row:
+            return JSONResponse(
+                {
+                    "Error": f"Cannot unlink team with team id-{team_id}: project {project_id} not found",
+                    "SubCode": "NotFoundError",
+                },
+                status_code=404,
+            )
+
+        mapping_perm = project_row["mapping_permission"]
+        validation_perm = project_row["validation_permission"]
+
+        project_team_row = await db.fetch_one(
+            "SELECT role FROM project_teams WHERE project_id = :pid AND team_id = :tid",
+            {"pid": project_id, "tid": team_id},
+        )
+        if not project_team_row:
+            return JSONResponse(
+                {
+                    "Error": (
+                        f"Cannot unlink team with team id-{team_id}: "
+                        f"project {project_id} has no such linked team"
+                    ),
+                    "SubCode": "NotFoundError",
+                },
+                status_code=404,
+            )
+
+        team_role = project_team_row["role"]
+
+        # Mapping check
+        if (
+            mapping_perm
+            in (MappingPermission.TEAMS.value, MappingPermission.TEAMS_LEVEL.value)
+            and team_role == TeamRoles.MAPPER.value
+        ):
+            cnt_row = await db.fetch_one(
+                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid AND role = :role",
+                {"pid": project_id, "role": TeamRoles.MAPPER.value},
+            )
+            mapper_count = int(cnt_row["cnt"]) if cnt_row else 0
+
+            if mapper_count <= 1:
+                return JSONResponse(
+                    {
+                        "Error": (
+                            f"Cannot unlink team with team id-{team_id}: "
+                            f"project {project_id} mapping is restricted to assigned teams "
+                            f"and this is the only mapper team. Contact the project admin "
+                            f"to unlink the team and assign another mapper team."
+                        ),
+                        "SubCode": "ProjectPermissionError",
+                    },
+                    status_code=403,
+                )
+
+        # Validation check
+        if (
+            validation_perm
+            in (
+                ValidationPermission.TEAMS.value,
+                ValidationPermission.TEAMS_LEVEL.value,
+            )
+            and team_role == TeamRoles.VALIDATOR.value
+        ):
+            cnt_row = await db.fetch_one(
+                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid AND role = :role",
+                {"pid": project_id, "role": TeamRoles.VALIDATOR.value},
+            )
+            validator_count = int(cnt_row["cnt"]) if cnt_row else 0
+
+            if validator_count <= 1:
+                return JSONResponse(
+                    {
+                        "Error": (
+                            f"Cannot unlink team with team id-{team_id}: "
+                            f"project {project_id} validation is restricted to assigned teams "
+                            f"and this is the only validator team. Contact the project admin "
+                            f"to unlink the team and assign another validator team."
+                        ),
+                        "SubCode": "ProjectPermissionError",
+                    },
+                    status_code=403,
+                )
+
+        return None
