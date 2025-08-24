@@ -10,7 +10,7 @@ import { AnimatedLoadingIcon } from '../components/button';
 export function Authorized(props) {
 
   const authComplete = (authCode, state) => {
-      let callback_url = `/api/v2/system/authentication/callback/?redirect_uri=${OSM_REDIRECT_URI}&code=${authCode}`;
+      let callback_url = `system/authentication/callback/?redirect_uri=${OSM_REDIRECT_URI}&code=${authCode}`;
       const emailAddress = getItem('email_address');
       if (emailAddress !== null) {
         callback_url += `&email_address=${emailAddress}`;
