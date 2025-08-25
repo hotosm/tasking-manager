@@ -602,4 +602,12 @@ export default defineMessages({
     id: 'management.members.remove_confirmation_description',
     defaultMessage: 'This team will have only managers and no members.',
   },
+  view: {
+    id: 'management.teams.project.view',
+    defaultMessage: 'View',
+  },
+  unlink: {
+    id: 'management.teams.project.unlink',
+    defaultMessage: 'Unlink',
+  },
 });
