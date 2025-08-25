@@ -30,7 +30,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
   );
 
   const unLinkProjectFromTeam = (projectId) => {
-    fetchLocalJSONAPI(`teams/${projectId}/teams/${id}/`, token, 'DELETE')
+    fetchLocalJSONAPI(`teams/projects/${projectId}/teams/${id}/`, token, 'DELETE')
       .then(() => {
         toast.success('Unlinked Successfully');
         refetch();
