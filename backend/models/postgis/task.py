@@ -749,7 +749,9 @@ class Task(Base):
             task.y = task_feature.properties["y"]
             task.zoom = task_feature.properties["zoom"]
             task.is_square = task_feature.properties["isSquare"]
-            task.geometry = shape(task_feature.geometry).wkt
+            wkt = shape(task_feature.geometry).wkt
+            ewkt = f"SRID=4326;{wkt}"
+            task.geometry = ewkt
         except KeyError as e:
             raise InvalidData(
                 f"PropertyNotFound: Expected property not found: {str(e)}"
