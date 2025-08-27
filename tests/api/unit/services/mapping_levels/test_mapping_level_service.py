@@ -16,6 +16,7 @@ from backend.exceptions import NotFound
 from tests.api.helpers.test_helpers import (
     get_or_create_levels,
     create_canned_user,
+    return_canned_user,
 )
 
 
@@ -144,6 +145,12 @@ class TestMappingLevelService:
             isBeginner=True,
             requiredBadges=[AssociatedBadge(id=badge2.id)],
         )
+        level = await MappingLevel.create(MappingLevelCreateDTO(name="level"), self.db)
+        voter = await create_canned_user(
+            self.db, await return_canned_user(self.db, id=24934, username="foo")
+        )
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+        await UserLevelVote.vote(self.test_user.id, level.id, voter.id, self.db)
 
         # Act
         from_db = await MappingLevelService.update(new_data, self.db)
@@ -157,6 +164,10 @@ class TestMappingLevelService:
         assert from_db.is_beginner == new_data.is_beginner
         assert from_db.is_beginner
         assert from_db.required_badges == [AssociatedBadge(id=badge2.id, name="two")]
+        assert not (
+            await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
+        )
+        assert (await UserLevelVote.count(self.test_user.id, level.id, self.db)) == 0
 
     async def test_delete(self):
         # Arrange

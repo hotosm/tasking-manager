@@ -104,6 +104,11 @@ class MappingLevel(Base):
                 """
                 await db.execute(update_query, values={**updated_values, "id": data.id})
 
+            # requirements have potentially changed, so nominations and
+            # votes are cleared
+            await db.execute("DELETE FROM user_next_level")
+            await db.execute("DELETE FROM user_level_vote")
+
             clear_query = "DELETE FROM mapping_level_badges WHERE level_id = :level_id"
             await db.execute(clear_query, values={"level_id": data.id})
 
