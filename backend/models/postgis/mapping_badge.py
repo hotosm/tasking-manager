@@ -91,12 +91,18 @@ class MappingBadge(Base):
         set_clause = ", ".join(f"{key} = :{key}" for key in updated_values.keys())
 
         if set_clause:
-            update_query = f"""
-            UPDATE mapping_badges
-            SET {set_clause}
-            WHERE id = :id
-            """
-            await db.execute(update_query, values={**updated_values, "id": data.id})
+            async with db.transaction():
+                # requirements have potentially changed, so nominations and
+                # votes are cleared
+                await db.execute("DELETE FROM user_next_level")
+                await db.execute("DELETE FROM user_level_vote")
+
+                update_query = f"""
+                UPDATE mapping_badges
+                SET {set_clause}
+                WHERE id = :id
+                """
+                await db.execute(update_query, values={**updated_values, "id": data.id})
 
         return await MappingBadge.get_by_id(data.id, db)
 

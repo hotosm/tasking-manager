@@ -4,12 +4,16 @@ from backend.models.dtos.mapping_badge_dto import (
     MappingBadgeCreateDTO,
     MappingBadgeUpdateDTO,
 )
+from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO
 from backend.models.postgis.mapping_badge import MappingBadge
+from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.user import UserLevelVote, UserNextLevel
 from backend.services.mapping_badges import MappingBadgeService
 
 from tests.api.helpers.test_helpers import (
     get_or_create_levels,
     create_canned_user,
+    return_canned_user,
 )
 
 
@@ -108,6 +112,12 @@ class TestMappingBadgeService:
             requirements='{"buildings":10}',
             isEnabled=False,
         )
+        level = await MappingLevel.create(MappingLevelCreateDTO(name="level"), self.db)
+        voter = await create_canned_user(
+            self.db, await return_canned_user(self.db, id=24934, username="foo")
+        )
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+        await UserLevelVote.vote(self.test_user.id, level.id, voter.id, self.db)
 
         # Act
         await MappingBadgeService.update(new_data, self.db)
@@ -120,6 +130,10 @@ class TestMappingBadgeService:
         assert from_db.image_path == new_data.image_path
         assert from_db.requirements == new_data.requirements
         assert from_db.is_enabled == new_data.is_enabled
+        assert not (
+            await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
+        )
+        assert (await UserLevelVote.count(self.test_user.id, level.id, self.db)) == 0
 
     async def test_delete(self):
         # Arrange
