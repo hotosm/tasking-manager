@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from backend.api.utils import validate_date_input
 from backend.config import settings
 from backend.db import get_db
-from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.dtos.user_dto import AuthUserDTO, UserNextLevelDTO
 from backend.services.interests_service import InterestService
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
@@ -238,7 +238,7 @@ async def get_next_level(
     db: Database = Depends(get_db),
     user_id: int = Query(None, alias="userId"),
     user: AuthUserDTO = Depends(login_required),
-):
+) -> Optional[UserNextLevelDTO]:
     """
     Get next level and stats towards it
     """
