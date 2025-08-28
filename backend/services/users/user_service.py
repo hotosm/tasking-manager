@@ -1,5 +1,6 @@
 import json
 import datetime
+from typing import Optional
 
 from databases import Database
 from loguru import logger
@@ -947,18 +948,13 @@ class UserService:
                 await UserLevelVote.clear(user_id, requested_level.id, db)
 
     @staticmethod
-    async def next_level(user_id: int, db: Database) -> UserNextLevelDTO:
+    async def next_level(user_id: int, db: Database) -> Optional[UserNextLevelDTO]:
         user = await UserService.get_user_by_id(user_id, db)
         user_level = await MappingLevel.get_by_id(user.mapping_level, db)
         next_level = await MappingLevel.get_next(user_level.ordering, db)
 
         if not next_level:
-            return UserNextLevelDTO(
-                nextLevel=None,
-                aggregatedGoal=None,
-                aggregatedProgress=None,
-                noun="",
-            )
+            return None
 
         badges = await MappingBadge.get_related_to_level(next_level.id, db)
 
@@ -972,8 +968,10 @@ class UserService:
 
         stats = await UserStats.get_for_user(user_id, db)
 
-        aggregatedProgress = sum(
-            v for k, v in json.loads(stats.stats).items() if k in relevant_keys
+        aggregatedProgress = (
+            sum(v for k, v in json.loads(stats.stats).items() if k in relevant_keys)
+            if stats
+            else 0
         )
 
         return UserNextLevelDTO(

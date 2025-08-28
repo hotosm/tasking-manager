@@ -379,3 +379,20 @@ class TestUserService:
         )
         # votes are cleared
         assert await UserLevelVote.count(self.test_user.id, level.id, self.db) == 0
+
+    async def test_next_level(self):
+        next_level = await UserService.next_level(self.test_user.id, self.db)
+
+        assert next_level.next_level == "INTERMEDIATE"
+        assert next_level.aggregated_goal == 250
+        assert next_level.aggregated_progress == 0
+        assert next_level.metrics == ["changeset"]
+
+    async def test_next_level_empy(self):
+        await UserService.set_user_mapping_level(
+            self.test_user.username, "ADVANCED", self.db
+        )
+
+        next_level = await UserService.next_level(self.test_user.id, self.db)
+
+        assert next_level is None
