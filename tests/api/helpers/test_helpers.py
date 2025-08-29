@@ -7,7 +7,6 @@ from typing import Tuple
 
 from backend.exceptions import NotFound
 import geojson
-from sqlalchemy import select
 
 from backend.models.dtos.organisation_dto import UpdateOrganisationDTO
 from backend.models.dtos.project_dto import (
@@ -28,7 +27,6 @@ from backend.models.postgis.statuses import (
     TeamJoinMethod,
     TeamVisibility,
 )
-from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User

@@ -1,5 +1,3 @@
-from typing import List
-
 from databases import Database
 
 from backend.models.postgis.mapping_badge import MappingBadge

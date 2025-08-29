@@ -199,7 +199,7 @@ class User(Base):
         filters = []
         params = {}
 
-        if query.mapping_level and re.match("^\d+$", query.mapping_level):
+        if query.mapping_level and re.match(r"^\d+$", query.mapping_level):
             mapping_level_array = map(int, query.mapping_level.split(","))
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)

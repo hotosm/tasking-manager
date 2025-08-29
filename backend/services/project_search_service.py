@@ -22,14 +22,12 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingPermission,
     MappingTypes,
     ProjectDifficulty,
     ProjectPriority,
     ProjectStatus,
     TeamRoles,
     UserRole,
-    ValidationPermission,
 )
 from backend.services.users.user_service import UserService
 

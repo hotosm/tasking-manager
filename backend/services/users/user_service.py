@@ -47,7 +47,7 @@ from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
-from backend.services.users.osm_service import OSMService, OSMServiceError
+from backend.services.users.osm_service import OSMService
 from backend.services.mapping_levels import MappingLevelService
 
 settings = Settings()
@@ -170,7 +170,11 @@ class UserService:
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
         hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
-        url = f"{settings.OHSOME_STATS_API_URL}/stats/user?hashtag={hashtag}-%2A&userId={user_id}&topics={settings.OHSOME_STATS_TOPICS}"
+        url = (
+            f"{settings.OHSOME_STATS_API_URL}/stats/user?"
+            f"hashtag={hashtag}-%2A&userId={user_id}"
+            f"&topics={settings.OHSOME_STATS_TOPICS}"
+        )
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
 
