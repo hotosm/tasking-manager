@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.users.authentication_service import login_required
-from backend.services.users.user_service import OSMServiceError, UserService
+from backend.services.users.user_service import UserService
+from backend.services.users.osm_service import OSMServiceError
 
 router = APIRouter(
     prefix="/users",

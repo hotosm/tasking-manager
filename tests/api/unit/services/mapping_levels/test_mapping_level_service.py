@@ -58,7 +58,7 @@ class TestMappingLevelService:
         assert dto.color == orig.color
         assert dto.ordering == 4
         assert dto.is_beginner == orig.is_beginner
-        assert dto.is_beginner == True
+        assert dto.is_beginner is True
 
     async def test_get_all(self):
         # Act

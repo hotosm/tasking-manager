@@ -1,7 +1,7 @@
 import json
 
 from databases import Database
-from sqlalchemy import Integer, String, Column, ForeignKey, Boolean, JSON
+from sqlalchemy import Integer, String, Column, Boolean, JSON
 from asyncpg import ForeignKeyViolationError
 
 from backend.exceptions import Conflict

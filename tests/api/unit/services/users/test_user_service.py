@@ -1,6 +1,5 @@
 from unittest.mock import AsyncMock, patch, MagicMock
 
-import requests
 import pytest
 from httpx import AsyncClient
 

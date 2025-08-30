@@ -187,7 +187,7 @@ class TestMappingBadgeService:
         assigned_badge = await MappingBadge.create(assigned_badge_dto, self.db)
         hidden_badge = await MappingBadge.create(hidden_badge_dto, self.db)
         disabled_badge = await MappingBadge.create(disabled_badge_dto, self.db)
-        unassigned_badge = await MappingBadge.create(unassigned_badge_dto, self.db)
+        await MappingBadge.create(unassigned_badge_dto, self.db)
 
         # assign them
         await self.test_user.assign_badges(

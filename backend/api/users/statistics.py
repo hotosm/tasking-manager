@@ -1,6 +1,5 @@
 from datetime import date, timedelta, datetime
 from typing import Optional
-import json
 
 import httpx
 from databases import Database
