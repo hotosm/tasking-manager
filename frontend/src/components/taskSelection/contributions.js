@@ -60,20 +60,23 @@ const sortByLits = [
   },
 ];
 
-const SortingHeader = ({ sortBy, setSortBy }) => {
+const SortingHeader = ({ sortBy, setSortBy }: Object) => {
   return (
     <div className="flex justify-end items-center">
       {sortByLits?.map((sortByItem) => (
-        <div className="w-20 fl tr dib truncate" title={sortByItem.tooltipMessage}>
-          <div
-            className={`dib pt2 mr4 pointer ph2 pv2 hover-bg-black-10 br3 ${
-              sortBy === sortByItem?.sortId ? 'bg-black-10' : ''
+        <div
+          key={sortByItem.sortId}
+          className="w-20 fl tr dib truncate"
+          title={sortByItem.tooltipMessage}
+        >
+          <button
+            className={`bn dib pt2 mr4 pointer ph2 pv2  hover-bg-black-10 br3 ${
+              sortBy === sortByItem?.sortId ? 'bg-black-10' : 'bg-transparent'
             }`}
-            role="button"
             onClick={() => setSortBy(sortByItem?.sortId)}
           >
             {sortByItem?.icon}
-          </div>
+          </button>
         </div>
       ))}
     </div>
