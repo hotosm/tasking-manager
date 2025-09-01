@@ -22,66 +22,27 @@ async def main():
 
         logger.info("Started updating mapper levels...")
         users = await User.get_all_users_not_paginated(db)
-        users_updated = 0
         total_users = len(users)
-        failed_usernames = []
+        failed_users = []
+        users_updated = 0
 
         for user in users:
             try:
-                user = await UserService.get_user_by_id(user.id, db)
-                user_level = await MappingLevel.get_by_id(user.mapping_level, db)
-                try:
-                    stats = await UserService.get_and_save_stats(user.id, db)
-                except Exception:
-                    failed_usernames.append(user.username)
-                    logger.exception(
-                        "Failed to update stats for user %s — continuing with next user",
-                        user.id,
-                    )
-                    continue
-
-                try:
-                    async with db.transaction():
-                        badges = await MappingBadge.available_badges_for_user(
-                            user.id, db
-                        )
-                        assignable_ids = []
-                        for badge in badges:
-                            if badge.all_requirements_satisfied(stats):
-                                assignable_ids.append(badge.id)
-                        await user.assign_badges(assignable_ids, db)
-
-                        next_level = await MappingLevel.get_next(
-                            user_level.ordering, db
-                        )
-
-                        if await MappingLevel.all_badges_satisfied(
-                            next_level.id, user.id, db
-                        ):
-                            if next_level.approvals_required == 0:
-                                await user.set_mapping_level(next_level, db)
-                            else:
-                                await UserNextLevel.nominate(user.id, next_level.id, db)
-                except Exception:
-                    logger.exception(
-                        "Failed to update mapper level for user %s — stats updated, but skipping badges/level",
-                        user.id,
-                    )
-
+                await UserService.check_and_update_mapper_level(user.id, db)
             except Exception:
-                failed_usernames.append(user.username)
+                failed_users.append(user.id)
                 logger.exception(
-                    "Failed to fetch stats and update mapper level for user %s — continuing with next user",
+                    "Failed to update stats/mapper level for user %s",
                     user.id,
                 )
                 continue
 
             users_updated += 1
             if users_updated % 1000 == 0:
-                print(f"{users_updated} users updated of {total_users}")
+                logger.info(f"{users_updated} users updated of {total_users}")
 
         logger.info(f"Finished. Updated {users_updated} user mapper levels.")
-        logger.info(f"Failed stats update for these users: {failed_usernames}.")
+        logger.info(f"Failed stats update for these users: {failed_users}.")
 
     except Exception:
         logger.exception("Error while refreshing mapper levels")
