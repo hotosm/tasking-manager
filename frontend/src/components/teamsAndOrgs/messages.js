@@ -610,4 +610,12 @@ export default defineMessages({
     id: 'management.teams.project.unlink',
     defaultMessage: 'Unlink',
   },
+  unlinkAll: {
+    id: 'management.teams.project.unlink_all',
+    defaultMessage: 'Unlink All',
+  },
+    unlinkSelected: {
+    id: 'management.teams.project.unlink_selected',
+    defaultMessage: 'Unlink Selected',
+  },
 });
