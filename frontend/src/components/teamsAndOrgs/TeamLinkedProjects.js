@@ -9,8 +9,9 @@ import { ViewAllLink } from './management';
 import { CustomMenu } from '../CustomMenu';
 import TeamLinkedProjectCard, { nTeamProjectsCardPlaceholders } from './TeamLinkedProjectCard';
 import { useSelector } from 'react-redux';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import toast from 'react-hot-toast';
+import { Button, CustomButton } from '../button';
 
 const items = [
   { id: 'PUBLISHED', label: <FormattedMessage {...statusMessages.status_PUBLISHED} /> },
@@ -22,57 +23,126 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
   const { id } = useParams();
   const token = useSelector((state) => state.auth.token);
   const [selectedProjectStatus, setSelectedProjectStatus] = useState('PUBLISHED');
+  const [selectedProjects, setSelectedProjects] = useState([]);
 
   // eslint-disable-next-line no-unused-vars
-  const [, , projects, refetch] = useFetchWithAbort(
+  const [, isloading, projects, refetch] = useFetchWithAbort(
     `projects/?teamId=${id}&omitMapResults=true&projectStatuses=${selectedProjectStatus}`,
     id,
   );
 
-  const unLinkProjectFromTeam = (projectId) => {
-    fetchLocalJSONAPI(`teams/projects/${projectId}/teams/${id}/`, token, 'DELETE')
+  // bulk action
+  const unlinkAllProjectsFromTeam = () => {
+    fetchLocalJSONAPI(`teams/projects/teams/${id}/unlink`, token, 'DELETE')
       .then(() => {
         toast.success('Unlinked Successfully');
         refetch();
       })
       .catch((e) => {
+        if (e.message === 'ProjectPermissionError') {
+          toast.error(
+            'Project on list has mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
+          );
+        }
         console.log(e.message);
+      })
+      .finally(() => {
+        setSelectedProjects([]);
       });
+  };
+
+  const unlinkProjectsByIds = (projectIds) => {
+    const payload = {
+      items: projectIds.map((projectId) => ({ project_id: projectId, team_id: Number(id) })),
+    };
+    pushToLocalJSONAPI(`teams/projects/unlink`, JSON.stringify(payload), token, 'DELETE')
+      .then(() => {
+        toast.success('Unlinked Successfully');
+        refetch();
+      })
+      .catch((e) => {
+        if (e.message === 'ProjectPermissionError') {
+          toast.error(
+            'Project has mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
+          );
+        }
+        console.log(e.message);
+      })
+      .finally(() => {
+        setSelectedProjects([]);
+      });
+  };
+
+  const handleProjectSelection = (selectedProjectId) => {
+    if (selectedProjects.includes(selectedProjectId))
+      return setSelectedProjects((prev) => prev.filter((project) => project !== selectedProjectId));
+    return setSelectedProjects((prev) => [...prev, selectedProjectId]);
   };
 
   return (
     <div className={`bg-white mb3 ${border ? 'b--grey-light ba pa4' : ''}`}>
-      <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
-        <FormattedMessage {...messages.projects} />
-      </h3>
-      <ViewAllLink link={viewAllEndpoint} />
-      <div className="pv2">
-        <div style={{ width: '280px' }}>
-          <CustomMenu
-            items={items}
-            activeMenuItem={selectedProjectStatus}
-            onItemClick={(itemId) => setSelectedProjectStatus(itemId)}
-          />
+      <div className="flex justify-between">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
+          <FormattedMessage {...messages.projects} />
+        </h3>
+        <div className="flex items-center">
+          <ViewAllLink link={viewAllEndpoint} />
+          <CustomButton
+            className="dib bn fr red link hover-dark-red bg-transparent mt2 ml4"
+            onClick={() => {
+              unlinkAllProjectsFromTeam();
+            }}
+          >
+            <FormattedMessage {...messages.unlinkAll} />
+          </CustomButton>
         </div>
-        <div className="pt3">
+      </div>
+      <div className="pv2">
+        {canUserEditTeam && (
+          <div style={{ width: '280px' }}>
+            <CustomMenu
+              items={items}
+              activeMenuItem={selectedProjectStatus}
+              onItemClick={(itemId) => setSelectedProjectStatus(itemId)}
+            />
+          </div>
+        )}
+        <div className="pt3 flex flex-column">
           <ReactPlaceholder
             customPlaceholder={nTeamProjectsCardPlaceholders(4)}
             showLoadingAnimation={true}
             delay={10}
-            ready={projects?.results}
+            ready={projects?.results && !isloading}
           >
             {projects?.results?.map((card) => (
               <TeamLinkedProjectCard
                 key={card.projectId}
                 projectId={card.projectId}
                 projectName={card.name}
-                unLinkFunc={canUserEditTeam ? unLinkProjectFromTeam : () => {}}
+                unLinkFunc={canUserEditTeam ? unlinkProjectsByIds : () => {}}
                 canUserEditTeam={canUserEditTeam}
+                isProjectSelected={selectedProjects.includes(card.projectId)}
+                handleProjectSelection={handleProjectSelection}
               />
             ))}
           </ReactPlaceholder>
         </div>
       </div>
+      {selectedProjects?.length > 0 && (
+        <div className="flex justify-between items-center">
+          <div className="gray text">
+            {selectedProjects?.length} {`project${selectedProjects.length > 1 ? 's' : ''}`} selected
+          </div>
+          <Button
+            className="bg-red white hover-bg-dark-red"
+            onClick={() => {
+              unlinkProjectsByIds(selectedProjects);
+            }}
+          >
+            <FormattedMessage {...messages.unlinkSelected} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
