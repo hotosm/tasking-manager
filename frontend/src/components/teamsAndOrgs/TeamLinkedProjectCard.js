@@ -3,17 +3,19 @@ import { Link } from 'react-router-dom';
 import { TextBlock } from 'react-placeholder/lib/placeholders';
 import { CustomButton } from '../button';
 import messages from './messages';
+import { CheckBoxInput } from '../formInputs';
 
-const TeamLinkedProjectCard = ({ projectId, projectName, canUserEditTeam, unLinkFunc }: object) => {
+const TeamLinkedProjectCard = ({ projectId, projectName, canUserEditTeam, unLinkFunc, isProjectSelected, handleProjectSelection }: object) => {
   return (
-    <div className="flex bb b--black-10">
+    <div className="flex items-center bb b--black-10">
+      {canUserEditTeam && <CheckBoxInput isActive={isProjectSelected} changeState={() => {handleProjectSelection(projectId)}} className="mr3" />}
       <div className="w-70 flex items-center">
         <h3 className="truncate">{projectName}</h3>
       </div>
       <div className="w-30 flex items-center justify-end">
         <Link
           to={`/projects/${projectId}`}
-          className="link ttc ph3 pv2 bg-gray bn white mr4 hover-bg-mid-gray"
+          className="link ttc ph3 pv2 bg-mid-gray br2 white mr3 hover-bg-gray"
         >
           <FormattedMessage {...messages.view} />
         </Link>
@@ -21,9 +23,9 @@ const TeamLinkedProjectCard = ({ projectId, projectName, canUserEditTeam, unLink
         {/* User with a team edit access can unlink the project */}
         {canUserEditTeam && (
           <CustomButton
-            className="bg-red pr2 white ph3 pv2 bn pointer hover-bg-dark-red"
+            className="bg-transparent br2 pr2 ph3 pv2 pointer ba hover-bg-black-10"
             onClick={() => {
-              unLinkFunc(projectId);
+              unLinkFunc([projectId]);
             }}
           >
             <FormattedMessage {...messages.unlink} />
