@@ -922,6 +922,9 @@ class UserService:
             if await MappingLevel.all_badges_satisfied(next_level.id, user.id, db):
                 if next_level.approvals_required == 0:
                     await user.set_mapping_level(next_level, db)
+                    await UserService.notify_level_upgrade(
+                        user_id, user.username, next_level.name, db
+                    )
                 else:
                     await UserNextLevel.nominate(user.id, next_level.id, db)
 
@@ -946,6 +949,9 @@ class UserService:
                 await user.set_mapping_level(requested_level, db)
                 await UserNextLevel.clear(user_id, requested_level.id, db)
                 await UserLevelVote.clear(user_id, requested_level.id, db)
+                await UserService.notify_level_upgrade(
+                    user_id, user.username, requested_level.name, db
+                )
 
     @staticmethod
     async def next_level(user_id: int, db: Database) -> Optional[UserNextLevelDTO]:

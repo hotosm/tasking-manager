@@ -187,6 +187,11 @@ class TestUserService:
         new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
         assert new_level.id == 2
         assert new_level.name == "INTERMEDIATE"
+        # Message is sent
+        message_count = await self.db.execute("select count(*) from messages where to_user_id = :user_id", {
+            "user_id": self.test_user.id,
+        })
+        assert message_count == 1
 
     @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_no_level_upgrade(self, mock_get):
@@ -417,6 +422,11 @@ class TestUserService:
         )
         # votes are cleared
         assert await UserLevelVote.count(self.test_user.id, level.id, self.db) == 0
+        # Message is sent
+        message_count = await self.db.execute("select count(*) from messages where to_user_id = :user_id", {
+            "user_id": self.test_user.id,
+        })
+        assert message_count == 1
 
     async def test_next_level(self):
         next_level = await UserService.next_level(self.test_user.id, self.db)
