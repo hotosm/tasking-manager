@@ -148,7 +148,11 @@ async def setup_cron_jobs():
 
 async def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--immediate-exit', action='store_true', help='Exit immediately after jobs finish')
+    parser.add_argument(
+        "--immediate-exit",
+        action="store_true",
+        help="Exit immediately after jobs finish",
+    )
     args = parser.parse_args()
 
     try:
