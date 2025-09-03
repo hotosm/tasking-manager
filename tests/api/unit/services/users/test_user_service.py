@@ -263,6 +263,9 @@ class TestUserService:
                 "result": {
                     "topics": {"changeset": {"value": 2000.0}},
                 },
+                "user": {
+                    "changesets": {"count": 2000.0},
+                },
             }
         )
         mock_get.return_value = mock_response
