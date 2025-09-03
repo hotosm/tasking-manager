@@ -896,9 +896,6 @@ class UserService:
         user = await UserService.get_user_by_id(user_id, db)
         user_level = await MappingLevel.get_by_id(user.mapping_level, db)
 
-        if user_level.id == (await MappingLevel.get_max_level(db)).id:
-            return  # User has achieved the highest level, no need to proceed
-
         async with db.transaction():
             # Update user stats
             if not stats:
@@ -918,6 +915,9 @@ class UserService:
 
             # Assign levels based on badges
             next_level = await MappingLevel.get_next(user_level.ordering, db)
+
+            if not next_level:
+                return  # User has achieved the highest level, no need to proceed
 
             if await MappingLevel.all_badges_satisfied(next_level.id, user.id, db):
                 if next_level.approvals_required == 0:

@@ -281,6 +281,41 @@ class TestUserService:
         assert new_level.name == "ADVANCED"
 
     @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_assignes_badges_on_top_level(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 2000.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        await self.test_user.set_mapping_level(
+            await MappingLevel.get_by_id(3, self.db), self.db
+        )
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 0
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 3
+        assert new_level.name == "ADVANCED"
+        # The badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 1
+
+    @patch.object(AsyncClient, "get")
     async def test_get_user_dto_by_username(self, mock_get):
         # Arrange
         mock_response = AsyncMock()
