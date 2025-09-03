@@ -322,7 +322,7 @@ class SplitService:
             await Task.copy_task_history(
                 split_task_dto.task_id, new_task.id, split_task_dto.project_id, db
             )
-            await Task.clear_task_lock(new_task.id, new_task.project_id, db)
+            await Task.clear_task_lock(new_task.id, split_task_dto.project_id, db)
             await Task.set_task_history(
                 task_id=new_task.id,
                 project_id=split_task_dto.project_id,
