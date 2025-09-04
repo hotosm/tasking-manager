@@ -188,9 +188,12 @@ class TestUserService:
         assert new_level.id == 2
         assert new_level.name == "INTERMEDIATE"
         # Message is sent
-        message_count = await self.db.execute("select count(*) from messages where to_user_id = :user_id", {
-            "user_id": self.test_user.id,
-        })
+        message_count = await self.db.execute(
+            "select count(*) from messages where to_user_id = :user_id",
+            {
+                "user_id": self.test_user.id,
+            },
+        )
         assert message_count == 1
 
     @patch.object(AsyncClient, "get")
@@ -289,7 +292,9 @@ class TestUserService:
         assert new_level.name == "ADVANCED"
 
     @patch.object(AsyncClient, "get")
-    async def test_check_and_update_mapper_level_assignes_badges_on_top_level(self, mock_get):
+    async def test_check_and_update_mapper_level_assignes_badges_on_top_level(
+        self, mock_get
+    ):
         # Arrange
         mock_response = AsyncMock()
         mock_response.status_code = 200
@@ -423,9 +428,12 @@ class TestUserService:
         # votes are cleared
         assert await UserLevelVote.count(self.test_user.id, level.id, self.db) == 0
         # Message is sent
-        message_count = await self.db.execute("select count(*) from messages where to_user_id = :user_id", {
-            "user_id": self.test_user.id,
-        })
+        message_count = await self.db.execute(
+            "select count(*) from messages where to_user_id = :user_id",
+            {
+                "user_id": self.test_user.id,
+            },
+        )
         assert message_count == 1
 
     async def test_next_level(self):
