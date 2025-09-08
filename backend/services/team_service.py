@@ -885,10 +885,8 @@ class TeamService:
 
         team_role = project_team_row["role"]
 
-        # Mapping check
         if (
-            mapping_perm
-            in (MappingPermission.TEAMS.value, MappingPermission.TEAMS_LEVEL.value)
+            mapping_perm == MappingPermission.TEAMS.value
             and team_role == TeamRoles.MAPPER.value
         ):
             cnt_row = await db.fetch_one(
@@ -911,13 +909,8 @@ class TeamService:
                     status_code=403,
                 )
 
-        # Validation check
         if (
-            validation_perm
-            in (
-                ValidationPermission.TEAMS.value,
-                ValidationPermission.TEAMS_LEVEL.value,
-            )
+            validation_perm == ValidationPermission.TEAMS.value
             and team_role == TeamRoles.VALIDATOR.value
         ):
             cnt_row = await db.fetch_one(
