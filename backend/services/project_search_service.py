@@ -792,13 +792,17 @@ class ProjectSearchService:
             SELECT p.id FROM projects p
             LEFT JOIN mapping_levels l ON l.id = p.mapping_permission_level_id
             WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
-            AND p.status = :published_status AND l.ordering <= :user_level_ordering
+            AND p.status = :published_status
         """
-        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+
         params = {
             "published_status": ProjectStatus.PUBLISHED.value,
-            "user_level_ordering": user_level.ordering,
         }
+
+        if user:
+            user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+            base_query += " AND l.ordering <= :user_level_ordering"
+            params["user_level_ordering"] = user_level.ordering
 
         if user and user.role != UserRole.ADMIN.value:
             (
@@ -822,13 +826,17 @@ class ProjectSearchService:
             SELECT p.id FROM projects p
             LEFT JOIN mapping_levels l ON l.id = p.validation_permission_level_id
             WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
-            AND p.status = :published_status AND l.ordering <= :user_level_ordering
+            AND p.status = :published_status
         """
-        user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+
         params = {
             "published_status": ProjectStatus.PUBLISHED.value,
-            "user_level_ordering": user_level.ordering,
         }
+
+        if user:
+            user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+            base_query += " AND l.ordering <= :user_level_ordering"
+            params["user_level_ordering"] = user_level.ordering
 
         if user and user.role != UserRole.ADMIN.value:
             (
