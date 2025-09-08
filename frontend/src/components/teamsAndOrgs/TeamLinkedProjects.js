@@ -155,7 +155,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
           <div className="flex justify-between items-center">
             <div className="gray text">
               {selectedProjects?.length} {`project${selectedProjects.length > 1 ? 's' : ''}`}{' '}
-              selected
+              <FormattedMessage {...messages.unlinkSelectedCount} />
             </div>
             <Button
               className="bg-red white hover-bg-dark-red"
@@ -179,9 +179,11 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
         }}
       >
         <div className="ph3 pv3">
-          <h2 className="f4 mb3">Are You sure you want to unlink projects?</h2>
+          <h2 className="f4 mb3">
+            <FormattedMessage {...messages.unlinkConfirmationDialogHeader} />
+          </h2>
           <p className="dark-gray mb4">
-            Once the unlinking project is successful, you cannot undo this operation.
+            <FormattedMessage {...messages.unlinkConfirmationDialogBody} />
           </p>
           <div className="flex justify-end">
             <Button

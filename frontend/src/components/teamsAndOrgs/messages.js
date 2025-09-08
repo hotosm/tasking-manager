@@ -614,8 +614,20 @@ export default defineMessages({
     id: 'management.teams.project.unlink_all',
     defaultMessage: 'Unlink All',
   },
-    unlinkSelected: {
+  unlinkSelected: {
     id: 'management.teams.project.unlink_selected',
     defaultMessage: 'Unlink Selected',
+  },
+  unlinkConfirmationDialogHeader: {
+    id: 'management.teams.project.unlink.confirmation_dialog_header',
+    defaultMessage: 'Are You sure you want to unlink projects?',
+  },
+   unlinkConfirmationDialogBody: {
+    id: 'management.teams.project.unlink.confirmation_dialog_body',
+    defaultMessage: 'Once the unlinking project is successful you cannot undo this operation.',
+  },
+  unlinkSelectedCount: {
+    id: 'management.teams.project.unlink.selected',
+    defaultMessage: 'selected',
   },
 });
