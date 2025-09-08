@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button, CustomButton } from '../button';
 import { Alert } from '../alert';
+import Popup from 'reactjs-popup';
 
 const items = [
   { id: 'PUBLISHED', label: <FormattedMessage {...statusMessages.status_PUBLISHED} /> },
@@ -29,6 +30,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
     projectId: 0,
     message: '',
   });
+  const [unlinkBy, setUnlinkBy] = useState(null);
 
   // eslint-disable-next-line no-unused-vars
   const [, isloading, projects, refetch] = useFetchWithAbort(
@@ -55,6 +57,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
       })
       .finally(() => {
         setSelectedProjects([]);
+        setUnlinkBy(null);
       });
   };
 
@@ -80,6 +83,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
       })
       .finally(() => {
         setSelectedProjects([]);
+        setUnlinkBy(null);
       });
   };
 
@@ -104,7 +108,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
             <CustomButton
               className="dib bn fr red link hover-dark-red bg-transparent mt2 ml4"
               onClick={() => {
-                unlinkAllProjectsFromTeam();
+                setUnlinkBy('all');
               }}
             >
               <FormattedMessage {...messages.unlinkAll} />
@@ -156,7 +160,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
             <Button
               className="bg-red white hover-bg-dark-red"
               onClick={() => {
-                unlinkProjectsByIds(selectedProjects);
+                setUnlinkBy('selection');
               }}
             >
               <FormattedMessage {...messages.unlinkSelected} />
@@ -164,6 +168,45 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
           </div>
         )}
       </div>
+
+      <Popup
+        modal
+        open={!!unlinkBy}
+        closeOnEscape
+        closeOnDocumentClick
+        onClose={() => {
+          setUnlinkBy(null);
+        }}
+      >
+        <div className="ph3 pv3">
+          <h2 className="f4 mb3">Are You sure you want to unlink projects?</h2>
+          <p className="dark-gray mb4">
+            Once the unlinking project is successful, you cannot undo this operation.
+          </p>
+          <div className="flex justify-end">
+            <Button
+              className="pv2 ph3 ba b--red white bg-black-40 mv1 mr2"
+              onClick={() => {
+                setUnlinkBy(null);
+              }}
+            >
+              <FormattedMessage {...messages.cancel} />
+            </Button>
+            <Button
+              className="pv2 ph3 ba b--red white bg-red mv1"
+              onClick={() => {
+                if (unlinkBy === 'all') {
+                  unlinkAllProjectsFromTeam();
+                } else {
+                  unlinkProjectsByIds(selectedProjects);
+                }
+              }}
+            >
+              <FormattedMessage {...messages.unlink} />
+            </Button>
+          </div>
+        </div>
+      </Popup>
     </>
   );
 }
