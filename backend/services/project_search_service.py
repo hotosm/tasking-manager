@@ -436,7 +436,9 @@ class ProjectSearchService:
 
             if search_dto.text_search:
                 search_text = "".join(
-                    char for char in search_dto.text_search if char not in "@|&!><\\():"
+                    char
+                    for char in search_dto.text_search
+                    if char not in "@|&!><\\():'"
                 )
                 tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
                 ilike_search = f"%{search_text}%"
