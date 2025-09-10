@@ -10,41 +10,39 @@ import {
   Tooltip,
 } from 'chart.js';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useState, useEffect } from 'react';
 
 import messages from './messages';
-import userMessages from '../user/messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { useContributorStats } from '../../hooks/UseContributorStats';
 import { StatsCardContent } from '../statsCard';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export default function ContributorsStats({ contributors }) {
   ChartJS.register(BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip, ArcElement);
   const intl = useIntl();
   const stats = useContributorStats(contributors);
-  const getUserLevelLabel = (level) => intl.formatMessage(userMessages[`mapperLevel${level}`]);
   const getUserExpLabel = (id) => intl.formatMessage(messages[`${id}`]);
+  const [levels, setLevels] = useState([]);
 
-  let userLevelsReference = [
-    {
-      label: getUserLevelLabel('BEGINNER'),
-      field: 'beginnerUsers',
-      backgroundColor: CHART_COLOURS.green,
+  useEffect(() => {
+    (async () => {
+      const res = await fetchLocalJSONAPI(`levels/`);
+
+      setLevels(res.levels);
+    })();
+  }, []);
+
+  let userLevelsReference = levels.map((level) => {
+    return {
+      label: level.name,
+      field: (stats) => stats.usersByLevel[level.name],
+      backgroundColor: level.color,
       borderColor: CHART_COLOURS.white,
-    },
-    {
-      label: getUserLevelLabel('INTERMEDIATE'),
-      field: 'intermediateUsers',
-      backgroundColor: CHART_COLOURS.blue,
-      borderColor: CHART_COLOURS.white,
-    },
-    {
-      label: getUserLevelLabel('ADVANCED'),
-      field: 'advancedUsers',
-      backgroundColor: CHART_COLOURS.orange,
-      borderColor: CHART_COLOURS.white,
-    },
-  ];
+    };
+  });
+
   let userExperienceReference = [
     {
       label: getUserExpLabel('lessThan1MonthExp'),
