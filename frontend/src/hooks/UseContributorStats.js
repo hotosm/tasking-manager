@@ -5,23 +5,28 @@ export function useContributorStats(contributions) {
   const [stats, setStats] = useState({
     validators: 0,
     mappers: 0,
-    beginnerUsers: 0,
-    intermediateUsers: 0,
-    advancedUsers: 0,
+    usersByLevel: {},
     lessThan1MonthExp: 0,
     lessThan3MonthExp: 0,
     lessThan6MonthExp: 0,
     lessThan12MonthExp: 0,
     moreThan1YearExp: 0,
   });
+
   useEffect(() => {
     if (contributions !== undefined) {
       const data = {
         validators: contributions.filter((i) => i.validated > 0).length,
         mappers: contributions.filter((i) => i.mapped > 0).length,
-        beginnerUsers: contributions.filter((i) => i.mappingLevel === 'BEGINNER').length,
-        intermediateUsers: contributions.filter((i) => i.mappingLevel === 'INTERMEDIATE').length,
-        advancedUsers: contributions.filter((i) => i.mappingLevel === 'ADVANCED').length,
+        usersByLevel: contributions.reduce((prev, curr) => {
+          if (!Object.hasOwnProperty.call(prev, curr.mappingLevel)) {
+            prev[curr.mappingLevel] = 0;
+          }
+
+          prev[curr.mappingLevel]++;
+
+          return prev;
+        }, {}),
       };
       const monthRanges = [
         [0, 1],
@@ -43,5 +48,6 @@ export function useContributorStats(contributions) {
       setStats(data);
     }
   }, [contributions]);
+
   return stats;
 }
