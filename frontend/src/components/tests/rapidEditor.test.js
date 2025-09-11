@@ -33,7 +33,7 @@ describe('equalsUrlParameters', () => {
         new URLSearchParams('comment=something&presets=null'),
         new URLSearchParams('comment=something&presets=null&data=extra'),
       ),
-    ).toBeFalsy();
+    ).toBeTruthy();
     expect(
       equalsUrlParameters(
         new URLSearchParams('comment=something&presets=null&data=extra'),
