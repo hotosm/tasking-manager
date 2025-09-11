@@ -52,13 +52,13 @@ const UserFilter = ({ filters, setFilters, updateFilters }) => {
                 aria-describedby="name-desc"
               />
 
-            <CloseIcon
-              onClick={() => {
-                setFilters((p) => {
-                  return { ...p, username: '' };
-                });
-              }}
-              className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
+              <CloseIcon
+                onClick={() => {
+                  setFilters((p) => {
+                    return { ...p, username: '' };
+                  });
+                }}
+                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
                   filters.username ? '' : 'dn'
                 }`}
               />
@@ -155,7 +155,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
   const [status, setStatus] = useState({ status: null, message: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ sortState, setSortState ] = useState({});
+  const [sortState, setSortState] = useState({});
 
   const handleSort = (topic) => {
     let newState = {};
@@ -170,9 +170,11 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
   };
 
   const getSort = () => {
-    return Object.entries(sortState).map(([key, val]) => {
-      return `&sort=${key}&sort_dir=${val}`;
-    }).join('');
+    return Object.entries(sortState)
+      .map(([key, val]) => {
+        return `&sort=${key}&sort_dir=${val}`;
+      })
+      .join('');
   };
 
   useEffect(() => {
@@ -208,7 +210,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
       .join('&');
 
     fetchUsers(urlFilters);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, token, status, sortState]);
 
   const handleStatsUpdate = (user) => {
@@ -217,15 +219,9 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
     fetchLocalJSONAPI(endpoint, token, 'PATCH')
       .then(() => {
         setStatus({ success: true });
-        toast.success(
-          <FormattedMessage {...messages.statsUpdated} />,
-        );
+        toast.success(<FormattedMessage {...messages.statsUpdated} />);
       })
-      .catch(() =>
-        toast.error(
-          <FormattedMessage {...messages.failedUdatingStats} />,
-        ),
-      );
+      .catch(() => toast.error(<FormattedMessage {...messages.failedUdatingStats} />));
   };
 
   const handleApprove = (user) => {
@@ -234,48 +230,44 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
     fetchLocalJSONAPI(endpoint, token, 'PATCH')
       .then(() => {
         setStatus({ success: true });
-        toast.success(
-          <FormattedMessage {...messages.levelApproved} />,
-        );
+        toast.success(<FormattedMessage {...messages.levelApproved} />);
       })
-      .catch(() =>
-        toast.error(
-          <FormattedMessage {...messages.failedApprovingLevel} />,
-        ),
-      );
+      .catch(() => toast.error(<FormattedMessage {...messages.failedApprovingLevel} />));
   };
 
   const COLUMNS = Array.prototype.concat.call(
     [
       {
         accessorKey: 'username',
-        header: () => (<FormattedMessage {...messages.tableUsername} />),
-        cell: ({row}) => <>
-          <UserAvatar
-            picture={row.original.pictureUrl}
-            username={row.original.username}
-            colorClasses="white bg-blue-grey"
-          />
-          <a
-            className="blue-grey mr2 ml3 link"
-            rel="noopener noreferrer"
-            target="_blank"
-            href={`/users/${row.original.username}`}
-          >
-            {row.original.username}
-          </a>
-        </>,
+        header: () => <FormattedMessage {...messages.tableUsername} />,
+        cell: ({ row }) => (
+          <>
+            <UserAvatar
+              picture={row.original.pictureUrl}
+              username={row.original.username}
+              colorClasses="white bg-blue-grey"
+            />
+            <a
+              className="blue-grey mr2 ml3 link"
+              rel="noopener noreferrer"
+              target="_blank"
+              href={`/users/${row.original.username}`}
+            >
+              {row.original.username}
+            </a>
+          </>
+        ),
       },
       {
         id: 'level',
         accessorKey: 'mappingLevel',
-        header: () => (<FormattedMessage {...messages.tableLevel} />),
+        header: () => <FormattedMessage {...messages.tableLevel} />,
       },
       {
         id: 'role',
-        header: () => (<FormattedMessage {...messages.tableRole} />),
-        cell: ({row}) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
-      }
+        header: () => <FormattedMessage {...messages.tableRole} />,
+        cell: ({ row }) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
+      },
     ],
 
     OHSOME_STATS_TOPICS.split(',').map((topic) => {
@@ -286,42 +278,51 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
 
           return topics[topic] && topics[topic].toFixed(1);
         },
-        header: () => <button
-          onClick={() => handleSort(topic)}
-          className="flex align-center bn bg-transparent pointer"
-          style={{gap: ".5rem"}}
-        >
-          <FormattedMessage {...messages[`tableCol_${topic}`]} />
-          {sortState[topic] === 'asc' ? <ChevronUpIcon /> : sortState[topic] === 'desc' ? <ChevronDownIcon /> : ''}
-        </button>,
+        header: () => (
+          <button
+            onClick={() => handleSort(topic)}
+            className="flex align-center bn bg-transparent pointer"
+            style={{ gap: '.5rem' }}
+          >
+            <FormattedMessage {...messages[`tableCol_${topic}`]} />
+            {sortState[topic] === 'asc' ? (
+              <ChevronUpIcon />
+            ) : sortState[topic] === 'desc' ? (
+              <ChevronDownIcon />
+            ) : (
+              ''
+            )}
+          </button>
+        ),
       };
     }),
 
     [
       {
         id: 'levelUpgrade',
-        header: () => (<FormattedMessage {...messages.tableUpgrade} />),
-        cell: ({row}) => {
+        header: () => <FormattedMessage {...messages.tableUpgrade} />,
+        cell: ({ row }) => {
           if (userDetails.username !== row.original.username) {
             // Can show approve UI only if viewer is not same as row
             if (row.original.user_has_voted) {
               return <FormattedMessage {...messages.alreadyVoted} />;
             } else if (row.original.requires_approval) {
-              return <Button
-                className="bg-black-90 white"
-                onClick={() => handleApprove(row.original)}
-              ><FormattedMessage {...messages.tableApprove} /></Button>;
+              return (
+                <Button className="bg-black-90 white" onClick={() => handleApprove(row.original)}>
+                  <FormattedMessage {...messages.tableApprove} />
+                </Button>
+              );
             }
           }
         },
       },
       {
         id: 'statsLastUpdated',
-        header: () => (<FormattedMessage {...messages.tableLastUpdated} />),
-        cell: ({row}) => {
+        header: () => <FormattedMessage {...messages.tableLastUpdated} />,
+        cell: ({ row }) => {
           if (row.original.statsLastUpdated) {
             return formatDistance(
-              new Date(Date.parse(row.original.statsLastUpdated+'Z')),
+              new Date(Date.parse(row.original.statsLastUpdated + 'Z')),
               new Date(),
               { addSuffix: true },
             );
@@ -332,33 +333,44 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
       },
       {
         id: 'actions',
-        header: () => (<FormattedMessage {...messages.tableActions} />),
-        cell: ({row}) => (<>
-          {userDetails.username !== row.original.username && <Popup
-            trigger={
-              <span>
-                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey mr3" />
-              </span>
-            }
-            position="left center"
-            closeOnDocumentClick
-            className="user-popup"
-          >
-            {(close) => (
-              <UserEditMenu
-                user={row.original}
-                token={token}
-                close={close}
-                setStatus={setStatus}
-                levels={levels}
-              />
+        header: () => <FormattedMessage {...messages.tableActions} />,
+        cell: ({ row }) => (
+          <>
+            {userDetails.username !== row.original.username && (
+              <Popup
+                trigger={
+                  <span>
+                    <SettingsIcon
+                      width="18px"
+                      height="18px"
+                      className="pointer hover-blue-grey mr3"
+                    />
+                  </span>
+                }
+                position="left center"
+                closeOnDocumentClick
+                className="user-popup"
+              >
+                {(close) => (
+                  <UserEditMenu
+                    user={row.original}
+                    token={token}
+                    close={close}
+                    setStatus={setStatus}
+                    levels={levels}
+                  />
+                )}
+              </Popup>
             )}
-          </Popup>}
 
-          <button onClick={() => handleStatsUpdate(row.original)} className="bn pa0 bg-transparent pointer">
-            <RefreshIcon width={18} height={18} />
-          </button>
-        </>)
+            <button
+              onClick={() => handleStatsUpdate(row.original)}
+              className="bn pa0 bg-transparent pointer"
+            >
+              <RefreshIcon width={18} height={18} />
+            </button>
+          </>
+        ),
       },
     ],
   );
@@ -398,21 +410,23 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
                       key={header.id}
                       colSpan={header.colSpan}
                     >
-                      {header.isPlaceholder ? null : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
-            <tbody>
+            <tbody data-testid="user-list">
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <td
-                      className={"f6 pr3 pv3 mw5 pl2 bb b--moon-gray " + (row.index % 2 === 1 ? "bg-white-60" : "bg-white-90")}
+                      className={
+                        'f6 pr3 pv3 mw5 pl2 bb b--moon-gray ' +
+                        (row.index % 2 === 1 ? 'bg-white-60' : 'bg-white-90')
+                      }
                       key={cell.id}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -458,7 +472,7 @@ export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
           <FormattedMessage
             {...messages.userAttributeUpdationSuccess}
             values={{
-              attribute: "role",
+              attribute: 'role',
             }}
           />,
         );
@@ -475,46 +489,46 @@ export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
       );
   };
 
-  return <>
-    <div className="w-100 bb b--tan">
-      <p className="b mv3">
-        <FormattedMessage {...messages.setRole} />
-      </p>
-      {roles.map((role) => {
-        return (
-          <div
-            key={role}
-            role="button"
-            onClick={() => updateAttribute('role', role)}
-            className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
-          >
-            <p className="ma0">
-              <FormattedMessage {...messages[`userRole${role}`]} />
-            </p>
-            {role === user.role ? <CheckIcon className={iconClass} /> : null}
-          </div>
-        );
-      })}
-    </div>
-    <div className="w-100">
-      <p className="b mv3">
-        <FormattedMessage {...messages.setLevel} />
-      </p>
-      {levels.map((level) => {
-        return (
-          <div
-            key={level.id}
-            role="button"
-            onClick={() => updateAttribute('mapperLevel', level.name)}
-            className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
-          >
-            <p className="ma0">
-              { level.name }
-            </p>
-            {level.name === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
-          </div>
-        );
-      })}
-    </div>
-  </>;
+  return (
+    <>
+      <div className="w-100 bb b--tan">
+        <p className="b mv3">
+          <FormattedMessage {...messages.setRole} />
+        </p>
+        {roles.map((role) => {
+          return (
+            <div
+              key={role}
+              role="button"
+              onClick={() => updateAttribute('role', role)}
+              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+            >
+              <p className="ma0">
+                <FormattedMessage {...messages[`userRole${role}`]} />
+              </p>
+              {role === user.role ? <CheckIcon className={iconClass} /> : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className="w-100">
+        <p className="b mv3">
+          <FormattedMessage {...messages.setLevel} />
+        </p>
+        {levels.map((level) => {
+          return (
+            <div
+              key={level.id}
+              role="button"
+              onClick={() => updateAttribute('mapperLevel', level.name)}
+              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+            >
+              <p className="ma0">{level.name}</p>
+              {level.name === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
 };
