@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.user_dto.UserOSMDTO" name="backend.models.dtos.user_dto.UserOSMDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="7,148,191,228"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="66,83,88,147,83,149,61,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="143,72,121,133,116,132,138,70"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="backend.models.postgis.statuses.BannerType" name="backend.models.postgis.statuses.BannerType">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,240,219"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="97,5,148,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,84,125,119,120,119,120,84"/>
+</map>

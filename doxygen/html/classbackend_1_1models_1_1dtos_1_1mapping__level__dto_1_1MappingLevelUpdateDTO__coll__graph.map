@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.mapping_level_dto.MappingLevelUpdateDTO" name="backend.models.dtos.mapping_level_dto.MappingLevelUpdateDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="26,192,277,272"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="74,82,133,190,128,193,70,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,175,149,175,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="305,5,342,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="326,71,320,120,310,146,296,170,282,184,278,180,292,166,306,144,314,119,321,70"/>
+</map>

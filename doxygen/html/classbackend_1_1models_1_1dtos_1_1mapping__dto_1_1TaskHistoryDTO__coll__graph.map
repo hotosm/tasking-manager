@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.mapping_dto.TaskHistoryDTO" name="backend.models.dtos.mapping_dto.TaskHistoryDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="45,221,258,301"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,82,136,220,131,222,67,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,204,149,204,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="231,5,304,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="271,71,265,133,255,167,240,199,231,211,227,208,236,196,250,165,259,132,266,71"/>
+</map>
