@@ -62,3 +62,33 @@ export const userQueryDetails = {
   gender: 'MALE',
   selfDescriptionGender: null,
 };
+
+export const userLevels = [
+  {
+    id: 1,
+    name: 'BEGINNER',
+    approvalsRequired: 0,
+    color: null,
+    ordering: 1,
+    isBeginner: true,
+    requiredBadges: [],
+  },
+  {
+    id: 2,
+    name: 'INTERMEDIATE',
+    approvalsRequired: 0,
+    color: null,
+    ordering: 2,
+    isBeginner: false,
+    requiredBadges: [],
+  },
+  {
+    id: 3,
+    name: 'ADVANCED',
+    approvalsRequired: 0,
+    color: null,
+    ordering: 3,
+    isBeginner: false,
+    requiredBadges: [],
+  },
+];
