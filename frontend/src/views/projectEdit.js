@@ -49,20 +49,17 @@ export const handleCheckButton = (event, arrayElement) => {
   } else {
     arrayElement = arrayElement.filter((t) => t !== event.target.value);
   }
-
+  
   return arrayElement;
 };
 
 const doesMappingTeamNotExist = (teams, mappingPermission) =>
   ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
-  teams.filter((team) => team.role === 'MAPPER').length === 0 &&
-  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
-  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
+  teams.filter((team) => team.role === 'MAPPER').length === 0;
 
 const doesValidationTeamNotExist = (teams, validationPermission) =>
   ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
-  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
-  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
+  teams.filter((team) => team.role === 'VALIDATOR').length === 0;
 
 export function ProjectEdit() {
   const { id } = useParams();
