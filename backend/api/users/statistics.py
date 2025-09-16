@@ -1,21 +1,20 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from typing import Optional
 
 import httpx
 from databases import Database
-from fastapi import APIRouter, Depends, Request, Query
+from fastapi import APIRouter, Depends, Request, Query, HTTPException
 from fastapi.responses import JSONResponse
-from typing import Optional
+
 from backend.api.utils import validate_date_input
 from backend.config import settings
 from backend.db import get_db
-from backend.models.dtos.user_dto import AuthUserDTO
+from backend.models.dtos.user_dto import AuthUserDTO, UserNextLevelDTO
 from backend.services.interests_service import InterestService
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
-from datetime import datetime
-from fastapi import HTTPException
-
+from backend.models.postgis.user import UserStats
 
 router = APIRouter(
     prefix="/users",
@@ -174,6 +173,7 @@ async def get_period_user_stats(
 
 @router.get("/statistics/ohsome/")
 async def get_ohsome_stats(
+    db: Database = Depends(get_db),
     userId: int = Query(..., description="OSM user ID"),
     topics: str = Query(
         ..., description="Comma-separated list of OSM topics, e.g. building,highway"
@@ -188,6 +188,7 @@ async def get_ohsome_stats(
     """
     Get OHSOME stats for a given user and topics.
     """
+    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
 
     def format_date(date_str: str) -> str:
         try:
@@ -207,6 +208,7 @@ async def get_ohsome_stats(
         "userId": userId,
         "topics": topics,
     }
+
     if startdate:
         params["startdate"] = format_date(startdate)
     if enddate:
@@ -214,15 +216,29 @@ async def get_ohsome_stats(
     if hashtag:
         params["hashtag"] = hashtag
 
-    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(base_url, params=params, headers=headers)
             response.raise_for_status()
 
-        return JSONResponse(content=response.json(), status_code=response.status_code)
+        json_data = response.json()
 
+        await UserStats.update(user.id, json_data, db)
+
+        return JSONResponse(content=json_data, status_code=response.status_code)
     except Exception as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400
         )
+
+
+@router.get("/statistics/nextlevel/")
+async def get_next_level(
+    db: Database = Depends(get_db),
+    user_id: int = Query(None, alias="userId"),
+    user: AuthUserDTO = Depends(login_required),
+) -> Optional[UserNextLevelDTO]:
+    """
+    Get next level and stats towards it
+    """
+    return await UserService.next_level(user_id, db)

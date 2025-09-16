@@ -50,3 +50,45 @@ class TestProjectService:
         assert project_search_dto is not None
         assert len(project_search_dto.results) > 0
         assert any(p.project_id == self.project_id for p in project_search_dto.results)
+
+    async def test_projects_can_be_searched_without_account_map(self):
+        # Arrange
+        search_dto = ProjectSearchDTO(
+            difficulty="EASY",
+            project_statuses=["PUBLISHED"],
+            order_by="priority",
+            order_by_type="DESC",
+            action="validate",
+            page=1,
+        )
+
+        # Act
+        project_search_dto = await ProjectSearchService.search_projects(
+            search_dto, None, self.db
+        )
+
+        # Assert
+        assert project_search_dto is not None
+        assert len(project_search_dto.results) > 0
+        assert any(p.project_id == self.project_id for p in project_search_dto.results)
+
+    async def test_projects_can_be_searched_without_account_validate(self):
+        # Arrange
+        search_dto = ProjectSearchDTO(
+            difficulty="EASY",
+            project_statuses=["PUBLISHED"],
+            order_by="priority",
+            order_by_type="DESC",
+            action="validate",
+            page=1,
+        )
+
+        # Act
+        project_search_dto = await ProjectSearchService.search_projects(
+            search_dto, None, self.db
+        )
+
+        # Assert
+        assert project_search_dto is not None
+        assert len(project_search_dto.results) > 0
+        assert any(p.project_id == self.project_id for p in project_search_dto.results)

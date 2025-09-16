@@ -7,14 +7,13 @@ export const OHSOME_STATS_BASE_URL =
   process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org';
 export const OHSOME_STATS_API_URL =
   process.env.REACT_APP_OHSOME_STATS_API_URL || 'https://stats.now.ohsome.org/api';
+export const OHSOME_STATS_TOPICS =
+  process.env.REACT_APP_OHSOME_STATS_TOPICS || 'highway,waterway,building,poi';
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
 export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || '';
 export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
   process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
-export const INTERMEDIATE_LEVEL_COUNT =
-  Number(process.env.REACT_APP_TM_MAPPER_LEVEL_INTERMEDIATE) || 250;
-export const ADVANCED_LEVEL_COUNT = Number(process.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
 export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
 export const MAX_AOI_AREA = Number(process.env.REACT_APP_MAX_AOI_AREA) || 5000;

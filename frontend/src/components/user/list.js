@@ -1,19 +1,25 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import toast from 'react-hot-toast';
 import Popup from 'reactjs-popup';
+import Select from 'react-select';
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { formatDistance } from 'date-fns';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { PaginatorLine } from '../paginator';
-import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon } from '../svgIcons';
+import { SearchIcon, CloseIcon, SettingsIcon, CheckIcon, RefreshIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { nCardPlaceholders } from './usersPlaceholder';
+import { OHSOME_STATS_TOPICS } from '../../config';
+import { Button } from '../button';
+import { ChevronUpIcon, ChevronDownIcon } from '../svgIcons';
 
-const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
+const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
 
   return (
@@ -64,7 +70,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   );
 };
 
-const RoleFilter = ({ filters, setFilters, updateFilters }) => {
+const RoleFilter = ({ filters, updateFilters }) => {
   const roles = ['ALL', 'MAPPER', 'ADMIN', 'READ_ONLY'];
 
   const options = roles.map((role) => {
@@ -86,36 +92,34 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   );
 };
 
-const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
-  const mapperLevels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+const MapperLevelFilter = ({ filters, updateFilters, levels }) => {
+  const intl = useIntl();
 
-  const options = mapperLevels.map((l) => {
-    return { value: l, label: <FormattedMessage {...messages[`mapperLevel${l}`]} /> };
+  const options = levels.map((l) => {
+    return { value: l.id, label: l.name };
   });
 
   return (
     <div>
-      <Dropdown
-        onChange={(n) => {
-          const value = n && n[0] && n[0].value;
-          updateFilters('level', value);
-        }}
+      <Select
+        isClearable={true}
+        placeholder={intl.formatMessage(messages.mapperLevelALL)}
         options={options}
-        value={filters.level}
-        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 br1 f5 pointer'}
+        onChange={(value) => updateFilters('level', value?.value)}
+        value={options.find((o) => o.value === filters.level) || null}
       />
     </div>
   );
 };
 
-export const SearchNav = ({ filters, setFilters, initialFilters }) => {
+export const SearchNav = ({ filters, setFilters, initialFilters, levels }) => {
   const updateFilters = (field, value) => {
     setFilters((f) => {
       return { ...f, [field]: value };
     });
   };
 
-  const clearFilters = (e) => {
+  const clearFilters = () => {
     setFilters(initialFilters);
   };
 
@@ -129,6 +133,7 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
           filters={filters}
           setFilters={setFilters}
           updateFilters={updateFilters}
+          levels={levels}
         />
       </div>
       <div className="tr mr3">
@@ -143,18 +148,40 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
   );
 };
 
-export const UsersTable = ({ filters, setFilters }) => {
+export const UsersTable = ({ filters, setFilters, levels }) => {
   const token = useSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const [status, setStatus] = useState({ status: null, message: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortState, setSortState] = useState({});
+
+  const handleSort = (topic) => {
+    let newState = {};
+
+    if (sortState[topic] === 'desc') {
+      newState[topic] = 'asc';
+    } else if (!sortState[topic]) {
+      newState[topic] = 'desc';
+    }
+
+    setSortState(newState);
+  };
+
+  const getSort = () => {
+    return Object.entries(sortState)
+      .map(([key, val]) => {
+        return `&sort=${key}&sort_dir=${val}`;
+      })
+      .join('');
+  };
 
   useEffect(() => {
     const fetchUsers = async (filters) => {
       setLoading(true);
-      const url = `users/?${filters}`;
+      const sort = getSort();
+      const url = `users/?${filters}${sort}`;
       fetchLocalJSONAPI(url, token)
         .then((res) => {
           setResponse(res);
@@ -183,7 +210,178 @@ export const UsersTable = ({ filters, setFilters }) => {
       .join('&');
 
     fetchUsers(urlFilters);
-  }, [filters, token, status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, token, status, sortState]);
+
+  const handleStatsUpdate = (user) => {
+    const endpoint = `users/${user.username}/actions/update-stats`;
+
+    fetchLocalJSONAPI(endpoint, token, 'PATCH')
+      .then(() => {
+        setStatus({ success: true });
+        toast.success(<FormattedMessage {...messages.statsUpdated} />);
+      })
+      .catch(() => toast.error(<FormattedMessage {...messages.failedUdatingStats} />));
+  };
+
+  const handleApprove = (user) => {
+    const endpoint = `users/${user.username}/actions/approve-level`;
+
+    fetchLocalJSONAPI(endpoint, token, 'PATCH')
+      .then(() => {
+        setStatus({ success: true });
+        toast.success(<FormattedMessage {...messages.levelApproved} />);
+      })
+      .catch(() => toast.error(<FormattedMessage {...messages.failedApprovingLevel} />));
+  };
+
+  const COLUMNS = Array.prototype.concat.call(
+    [
+      {
+        accessorKey: 'username',
+        header: () => <FormattedMessage {...messages.tableUsername} />,
+        cell: ({ row }) => (
+          <>
+            <UserAvatar
+              picture={row.original.pictureUrl}
+              username={row.original.username}
+              colorClasses="white bg-blue-grey"
+            />
+            <a
+              className="blue-grey mr2 ml3 link"
+              rel="noopener noreferrer"
+              target="_blank"
+              href={`/users/${row.original.username}`}
+            >
+              {row.original.username}
+            </a>
+          </>
+        ),
+      },
+      {
+        id: 'level',
+        accessorKey: 'mappingLevel',
+        header: () => <FormattedMessage {...messages.tableLevel} />,
+      },
+      {
+        id: 'role',
+        header: () => <FormattedMessage {...messages.tableRole} />,
+        cell: ({ row }) => <FormattedMessage {...messages[`userRole${row.original.role}`]} />,
+      },
+    ],
+
+    OHSOME_STATS_TOPICS.split(',').map((topic) => {
+      return {
+        id: `stats_${topic}`,
+        accessorFn: (row) => {
+          const topics = row.stats || {};
+
+          return topics[topic] && topics[topic].toFixed(1);
+        },
+        header: () => (
+          <button
+            onClick={() => handleSort(topic)}
+            className="flex align-center bn bg-transparent pointer"
+            style={{ gap: '.5rem' }}
+          >
+            <FormattedMessage {...messages[`tableCol_${topic}`]} />
+            {sortState[topic] === 'asc' ? (
+              <ChevronUpIcon />
+            ) : sortState[topic] === 'desc' ? (
+              <ChevronDownIcon />
+            ) : (
+              ''
+            )}
+          </button>
+        ),
+      };
+    }),
+
+    [
+      {
+        id: 'levelUpgrade',
+        header: () => <FormattedMessage {...messages.tableUpgrade} />,
+        cell: ({ row }) => {
+          if (userDetails.username !== row.original.username) {
+            // Can show approve UI only if viewer is not same as row
+            if (row.original.user_has_voted) {
+              return <FormattedMessage {...messages.alreadyVoted} />;
+            } else if (row.original.requires_approval) {
+              return (
+                <Button className="bg-black-90 white" onClick={() => handleApprove(row.original)}>
+                  <FormattedMessage {...messages.tableApprove} />
+                </Button>
+              );
+            }
+          }
+        },
+      },
+      {
+        id: 'statsLastUpdated',
+        header: () => <FormattedMessage {...messages.tableLastUpdated} />,
+        cell: ({ row }) => {
+          if (row.original.statsLastUpdated) {
+            return formatDistance(
+              new Date(Date.parse(row.original.statsLastUpdated + 'Z')),
+              new Date(),
+              { addSuffix: true },
+            );
+          } else {
+            return <FormattedMessage {...messages.never} />;
+          }
+        },
+      },
+      {
+        id: 'actions',
+        header: () => <FormattedMessage {...messages.tableActions} />,
+        cell: ({ row }) => (
+          <>
+            {userDetails.username !== row.original.username && (
+              <Popup
+                trigger={
+                  <span>
+                    <SettingsIcon
+                      width="18px"
+                      height="18px"
+                      className="pointer hover-blue-grey mr3"
+                    />
+                  </span>
+                }
+                position="left center"
+                closeOnDocumentClick
+                className="user-popup"
+              >
+                {(close) => (
+                  <UserEditMenu
+                    user={row.original}
+                    token={token}
+                    close={close}
+                    setStatus={setStatus}
+                    levels={levels}
+                  />
+                )}
+              </Popup>
+            )}
+
+            <button
+              onClick={() => handleStatsUpdate(row.original)}
+              className="bn pa0 bg-transparent pointer"
+            >
+              <RefreshIcon width={18} height={18} />
+            </button>
+          </>
+        ),
+      },
+    ],
+  );
+
+  const table = useReactTable({
+    columns: COLUMNS,
+    data: response?.users || [],
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: 'onChange',
+    columnResizeDirection: 'ltr',
+  });
 
   return (
     <div className="w-100">
@@ -202,17 +400,42 @@ export const UsersTable = ({ filters, setFilters }) => {
           delay={10}
           ready={!loading && !error}
         >
-          <ul className="list pa0 ma0">
-            {response?.users.map((user) => (
-              <UserListCard
-                user={user}
-                key={user.id}
-                token={token}
-                username={userDetails.username}
-                setStatus={setStatus}
-              />
-            ))}
-          </ul>
+          <table className="f6 w-100 center" cellSpacing="0">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      className="fw5 f6 bb b bw1 b--moon-gray tl pv3 pr3 pl2 relative"
+                      key={header.id}
+                      colSpan={header.colSpan}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody data-testid="user-list">
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className={
+                        'f6 pr3 pv3 mw5 pl2 bb b--moon-gray ' +
+                        (row.index % 2 === 1 ? 'bg-white-60' : 'bg-white-90')
+                      }
+                      key={cell.id}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </ReactPlaceholder>
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
@@ -231,9 +454,8 @@ export const UsersTable = ({ filters, setFilters }) => {
   );
 };
 
-export const UserEditMenu = ({ user, token, close, setStatus }) => {
+export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
   const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
-  const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   const iconClass = 'h1 w1 red';
 
   const updateAttribute = (attribute, attributeValue) => {
@@ -250,7 +472,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
           <FormattedMessage
             {...messages.userAttributeUpdationSuccess}
             values={{
-              attribute,
+              attribute: 'role',
             }}
           />,
         );
@@ -268,7 +490,7 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
   };
 
   return (
-    <div className="w-100 f6 tl ph1">
+    <>
       <div className="w-100 bb b--tan">
         <p className="b mv3">
           <FormattedMessage {...messages.setRole} />
@@ -293,78 +515,20 @@ export const UserEditMenu = ({ user, token, close, setStatus }) => {
         <p className="b mv3">
           <FormattedMessage {...messages.setLevel} />
         </p>
-        {mapperLevels.map((level) => {
+        {levels.map((level) => {
           return (
             <div
-              key={level}
+              key={level.id}
               role="button"
-              onClick={() => updateAttribute('mapperLevel', level)}
+              onClick={() => updateAttribute('mapperLevel', level.name)}
               className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
             >
-              <p className="ma0">
-                <FormattedMessage {...messages[`mapperLevel${level}`]} />
-              </p>
-              {level === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
+              <p className="ma0">{level.name}</p>
+              {level.name === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
             </div>
           );
         })}
       </div>
-    </div>
+    </>
   );
 };
-
-export function UserListCard({ user, token, username, setStatus }: Object) {
-  const [isHovered, setHovered] = useState(false);
-
-  return (
-    <li
-      key={user.username}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`bg-white cf flex items-center pa3 ba mb1 b--grey-light blue-dark ${
-        isHovered ? 'shadow-4' : ''
-      }`}
-    >
-      <div className="w-50-ns w-100 fl">
-        <UserAvatar
-          picture={user.pictureUrl}
-          username={user.username}
-          colorClasses="white bg-blue-grey"
-        />
-        <a
-          className="blue-grey mr2 ml3 link"
-          rel="noopener noreferrer"
-          target="_blank"
-          href={`/users/${user.username}`}
-        >
-          {user.username}
-        </a>
-      </div>
-      <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...messages[`mapperLevel${user.mappingLevel}`]} />
-      </div>
-      <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...messages[`userRole${user.role}`]} />
-      </div>
-
-      {username === user.username ? null : (
-        <div className="w-10 fl tr">
-          <Popup
-            trigger={
-              <span>
-                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey" />
-              </span>
-            }
-            position="right center"
-            closeOnDocumentClick
-            className="user-popup"
-          >
-            {(close) => (
-              <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
-            )}
-          </Popup>
-        </div>
-      )}
-    </li>
-  );
-}

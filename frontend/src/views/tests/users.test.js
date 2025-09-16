@@ -7,11 +7,12 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { UsersList } from '../users';
+import { store } from '../../store';
 
 describe('List Users', () => {
   const setup = () => {
     const { container, history } = renderWithRouter(
-      <ReduxIntlProviders>
+      <ReduxIntlProviders store={store}>
         <UsersList />
       </ReduxIntlProviders>,
     );
@@ -31,23 +32,26 @@ describe('List Users', () => {
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    expect(screen.getAllByRole('listitem').length).toBe(2);
-    // describe link on the image DP and username text
-    expect(screen.getAllByRole('link', { name: /ram/i }).length).toBe(2);
-    expect(screen.getAllByRole('link', { name: /shyam/i }).length).toBe(2);
+
+    const tbody = screen.getByTestId('user-list');
+    expect(within(tbody).getAllByRole('link').length).toBe(4);
+    expect(within(tbody).getAllByRole('link', { name: /ram/i }).length).toBe(2);
+    expect(within(tbody).getAllByRole('link', { name: /shyam/i }).length).toBe(2);
   });
 
   it('should navigate to user detail page when clicked on the display picture', async () => {
     const { user, container, router } = createComponentWithMemoryRouter(
-      <ReduxIntlProviders>
+      <ReduxIntlProviders store={store}>
         <UsersList />
       </ReduxIntlProviders>,
     );
-    await waitFor(() =>
-      expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
-    );
-    await user.click(screen.getAllByRole('link', { name: /ram/i })[0]);
-    await waitFor(() => expect(router.state.location.pathname).toBe('/users/Ram'));
+
+    await waitFor(() => {
+      expect(container.getElementsByClassName('show-loading-animation').length).toBe(0);
+    });
+    const tbody = screen.getByTestId('user-list');
+    await user.click(within(tbody).getAllByRole('link', { name: /ram/i })[0]);
+    waitFor(() => expect(router.state.location.pathname).toBe('/users/Ram'));
   });
 });
 
@@ -64,13 +68,18 @@ describe('Change of role and mapper level', () => {
     };
   };
 
+  beforeEach(() => {
+    const popupRoot = document.getElementById('popup-root');
+    if (popupRoot) popupRoot.innerHTML = '';
+  });
+
   it('should call endpoint to update role', async () => {
     const { user, container } = setup();
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
     await user.click(container.getElementsByClassName('pointer hover-blue-grey')[0]);
-    const tooltip = screen.getByRole('tooltip');
+    const tooltip = await screen.findByRole('tooltip');
     await user.click(within(tooltip).getByText(/advanced/i));
     await waitFor(
       () =>
@@ -85,7 +94,7 @@ describe('Change of role and mapper level', () => {
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
     await user.click(container.getElementsByClassName('pointer hover-blue-grey')[0]);
-    const tooltip = screen.getByRole('tooltip');
+    const tooltip = await screen.findByRole('tooltip');
     await user.click(within(tooltip).getByText(/admin/i));
     await waitFor(
       () =>
@@ -129,11 +138,7 @@ describe('Search and Filters', () => {
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
-    await user.click(
-      screen.getByRole('button', {
-        name: /all levels/i,
-      }),
-    );
+    await user.click(screen.getAllByText(/all levels/i)[0]);
     await user.click(screen.getAllByText(/beginner/i)[0]);
     await waitFor(
       async () =>

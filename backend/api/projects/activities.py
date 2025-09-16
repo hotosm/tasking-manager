@@ -71,7 +71,6 @@ async def get_activities(
             db,
         )
         if not project_dto:
-
             return JSONResponse(
                 content={
                     "Error": "User not permitted: Private Project",
@@ -133,7 +132,6 @@ async def get_latest_activities(
             db,
         )
         if not project_dto:
-
             return JSONResponse(
                 content={
                     "Error": "User not permitted: Private Project",

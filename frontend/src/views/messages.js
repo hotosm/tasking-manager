@@ -266,6 +266,14 @@ export default defineMessages({
     id: 'management.category.manage',
     defaultMessage: 'Manage category',
   },
+  manageBadge: {
+    id: 'management.badge.manage',
+    defaultMessage: 'Manage badge',
+  },
+  manageLevel: {
+    id: 'management.level.manage',
+    defaultMessage: 'Manage level',
+  },
   categoryInfo: {
     id: 'management.interest.title',
     defaultMessage: 'Category information',
@@ -273,6 +281,14 @@ export default defineMessages({
   licenseInfo: {
     id: 'management.license.title',
     defaultMessage: 'License information',
+  },
+  badgeInfo: {
+    id: 'management.badge.title',
+    defaultMessage: 'Badge information',
+  },
+  levelInfo: {
+    id: 'management.level.title',
+    defaultMessage: 'Level information',
   },
   newCategory: {
     id: 'management.category.creation',
@@ -282,9 +298,25 @@ export default defineMessages({
     id: 'management.license.creation',
     defaultMessage: 'Create new license',
   },
+  newBadge: {
+    id: 'management.badge.creation',
+    defaultMessage: 'Create new badge',
+  },
+  newLevel: {
+    id: 'management.level.creation',
+    defaultMessage: 'Create new level',
+  },
   createLicense: {
     id: 'management.license.button.create',
     defaultMessage: 'Create license',
+  },
+  createBadge: {
+    id: 'management.badge.button.create',
+    defaultMessage: 'Create badge',
+  },
+  createLevel: {
+    id: 'management.level.button.create',
+    defaultMessage: 'Create level',
   },
   createCategory: {
     id: 'management.category.button.create',

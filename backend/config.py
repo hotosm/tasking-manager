@@ -74,6 +74,8 @@ class Settings(BaseSettings):
     POSTGRES_ENDPOINT: str = os.getenv("POSTGRES_ENDPOINT", "localhost")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "postgres")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
+    DB_MIN_CONNECTIONS: int = os.getenv("DB_MIN_CONNECTIONS", 4)
+    DB_MAX_CONNECTIONS: int = os.getenv("DB_MAX_CONNECTIONS", 8)
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
@@ -272,6 +274,7 @@ class Settings(BaseSettings):
     OHSOME_STATS_API_URL: str = os.getenv(
         "OHSOME_STATS_API_URL", "https://stats.now.ohsome.org/api"
     )
+    OHSOME_STATS_TOPICS: str = os.getenv("OHSOME_STATS_TOPICS", None)
 
 
 class TestEnvironmentConfig(Settings):

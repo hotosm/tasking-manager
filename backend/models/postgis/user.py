@@ -1,4 +1,7 @@
+import re
+import json
 import geojson
+import sqlalchemy as sa
 from databases import Database
 from sqlalchemy import (
     ARRAY,
@@ -6,7 +9,9 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    ForeignKey,
     Integer,
+    JSON,
     String,
     delete,
     insert,
@@ -30,8 +35,8 @@ from backend.models.dtos.user_dto import (
 from backend.models.postgis.interests import Interest, user_interests
 from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingLevel,
     ProjectStatus,
     UserGender,
     UserRole,
@@ -47,7 +52,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     username = Column(String, unique=True)
     role = Column(Integer, default=0, nullable=False)
-    mapping_level = Column(Integer, default=1, nullable=False)
+    mapping_level = Column(ForeignKey("mapping_levels.id"), default=1, nullable=False)
     tasks_mapped = Column(Integer, default=0, nullable=False)
     tasks_validated = Column(Integer, default=0, nullable=False)
     tasks_invalidated = Column(Integer, default=0, nullable=False)
@@ -79,6 +84,7 @@ class User(Base):
     last_validation_date = Column(DateTime, default=timestamp)
 
     # Relationships
+    level = relationship(MappingLevel, backref="users")
     accepted_licenses = relationship(
         "License", secondary=user_licenses_table, overlaps="users"
     )
@@ -171,16 +177,30 @@ class User(Base):
         """Search and filter all users"""
 
         base_query = """
-            SELECT id, username, mapping_level, role, picture_url FROM users
+            SELECT
+                u.id,
+                u.username,
+                u.mapping_level,
+                u.role,
+                u.picture_url,
+                us.date_obtained,
+                us.stats,
+                un.level_id::bool as requires_approval,
+                uv.level_id::bool as user_has_voted
+            FROM
+                users AS u
+            LEFT JOIN
+                user_stats AS us ON u.id = us.user_id
+            LEFT JOIN
+                user_next_level AS un ON u.id = un.user_id
+            LEFT JOIN
+                user_level_vote AS uv ON u.id = uv.user_id AND uv.voter_id = :voter_id
         """
         filters = []
         params = {}
 
-        if query.mapping_level:
-            mapping_levels = query.mapping_level.split(",")
-            mapping_level_array = [
-                MappingLevel[mapping_level].value for mapping_level in mapping_levels
-            ]
+        if query.mapping_level and re.match(r"^\d+$", query.mapping_level):
+            mapping_level_array = map(int, query.mapping_level.split(","))
             filters.append("mapping_level = ANY(:mapping_levels)")
             params["mapping_levels"] = tuple(mapping_level_array)
 
@@ -197,16 +217,25 @@ class User(Base):
         if filters:
             base_query += " WHERE " + " AND ".join(filters)
 
-        base_query += " ORDER BY username"
+        if query.sort:
+            base_query += (
+                " ORDER BY (us.stats ->> :sort)::float "
+                + query.sort_dir
+                + " NULLS LAST"
+            )
+        else:
+            base_query += " ORDER BY requires_approval, username"
 
         if query.pagination:
             base_query += " LIMIT :limit OFFSET :offset"
             base_params = params.copy()
+            base_params["voter_id"] = query.voter_id
             base_params["limit"] = query.per_page
             base_params["offset"] = (query.page - 1) * query.per_page
+            if query.sort:
+                base_params["sort"] = query.sort
 
             results = await db.fetch_all(base_query, base_params)
-
         else:
             results = await db.fetch_all(base_query, params)
 
@@ -214,9 +243,15 @@ class User(Base):
         for result in results:
             listed_user = ListedUser()
             listed_user.id = result["id"]
-            listed_user.mapping_level = MappingLevel(result["mapping_level"]).name
+            listed_user.mapping_level = (
+                await MappingLevel.get_by_id(result["mapping_level"], db)
+            ).name
             listed_user.username = result["username"]
             listed_user.picture_url = result["picture_url"]
+            listed_user.stats_last_updated = result["date_obtained"]
+            listed_user.stats = json.loads(result["stats"]) if result["stats"] else None
+            listed_user.requires_approval = result["requires_approval"]
+            listed_user.user_has_voted = result["user_has_voted"]
             listed_user.role = UserRole(result["role"]).name
             dto.users.append(listed_user)
 
@@ -386,15 +421,24 @@ class User(Base):
 
     async def set_mapping_level(self, level: MappingLevel, db: Database):
         """Sets the supplied level on the user"""
-        self.mapping_level = level.value
+        self.mapping_level = level.id
 
         query = """
             UPDATE users
             SET mapping_level = :mapping_level
             WHERE id = :user_id
         """
-        await db.execute(
-            query, values={"user_id": self.id, "mapping_level": level.value}
+        await db.execute(query, values={"user_id": self.id, "mapping_level": level.id})
+
+    async def assign_badges(self, badge_ids: [int], db: Database):
+        await db.execute_many(
+            """
+            INSERT INTO user_mapping_badge (user_id, badge_id, date_assigned)
+            VALUES (:user_id, :badge_id, current_timestamp)
+        """,
+            values=[
+                {"user_id": self.id, "badge_id": badge_id} for badge_id in badge_ids
+            ],
         )
 
     async def accept_license_terms(self, user_id, license_id: int, db: Database):
@@ -426,13 +470,15 @@ class User(Base):
 
         return False
 
-    def as_dto(self, logged_in_username: str) -> UserDTO:
+    async def as_dto(self, logged_in_username: str, db: Database) -> UserDTO:
         """Create DTO object from user in scope"""
         user_dto = UserDTO()
         user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
-        user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.mapping_level = (
+            await MappingLevel.get_by_id(self.mapping_level, db)
+        ).name
         user_dto.projects_mapped = (
             len(self.projects_mapped) if self.projects_mapped else None
         )
@@ -489,3 +535,176 @@ class UserEmail(Base):
     def get_by_email(email_address: str):
         """Return the user for the specified username, or None if not found"""
         return UserEmail.query.filter_by(email_address=email_address).one_or_none()
+
+
+class UserStats(Base):
+    __tablename__ = "user_stats"
+
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, nullable=False, unique=True)
+    stats = Column(JSON, nullable=False)
+    date_obtained = Column(DateTime, nullable=False, default=timestamp)
+
+    @staticmethod
+    async def update(user_id: int, stats: dict, db: Database):
+        new_stats = {}
+
+        for key, value in stats["result"]["topics"].items():
+            new_stats[key] = value["added"] if "added" in value else value["value"]
+
+        await db.execute(
+            """
+            INSERT INTO user_stats (user_id, stats, date_obtained)
+            VALUES (:user_id, :stats, current_timestamp)
+            ON CONFLICT (user_id)
+            DO UPDATE SET stats=excluded.stats, date_obtained=current_timestamp
+            """,
+            values={
+                "user_id": user_id,
+                "stats": json.dumps(new_stats),
+            },
+        )
+
+        return new_stats
+
+    @staticmethod
+    async def get_for_user(user_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_stats WHERE user_id = :user_id",
+            values={
+                "user_id": user_id,
+            },
+        )
+        return UserStats(**result) if result else None
+
+
+class UserMappingBadge(Base):
+    __tablename__ = "user_mapping_badge"
+
+    user_id = Column(BigInteger, nullable=False, primary_key=True)
+    badge_id = Column(Integer, nullable=False, primary_key=True)
+    date_assigned = Column(DateTime, nullable=False, default=timestamp)
+
+
+class UserNextLevel(Base):
+    __tablename__ = "user_next_level"
+
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    level_id = Column(
+        ForeignKey("mapping_levels.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
+    )
+    nomination_date = Column(DateTime, nullable=False, default=timestamp)
+
+    @staticmethod
+    async def get_for_user(user_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_next_level WHERE user_id = :user_id",
+            values={
+                "user_id": user_id,
+            },
+        )
+
+        return UserNextLevel(**result) if result else None
+
+    @staticmethod
+    async def nominate(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            """
+            INSERT INTO user_next_level (user_id, level_id, nomination_date)
+            VALUES (:user_id, :level_id, :nomination_date)
+            ON CONFLICT (user_id, level_id) DO NOTHING
+            """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+                "nomination_date": timestamp(),
+            },
+        )
+
+    @staticmethod
+    async def is_nominated(user_id: int, level_id: int, db: Database):
+        result = await db.fetch_one(
+            "SELECT * FROM user_next_level WHERE user_id = :user_id AND level_id = :level_id",
+            values={"user_id": user_id, "level_id": level_id},
+        )
+
+        return True if result else False
+
+    @staticmethod
+    async def clear(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            "DELETE FROM user_next_level WHERE user_id = :user_id AND level_id = :level_id",
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            },
+        )
+
+
+class UserLevelVote(Base):
+    __tablename__ = "user_level_vote"
+
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    level_id = Column(
+        ForeignKey("mapping_levels.id", ondelete="CASCADE"),
+        nullable=False,
+        primary_key=True,
+    )
+    voter_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    vote_date = Column(
+        DateTime,
+        nullable=False,
+        default=timestamp,
+        server_default=sa.text("current_timestamp"),
+    )
+
+    @staticmethod
+    async def vote(user_id: int, level_id: int, voter_id: int, db: Database):
+        await db.execute(
+            """
+            INSERT INTO user_level_vote (user_id, level_id, voter_id)
+            VALUES (:user_id, :level_id, :voter_id)
+            ON CONFLICT (user_id, level_id, voter_id) DO NOTHING
+        """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+                "voter_id": voter_id,
+            },
+        )
+
+    @staticmethod
+    async def count(user_id: int, level_id: int, db: Database):
+        """Returns the number of votes a user has received to get access to a
+        level."""
+        result = await db.fetch_one(
+            """
+            SELECT count(user_id)
+            FROM user_level_vote
+            WHERE user_id = :user_id AND level_id = :level_id
+        """,
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            },
+        )
+
+        return result[0]
+
+    @staticmethod
+    async def clear(user_id: int, level_id: int, db: Database):
+        await db.execute(
+            "DELETE FROM user_level_vote WHERE user_id = :user_id AND level_id = :level_id",
+            values={
+                "user_id": user_id,
+                "level_id": level_id,
+            },
+        )

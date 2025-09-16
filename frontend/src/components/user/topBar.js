@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { TextRow } from 'react-placeholder/lib/placeholders';
 
@@ -7,19 +7,17 @@ import messages from './messages';
 import { CurrentUserAvatar } from './avatar';
 import { ProfileCompleteness } from './completeness';
 import { MappingLevelMessage } from '../mappingLevel';
-import { INTERMEDIATE_LEVEL_COUNT, ADVANCED_LEVEL_COUNT } from '../../config';
+import { useUserNextLevelQuery } from '../../api/stats';
 
-export function NextMappingLevel({ changesetsCount }: Object) {
-  changesetsCount = Number(changesetsCount);
-  let nextLevelThreshold, nextLevel;
-  if (changesetsCount < INTERMEDIATE_LEVEL_COUNT) {
-    nextLevelThreshold = <FormattedNumber value={INTERMEDIATE_LEVEL_COUNT} />;
-    nextLevel = <MappingLevelMessage level="INTERMEDIATE" className="ttl " />;
-  } else if (changesetsCount < ADVANCED_LEVEL_COUNT) {
-    nextLevelThreshold = <FormattedNumber value={ADVANCED_LEVEL_COUNT} />;
-    nextLevel = <MappingLevelMessage level="ADVANCED" className="ttl" />;
-  }
-  if (nextLevel) {
+export function NextMappingLevel({ userId }: Object) {
+  const { data } = useUserNextLevelQuery(userId);
+  const nextLevel = data?.nextLevel;
+  const nextLevelThreshold = data?.aggregatedGoal;
+  const changesetsCount = data?.aggregatedProgress;
+  const metrics = data?.metrics || [];
+  const intl = useIntl();
+
+  if (nextLevel && metrics.length === 1) {
     return (
       <span className="blue-grey">
         <FormattedMessage
@@ -33,11 +31,13 @@ export function NextMappingLevel({ changesetsCount }: Object) {
             ),
             nextLevelThreshold: <span className="blue-dark f4">{nextLevelThreshold}</span>,
             level: nextLevel,
+            metric: intl.formatMessage(messages[`progress_${metrics[0]}`]),
           }}
         />
       </span>
     );
   }
+
   return '';
 }
 
@@ -72,7 +72,7 @@ export function UserTopBar() {
             <p className="f4 blue-dark mv3 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
-            <NextMappingLevel changesetsCount={osmUserInfo ? osmUserInfo.changesetCount : 0} />
+            <NextMappingLevel userId={user.id} />
           </div>
         </ReactPlaceholder>
       </div>

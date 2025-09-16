@@ -29,6 +29,7 @@ import {
   levelUpdationSuccess,
   roleUpdationSuccess,
   userQueryDetails,
+  userLevels,
 } from './mockData/userList';
 import {
   license,
@@ -229,6 +230,13 @@ const handlers = [
   }),
   rest.get(API_URL + 'users/queries/tasks/locked/details/', async (req, res, ctx) => {
     return res(ctx.json(userLockedTasksDetails));
+  }),
+  rest.get(API_URL + 'levels/', async (req, res, ctx) => {
+    return res(
+      ctx.json({
+        levels: userLevels,
+      }),
+    );
   }),
   // ORGANIZATIONS
   rest.get(API_URL + 'organisations', (req, res, ctx) => {

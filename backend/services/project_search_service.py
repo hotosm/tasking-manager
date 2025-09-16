@@ -20,16 +20,14 @@ from backend.models.dtos.project_dto import (
     ProjectSearchResultsDTO,
 )
 from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
-    MappingLevel,
-    MappingPermission,
     MappingTypes,
     ProjectDifficulty,
     ProjectPriority,
     ProjectStatus,
     TeamRoles,
     UserRole,
-    ValidationPermission,
 )
 from backend.services.users.user_service import UserService
 
@@ -438,7 +436,9 @@ class ProjectSearchService:
 
             if search_dto.text_search:
                 search_text = "".join(
-                    char for char in search_dto.text_search if char not in "@|&!><\\():"
+                    char
+                    for char in search_dto.text_search
+                    if char not in "@|&!><\\():'"
                 )
                 tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
                 ilike_search = f"%{search_text}%"
@@ -754,36 +754,23 @@ class ProjectSearchService:
         return all_results, paginated_results, pagination_dto
 
     @staticmethod
-    async def filter_by_user_permission(user, permission: str):
+    async def filter_by_user_permission(user, permission: str, db: Database):
         if not user or user.role == UserRole.ADMIN.value:
             return "TRUE", {}  # Admin can access all projects
 
         # Select permission class and team roles based on the permission type
         if permission == "validation_permission":
-            permission_class = ValidationPermission
             team_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         else:
-            permission_class = MappingPermission
             team_roles = [
                 TeamRoles.MAPPER.value,
                 TeamRoles.VALIDATOR.value,
                 TeamRoles.PROJECT_MANAGER.value,
             ]
 
-        if user.mapping_level == MappingLevel.BEGINNER.value:
-            permission_condition = (
-                f"AND p.{permission} = {permission_class.TEAMS.value}"
-            )
-        else:
-            permission_condition = ""
-
-        if user.mapping_level != MappingLevel.BEGINNER.value:
-            level_condition = f", {permission_class.LEVEL.value}"
-        else:
-            level_condition = ""
-
         condition = f"""
-            (
+            p.{permission} = 0 OR (
+                p.{permission} = 2 AND
                 p.id IN (
                     SELECT DISTINCT pt.project_id
                     FROM team_members tm
@@ -792,10 +779,6 @@ class ProjectSearchService:
                     AND tm.active = True
                     AND pt.role = ANY(:team_roles)
                 )
-                {permission_condition}
-            )
-            OR p.{permission} IN (
-                {permission_class.ANY.value}{level_condition}
             )
         """
 
@@ -807,17 +790,28 @@ class ProjectSearchService:
         """Filter projects needing mapping with proper permission checks"""
         base_query = """
             SELECT p.id FROM projects p
+            LEFT JOIN mapping_levels l ON l.id = p.mapping_permission_level_id
             WHERE (p.tasks_mapped + p.tasks_validated) < (p.total_tasks - p.tasks_bad_imagery)
             AND p.status = :published_status
         """
-        params = {"published_status": ProjectStatus.PUBLISHED.value}
+
+        params = {
+            "published_status": ProjectStatus.PUBLISHED.value,
+        }
+
+        if user:
+            user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+            base_query += " AND l.ordering <= :user_level_ordering"
+            params["user_level_ordering"] = user_level.ordering
 
         if user and user.role != UserRole.ADMIN.value:
             (
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "mapping_permission"
+                user,
+                "mapping_permission",
+                db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
@@ -830,17 +824,28 @@ class ProjectSearchService:
         """Filter projects needing validation with proper permission checks"""
         base_query = """
             SELECT p.id FROM projects p
+            LEFT JOIN mapping_levels l ON l.id = p.validation_permission_level_id
             WHERE p.tasks_validated < (p.total_tasks - p.tasks_bad_imagery)
             AND p.status = :published_status
         """
-        params = {"published_status": ProjectStatus.PUBLISHED.value}
+
+        params = {
+            "published_status": ProjectStatus.PUBLISHED.value,
+        }
+
+        if user:
+            user_level = await MappingLevel.get_by_id(user.mapping_level, db)
+            base_query += " AND l.ordering <= :user_level_ordering"
+            params["user_level_ordering"] = user_level.ordering
 
         if user and user.role != UserRole.ADMIN.value:
             (
                 perm_condition,
                 perm_params,
             ) = await ProjectSearchService.filter_by_user_permission(
-                user, "validation_permission"
+                user,
+                "validation_permission",
+                db,
             )
             base_query += f" AND ({perm_condition})"
             params.update(perm_params)
