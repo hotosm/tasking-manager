@@ -842,6 +842,7 @@ class TeamService:
         )
         return row is not None
 
+    @staticmethod
     async def ensure_unlink_allowed(
         project_id: int, team_id: int, db: Database
     ) -> Optional[JSONResponse]:
@@ -858,7 +859,10 @@ class TeamService:
         if not project_row:
             return JSONResponse(
                 {
-                    "Error": f"Cannot unlink team with team id-{team_id}: project {project_id} not found",
+                    "Error": (
+                        f"Cannot unlink team with team id-{team_id}: "
+                        f"project {project_id} not found"
+                    ),
                     "SubCode": "NotFoundError",
                 },
                 status_code=404,
@@ -885,12 +889,37 @@ class TeamService:
 
         team_role = project_team_row["role"]
 
+        # Project-manager check: ensure there is another project-manager team
+        if team_role == TeamRoles.PROJECT_MANAGER.value:
+            cnt_row = await db.fetch_one(
+                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid "
+                "AND role = :role",
+                {"pid": project_id, "role": TeamRoles.PROJECT_MANAGER.value},
+            )
+            pm_count = int(cnt_row["cnt"]) if cnt_row else 0
+
+            if pm_count <= 1:
+                return JSONResponse(
+                    {
+                        "Error": (
+                            f"Cannot unlink team with team id-{team_id}: "
+                            f"project {project_id} requires at least one project manager and "
+                            f"this is the only project-manager team. Contact the project admin "
+                            f"to assign another project manager team before unlinking."
+                        ),
+                        "SubCode": "ProjectPermissionError",
+                    },
+                    status_code=403,
+                )
+
+        # Mapping check
         if (
             mapping_perm == MappingPermission.TEAMS.value
             and team_role == TeamRoles.MAPPER.value
         ):
             cnt_row = await db.fetch_one(
-                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid AND role = :role",
+                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid "
+                "AND role = :role",
                 {"pid": project_id, "role": TeamRoles.MAPPER.value},
             )
             mapper_count = int(cnt_row["cnt"]) if cnt_row else 0
@@ -909,12 +938,14 @@ class TeamService:
                     status_code=403,
                 )
 
+        # Validation check
         if (
             validation_perm == ValidationPermission.TEAMS.value
             and team_role == TeamRoles.VALIDATOR.value
         ):
             cnt_row = await db.fetch_one(
-                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid AND role = :role",
+                "SELECT COUNT(1) AS cnt FROM project_teams WHERE project_id = :pid "
+                "AND role = :role",
                 {"pid": project_id, "role": TeamRoles.VALIDATOR.value},
             )
             validator_count = int(cnt_row["cnt"]) if cnt_row else 0
