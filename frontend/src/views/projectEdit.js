@@ -49,7 +49,7 @@ export const handleCheckButton = (event, arrayElement) => {
   } else {
     arrayElement = arrayElement.filter((t) => t !== event.target.value);
   }
-  
+
   return arrayElement;
 };
 
@@ -60,6 +60,15 @@ const doesMappingTeamNotExist = (teams, mappingPermission) =>
 const doesValidationTeamNotExist = (teams, validationPermission) =>
   ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
   teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+
+const doesSameTeamAndRoleExists = (teams) => {
+  const visited = {};
+  return teams?.some((team) => {
+    if (visited[team.teamId] === team.role) return true;
+    visited[team.teamId] = team.role;
+    return false;
+  });
+};
 
 export function ProjectEdit() {
   const { id } = useParams();
@@ -160,6 +169,9 @@ export function ProjectEdit() {
       doesValidationTeamNotExist(teams, validationPermission)
     ) {
       missingFields.push({ type: 'noTeamsAssigned' });
+    }
+    if (doesSameTeamAndRoleExists(teams)) {
+      missingFields.push({ type: 'duplicateTeamsAssigned' });
     }
     // validate name
     if (!missingFields?.[0]?.fields?.includes('name')) {
@@ -364,6 +376,9 @@ const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
         }}
       />
     );
+  }
+  if (type === 'duplicateTeamsAssigned') {
+    return <FormattedMessage {...messages.duplicateTeamsAssigned} />;
   }
   if (type === 'nameValidationError') {
     return (

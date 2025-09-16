@@ -794,6 +794,10 @@ export default defineMessages({
     defaultMessage:
       '{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.',
   },
+  duplicateTeamsAssigned: {
+    id: 'pages.edit_project.actions.duplicate_teams_assigned',
+    defaultMessage: 'Same team assigned multiple times for same role',
+  },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',
     defaultMessage: 'Description',
