@@ -18,15 +18,13 @@ class OSMServiceError(Exception):
 
 class OSMService:
     @staticmethod
-    def is_osm_user_gone(user_id: int) -> bool:
+    async def is_osm_user_gone(user_id: int) -> bool:
         """
         Check if OSM details for the user from OSM API are available
         :param user_id: user_id in scope
         :raises OSMServiceError
         """
-        osm_user_details_url = (
-            f"{current_app.config['OSM_SERVER_URL']}/api/0.6/user/{user_id}.json"
-        )
+        osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
         response = requests.head(osm_user_details_url)
 
         if response.status_code == 410:
@@ -37,13 +35,13 @@ class OSMService:
         return False
 
     @staticmethod
-    def get_deleted_users() -> Optional[Generator[int, None, None]]:
+    async def get_deleted_users() -> Optional[Generator[int, None, None]]:
         """
         Get the list of deleted users from OpenStreetMap.
         This only returns users from the https://www.openstreetmap.org instance.
         :return: The deleted users
         """
-        if current_app.config["OSM_SERVER_URL"] == "https://www.openstreetmap.org":
+        if settings.OSM_SERVER_URL == "https://www.openstreetmap.org":
 
             def get_planet_osm_deleted_users() -> Generator[int, None, None]:
                 response = requests.get(

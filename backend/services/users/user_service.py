@@ -1,6 +1,6 @@
 import json
 import datetime
-from typing import Optional
+from typing import List, Optional
 
 from databases import Database
 from loguru import logger
@@ -29,7 +29,7 @@ from backend.models.dtos.user_dto import (
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.mapping_badge import MappingBadge
-from backend.models.postgis.message import MessageType
+from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
@@ -49,6 +49,8 @@ from backend.services.messaging.template_service import (
 )
 from backend.services.users.osm_service import OSMService
 from backend.services.mapping_levels import MappingLevelService
+from fastapi import HTTPException
+
 
 settings = Settings()
 
@@ -267,6 +269,108 @@ class UserService:
         request_user = await UserService.get_user_by_id(request_user, db)
 
         return await user.as_dto(request_user.username, db)
+
+    @staticmethod
+    async def delete_user_by_id(
+        user_id: int, request_user_id: int, db: Database
+    ) -> Optional[UserDTO]:
+        """
+        Anonymize + clean up a user account and return the original DTO.
+        Permissions: user may delete themselves, or an admin may delete any user.
+        Everything runs inside a DB transaction for consistency.
+        """
+        if user_id != request_user_id:
+            is_requester_admin = await UserService.is_user_an_admin(request_user_id, db)
+            if not is_requester_admin:
+                return None
+
+        original_dto = await UserService.get_user_dto_by_id(
+            user_id, request_user_id, db
+        )
+
+        if original_dto is None:
+            return None
+
+        username_replacement = f"user_{user_id}"
+        empty_json_array = []
+
+        try:
+            async with db.transaction():
+                # FIXME: Should we keep user_id since that will make conversations easier to follow?
+                # Keep in mind that OSM uses user_<int:user_id> on deleted accounts.
+                await db.execute(
+                    query="""
+                        UPDATE "users"
+                        SET
+                            accepted_licenses = :empty_array,
+                            city = NULL,
+                            country = NULL,
+                            email_address = NULL,
+                            facebook_id = NULL,
+                            gender = NULL,
+                            interests = :empty_array,
+                            irc_id = NULL,
+                            is_email_verified = FALSE,
+                            is_expert = FALSE,
+                            linkedin_id = NULL,
+                            name = NULL,
+                            picture_url = NULL,
+                            self_description_gender = NULL,
+                            skype_id = NULL,
+                            slack_id = NULL,
+                            twitter_id = NULL,
+                            username = :username
+                        WHERE id = :user_id
+                    """,
+                    values={
+                        "empty_array": json.dumps(empty_json_array),
+                        "username": username_replacement,
+                        "user_id": user_id,
+                    },
+                )
+
+                is_target_admin = await UserService.is_user_an_admin(user_id, db)
+
+                if is_target_admin:
+                    query = "UPDATE users SET role = :role WHERE id = :user_id"
+                    await db.execute(
+                        query=query,
+                        values={"role": UserRole.MAPPER.value, "user_id": user_id},
+                    )
+
+                # Remove messages that might contain user identifying information.
+                # TODO detect image links and try to delete them
+                await db.execute(
+                    query="""
+                        UPDATE project_chat
+                        SET message = :new_message
+                        WHERE user_id = :user_id
+                    """,
+                    values={
+                        "new_message": f"[Deleted user_{user_id} message]",
+                        "user_id": user_id,
+                    },
+                )
+
+                from backend.models.postgis.application import Application
+
+                # Drop application keys
+
+                await Application.delete_all_for_user(user_id, db)
+                # Delete all messages (AKA notifications) for the user
+
+                message_types: List[int] = [mt.value for mt in MessageType]
+                await Message.delete_all_messages(user_id, db, message_types)
+                # Leave interests, licenses, organizations, and tasks alone for now.
+
+            return original_dto
+
+        except Exception as exc:
+            logger.exception("Failed to delete/anonymize user %s: %s", user_id, exc)
+            raise HTTPException(
+                status_code=400,
+                detail="Failed to delete/anonymize user",
+            )
 
     @staticmethod
     async def get_interests_stats(user_id: int, db: Database):

@@ -1,16 +1,18 @@
-from typing import Optional
-from collections.abc import Generator
+import json
+from typing import Optional, AsyncGenerator
 
+from backend.models.postgis.user import User
 from databases import Database
-from fastapi import APIRouter, Depends, Request, Query, Path
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Request, Query, Path, HTTPException
+from fastapi.responses import JSONResponse, StreamingResponse
 from loguru import logger
-
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
 from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
+from backend.services.users.osm_service import OSMService
+
 
 router = APIRouter(
     prefix="/users",
@@ -58,28 +60,6 @@ async def get_user(
     """
     user_dto = await UserService.get_user_dto_by_id(user_id, user.id, db)
     return user_dto
-
-    @token_auth.login_required
-    def delete(self, user_id: Optional[int] = None):
-        """
-        Delete user information by id.
-        :param user_id: The user to delete
-        :return: RFC7464 compliant sequence of user objects deleted
-            200: User deleted
-            401: Unauthorized - Invalid credentials
-            404: User not found
-            500: Internal Server Error
-        """
-        if user_id == token_auth.current_user() or UserService.is_user_an_admin(
-            token_auth.current_user()
-        ):
-            return (
-                UserService.delete_user_by_id(
-                    user_id, token_auth.current_user()
-                ).to_primitive(),
-                200,
-            )
-        raise Unauthorized()
 
 
 @router.get("/")
@@ -167,6 +147,72 @@ async def list_users(
         )
     users_dto = await UserService.get_all_users(query, db)
     return users_dto
+
+
+@router.delete("/", tags=["users"])
+async def delete_users(
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+) -> StreamingResponse:
+    """
+    Stream-deletes local users who have deleted their OSM account.
+    This mirrors the previous logic: prefer an OSMService generator if available,
+    otherwise fall back to checking each user via the OSM API.
+    """
+
+    is_admin = await UserService.is_user_an_admin(user)
+    if not is_admin:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    async def _delete_users_gen() -> AsyncGenerator[bytes, None]:
+        """
+        Async generator yielding json-seq records (start-of-record U+001E + json + newline).
+        Yields bytes because StreamingResponse prefers bytes.
+        """
+        # Try to use the OSMService generator if available
+        deleted_users_gen = await OSMService.get_deleted_users()
+        if deleted_users_gen:
+            # assume deleted_users_gen is an async iterator producing OSM user ids in ascending order
+            last_deleted_user = 0
+            async for (
+                user_rec
+            ) in User.get_all_users_not_paginated():  # assumed async iterator
+                # consume deleted_users_gen until we reach user_rec.id or pass it
+                try:
+                    while last_deleted_user < user_rec.id:
+                        last_deleted_user = (
+                            await deleted_users_gen.__anext__()
+                        )  # async-next
+                except StopAsyncIteration:
+                    # generator exhausted; break out to fallback logic
+                    break
+
+                if last_deleted_user == user_rec.id:
+                    deleted_dto = await UserService.delete_user_by_id(
+                        user_rec.id, user, db
+                    )
+                    primitive = (
+                        deleted_dto.to_primitive()
+                        if hasattr(deleted_dto, "to_primitive")
+                        else deleted_dto
+                    )
+                    # json-seq record: U+001E + JSON + \n
+                    yield (f"\u001e{json.dumps(primitive)}\n").encode("utf-8")
+            return
+
+        # Fallback: iterate all users and call OSMService.is_osm_user_gone
+        async for user_rec in User.get_all_users_not_paginated():
+            gone = await OSMService.is_osm_user_gone(user_rec.id)
+            if gone:
+                deleted_dto = await UserService.delete_user_by_id(user_rec.id, user, db)
+                primitive = (
+                    deleted_dto.to_primitive()
+                    if hasattr(deleted_dto, "to_primitive")
+                    else deleted_dto
+                )
+                yield (f"\u001e{json.dumps(primitive)}\n").encode("utf-8")
+
+    return StreamingResponse(_delete_users_gen(), media_type="application/json-seq")
 
 
 @router.get("/queries/favorites/")
