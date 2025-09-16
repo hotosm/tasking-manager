@@ -17,9 +17,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MAX_CONCURRENT_WORKERS = int(os.getenv("MAX_CONCURRENT_WORKERS", "50"))
+# Defaults come from env or fall back to sensible values
+DEFAULT_MAX_CONCURRENT_WORKERS = int(os.getenv("MAX_CONCURRENT_WORKERS", "50"))
+DEFAULT_TASK_BATCH_SIZE = int(os.getenv("TASK_BATCH_SIZE", "5000"))
 PROGRESS_PRINT_EVERY = int(os.getenv("PROGRESS_PRINT_EVERY", "1000"))
-TASK_BATCH_SIZE = int(os.getenv("TASK_BATCH_SIZE", "5000"))
 
 RETRIES = 2
 RETRY_DELAY = 1.0
@@ -108,12 +109,15 @@ async def _fetch_users_only_missing(conn) -> List[SimpleNamespace]:
     return users
 
 
-async def main(only_missing: bool):
+async def main(only_missing: bool, workers: int, batch_size: int):
     try:
         logger.info("Connecting to database...")
         await db_connection.connect()
 
         logger.info("Started updating mapper levels...")
+        logger.info(
+            "Using %d concurrent workers, task batch size %d", workers, batch_size
+        )
 
         async with db_connection.database.connection() as conn:
             if only_missing:
@@ -128,10 +132,10 @@ async def main(only_missing: bool):
         failed_lock = asyncio.Lock()
         users_updated_counter = [0]
         counter_lock = asyncio.Lock()
-        semaphore = asyncio.Semaphore(MAX_CONCURRENT_WORKERS)
+        semaphore = asyncio.Semaphore(workers)
 
-        for start in range(0, total_users, TASK_BATCH_SIZE):
-            end = min(start + TASK_BATCH_SIZE, total_users)
+        for start in range(0, total_users, batch_size):
+            end = min(start + batch_size, total_users)
             batch = users[start:end]
             logger.info("Scheduling batch %d..%d (size=%d)", start + 1, end, len(batch))
 
@@ -173,6 +177,32 @@ if __name__ == "__main__":
         action="store_true",
         help="Process only users that do not have an entry in user_stats",
     )
+    parser.add_argument(
+        "--workers",
+        "-w",
+        type=int,
+        default=DEFAULT_MAX_CONCURRENT_WORKERS,
+        help=f"Number of concurrent workers (default {DEFAULT_MAX_CONCURRENT_WORKERS})",
+    )
+    parser.add_argument(
+        "--batch-size",
+        "-b",
+        type=int,
+        default=DEFAULT_TASK_BATCH_SIZE,
+        help=f"Number of users scheduled per batch (default {DEFAULT_TASK_BATCH_SIZE})",
+    )
     args = parser.parse_args()
 
-    asyncio.run(main(only_missing=args.only_missing))
+    # Basic validation
+    if args.workers <= 0:
+        parser.error("--workers must be a positive integer")
+    if args.batch_size <= 0:
+        parser.error("--batch-size must be a positive integer")
+
+    asyncio.run(
+        main(
+            only_missing=args.only_missing,
+            workers=args.workers,
+            batch_size=args.batch_size,
+        )
+    )
