@@ -6,9 +6,10 @@ import argparse
 from types import SimpleNamespace
 from typing import List
 
-from backend.db import db_connection
+from databases import Database
 from backend.services.users.user_service import UserService
 from backend.models.postgis.user import User
+from backend.config import settings
 
 import httpx
 
@@ -28,6 +29,7 @@ RETRY_DELAY = 1.0
 
 async def process_user(
     user_record,
+    script_db: Database,
     failed_users,
     failed_lock,
     users_updated_counter,
@@ -35,13 +37,13 @@ async def process_user(
     semaphore,
 ):
     """
-    Process a single user using its own DB connection from the pool.
+    Process a single user using its own DB connection from the script-local pool.
     Calls UserService.check_and_update_mapper_level(user_id, conn).
     Retries on transient network/HTTP errors with simple fixed delay.
     """
     await semaphore.acquire()
     try:
-        async with db_connection.database.connection() as conn:
+        async with script_db.connection() as conn:
             attempt = 0
             while True:
                 attempt += 1
@@ -109,17 +111,31 @@ async def _fetch_users_only_missing(conn) -> List[SimpleNamespace]:
     return users
 
 
-async def main(only_missing: bool, workers: int, batch_size: int):
+async def main(
+    only_missing: bool,
+    workers: int,
+    batch_size: int,
+    script_db_min: int,
+    script_db_max: int,
+):
     try:
-        logger.info("Connecting to database...")
-        await db_connection.connect()
+        db_url = settings.SQLALCHEMY_DATABASE_URI.unicode_string()
+
+        script_db = Database(db_url, min_size=script_db_min, max_size=script_db_max)
+
+        logger.info(
+            "Connecting to script-local DB pool (min=%d max=%d)...",
+            script_db_min,
+            script_db_max,
+        )
+        await script_db.connect()
 
         logger.info("Started updating mapper levels...")
         logger.info(
             "Using %d concurrent workers, task batch size %d", workers, batch_size
         )
 
-        async with db_connection.database.connection() as conn:
+        async with script_db.connection() as conn:
             if only_missing:
                 users = await _fetch_users_only_missing(conn)
             else:
@@ -143,6 +159,7 @@ async def main(only_missing: bool, workers: int, batch_size: int):
                 asyncio.create_task(
                     process_user(
                         user_record,
+                        script_db,
                         failed_users,
                         failed_lock,
                         users_updated_counter,
@@ -163,11 +180,11 @@ async def main(only_missing: bool, workers: int, batch_size: int):
         logger.exception("Error while refreshing mapper levels")
         raise
     finally:
-        logger.info("Disconnecting from database...")
+        logger.info("Disconnecting from script-local DB...")
         try:
-            await db_connection.disconnect()
+            await script_db.disconnect()
         except Exception:
-            logger.exception("Error while disconnecting from DB (ignored)")
+            logger.exception("Error while disconnecting from script-local DB (ignored)")
 
 
 if __name__ == "__main__":
@@ -191,6 +208,19 @@ if __name__ == "__main__":
         default=DEFAULT_TASK_BATCH_SIZE,
         help=f"Number of users scheduled per batch (default {DEFAULT_TASK_BATCH_SIZE})",
     )
+    parser.add_argument(
+        "--script-db-min",
+        type=int,
+        default=4,
+        help="Script-local DB pool minimum size (default 4)",
+    )
+    parser.add_argument(
+        "--script-db-max",
+        type=int,
+        default=8,
+        help="Script-local DB pool maximum size (default 8)",
+    )
+
     args = parser.parse_args()
 
     # Basic validation
@@ -198,11 +228,17 @@ if __name__ == "__main__":
         parser.error("--workers must be a positive integer")
     if args.batch_size <= 0:
         parser.error("--batch-size must be a positive integer")
+    if args.script_db_min <= 0 or args.script_db_max <= 0:
+        parser.error("--script-db-min and --script-db-max must be positive integers")
+    if args.script_db_min > args.script_db_max:
+        parser.error("--script-db-min cannot be greater than --script-db-max")
 
     asyncio.run(
         main(
             only_missing=args.only_missing,
             workers=args.workers,
             batch_size=args.batch_size,
+            script_db_min=args.script_db_min,
+            script_db_max=args.script_db_max,
         )
     )

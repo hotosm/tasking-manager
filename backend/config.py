@@ -74,6 +74,8 @@ class Settings(BaseSettings):
     POSTGRES_ENDPOINT: str = os.getenv("POSTGRES_ENDPOINT", "localhost")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "postgres")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
+    DB_MIN_CONNECTIONS: int = os.getenv("DB_MIN_CONNECTIONS", 4)
+    DB_MAX_CONNECTIONS: int = os.getenv("DB_MAX_CONNECTIONS", 8)
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
