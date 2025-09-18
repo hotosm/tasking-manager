@@ -69,6 +69,9 @@ inputs = {
     dependency.alb.outputs.load_balancer_app_security_group
   ]
 
+  #Enable Execute Command
+  enable_execute_command = get_env("ECS_TASK_ENABLE_EXECUTE_COMMAND", "false") == "true" ? true : false
+
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
   dependency.rds.outputs.database_config_as_ecs_secrets_inputs)
@@ -82,8 +85,8 @@ inputs = {
   ## Task count for ECS services.
   tasks_count = {
     desired_count   = 1
-    min_healthy_pct = 25
-    max_pct         = 200
+    min_healthy_pct = 100
+    max_pct         = 300
   }
 
   health_check_grace_period_seconds = 60
