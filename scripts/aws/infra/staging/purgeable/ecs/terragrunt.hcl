@@ -70,7 +70,7 @@ inputs = {
   ]
 
   #Enable Execute Command
-  enable_execute_command = false
+  enable_execute_command = get_env("ECS_TASK_ENABLE_EXECUTE_COMMAND", "false") == "true" ? true : false
 
   # Merge secrets with: key:ValueFrom together
   container_secrets = concat(dependency.extras.outputs.container_secrets,
