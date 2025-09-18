@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from typing import List
 
 from databases import Database
-from backend.services.users.user_service import UserService
+from backend.services.users.user_service import UserService, UserServiceError
 from backend.models.postgis.user import User
 from backend.config import settings
 
@@ -77,6 +77,21 @@ async def process_user(
                         )
                         await asyncio.sleep(RETRY_DELAY)
                         continue
+                except UserServiceError as exc:
+                    # Non-retriable external API error from UserService (e.g. OSM returned 404/410)
+                    # 404 for user not found.
+                    # 410 for user deleted from osm. Gone error code.
+                    async with failed_lock:
+                        failed_users.append(user_record.id)
+                    logger.info(
+                        "OSM error for user %s — recorded in osm_failed_users: %s",
+                        user_record.id,
+                        exc,
+                    )
+                    logger.debug(
+                        "UserServiceError for user %s", user_record.id, exc_info=True
+                    )
+                    break
                 except Exception:
                     async with failed_lock:
                         failed_users.append(user_record.id)
