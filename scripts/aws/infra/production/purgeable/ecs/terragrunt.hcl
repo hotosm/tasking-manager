@@ -85,8 +85,8 @@ inputs = {
   ## Task count for ECS services.
   tasks_count = {
     desired_count   = 1
-    min_healthy_pct = 25
-    max_pct         = 200
+    min_healthy_pct = 100
+    max_pct         = 600
   }
 
   ## Scaling Policy Target Values
