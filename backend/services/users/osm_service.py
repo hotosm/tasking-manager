@@ -1,12 +1,12 @@
 import re
-from collections.abc import Generator
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 import requests
 from loguru import logger
 
 from backend.config import settings
 from backend.models.dtos.user_dto import UserOSMDTO
+import httpx
 
 
 class OSMServiceError(Exception):
@@ -20,45 +20,47 @@ class OSMService:
     @staticmethod
     async def is_osm_user_gone(user_id: int) -> bool:
         """
-        Check if OSM details for the user from OSM API are available
-        :param user_id: user_id in scope
-        :raises OSMServiceError
+        Async HEAD request to check OSM user status.
+        Returns True for 410, False for 200, raise OSMServiceError otherwise.
         """
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
-        response = requests.head(osm_user_details_url)
-
-        if response.status_code == 410:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.head(osm_user_details_url, follow_redirects=True)
+        if resp.status_code == 410:
             return True
-        if response.status_code != 200:
-            raise OSMServiceError("Bad response from OSM")
-
-        return False
+        if resp.status_code == 200:
+            return False
+        # treat other statuses as an error so caller can decide
+        raise OSMServiceError(f"Bad response from OSM: {resp.status_code}")
 
     @staticmethod
-    async def get_deleted_users() -> Optional[Generator[int, None, None]]:
+    def get_deleted_users() -> Optional[AsyncGenerator[int, None]]:
         """
-        Get the list of deleted users from OpenStreetMap.
-        This only returns users from the https://www.openstreetmap.org instance.
-        :return: The deleted users
+        Return an async generator yielding deleted user IDs (ascending).
+        If not using https://www.openstreetmap.org as OSM_SERVER_URL, return None
+        (matching original behaviour).
         """
-        if settings.OSM_SERVER_URL == "https://www.openstreetmap.org":
+        if settings.OSM_SERVER_URL != "https://www.openstreetmap.org":
+            return None
 
-            def get_planet_osm_deleted_users() -> Generator[int, None, None]:
-                response = requests.get(
-                    "https://planet.openstreetmap.org/users_deleted/users_deleted.txt",
-                    stream=True,
-                )
-                username = re.compile(r"^\s*(\d+)\s*$")
-                try:
-                    for line in response.iter_lines(decode_unicode=True):
-                        match = username.fullmatch(line)
-                        if match:
-                            yield int(match.group(1))
-                finally:
-                    response.close()
+        async def _gen() -> AsyncGenerator[int, None]:
+            url = "https://planet.openstreetmap.org/users_deleted/users_deleted.txt"
+            username_re = re.compile(r"^\s*(\d+)\s*$")
+            async with httpx.AsyncClient(timeout=None) as client:
+                async with client.stream("GET", url) as resp:
+                    if resp.status_code != 200:
+                        # Fail fast — caller can handle OSMServiceError
+                        raise OSMServiceError(
+                            f"Failed fetching deleted users: {resp.status_code}"
+                        )
+                    async for line in resp.aiter_lines():
+                        if not line:
+                            continue
+                        m = username_re.fullmatch(line)
+                        if m:
+                            yield int(m.group(1))
 
-            return get_planet_osm_deleted_users()
-        return None
+        return _gen()
 
     @staticmethod
     def get_osm_details_for_user(user_id: int) -> UserOSMDTO:

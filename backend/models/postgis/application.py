@@ -74,7 +74,7 @@ class Application(Base):
         Delete all Application rows for the given user in one async transaction.
         Pass `db` (from your get_db dependency).
         """
-        query = "DELETE FROM applications WHERE user = :user"
+        query = 'DELETE FROM application_keys WHERE "user" = :user'
         async with db.transaction():
             await db.execute(query=query, values={"user": user_id})
 

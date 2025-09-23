@@ -292,7 +292,6 @@ class UserService:
             return None
 
         username_replacement = f"user_{user_id}"
-        empty_json_array = []
 
         try:
             async with db.transaction():
@@ -300,15 +299,13 @@ class UserService:
                 # Keep in mind that OSM uses user_<int:user_id> on deleted accounts.
                 await db.execute(
                     query="""
-                        UPDATE "users"
+                        UPDATE users
                         SET
-                            accepted_licenses = :empty_array,
                             city = NULL,
                             country = NULL,
                             email_address = NULL,
                             facebook_id = NULL,
                             gender = NULL,
-                            interests = :empty_array,
                             irc_id = NULL,
                             is_email_verified = FALSE,
                             is_expert = FALSE,
@@ -323,10 +320,25 @@ class UserService:
                         WHERE id = :user_id
                     """,
                     values={
-                        "empty_array": json.dumps(empty_json_array),
                         "username": username_replacement,
                         "user_id": user_id,
                     },
+                )
+
+                await db.execute(
+                    query="""
+                        DELETE FROM user_licenses
+                        WHERE user = :user_id
+                    """,
+                    values={"user_id": str(user_id)},
+                )
+
+                await db.execute(
+                    query="""
+                        DELETE FROM user_interests
+                        WHERE user_id = :user_id
+                    """,
+                    values={"user_id": user_id},
                 )
 
                 is_target_admin = await UserService.is_user_an_admin(user_id, db)
@@ -347,22 +359,23 @@ class UserService:
                         WHERE user_id = :user_id
                     """,
                     values={
-                        "new_message": f"[Deleted user_{user_id} message]",
+                        "new_message": f"Deleted user_{user_id} message",
                         "user_id": user_id,
                     },
                 )
-
                 from backend.models.postgis.application import Application
 
                 # Drop application keys
-
                 await Application.delete_all_for_user(user_id, db)
-                # Delete all messages (AKA notifications) for the user
 
+                # Delete all messages (AKA notifications) for the user
                 message_types: List[int] = [mt.value for mt in MessageType]
                 await Message.delete_all_messages(user_id, db, message_types)
                 # Leave interests, licenses, organizations, and tasks alone for now.
 
+            original_dto = await UserService.get_user_dto_by_id(
+                user_id, request_user_id, db
+            )
             return original_dto
 
         except Exception as exc:

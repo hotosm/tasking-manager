@@ -58,7 +58,7 @@ export function DeleteModal({
           setTimeout(() => navigate(`/inbox`), 750);
         } else if (type === 'comments' || type === 'users') {
           setTimeout(() => {
-            onDelete(success);
+            onDelete();
             modalRef.current.close();
           }, 750);
           return;
