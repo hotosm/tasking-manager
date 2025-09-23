@@ -6,18 +6,14 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { MAP_STYLE } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let markerIcon = new Image(17, 20);
 markerIcon.src = mapMarker;
 
-maplibregl.accessToken = MAPBOX_TOKEN;
-
-const licensedFonts = MAPBOX_TOKEN
-  ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
-  : ['Open Sans Semibold'];
+const licensedFonts = ['Open Sans Semibold'];
 
 export const maplibreLayerDefn = (map, mapResults, clickOnProjectID, disablePoiClick = false) => {
   map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });

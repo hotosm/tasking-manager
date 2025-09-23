@@ -5,15 +5,13 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { MAP_STYLE } from '../../config';
 import { maplibreLayerDefn } from '../projects/projectsMap';
 import { BarListChart } from './barListChart';
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 const UserCountriesMap = ({ projects }) => {
   const navigate = useNavigate();

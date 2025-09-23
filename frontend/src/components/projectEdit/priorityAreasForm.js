@@ -13,7 +13,7 @@ import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
-import { MAPBOX_TOKEN, CHART_COLOURS, baseLayers, DEFAULT_MAP_STYLE } from '../../config';
+import { CHART_COLOURS, baseLayers, DEFAULT_MAP_STYLE } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
 import {
   verifyGeometry,
@@ -27,8 +27,6 @@ import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
 import WebglUnsupported from '../webglUnsupported';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);

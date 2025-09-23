@@ -10,7 +10,7 @@ import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import messages from './messages';
-import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE } from '../../config';
+import { TASK_COLOURS, MAP_STYLE } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
@@ -20,8 +20,6 @@ lockIcon.src = lock;
 
 let redlockIcon = new Image(17, 20);
 redlockIcon.src = redlock;
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const TasksMap = ({
   className,

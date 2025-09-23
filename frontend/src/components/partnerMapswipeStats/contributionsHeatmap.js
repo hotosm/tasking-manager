@@ -5,11 +5,9 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
+import { MAP_STYLE, CHART_COLOURS } from '../../config';
 import messages from './messages';
 import './contributionsHeatmap.css';
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   const mapContainer = useRef(null);
