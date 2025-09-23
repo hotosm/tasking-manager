@@ -323,7 +323,7 @@ export const ProjectDetail = (props) => {
             size={'large'}
             textColor="white"
             users={contributors}
-            maxLength={parseInt(size[0] / 75) > 12 ? 12 : parseInt(size[0] / 75)}
+            maxLength={Number.parseInt(size[0] / 75) > 12 ? 12 : Number.parseInt(size[0] / 75)}
           />
         )}
       </div>

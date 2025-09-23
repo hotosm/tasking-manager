@@ -31,7 +31,7 @@ export function CurrentProjects({ currentProjects }) {
 
   const fetchData = async () => {
     try {
-      const projectIds = currentProjects.split(',').map((id) => parseInt(id.trim(), 10));
+      const projectIds = currentProjects.split(',').map((id) => Number.parseInt(id.trim(), 10));
       const promises = projectIds.map(async (id) => {
         const response = await fetch(API_URL + `projects/${id}/tasks/`);
 
