@@ -107,30 +107,30 @@ const fallbackRasterStyle = {
   ],
 };
 
-const wmsDensityStyle = {
-  version: 8,
-  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-  sources: {
-    'raster-tiles': {
-      type: 'raster',
-      tiles: [
-        'https://sedac.ciesin.columbia.edu/geoserver/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gpw-v3:gpw-v3-population-density-future-estimates_2005',
-      ],
-      tileSize: 256,
-      attribution:
-        '© <a href="https://sedac.ciesin.columbia.edu">Socioeconomic Data and Applications Center (SEDAC)</a>',
-    },
-  },
-  layers: [
-    {
-      id: 'simple-tiles',
-      type: 'raster',
-      source: 'raster-tiles',
-      minzoom: 0,
-      maxzoom: 22,
-    },
-  ],
-};
+// const wmsDensityStyle = {
+//   version: 8,
+//   glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+//   sources: {
+//     'raster-tiles': {
+//       type: 'raster',
+//       tiles: [
+//         'https://sedac.ciesin.columbia.edu/geoserver/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gpw-v3:gpw-v3-population-density-future-estimates_2005',
+//       ],
+//       tileSize: 256,
+//       attribution:
+//         '© <a href="https://sedac.ciesin.columbia.edu">Socioeconomic Data and Applications Center (SEDAC)</a>',
+//     },
+//   },
+//   layers: [
+//     {
+//       id: 'simple-tiles',
+//       type: 'raster',
+//       source: 'raster-tiles',
+//       minzoom: 0,
+//       maxzoom: 22,
+//     },
+//   ],
+// };
 
 const bingStyle = {
   version: 8,
@@ -166,7 +166,7 @@ const bingStyle = {
 export const BASEMAP_OPTIONS = [
   // { label: 'default', value: 'bright-v9' },
   { label: 'Default', value: fallbackRasterStyle },
-  { label: 'density', value: wmsDensityStyle },
+  // { label: 'density', value: wmsDensityStyle },
   { label: 'bing', value: bingStyle },
   // { label: 'mapbox satellite', value: 'satellite-v9' },
 ];
