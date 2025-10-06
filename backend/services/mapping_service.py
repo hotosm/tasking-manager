@@ -579,7 +579,9 @@ class MappingService:
             )
 
             # Update the duration of the lock/extension before creating new history
-            last_history = await TaskHistory.get_last_action(extend_dto.project_id, task_id)
+            last_history = await TaskHistory.get_last_action(
+                extend_dto.project_id, task_id
+            )
             # To reset a lock the last action must have been either lock or extension
             last_action = TaskAction[last_history["result"][0]["action"]]
             await TaskHistory.update_task_locked_with_duration(
