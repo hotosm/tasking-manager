@@ -1120,8 +1120,8 @@ class Task(Base):
             last_history = await TaskHistory.get_last_action(project_id, task_id, db)
             # To unlock a task the last action must have been either lock or extension
             last_action = TaskAction[last_history["result"][0]["action"]]
-            TaskHistory.update_task_locked_with_duration(
-                task_id, project_id, last_action, user_id
+            await TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, last_action, user_id, db
             )
 
         # Only create new history after updating the duration since we need the last action to update the duration.
@@ -1148,156 +1148,6 @@ class Task(Base):
             mapping_issues=issues,
         )
         # If undo, clear the mapped_by and validated_by fields
-        if undo:
-            if new_state == TaskStatus.MAPPED:
-                self.validated_by = None
-            elif new_state == TaskStatus.READY:
-                self.mapped_by = None
-        elif (
-            new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
-            and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
-        ):
-            # Don't set mapped if state being set back to mapped after validation
-            self.mapped_by = user_id
-        elif new_state == TaskStatus.VALIDATED:
-            TaskInvalidationHistory.record_validation(
-                self.project_id, self.id, user_id, history
-            )
-            self.validated_by = user_id
-        elif new_state == TaskStatus.INVALIDATED:
-            TaskInvalidationHistory.record_invalidation(
-                self.project_id, self.id, user_id, history
-            )
-            self.mapped_by = None
-            self.validated_by = None
-
-        self.task_status = new_state.value
-        self.locked_by = None
-        self.update()
-
-    def reset_lock(self, user_id, comment=None):
-        """Removes a current lock from a task, resets to last status and
-        updates history with duration of lock"""
-        last_history = TaskHistory.get_last_action(self.project_id, self.id)
-        # To reset a lock the last action must have been either lock or extension
-        last_action = TaskAction[last_history.action]
-        TaskHistory.update_task_locked_with_duration(
-            self.id, self.project_id, last_action, user_id
-        )
-
-        # Only set task history after updating the duration since we need the last action to update the duration.
-        if comment:
-            self.set_task_history(
-                action=TaskAction.COMMENT, comment=comment, user_id=user_id
-            )
-
-        self.clear_lock()
-
-    def clear_lock(self):
-        """Resets to last status and removes current lock from a task"""
-        self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
-        self.locked_by = None
-        self.update()
-
-    @staticmethod
-    async def clear_task_lock(task_id: int, project_id: int, db: Database):
-        """Unlocks task in scope, clears the lock as though it never happened."""
-
-        # Get the last locked action and delete it from the task history
-        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
-        if last_action:
-            delete_action_query = """
-                DELETE FROM task_history
-                WHERE id = :history_id
-            """
-            await db.execute(
-                query=delete_action_query, values={"history_id": last_action["id"]}
-            )
-
-        # Clear the lock from the task itself
-        await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
-
-    @staticmethod
-    async def record_auto_unlock(
-        task_id: int, project_id: int, lock_duration: str, db: Database
-    ):
-        """Automatically unlocks the task and records the auto-unlock action in task history"""
-
-        # Fetch the locked user and last locked action for the task
-        locked_user_query = """
-            SELECT locked_by
-            FROM tasks
-            WHERE id = :task_id AND project_id = :project_id
-        """
-        locked_user = await db.fetch_one(
-            query=locked_user_query,
-            values={"task_id": task_id, "project_id": project_id},
-        )
-
-        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
-
-        if last_action and last_action["action"] == "LOCKED_FOR_MAPPING":
-            next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING
-        else:
-            next_action = TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
-
-        # Clear the task lock (clear the lock and delete the last locked action)
-        await Task.clear_task_lock(task_id, project_id, db)
-
-        # Add AUTO_UNLOCKED action in the task history
-        auto_unlocked = await Task.set_task_history(
-            task_id=task_id,
-            project_id=project_id,
-            user_id=locked_user["locked_by"],
-            action=next_action,
-            db=db,
-        )
-
-        # Update the action_text with the lock duration
-        update_history_query = """
-            UPDATE task_history
-            SET action_text = :lock_duration
-            WHERE id = :history_id
-        """
-        await db.execute(
-            query=update_history_query,
-            values={"lock_duration": lock_duration, "history_id": auto_unlocked["id"]},
-        )
-
-    @staticmethod
-    async def unlock_task(
-        task_id: int,
-        project_id: int,
-        user_id: int,
-        new_state: TaskStatus,
-        db: Database,
-        comment: Optional[str] = None,
-        undo: bool = False,
-        issues: Optional[List[Dict[str, Any]]] = None,
-    ):
-        """Unlock the task and change its state."""
-        # Add task comment history if provided
-        if comment:
-            await Task.set_task_history(
-                task_id,
-                project_id,
-                user_id,
-                TaskAction.COMMENT,
-                db,
-                comment=comment,
-                mapping_issues=issues,
-            )
-        # Record state change in history
-        history = await Task.set_task_history(
-            task_id,
-            project_id,
-            user_id,
-            TaskAction.STATE_CHANGE,
-            db,
-            comment=comment,
-            new_state=new_state,
-            mapping_issues=issues,
-        )
         if undo:
             if new_state == TaskStatus.MAPPED:
                 update_query = """
@@ -1378,11 +1228,6 @@ class Task(Base):
                         },
                     )
 
-            # Update task locked duration in the history when `undo` is False
-            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            await TaskHistory.update_task_locked_with_duration(
-                task_id, project_id, TaskStatus(current_status), user_id, db
-            )
         # Final query for updating task status
         final_update_query = """
             UPDATE tasks
@@ -1396,6 +1241,71 @@ class Task(Base):
                 "task_id": task_id,
                 "project_id": project_id,
             },
+        )
+
+    @staticmethod
+    async def clear_task_lock(task_id: int, project_id: int, db: Database):
+        """Unlocks task in scope, clears the lock as though it never happened."""
+
+        # Get the last locked action and delete it from the task history
+        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
+        if last_action:
+            delete_action_query = """
+                DELETE FROM task_history
+                WHERE id = :history_id
+            """
+            await db.execute(
+                query=delete_action_query, values={"history_id": last_action["id"]}
+            )
+
+        # Clear the lock from the task itself
+        await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
+
+    @staticmethod
+    async def record_auto_unlock(
+        task_id: int, project_id: int, lock_duration: str, db: Database
+    ):
+        """Automatically unlocks the task and records the auto-unlock action in task history"""
+
+        # Fetch the locked user and last locked action for the task
+        locked_user_query = """
+            SELECT locked_by
+            FROM tasks
+            WHERE id = :task_id AND project_id = :project_id
+        """
+        locked_user = await db.fetch_one(
+            query=locked_user_query,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
+        last_action = await TaskHistory.get_last_locked_action(project_id, task_id, db)
+
+        if last_action and last_action["action"] == "LOCKED_FOR_MAPPING":
+            next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING
+        else:
+            next_action = TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+
+        # Clear the task lock (clear the lock and delete the last locked action)
+        await Task.clear_task_lock(task_id, project_id, db)
+
+        # Add AUTO_UNLOCKED action in the task history
+        auto_unlocked = await Task.set_task_history(
+            task_id=task_id,
+            project_id=project_id,
+            user_id=locked_user["locked_by"],
+            action=next_action,
+            db=db,
+        )
+
+        # Update the action_text with the lock duration
+        update_history_query = """
+            UPDATE task_history
+            SET action_text = :lock_duration
+            WHERE id = :history_id
+        """
+        await db.execute(
+            query=update_history_query,
+            values={"lock_duration": lock_duration, "history_id": auto_unlocked["id"]},
         )
 
     @staticmethod
@@ -1416,6 +1326,15 @@ class Task(Base):
         :param comment: Optional comment provided during the reset.
         :param db: The database connection.
         """
+
+        last_history = TaskHistory.get_last_action(project_id, task_id, db)
+        # To reset a lock the last action must have been either lock or extension
+        last_action = TaskAction[last_history["result"][0]["action"]]
+        await TaskHistory.update_task_locked_with_duration(
+            task_id, project_id, last_action, user_id, db
+        )
+
+        # Only set task history after updating the duration since we need the last action to update the duration.
         # If a comment is provided, set the task history with a comment action
         if comment:
             await Task.set_task_history(
@@ -1426,14 +1345,6 @@ class Task(Base):
                 comment=comment,
                 db=db,
             )
-        # Update task lock history with duration
-        await TaskHistory.update_task_locked_with_duration(
-            task_id=task_id,
-            project_id=project_id,
-            lock_action=TaskStatus(task_status),
-            user_id=user_id,
-            db=db,
-        )
 
         # Clear the lock on the task
         await Task.clear_lock(task_id=task_id, project_id=project_id, db=db)
