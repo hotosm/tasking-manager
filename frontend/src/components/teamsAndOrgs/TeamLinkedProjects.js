@@ -50,7 +50,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
           setResponse({
             type: 'error',
             message:
-              'Project has mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
+              'Certain projects have mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
           });
         }
         console.log(e.message);
@@ -74,8 +74,9 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
         if (e.message === 'ProjectPermissionError') {
           setResponse({
             type: 'error',
-            message:
-              'Project has mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
+            message: `${
+              projectIds.length === 1 ? 'Project has ' : 'Certain projects have '
+            } mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.`,
             projectId: projectIds.length === 1 ? projectIds[0] : 0,
           });
         }
