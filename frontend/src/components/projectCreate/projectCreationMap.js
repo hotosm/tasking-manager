@@ -11,7 +11,13 @@ import { useDropzone } from 'react-dropzone';
 import { maplibreLayerDefn } from '../projects/projectsMap';
 import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS, TASK_COLOURS } from '../../config';
+import {
+  MAPBOX_TOKEN,
+  CHART_COLOURS,
+  TASK_COLOURS,
+  baseLayers,
+  DEFAULT_MAP_STYLE,
+} from '../../config';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import isWebglSupported from '../../utils/isWebglSupported';
@@ -50,7 +56,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
       let bounds = mapObj.map.getBounds();
       let bbox = `${bounds._sw.lng},${bounds._sw.lat},${bounds._ne.lng},${bounds._ne.lat}`;
       fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) => {
-        mapObj.map.getSource('otherProjects').setData(res);
+        mapObj.map.getSource('otherProjects')?.setData(res);
         setIsAoiLoading(false);
       });
     }
@@ -74,7 +80,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     if (!isWebglSupported()) return;
     const map = new maplibregl.Map({
       container: mapRef.current,
-      style: MAP_STYLE,
+      style: DEFAULT_MAP_STYLE,
       center: [0, 0],
       zoom: 1.3,
       attributionControl: false,
@@ -103,6 +109,14 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, []);
 
   const addMapLayers = (map) => {
+    // load all base layer and toggle visibility
+    Object.entries(baseLayers).forEach(([key, value]) => {
+      if (mapObj.map.getSource(`${key}-source`) === undefined) {
+        mapObj.map.addSource(`${key}-source`, value.source);
+        mapObj.map.addLayer(value.layer);
+      }
+    });
+
     if (map.getSource('aoi') === undefined) {
       map.addSource('aoi', {
         type: 'geojson',
@@ -273,6 +287,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
         }
       });
     }
+    // eslint-disable-next-line
   }, [mapObj, metadata, updateMetadata, step]);
 
   if (!isWebglSupported()) {

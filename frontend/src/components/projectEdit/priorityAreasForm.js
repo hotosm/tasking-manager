@@ -13,7 +13,7 @@ import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
+import { MAPBOX_TOKEN, CHART_COLOURS, baseLayers, DEFAULT_MAP_STYLE } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
 import {
   verifyGeometry,
@@ -122,7 +122,7 @@ export const PriorityAreasForm = () => {
       isWebglSupported() &&
       new maplibregl.Map({
         container: mapRef.current,
-        style: MAP_STYLE,
+        style: DEFAULT_MAP_STYLE,
         center: [0, 0],
         zoom: 1,
         attributionControl: false,
@@ -138,6 +138,14 @@ export const PriorityAreasForm = () => {
   }, []);
 
   const addMapLayers = (map) => {
+    // load all base layer and toggle visibility
+    Object.entries(baseLayers).forEach(([key, value]) => {
+      if (mapObj.map.getSource(`${key}-source`) === undefined) {
+        mapObj.map.addSource(`${key}-source`, value.source);
+        mapObj.map.addLayer(value.layer);
+      }
+    });
+
     if (map.getSource('aoi') === undefined) {
       map.addSource('aoi', {
         type: 'geojson',
