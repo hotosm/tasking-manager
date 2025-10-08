@@ -155,7 +155,7 @@ export default defineMessages({
   },
   confirmDeleteTitle_users: {
     id: 'deleteModal.title.users',
-    defaultMessage: "Are you sure you want to redact this user's information?",
+    defaultMessage: "Are you sure you want to delete this user's information?",
   },
   confirmDeleteTitle_comments: {
     id: 'deleteModal.title.comments',
