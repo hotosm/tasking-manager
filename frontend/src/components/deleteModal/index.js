@@ -33,7 +33,6 @@ const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
  */
 export function DeleteModal({
   id,
-  name,
   type,
   className,
   endpointURL,
@@ -70,7 +69,7 @@ export function DeleteModal({
         let errorMessage = e.message;
 
         if (Object.prototype.hasOwnProperty.call(messages, errorMessage)) {
-          errorMessage = intl.formatMessage({...messages[e.message]});
+          errorMessage = intl.formatMessage({ ...messages[e.message] });
         }
 
         setDeleteStatus('failure');
