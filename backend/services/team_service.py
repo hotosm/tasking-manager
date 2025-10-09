@@ -907,7 +907,7 @@ class TeamService:
                             f"this is the only project-manager team. Contact the project admin "
                             f"to assign another project manager team before unlinking."
                         ),
-                        "SubCode": "ProjectPermissionError",
+                        "SubCode": "ProjectManagementPermissionError",
                     },
                     status_code=403,
                 )
@@ -933,7 +933,7 @@ class TeamService:
                             f"and this is the only mapper team. Contact the project admin "
                             f"to unlink the team and assign another mapper team."
                         ),
-                        "SubCode": "ProjectPermissionError",
+                        "SubCode": "TeamMappingPermissionError",
                     },
                     status_code=403,
                 )
@@ -959,7 +959,7 @@ class TeamService:
                             f"and this is the only validator team. Contact the project admin "
                             f"to unlink the team and assign another validator team."
                         ),
-                        "SubCode": "ProjectPermissionError",
+                        "SubCode": "TeamValidationPermissionError",
                     },
                     status_code=403,
                 )
