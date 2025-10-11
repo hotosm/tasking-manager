@@ -26,21 +26,38 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
         window.iD.prefs('background-custom-template', imagery);
-        // this line is needed to keep the extraIdParams when custom imagery is set
-        if (extraIdParams) {
-          const params = new URLSearchParams(extraIdParams);
-          const offsetStr = params.get('offset'); // "10,-10"
-          if (!offsetStr) return;
-          const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
-          const offset = window.iD.geoMetersToOffset(offsetInMeters);
-          iDContext.background().offset(offset);
-        }
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
           iDContext.background().baseLayerSource(imagerySource);
         }
       }
+    }
+
+    // wait till iDContext loads background
+    if (!iDContext?.background()) return;
+
+    // this fixes the custom imagery persisting from previous load
+    // when no imagery is selected in project setting
+    if (!imagery) {
+      // set Bing as default
+      const imagerySource = iDContext.background().findSource('Bing');
+      if (!imagerySource) return;
+      iDContext.background().baseLayerSource(imagerySource);
+    }
+
+    // this sets imagery offset from extraIdParams if present
+    if (extraIdParams) {
+      const params = new URLSearchParams(extraIdParams);
+      const offsetStr = params.get('offset'); // "10,-10"
+      if (!offsetStr) return;
+      const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
+      const offset = window.iD.geoMetersToOffset(offsetInMeters);
+      iDContext.background().offset(offset);
+    } else {
+      // reset offset if params not present
+      // this is needed to fix the offset persisting from previous project issue
+      iDContext.background().offset([0, 0]);
     }
   }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
