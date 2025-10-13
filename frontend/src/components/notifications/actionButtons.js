@@ -34,13 +34,13 @@ export const ActionButtons = ({
 
   const deleteMessages = () => {
     if (isAllSelected) {
-      pushToLocalJSONAPI(`/api/v2/notifications/delete-all/${param}`, null, token, 'DELETE')
+      pushToLocalJSONAPI(`notifications/delete-all/${param}`, null, token, 'DELETE')
         .then(() => handleSuccess())
         .catch((e) => {
           console.log(e.message);
         });
     } else {
-      pushToLocalJSONAPI(`/api/v2/notifications/delete-multiple/`, payload, token, 'DELETE')
+      pushToLocalJSONAPI(`notifications/delete-multiple/`, payload, token, 'DELETE')
         .then(() => {
           // Decrement the page query if the user deleted all notifications in the last page
           if (inboxQuery.page === totalPages && selected.length === pageOfCards.length) {
@@ -64,13 +64,13 @@ export const ActionButtons = ({
 
   const markNotificationsAsRead = () => {
     if (isAllSelected) {
-      pushToLocalJSONAPI(`/api/v2/notifications/mark-as-read-all/${param}`, null, token, 'POST')
+      pushToLocalJSONAPI(`notifications/mark-as-read-all/${param}`, null, token, 'POST')
         .then(() => handleSuccess())
         .catch((e) => {
           console.log(e.message);
         });
     } else {
-      pushToLocalJSONAPI(`/api/v2/notifications/mark-as-read-multiple/`, payload, token, 'POST')
+      pushToLocalJSONAPI(`notifications/mark-as-read-multiple/`, payload, token, 'POST')
         .then(() => handleSuccess())
         .catch((e) => {
           console.log(e.message);
