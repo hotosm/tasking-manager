@@ -6,20 +6,24 @@ import { SwitchToggle } from '../formInputs';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { TeamSelect } from './teamSelect';
 import { PermissionsBlock } from './permissionsBlock';
+import { useFetch } from '../../hooks/UseFetch';
 
 export const PermissionsForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const permissions = [
     { label: <FormattedMessage {...messages.permissions_ANY} />, value: 'ANY' },
-    { label: <FormattedMessage {...messages.permissions_LEVEL} />, value: 'LEVEL' },
     { label: <FormattedMessage {...messages.permissions_TEAMS} />, value: 'TEAMS' },
-    { label: <FormattedMessage {...messages.permissions_TEAMS_LEVEL} />, value: 'TEAMS_LEVEL' },
   ];
 
-  return (
+  const [error, loading, result] = useFetch('levels/');
+
+  return !error && !loading && (
     <div className="w-100">
-      <PermissionsBlock permissions={permissions} type="mappingPermission" />
-      <PermissionsBlock permissions={permissions} type="validationPermission" />
+      {result?.levels ? <>
+        <PermissionsBlock permissions={permissions} levels={result.levels} type="mappingPermission" />
+        <PermissionsBlock permissions={permissions} levels={result.levels} type="validationPermission" />
+      </> : ""}
+
       <div className={styleClasses.divClass.replace('w-70', 'w-90')}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.teams} />

@@ -1,11 +1,28 @@
+from unittest.mock import AsyncMock, patch, MagicMock
+
 import pytest
+from httpx import AsyncClient
+
 from backend.services.users.user_service import (
     NotFound,
     UserRole,
     UserService,
     UserServiceError,
 )
-from tests.api.helpers.test_helpers import create_canned_user
+from tests.api.helpers.test_helpers import (
+    create_canned_user,
+    return_canned_user,
+)
+from backend.models.postgis.user import (
+    User,
+    UserNextLevel,
+    UserStats,
+    UserLevelVote,
+)
+from backend.models.postgis.mapping_level import MappingLevel
+from backend.models.postgis.mapping_badge import MappingBadge
+from backend.models.dtos.mapping_badge_dto import MappingBadgeCreateDTO
+from backend.models.dtos.mapping_level_dto import MappingLevelCreateDTO, AssociatedBadge
 
 
 @pytest.mark.anyio
@@ -62,6 +79,375 @@ class TestUserService:
         with pytest.raises(UserServiceError):
             await UserService.add_role_to_user(1, "test", "TEST", self.db)
 
+    async def test_get_mapping_level(self):
+        # Assert
+        level = await UserService.get_mapping_level(self.test_user.id, self.db)
+
+        assert level.name == "BEGINNER"
+
+    async def test_set_user_mapping_level(self):
+        # Act
+        await UserService.set_user_mapping_level(
+            self.test_user.username, "ADVANCED", self.db
+        )
+
+        # Assert
+        level = await UserService.get_mapping_level(self.test_user.id, self.db)
+
+        assert level.name == "ADVANCED"
+        assert not level.is_beginner
+
     async def test_unknown_level_raise_error_when_setting_level(self):
         with pytest.raises(UserServiceError):
             await UserService.set_user_mapping_level("test", "TEST", self.db)
+
+    async def test_register_user_beginner(self):
+        # Act
+        registered_user = await UserService.register_user(
+            1, "foo", 0, None, "foo@example.com", self.db
+        )
+
+        # Assert
+        assert (
+            registered_user.mapping_level
+            == (await MappingLevel.get_by_name("BEGINNER", self.db)).id
+        )
+
+    @patch.object(AsyncClient, "get")
+    async def test_get_and_save_stats(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
+                },
+            },
+        )
+        mock_get.return_value = mock_response
+
+        # Act
+        await UserService.get_and_save_stats(self.test_user.id, self.db)
+
+        # Assert
+        stats = await UserStats.get_for_user(self.test_user.id, self.db)
+        assert stats.stats == '{"changeset": 251.0}'
+
+    @patch.object(AsyncClient, "get")
+    async def test_get_and_save_stats_error(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 500
+        mock_response.json = MagicMock(
+            return_value={
+                "status": 500,
+                "error": "Internal Server Error",
+                "path": "/api/stats/user",
+            },
+        )
+        mock_get.return_value = mock_response
+
+        # Assert
+        with pytest.raises(UserServiceError):
+            # Act
+            await UserService.get_and_save_stats(self.test_user.id, self.db)
+
+    @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_happy_path(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # one badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 1
+        assert badges[0].name == "INTERMEDIATE_internal"
+        # intermediate level is assigned
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 2
+        assert new_level.name == "INTERMEDIATE"
+        # Message is sent
+        message_count = await self.db.execute(
+            "select count(*) from messages where to_user_id = :user_id",
+            {
+                "user_id": self.test_user.id,
+            },
+        )
+        assert message_count == 1
+
+    @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_no_level_upgrade(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 249.0}},
+                },
+                "user": {
+                    "changesets": {"count": 249.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # no badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 0
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 1
+        assert new_level.name == "BEGINNER"
+
+    @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_pool_of_approval(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 251.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        await self.db.execute(
+            "UPDATE mapping_levels SET approvals_required = 1 WHERE id = 2"
+        )
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # a badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 1
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 1
+        assert new_level.name == "BEGINNER"
+        # user is added to the waiting queue
+        assert await UserNextLevel.is_nominated(user.id, 2, self.db)
+
+    @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_max_level(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 2000.0}},
+                },
+                "user": {
+                    "changesets": {"count": 2000.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        await self.test_user.set_mapping_level(
+            await MappingLevel.get_by_id(3, self.db), self.db
+        )
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 3
+        assert new_level.name == "ADVANCED"
+
+    @patch.object(AsyncClient, "get")
+    async def test_check_and_update_mapper_level_assignes_badges_on_top_level(
+        self, mock_get
+    ):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 2000.0}},
+                },
+                "user": {
+                    "changesets": {"count": 251.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        await self.test_user.set_mapping_level(
+            await MappingLevel.get_by_id(3, self.db), self.db
+        )
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 0
+
+        # Act
+        await UserService.check_and_update_mapper_level(self.test_user.id, self.db)
+
+        # Assert
+        # no level is upgraded
+        user = await User.get_by_id(self.test_user.id, self.db)
+        new_level = await MappingLevel.get_by_id(user.mapping_level, self.db)
+        assert new_level.id == 3
+        assert new_level.name == "ADVANCED"
+        # The badge is assigned
+        badges = await MappingBadge.get_related_to_user(self.test_user.id, self.db)
+        assert len(badges) == 1
+
+    @patch.object(AsyncClient, "get")
+    async def test_get_user_dto_by_username(self, mock_get):
+        # Arrange
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.json = MagicMock(
+            return_value={
+                "result": {
+                    "topics": {"changeset": {"value": 2000.0}},
+                },
+                "user": {
+                    "changesets": {"count": 2000.0},
+                },
+            }
+        )
+        mock_get.return_value = mock_response
+        # Act
+        dto = await UserService.get_user_dto_by_username(
+            self.test_user.username, self.test_user.id, self.db
+        )
+
+        # Assert
+        assert dto.mapping_level == "BEGINNER"
+
+    async def test_approve_level_needs_one_more(self):
+        # Arrange
+        badge = await MappingBadge.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements='{"roads": 10}',
+            ),
+            self.db,
+        )
+        level = await MappingLevel.create(
+            MappingLevelCreateDTO(
+                name="Super Mapper",
+                approvalsRequired=2,
+                color="#acabad",
+                isBeginner=False,
+                requiredBadges=[AssociatedBadge(id=badge.id)],
+            ),
+            self.db,
+        )
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+
+        other_user = await create_canned_user(
+            self.db, await return_canned_user(self.db, id=24934, username="foo")
+        )
+
+        # Act
+        await UserService.approve_level(self.test_user.id, other_user.id, self.db)
+
+        # Assert
+        user = await UserService.get_user_by_id(self.test_user.id, self.db)
+        assert user.mapping_level != level.id
+        assert await UserNextLevel.is_nominated(self.test_user.id, level.id, self.db)
+
+    async def test_approve_level(self):
+        # Arrange
+        badge = await MappingBadge.create(
+            MappingBadgeCreateDTO(
+                name="a badge",
+                description="...",
+                imagePath="/",
+                requirements='{"roads": 10}',
+            ),
+            self.db,
+        )
+        level = await MappingLevel.create(
+            MappingLevelCreateDTO(
+                name="Super Mapper",
+                approvalsRequired=1,
+                color="#acabad",
+                isBeginner=False,
+                requiredBadges=[AssociatedBadge(id=badge.id)],
+            ),
+            self.db,
+        )
+        await UserNextLevel.nominate(self.test_user.id, level.id, self.db)
+
+        other_user = await create_canned_user(
+            self.db, await return_canned_user(self.db, id=24934, username="foo")
+        )
+
+        # Act
+        await UserService.approve_level(self.test_user.id, other_user.id, self.db)
+
+        # Assert
+        user = await UserService.get_user_by_id(self.test_user.id, self.db)
+        # Level is upgraded
+        assert user.mapping_level == level.id
+        # user_next_level table is cleared
+        assert not await UserNextLevel.is_nominated(
+            self.test_user.id, level.id, self.db
+        )
+        # votes are cleared
+        assert await UserLevelVote.count(self.test_user.id, level.id, self.db) == 0
+        # Message is sent
+        message_count = await self.db.execute(
+            "select count(*) from messages where to_user_id = :user_id",
+            {
+                "user_id": self.test_user.id,
+            },
+        )
+        assert message_count == 1
+
+    async def test_next_level(self):
+        next_level = await UserService.next_level(self.test_user.id, self.db)
+
+        assert next_level.next_level == "INTERMEDIATE"
+        assert next_level.aggregated_goal == 250
+        assert next_level.aggregated_progress == 0
+        assert next_level.metrics == ["changeset"]
+
+    async def test_next_level_empy(self):
+        await UserService.set_user_mapping_level(
+            self.test_user.username, "ADVANCED", self.db
+        )
+
+        next_level = await UserService.next_level(self.test_user.id, self.db)
+
+        assert next_level is None

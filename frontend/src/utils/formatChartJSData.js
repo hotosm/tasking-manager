@@ -1,7 +1,13 @@
 export const formatChartData = (reference, stats) => {
   let data = { datasets: [{ data: [], backgroundColor: [] }], labels: [] };
 
-  data.datasets[0].data = reference.map((f) => stats[f.field]);
+  data.datasets[0].data = reference.map((f) => {
+    if (typeof f.field === "function") {
+      return f.field(stats) || 0;
+    }
+
+    return stats[f.field];
+  });
   const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
   data.datasets[0].data = data.datasets[0].data.map((v) => Math.round((v / total) * 100));
   data.datasets[0].backgroundColor = reference.map((f) => f.backgroundColor);

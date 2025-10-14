@@ -115,7 +115,6 @@ async def get_project_tasks(
             description: Internal Server Error
     """
     try:
-
         is_private, status = await ProjectService.get_project_privacy_and_status(
             project_id, db
         )
@@ -137,7 +136,6 @@ async def get_project_tasks(
                 db,
             )
             if not project_dto:
-
                 return JSONResponse(
                     content={
                         "Error": "User not permitted: Private Project",

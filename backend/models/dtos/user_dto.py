@@ -7,7 +7,7 @@ from pydantic.functional_validators import field_validator
 from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.dtos.mapping_dto import TaskDTO
 from backend.models.dtos.stats_dto import Pagination
-from backend.models.postgis.statuses import MappingLevel, UserRole
+from backend.models.postgis.statuses import UserRole
 
 
 def is_known_role(value):
@@ -65,22 +65,6 @@ class UserDTO(BaseModel):
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
     )
     self_description_gender: Optional[str] = Field(None, alias="selfDescriptionGender")
-
-    @field_validator("mapping_level", mode="before")
-    def is_known_mapping_level(value):
-        """Validates that supplied mapping level is known value"""
-        if value.upper() == "ALL":
-            return True
-
-        try:
-            value = value.split(",")
-            for level in value:
-                MappingLevel[level.upper()]
-        except KeyError:
-            raise ValueError(
-                f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
-                f"{MappingLevel.INTERMEDIATE.name}, {MappingLevel.ADVANCED.name}, ALL"
-            )
 
     def validate_self_description(self, data, value):
         if (
@@ -179,6 +163,9 @@ class UserSearchQuery(BaseModel):
     page: Optional[int] = None
     pagination: bool = True
     per_page: Optional[int] = Field(default=20, alias="perPage")
+    voter_id: int
+    sort: Optional[str] = None
+    sort_dir: str = Field(default="desc")
 
     class Config:
         populate_by_name = True
@@ -208,6 +195,10 @@ class ListedUser(BaseModel):
     role: Optional[str] = None
     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
     picture_url: Optional[str] = Field(None, alias="pictureUrl")
+    stats_last_updated: Optional[datetime] = Field(None, alias="statsLastUpdated")
+    stats: Optional[dict] = None
+    requires_approval: Optional[bool] = None
+    user_has_voted: Optional[bool] = None
 
 
 class UserRegisterEmailDTO(BaseModel):
@@ -264,6 +255,15 @@ class UserTaskDTOs(BaseModel):
 
     user_tasks: List[TaskDTO] = Field([], alias="tasks")
     pagination: Pagination = Field(None, alias="pagination")
+
+
+class UserNextLevelDTO(BaseModel):
+    """Informs about progress towards the next level"""
+
+    next_level: str = Field(None, alias="nextLevel")
+    aggregated_progress: float = Field(None, alias="aggregatedProgress")
+    aggregated_goal: float = Field(None, alias="aggregatedGoal")
+    metrics: List[str]
 
 
 class AuthUserDTO(BaseModel):

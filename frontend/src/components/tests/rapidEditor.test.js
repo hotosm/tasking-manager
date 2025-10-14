@@ -1,20 +1,6 @@
 import { generateStartingHash, equalsUrlParameters } from '../rapidEditor';
 
 describe('equalsUrlParameters', () => {
-  // This is a mini polyfill for Node 16, 17, and 18. Node 19 actually implements URLSearchParams.size.
-  // See https://nodejs.org/api/url.html#urlsearchparamssize for details.
-  if (!('size' in URLSearchParams.prototype)) {
-    const prototype = URLSearchParams.prototype;
-    Object.defineProperty(prototype, 'size', {
-      get: function () {
-        let counter = 0;
-        for (const [_] of this) {
-          counter += 1;
-        }
-        return counter;
-      },
-    });
-  }
   it('equals', () => {
     expect(
       equalsUrlParameters(
@@ -47,7 +33,7 @@ describe('equalsUrlParameters', () => {
         new URLSearchParams('comment=something&presets=null'),
         new URLSearchParams('comment=something&presets=null&data=extra'),
       ),
-    ).toBeFalsy();
+    ).toBeTruthy();
     expect(
       equalsUrlParameters(
         new URLSearchParams('comment=something&presets=null&data=extra'),

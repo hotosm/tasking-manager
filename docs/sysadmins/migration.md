@@ -6,6 +6,44 @@ please do always backups and run the migration first in a testing
 environment, make sure everything works as expected before you move
 on!
 
+## Migration from version 4 to version 5
+
+The version 5 of the Tasking Manager has major stack update.
+Tasking Manager version 4 was a synchronous application built with Flask backend
+and psycopg2 as database driver which is migrated to FastAPI backend and asyncpg.
+
+
+To migrate Tasking Manager from version 4 to 5, first and optionally,
+you might want take a backup of the database. Although no specific database changes,
+but a database backup before a major transition is always a good practice. For
+the database backup you can run
+
+$ `pg_dump -h <host> -p <port> -U <user> -d <dbname> -f ./backup.sql`
+
+The latest/development branch is the develop branch.
+Use main branch instead of develop for stability
+Simply pull/rebase the develop/main branch and build.
+
+$ `docker compose up --build`
+
+Note: ${TARGET_TAG} in docker-compose for different (development/deployment) environment. Use debug
+for development purpose and prod for deployment purpose.
+
+Since docker compose has the .env file as default environment file,
+the convention of using the non standard dotenv tasking-manager.env
+might result in a database health-check warning - postgres user does not exist.
+
+You can specify the file with the command
+
+$ `docker compose --env-file tasking-manager.env up -d`
+
+Also note that if you're using wsgi server, the version 5 might be incompatible
+with it. Instead, uvicorn can be used, which is also updated on the Dockerfile
+on the scripts/docker/Dockerfile and running through the command
+
+$ `CMD ["uvicorn", "backend.main:api", "--host", "0.0.0.0", "--port", "5000", \
+    "--workers", "8", "--log-level", "critical","--no-access-log"]`
+
 ## Migration from version 3 to version 4
 
 First and optionally, you might want to run the following SQL script

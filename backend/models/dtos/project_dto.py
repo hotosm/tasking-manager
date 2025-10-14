@@ -120,7 +120,7 @@ def is_known_mapping_permission(value: str) -> str:
             detail=(
                 f"Unknown mappingPermission: {value}. Valid values are: "
                 f"{MappingPermission.ANY.name}, "
-                f"{MappingPermission.LEVEL.name}."
+                f"{MappingPermission.TEAMS.name}."
             ),
         )
     return value
@@ -136,9 +136,7 @@ def is_known_validation_permission(value: str) -> str:
             detail=(
                 f"Unknown validationPermission: {value}. Valid values are: "
                 f"{ValidationPermission.ANY.name}, "
-                f"{ValidationPermission.LEVEL.name}, "
                 f"{ValidationPermission.TEAMS.name}, "
-                f"{ValidationPermission.TEAMS_LEVEL.name}."
             ),
         )
     return value
@@ -228,7 +226,9 @@ class ProjectDTO(BaseModel):
     )
     difficulty: str = Field(alias="difficulty")
     mapping_permission: str = Field(alias="mappingPermission")
+    mapping_permission_level_id: int = Field(alias="mappingPermissionLevelId")
     validation_permission: str = Field(alias="validationPermission")
+    validation_permission_level_id: int = Field(alias="validationPermissionLevelId")
     enforce_random_task_selection: Optional[bool] = Field(
         False, alias="enforceRandomTaskSelection"
     )

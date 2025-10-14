@@ -24,6 +24,7 @@ jest.spyOn(maplibregl, 'getRTLTextPluginStatus').mockImplementation(() => 'unava
 // Fix various timeout errors
 configure({ asyncUtilTimeout: 4000 });
 
+// eslint-disable-next-line flowtype/require-valid-file-annotation
 // Needed for react-tooltip dependency (@floating-ui/dom). See https://github.com/floating-ui/floating-ui/issues/1774 .
 // This can be removed after https://github.com/jsdom/jsdom/issues/3368 is fixed.
 beforeEach(() => {

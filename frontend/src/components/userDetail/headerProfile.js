@@ -7,6 +7,7 @@ import { TwitterIcon, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/topBar';
 import { UserOrganisations } from './userTeamsOrgs';
+import { UserBadges } from './userBadges';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
@@ -124,7 +125,7 @@ export const MyContributionsNav = ({ username, authUser }) => {
   );
 };
 
-export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
+export const HeaderProfile = ({ userDetails, selfProfile }) => {
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
@@ -162,11 +163,12 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
             <p className="f125 ma0 mb2 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
-            <NextMappingLevel changesetsCount={changesets} />
+            {userDetails && <NextMappingLevel userId={userDetails.id} />}
             <SocialMedia data={user} />
           </div>
           <div className="pt1 dib fl w-50-l w-100 v-btm">
             <UserOrganisations userId={user.id} />
+            <UserBadges userId={user.id} />
           </div>
         </div>
       </div>

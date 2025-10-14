@@ -44,6 +44,14 @@ export default defineMessages({
     id: 'deleteModal.status.success.campaigns',
     defaultMessage: 'Campaign deleted successfully.',
   },
+  success_badges: {
+    id: 'deleteModal.status.success.badges',
+    defaultMessage: 'Badge deleted successfully.',
+  },
+  success_levels: {
+    id: 'deleteModal.status.success.levels',
+    defaultMessage: 'Level deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
@@ -79,6 +87,14 @@ export default defineMessages({
   failure_comments: {
     id: 'deleteModal.status.failure.comments',
     defaultMessage: 'An error occurred when trying to delete this comment.',
+  },
+  failure_badges: {
+    id: 'deleteModal.status.failure.badges',
+    defaultMessage: 'An error occurred when trying to delete this badge.',
+  },
+  failure_levels: {
+    id: 'deleteModal.status.failure.levels',
+    defaultMessage: 'An error occurred when trying to delete this level.',
   },
   delete: {
     id: 'deleteModal.button.delete',
@@ -133,8 +149,28 @@ export default defineMessages({
     id: 'deleteModal.title.comments',
     defaultMessage: 'Are you sure you want to delete this comment?',
   },
+  confirmDeleteTitle_badges: {
+    id: 'deleteModal.title.badges',
+    defaultMessage: 'Are you sure you want to delete this badge?',
+  },
+  confirmDeleteTitle_levels: {
+    id: 'deleteModal.title.levels',
+    defaultMessage: 'Are you sure you want to delete this level?',
+  },
   OrgHasProjectsError: {
     id: 'deleteModal.error.OrgHasProjectsError',
     defaultMessage: 'Organisation has some projects. Please delete them first.',
+  },
+  MAPPING_LEVEL_HAS_USERS: {
+    id: 'deleteModal.error.levelHasUsersError',
+    defaultMessage: 'Some users have this level so it can\'t be deleted',
+  },
+  MAPPING_LEVEL_BEGINNER: {
+    id: 'deleteModal.error.levelBeginner',
+    defaultMessage: 'You can\'t delete the beginner level',
+  },
+  MAPPING_BADGE_HAS_USERS: {
+    id: 'deleteModal.error.badgeHasUsersError',
+    defaultMessage: 'You can\'t delete a badge that users have earned',
   },
 });

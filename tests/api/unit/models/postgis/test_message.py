@@ -14,7 +14,9 @@ class TestMessage:
     async def setup_test_data(self, db_connection_fixture, request):
         """Setup test user before each test."""
         assert db_connection_fixture is not None, "Database connection is not available"
-        test_user = return_canned_user(TEST_USERNAME, TEST_USER_ID)
+        test_user = await return_canned_user(
+            db_connection_fixture, TEST_USERNAME, TEST_USER_ID
+        )
         await create_canned_user(db_connection_fixture, test_user)
 
         request.cls.db = db_connection_fixture
@@ -59,7 +61,7 @@ class TestMessage:
         """Tests that all messages can be deleted by type."""
         await self.send_multiple_welcome_messages(3)
 
-        test_user_2 = return_canned_user("test_user_2", 222222222)
+        test_user_2 = await return_canned_user(self.db, "test_user_2", 222222222)
         await create_canned_user(self.db, test_user_2)
         await MessageService.send_team_join_notification(
             test_user_2.id,
@@ -113,7 +115,7 @@ class TestMessage:
         """Test that all messages of a certain type can be marked as read."""
         await self.send_multiple_welcome_messages(3)
 
-        test_user_2 = return_canned_user("test_user_2", 222222222)
+        test_user_2 = await return_canned_user(self.db, "test_user_2", 222222222)
         await create_canned_user(self.db, test_user_2)
 
         await MessageService.send_team_join_notification(

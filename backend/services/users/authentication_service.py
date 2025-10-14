@@ -128,7 +128,6 @@ class AuthenticationService:
             user_picture = None
 
         try:
-            await UserService.get_user_by_id(osm_id, db)
             await UserService.update_user(osm_id, username, user_picture, db)
         except NotFound:
             # User not found, so must be new user
@@ -139,6 +138,9 @@ class AuthenticationService:
                     osm_id, username, changeset_count, user_picture, email, db
                 )
             await MessageService.send_welcome_message(new_user, db)
+
+        # Update stats
+        await UserService.get_and_save_stats(osm_id, db)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
         return {

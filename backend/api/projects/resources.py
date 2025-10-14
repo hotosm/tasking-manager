@@ -1160,7 +1160,6 @@ async def get_project_summary(
             db,
         )
         if not project_dto:
-
             return JSONResponse(
                 content={
                     "Error": "User not permitted: Private Project",

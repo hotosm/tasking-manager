@@ -38,14 +38,6 @@ class TaskStatus(Enum):
     SPLIT = 7  # Task has been split
 
 
-class MappingLevel(Enum):
-    """The mapping level the mapper has achieved"""
-
-    BEGINNER = 1
-    INTERMEDIATE = 2
-    ADVANCED = 3
-
-
 class ProjectDifficulty(Enum):
     EASY = 1
     MODERATE = 2
@@ -82,7 +74,7 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_ACCEPTED_LICENSE = 101
     USER_NOT_ON_ALLOWED_LIST = 102
     PROJECT_NOT_PUBLISHED = 103
-    USER_IS_BEGINNER = 104
+    USER_NOT_CORRECT_MAPPING_LEVEL = 104
     NOT_A_VALIDATION_TEAM = 105
     USER_NOT_TEAM_MEMBER = 106
     PROJECT_HAS_NO_TEAM = 107
@@ -152,18 +144,14 @@ class MappingPermission(Enum):
     """Describes a set of permissions for mapping on a project"""
 
     ANY = 0
-    LEVEL = 1
     TEAMS = 2
-    TEAMS_LEVEL = 3
 
 
 class ValidationPermission(Enum):
     """Describes a set of permissions for validating on a project"""
 
     ANY = 0
-    LEVEL = 1
     TEAMS = 2
-    TEAMS_LEVEL = 3
 
 
 class OrganisationType(Enum):
