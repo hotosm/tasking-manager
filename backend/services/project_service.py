@@ -435,7 +435,17 @@ class ProjectService:
             is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
                 project.id, user_id, db
             )
-            if not is_allowed_user:
+
+            allowed_roles = [
+                TeamRoles.MAPPER.value,
+                TeamRoles.VALIDATOR.value,
+                TeamRoles.PROJECT_MANAGER.value,
+            ]
+
+            is_team_member = await TeamService.check_team_membership(
+                project.id, allowed_roles, user_id, db
+            )
+            if not (is_allowed_user or is_team_member):
                 return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to map"
@@ -444,6 +454,7 @@ class ProjectService:
     async def has_validation_permission(
         project: Project, user_id: int, validation_permission: int, db: Database
     ):
+
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         is_team_member = await TeamService.check_team_membership(
             project.id, allowed_roles, user_id, db
@@ -517,8 +528,11 @@ class ProjectService:
             is_allowed_user = await ProjectService.is_user_in_the_allowed_list(
                 project_id, user_id, db
             )
-
-            if not is_allowed_user:
+            allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
+            is_team_member = await TeamService.check_team_membership(
+                project.id, allowed_roles, user_id, db
+            )
+            if not (is_allowed_user or is_team_member):
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to validate"
