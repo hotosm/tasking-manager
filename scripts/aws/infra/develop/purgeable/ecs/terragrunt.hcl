@@ -117,7 +117,7 @@ inputs = {
       { lower_bound = 10, upper_bound = null, adjustment = 2 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -60, adjustment = -1 }
     ]
   }
 
@@ -133,7 +133,7 @@ inputs = {
       { lower_bound = 10, upper_bound = null, adjustment = 2 },
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -40, adjustment = -1 }
     ]
   }
 
