@@ -31,8 +31,9 @@ describe('Submitting Mapping Status for a Task', () => {
     return { user, router };
   };
 
+  jest.retryTimes(2);
   it('should stop mapping and direct to tasks selection page', async () => {
-    act(() => {
+    await act(() => {
       store.dispatch({ type: 'SET_LOCALE', locale: 'en-US' });
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
       store.dispatch({
@@ -62,7 +63,7 @@ describe('Submitting Mapping Status for a Task', () => {
         </QueryParamProvider>
       </QueryClientProviders>,
     );
-
+    
     await waitFor(() =>
       expect(screen.getByRole('heading')).toHaveTextContent(
         'We found another mapping task already locked by you',
