@@ -84,22 +84,17 @@ export const TeamSelect = () => {
     });
   };
 
-  // Get only ids.
-  const teamsIds = projectInfo.teams.map((t) => {
-    return t.teamId;
-  });
-
-  let filteredTeams = teamsData?.teams?.filter((t) => !teamsIds.includes(t.teamId));
+  let teamList = teamsData?.teams;
 
   if (org !== null) {
-    filteredTeams = [
+    teamList = [
       {
         label: org.name,
-        options: filteredTeams?.filter((t) => t.organisationId === org.organisationId),
+        options: teamList?.filter((t) => t.organisationId === org.organisationId),
       },
       {
         label: 'Others',
-        options: filteredTeams?.filter((t) => t.organisationId !== org.organisationId),
+        options: teamList?.filter((t) => t.organisationId !== org.organisationId),
       },
     ];
   }
@@ -153,7 +148,7 @@ export const TeamSelect = () => {
           classNamePrefix="react-select"
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.teamId}
-          options={isTeamsLoading ? [] : filteredTeams}
+          options={isTeamsLoading ? [] : teamList}
           onChange={(value) => handleSelect(value, 'team')}
           className="w-40 fl pr2 z-3"
           value={teamSelect.team.name !== null ? teamSelect.team : null}
