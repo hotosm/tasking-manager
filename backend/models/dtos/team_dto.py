@@ -247,3 +247,12 @@ class TeamSearchDTO(BaseModel):
 
     class Config:
         populate_by_name = True
+
+
+class ProjectTeamPairDTO(BaseModel):
+    project_id: int
+    team_id: int
+
+
+class ProjectTeamPairDTOList(BaseModel):
+    items: List[ProjectTeamPairDTO]

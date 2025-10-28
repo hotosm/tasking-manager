@@ -35,7 +35,6 @@ import {
   TeamSideBar,
 } from '../components/teamsAndOrgs/teams';
 import { MessageMembers } from '../components/teamsAndOrgs/messageMembers';
-import { Projects } from '../components/teamsAndOrgs/projects';
 import { LeaveTeamConfirmationAlert } from '../components/teamsAndOrgs/leaveTeamConfirmationAlert';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
@@ -44,6 +43,7 @@ import { PaginatorLine } from '../components/paginator';
 import { updateEntity } from '../utils/management';
 import { EntityError } from '../components/alert';
 import { useTeamsQuery } from '../api/teams';
+import { TeamLinkedProjects } from '../components/teamsAndOrgs/TeamLinkedProjects';
 
 export function ManageTeams() {
   useSetTitleTag('Manage teams');
@@ -427,14 +427,11 @@ export function TeamDetail() {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [error, loading, team] = useFetch(`teams/${id}/`);
-  // eslint-disable-next-line
-  const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?teamId=${id}&omitMapResults=true&projectStatuses=PUBLISHED`,
-    id,
-  );
   const [isMember, setIsMember] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
+
+  const [canUserEditTeam] = useEditTeamAllowed(team);
 
   useEffect(() => {
     if (!token) {
@@ -498,11 +495,9 @@ export function TeamDetail() {
             />
           </div>
           <div className="w-60-l w-100 mt2 pl5-l pl0 fl">
-            <Projects
-              projects={projects}
+            <TeamLinkedProjects
               viewAllEndpoint={`/explore/?team=${id}`}
-              ownerEntity="team"
-              showManageButtons={false}
+              canUserEditTeam={canUserEditTeam}
             />
           </div>
         </div>
