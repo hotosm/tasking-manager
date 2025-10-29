@@ -38,6 +38,39 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
     id,
   );
 
+  const setResponseAsPerSubCode = (e, isMultiple, projectId) => {
+    if (e.message === 'TeamMappingPermissionError') {
+      setResponse({
+        type: 'error',
+        message: `${
+          isMultiple ? 'Certain projects have ' : 'Project has '
+        }mapping permission to only team and this team is the only team assigned with mapping permission. Please contact the project author before unlinking.`,
+        projectId: projectId,
+      });
+      return;
+    }
+    if (e.message === 'TeamValidationPermissionError') {
+      setResponse({
+        type: 'error',
+        message: `${
+          isMultiple ? 'Certain projects have ' : 'Project has '
+        }validation permission to only team and this team is the only team assigned with validation permission. Please contact the project author before unlinking.`,
+        projectId: projectId,
+      });
+      return;
+    }
+    if (e.message === 'ProjectManagementPermissionError') {
+      setResponse({
+        type: 'error',
+        message: `${
+          isMultiple ? 'Certain Projects have ' : 'Project has '
+        }project management permission assigned to this team and no other team is assigned. Please contact the project author before unlinking.`,
+        projectId: projectId,
+      });
+      return;
+    }
+  };
+
   // bulk action
   const unlinkAllProjectsFromTeam = () => {
     fetchLocalJSONAPI(`teams/projects/teams/${id}/unlink`, token, 'DELETE')
@@ -46,13 +79,7 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
         refetch();
       })
       .catch((e) => {
-        if (e.message === 'ProjectPermissionError') {
-          setResponse({
-            type: 'error',
-            message:
-              'Certain projects have mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.',
-          });
-        }
+        setResponseAsPerSubCode(e, true);
         console.log(e.message);
       })
       .finally(() => {
@@ -71,15 +98,11 @@ export function TeamLinkedProjects({ viewAllEndpoint, border = true, canUserEdit
         refetch();
       })
       .catch((e) => {
-        if (e.message === 'ProjectPermissionError') {
-          setResponse({
-            type: 'error',
-            message: `${
-              projectIds.length === 1 ? 'Project has ' : 'Certain projects have '
-            } mapping/validation permissions restricted to teams, but no other team is assigned. Please contact the project author before unlinking.`,
-            projectId: projectIds.length === 1 ? projectIds[0] : 0,
-          });
-        }
+        setResponseAsPerSubCode(
+          e,
+          projectIds.length > 1,
+          projectIds.length === 1 ? projectIds[0] : 0,
+        );
         console.log(e.message);
       })
       .finally(() => {
