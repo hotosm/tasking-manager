@@ -139,12 +139,12 @@ export const PriorityAreasForm = () => {
 
   const addMapLayers = (map) => {
     // load all base layer and toggle visibility
-    Object.entries(baseLayers).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(baseLayers)) {
       if (mapObj.map.getSource(`${key}-source`) === undefined) {
         mapObj.map.addSource(`${key}-source`, value.source);
         mapObj.map.addLayer(value.layer);
       }
-    });
+    }
 
     if (map.getSource('aoi') === undefined) {
       map.addSource('aoi', {

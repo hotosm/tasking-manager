@@ -1,19 +1,18 @@
 import { useState } from 'react';
-
 import { baseLayers } from '../config';
 
-export const BasemapMenu = ({ map }) => {
+export const BasemapMenu = ({ map }: Object) => {
   const [basemap, setBasemap] = useState('OSM');
 
   const handleClick = (activeLayer) => {
     // toggle visibiity as per active base layer
-    Object.keys(baseLayers).forEach((layer) => {
+    for (const layer of Object.keys(baseLayers)) {
       map.setLayoutProperty(
         `${layer}-layer`,
         'visibility',
         `${activeLayer}-layer` === `${layer}-layer` ? 'visible' : 'none',
       );
-    });
+    }
     setBasemap(activeLayer);
   };
 
