@@ -23,25 +23,25 @@ export const SwipesByProjectType = ({ contributionsByProjectType = [] }) => {
       backgroundColors = [];
 
     contributionsByProjectType.forEach((stat) => {
-      if (['build_area', 'buildarea'].includes(stat.projectType.toLowerCase())) {
+      if (['find'].includes(stat.projectType.toLowerCase())) {
         const contributionsCount = stat.totalcontributions || 0;
         if (contributionsCount > 0) {
           chartData.push(contributionsCount);
-          labelsData.push('Find');
+          labelsData.push(stat?.projectTypeDisplay || 'Find');
           backgroundColors.push(CHART_COLOURS.orange);
         }
-      } else if (['foot_print', 'footprint'].includes(stat.projectType.toLowerCase())) {
+      } else if (['validate'].includes(stat.projectType.toLowerCase())) {
         const contributionsCount = stat.totalcontributions || 0;
         if (contributionsCount > 0) {
           chartData.push(contributionsCount);
-          labelsData.push('Validate');
+          labelsData.push(stat?.projectTypeDisplay || 'Validate');
           backgroundColors.push(CHART_COLOURS.green);
         }
-      } else if (['change_detection', 'changedetection'].includes(stat.projectType.toLowerCase())) {
+      } else if (['street'].includes(stat.projectType.toLowerCase())) {
         const contributionsCount = stat.totalcontributions || 0;
         if (contributionsCount > 0) {
           chartData.push(contributionsCount);
-          labelsData.push('Compare');
+          labelsData.push(stat?.projectTypeDisplay || 'Steet');
           backgroundColors.push(CHART_COLOURS.blue);
         }
       }
