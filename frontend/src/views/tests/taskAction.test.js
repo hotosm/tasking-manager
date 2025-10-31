@@ -63,7 +63,7 @@ describe('Submitting Mapping Status for a Task', () => {
         </QueryParamProvider>
       </QueryClientProviders>,
     );
-    
+
     await waitFor(() =>
       expect(screen.getByRole('heading')).toHaveTextContent(
         'We found another mapping task already locked by you',
