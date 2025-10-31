@@ -8,7 +8,9 @@ export function useFilterContributors(contributors, level, username, sortBy) {
   useEffect(() => {
     let users = contributors || [];
     if (['ADVANCED', 'INTERMEDIATE', 'BEGINNER'].includes(level)) {
-      users = users.filter((user) => user.mappingLevel === level);
+      users = users.filter(
+        (user) => user.mappingLevel && user.mappingLevel.toUpperCase().includes(level),
+      );
     }
     if (level === 'NEWUSER') {
       const monthFiltered = getPastMonths(1);

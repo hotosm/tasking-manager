@@ -26,12 +26,15 @@ describe('test if useFilterContributors', () => {
     expect(contributors.length).toEqual(1);
     expect(contributors[0].username).toEqual('user_3');
   });
-  it('with BEGINNER level filter returns 2 contributors', () => {
+  it('with BEGINNER level filter returns the correct contributors', () => {
     const { result } = renderHook(() =>
       useFilterContributors(projectContributions.userContributions, 'BEGINNER'),
     );
     const contributors = result.current;
     expect(contributors.length).toEqual(2);
+    const usernames = contributors.map((c) => c.username);
+    expect(usernames).toContain('test_1');
+    expect(usernames).toContain('user_5');
   });
   it('with BEGINNER level filter and a beginner username returns 1 contributor', () => {
     const { result } = renderHook(() =>
@@ -48,12 +51,15 @@ describe('test if useFilterContributors', () => {
     const contributors = result.current;
     expect(contributors.length).toEqual(0);
   });
-  it('with INTERMEDIATE level filter returns 2 contributors', () => {
+  it('with INTERMEDIATE level filter returns the correct contributors', () => {
     const { result } = renderHook(() =>
       useFilterContributors(projectContributions.userContributions, 'INTERMEDIATE'),
     );
     const contributors = result.current;
     expect(contributors.length).toEqual(2);
+    const usernames = contributors.map((c) => c.username);
+    expect(usernames).toContain('user_3');
+    expect(usernames).toContain('user_4');
   });
   it('with INTERMEDIATE level and an intermediate username filter returns 1 contributor', () => {
     const { result } = renderHook(() =>
@@ -70,12 +76,13 @@ describe('test if useFilterContributors', () => {
     const contributors = result.current;
     expect(contributors.length).toEqual(0);
   });
-  it('with ADVANCED level filter returns 1 contributor', () => {
+  it('with ADVANCED level filter returns the correct contributor', () => {
     const { result } = renderHook(() =>
       useFilterContributors(projectContributions.userContributions, 'ADVANCED'),
     );
     const contributors = result.current;
     expect(contributors.length).toEqual(1);
+    expect(contributors[0].username).toEqual('test');
   });
   it('with ADVANCED level filter and an advanced username returns 1 contributor', () => {
     const { result } = renderHook(() =>
