@@ -21,30 +21,32 @@ import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
-const MAPPING_LEVEL_TERMS = ['ADVANCED', 'INTERMEDIATE'];
-
 export const MappingLevelIcon = ({ mappingLevel }) => {
   if (!mappingLevel) {
     return null;
   }
+  const upperCaseLevelStr = mappingLevel.toUpperCase();
+  let level = null;
 
-  const foundTerm = MAPPING_LEVEL_TERMS.find((term) => mappingLevel.toUpperCase().includes(term));
+  if (upperCaseLevelStr.includes('ADVANCED')) {
+    level = 'ADVANCED';
+  } else if (upperCaseLevelStr.includes('INTERMEDIATE')) {
+    level = 'INTERMEDIATE';
+  }
 
-  if (foundTerm) {
+  if (level) {
     return (
-      <>
-        <FormattedMessage {...messages[`mappingLevel${foundTerm}`]}>
-          {(msg) => (
-            <span className="blue-grey ttl" title={msg}>
-              {foundTerm === 'ADVANCED' ? (
-                <FullStarIcon className="h1 w1 v-mid pb1" />
-              ) : (
-                <HalfStarIcon className="h1 w1 v-mid pb1" />
-              )}
-            </span>
-          )}
-        </FormattedMessage>
-      </>
+      <FormattedMessage {...messages[`mappingLevel${level}`]}>
+        {(msg) => (
+          <span className="blue-grey ttl" title={msg}>
+            {level === 'ADVANCED' ? (
+              <FullStarIcon className="h1 w1 v-mid pb1" />
+            ) : (
+              <HalfStarIcon className="h1 w1 v-mid pb1" />
+            )}
+          </span>
+        )}
+      </FormattedMessage>
     );
   }
 
