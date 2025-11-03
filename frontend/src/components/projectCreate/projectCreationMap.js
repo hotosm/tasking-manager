@@ -259,8 +259,8 @@ const ProjectCreationMap = ({
     if (mapObj.map !== null && isWebglSupported()) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(new maplibregl.NavigationControl());
-        mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
+        mapObj.map.addControl(mapObj.draw);
       });
 
       // Remove area and geometry when aoi is deleted.
