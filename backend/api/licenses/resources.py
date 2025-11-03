@@ -6,7 +6,7 @@ from backend.db import get_db
 from backend.models.dtos.licenses_dto import LicenseDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.license_service import LicenseService
-from backend.services.users.authentication_service import pm_only
+from backend.services.users.authentication_service import admin_only
 
 router = APIRouter(
     prefix="/licenses",
@@ -19,7 +19,7 @@ router = APIRouter(
 async def post_license(
     license_dto: LicenseDTO,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Creates a new mapping license
@@ -100,7 +100,7 @@ async def patch_license(
     license_dto: LicenseDTO,
     license_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Update a specified mapping license
@@ -155,7 +155,7 @@ async def patch_license(
 async def delete_license(
     license_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Delete a specified mapping license

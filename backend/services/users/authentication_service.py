@@ -285,7 +285,7 @@ async def login_required_optional(
     return AuthUserDTO(id=user_id)
 
 
-async def pm_only(
+async def admin_only(
     Authorization: str = Security(APIKeyHeader(name="Authorization")),
     db: Database = Depends(get_db),
 ):
