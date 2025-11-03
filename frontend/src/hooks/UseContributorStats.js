@@ -19,11 +19,12 @@ export function useContributorStats(contributions) {
         validators: contributions.filter((i) => i.validated > 0).length,
         mappers: contributions.filter((i) => i.mapped > 0).length,
         usersByLevel: contributions.reduce((prev, curr) => {
-          if (!Object.hasOwnProperty.call(prev, curr.mappingLevel)) {
-            prev[curr.mappingLevel] = 0;
+          const level = curr.mappingLevel.split(' ')[0].toUpperCase();
+          if (!Object.hasOwnProperty.call(prev, level)) {
+            prev[level] = 0;
           }
 
-          prev[curr.mappingLevel]++;
+          prev[level]++;
 
           return prev;
         }, {}),
