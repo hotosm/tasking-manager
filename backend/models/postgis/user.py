@@ -476,9 +476,13 @@ class User(Base):
         user_dto.id = self.id
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
+
         user_dto.mapping_level = (
             await MappingLevel.get_by_id(self.mapping_level, db)
         ).name
+        user_dto.level_ordering = (
+            await MappingLevel.get_by_id(self.mapping_level, db)
+        ).ordering
         user_dto.projects_mapped = (
             len(self.projects_mapped) if self.projects_mapped else None
         )
