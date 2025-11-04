@@ -286,7 +286,7 @@ class Project(Base):
         valid_geojson = geojson.dumps(aoi_geometry)
 
         query = """
-        SELECT ST_AsText(
+        SELECT ST_AsEWKT(
             ST_SetSRID(
                 ST_GeomFromGeoJSON(:geojson), 4326
             )
@@ -295,9 +295,8 @@ class Project(Base):
         # Execute the query with the GeoJSON value passed in as a parameter
         result = await db.fetch_one(query=query, values={"geojson": valid_geojson})
         self.geometry = result["geometry_wkt"] if result else None
-
         query = """
-        SELECT ST_AsText(ST_Centroid(ST_SetSRID(ST_GeomFromGeoJSON(:geometry), 4326))) AS centroid
+        SELECT ST_AsEWKT(ST_Centroid(ST_SetSRID(ST_GeomFromGeoJSON(:geometry), 4326))) AS centroid
         """
 
         # Execute the query and pass the GeoJSON as a parameter
