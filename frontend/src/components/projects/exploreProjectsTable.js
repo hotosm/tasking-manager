@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { FormattedMessage } from 'react-intl';
 import { formatDistance } from 'date-fns';
@@ -11,6 +11,14 @@ import './exploreProjectsTable.css';
 
 const COLUMNS = [
   {
+    accessorKey: 'id',
+    size: 100,
+    header: () => <span>ID</span>,
+    cell: ({ row }) => {
+      return <span>{row.original.projectId}</span>;
+    },
+  },
+  {
     accessorKey: 'name',
     header: () => (
       <span>
@@ -18,15 +26,7 @@ const COLUMNS = [
       </span>
     ),
     cell: ({ row }) => {
-      return (
-        <Link
-          to={`/projects/${row.original.projectId}`}
-          className="no-underline color-inherit"
-          title={row.original.name}
-        >
-          {row.original.name}
-        </Link>
-      );
+      return <span>{row.original.name}</span>;
     },
   },
   {
@@ -164,6 +164,7 @@ const COLUMNS = [
 ];
 
 export const ExploreProjectsTable = ({ projects, status }) => {
+  const navigate = useNavigate();
   const table = useReactTable({
     columns: COLUMNS,
     data: projects,
@@ -210,7 +211,13 @@ export const ExploreProjectsTable = ({ projects, status }) => {
         </thead>
         <tbody className="lh-copy">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              className="hover-bg-light-gray pointer"
+              onClick={() => {
+                navigate(`/projects/${row.original.projectId}`);
+              }}
+            >
               {row.getVisibleCells().map((cell) => (
                 <td
                   className={`f6 pr3 mw5 pl2 bb b--moon-gray ${
