@@ -192,3 +192,49 @@ export const DROPZONE_SETTINGS = {
 
 // TM_DEFAULT_CHANGESET_COMMENT without '#'
 export const defaultChangesetComment = TM_DEFAULT_CHANGESET_COMMENT.replace('#', '');
+
+export const DEFAULT_MAP_STYLE = {
+  version: 8,
+  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+  sources: {},
+  layers: [],
+};
+
+// base layers list on single object along with visibility
+export const baseLayers = {
+  OSM: {
+    source: {
+      type: 'raster',
+      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
+    },
+    layer: {
+      id: 'OSM-layer',
+      type: 'raster',
+      source: 'OSM-source',
+      layout: { visibility: 'visible' },
+    },
+  },
+  bing: {
+    source: {
+      type: 'raster',
+      tiles: [
+        'https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+        'https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+        'https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+        'https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
+      ],
+      tileSize: 256,
+      attribution:
+        '© <a href="https://blog.openstreetmap.org/2010/11/30/microsoft-imagery-details">Microsoft Corporation</a>',
+    },
+    layer: {
+      id: 'bing-layer',
+      type: 'raster',
+      source: 'bing-source',
+      layout: { visibility: 'none' },
+    },
+  },
+};
