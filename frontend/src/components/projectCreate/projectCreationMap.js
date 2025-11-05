@@ -243,7 +243,7 @@ const ProjectCreationMap = ({
       });
 
       // Remove area and geometry when aoi is deleted.
-      mapObj.map.on('draw.delete', (event) => {
+      mapObj.map.on('delete', (event) => {
         updateMetadata({ ...metadata, geom: null, area: 0 });
       });
       // enable disable the project AOI visualization checkbox
