@@ -19,10 +19,11 @@ from backend.models.dtos.partner_stats_dto import (
 )
 
 from urllib.parse import urlparse
+from backend.config import settings
 
 logger = logging.getLogger(__name__)
 
-MAPSWIPE_API_URL = "https://backend.mapswipe.org/graphql/"
+MAPSWIPE_API_URL = settings.MAPSWIPE_API_URL
 
 
 class MapswipeService:

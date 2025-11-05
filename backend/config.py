@@ -269,6 +269,11 @@ class Settings(BaseSettings):
     # Sentry backend DSN
     SENTRY_BACKEND_DSN: Optional[str] = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+    # Mapswipe backend url
+    MAPSWIPE_API_URL: str = os.getenv(
+        "MAPSWIPE_API_URL", "https://backend.mapswipe.org/graphql/"
+    )
+
     # Ohsome Stats Token
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", None)
     OHSOME_STATS_API_URL: str = os.getenv(
