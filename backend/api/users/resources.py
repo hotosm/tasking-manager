@@ -205,7 +205,7 @@ async def _aiter_from_sync_iterable(
         yield item
 
 
-@router.delete("/", tags=["users"])
+# @router.delete("/", tags=["users"])
 async def delete_users(
     user: AuthUserDTO = Depends(login_required),
     db: Database = Depends(get_db),
