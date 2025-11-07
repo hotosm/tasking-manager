@@ -3,12 +3,9 @@ import { useSelector } from 'react-redux';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { featureCollection } from '@turf/helpers';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import '@maplibre/maplibre-gl-geocoder/dist/maplibre-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
-
 import { maplibreLayerDefn } from '../projects/projectsMap';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 import { CHART_COLOURS, TASK_COLOURS, baseLayers, DEFAULT_MAP_STYLE } from '../../config';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -28,7 +25,6 @@ const ProjectCreationMap = ({
   uploadFile,
 }: Object) => {
   const mapRef = createRef();
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const token = useSelector((state) => state.auth.token);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
@@ -84,7 +80,6 @@ const ProjectCreationMap = ({
       attributionControl: false,
     })
       .addControl(new maplibregl.AttributionControl({ compact: false }))
-      .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
       .addControl(new maplibregl.ScaleControl({ unit: 'metric' }));
 
     setMapObj({ ...mapObj, map: map });

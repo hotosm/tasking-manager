@@ -1,7 +1,6 @@
 import { useState, useContext, useLayoutEffect, createRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 import { useDropzone } from 'react-dropzone';
@@ -24,14 +23,12 @@ import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
 import WebglUnsupported from '../webglUnsupported';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
 import { getAllFeatures } from '../../utils/terrawDraw';
 import './style.css';
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const mapRef = createRef();
   const [error, setError] = useState({ error: false, message: null });
 
@@ -121,7 +118,6 @@ export const PriorityAreasForm = () => {
         attributionControl: false,
       })
         .addControl(new maplibregl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage }))
         .addControl(new maplibregl.NavigationControl());
 
     setMapObj({ ...mapObj, map: map });

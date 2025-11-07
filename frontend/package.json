@@ -6,7 +6,6 @@
   "dependencies": {
     "@hotosm/id": "^2.34.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
-    "@mapbox/mapbox-gl-language": "^0.10.1",
     "@maplibre/maplibre-gl-geocoder": "^1.9.0",
     "@placemarkio/geo-viewport": "^1.0.2",
     "@rapideditor/rapid": "^2.5.2",
