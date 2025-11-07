@@ -57,7 +57,7 @@ class Settings(BaseSettings):
 
     # The address to use as the receiver in contact form.
     EMAIL_CONTACT_ADDRESS: str = os.getenv(
-        "TM_EMAIL_CONTACT_ADDRESS", "sysadmin@hotosm.org"
+        "TM_EMAIL_CONTACT_ADDRESS", "admin@yourorganisation.com"
     )
 
     # A freely definable secret key for connecting the front end with the back end
