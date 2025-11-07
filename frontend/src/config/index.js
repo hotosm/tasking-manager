@@ -163,11 +163,9 @@ const bingStyle = {
 // Removed Mapbox-specific basemap options ('bright-v9', 'satellite-v9')
 // since we're fully migrated to MapLibre, which does not support mapbox:// styles.
 export const BASEMAP_OPTIONS = [
-  // { label: 'default', value: 'bright-v9' },
   { label: 'Default', value: fallbackRasterStyle },
   // { label: 'density', value: wmsDensityStyle },
   { label: 'bing', value: bingStyle },
-  // { label: 'mapbox satellite', value: 'satellite-v9' },
 ];
 
 // Removed Mapbox style conditional since we're now using MapLibre only.
