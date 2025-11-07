@@ -25,7 +25,7 @@ import { Alert } from '../alert';
 import WebglUnsupported from '../webglUnsupported';
 import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
 import { getAllFeatures } from '../../utils/terrawDraw';
-import './style.css';
+import './style.scss';
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);

@@ -15,6 +15,7 @@ import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import { BasemapMenu } from '../basemapMenu';
 import { ProjectsAOILayerCheckBox } from './projectsAOILayerCheckBox';
 import WebglUnsupported from '../webglUnsupported';
+import '../projectEdit/style.scss';
 
 const ProjectCreationMap = ({
   mapObj,
