@@ -8,6 +8,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
 )
+from typing import Optional
 
 TEST_USERNAME = "test_user"
 TEST_USER_ID = 1111111
