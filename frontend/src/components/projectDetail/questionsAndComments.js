@@ -26,12 +26,14 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
+  const SESSION_KEY = 'project-comment';
 
   const mutation = useMutation({
     mutationFn: () => postProjectComment(projectId, comment, token, locale),
     onSuccess: () => {
       refetchComments();
       setComment('');
+      sessionStorage.clear(SESSION_KEY);
     },
   });
 
@@ -44,6 +46,7 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
       <div className={`w-100 h-100`} style={{ position: 'relative', display: 'block' }}>
         <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={13} delay={300} />}>
           <CommentInputField
+            sessionkey={SESSION_KEY}
             comment={comment}
             setComment={setComment}
             enableHashtagPaste
