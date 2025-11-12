@@ -24,7 +24,9 @@ class TestSystemStatisticsAPI:
     ):
         logger.info("Starting test: home page statistics")
 
-        test_user = return_canned_user("Test User", 2222222)
+        test_user = await return_canned_user(
+            db_connection_fixture, "Test User", 2222222
+        )
         await create_canned_user(db_connection_fixture, test_user)
 
         project, _, project_id = await create_canned_project(db_connection_fixture)
