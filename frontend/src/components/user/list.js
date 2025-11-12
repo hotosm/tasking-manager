@@ -339,7 +339,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
             {userDetails.username !== row.original.username && (
               <Popup
                 trigger={
-                  <span>
+                  <span data-testid="action-trigger">
                     <SettingsIcon
                       width="18px"
                       height="18px"
@@ -352,13 +352,15 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
                 className="user-popup"
               >
                 {(close) => (
-                  <UserEditMenu
-                    user={row.original}
-                    token={token}
-                    close={close}
-                    setStatus={setStatus}
-                    levels={levels}
-                  />
+                  <div data-testid="action-content">
+                    <UserEditMenu
+                      user={row.original}
+                      token={token}
+                      close={close}
+                      setStatus={setStatus}
+                      levels={levels}
+                    />
+                  </div>
                 )}
               </Popup>
             )}
@@ -490,7 +492,7 @@ export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
   };
 
   return (
-    <>
+    <div className="ph2">
       <div className="w-100 bb b--tan">
         <p className="b mv3">
           <FormattedMessage {...messages.setRole} />
@@ -529,6 +531,6 @@ export const UserEditMenu = ({ user, token, close, setStatus, levels }) => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };

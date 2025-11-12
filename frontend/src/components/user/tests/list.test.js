@@ -16,7 +16,7 @@ jest.mock('react-hot-toast', () => ({
 
 describe('User list card', () => {
   it('renders user card', async () => {
-    const { container, getByText, getAllByRole } = renderWithRouter(
+    const { container, getByText } = renderWithRouter(
       <ReduxIntlProviders store={store}>
         <UsersTable
           filters={{

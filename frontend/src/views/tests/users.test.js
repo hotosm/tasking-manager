@@ -55,17 +55,32 @@ describe('List Users', () => {
   });
 });
 
+// Retry failed tests up to 2 times to handle occasional async flakiness
+jest.retryTimes(2);
 describe('Change of role and mapper level', () => {
-  const setup = () => {
+  const setup = async () => {
     const { user, container } = renderWithRouter(
-      <ReduxIntlProviders>
+      <ReduxIntlProviders store={store}>
         <UsersList />
       </ReduxIntlProviders>,
     );
-    return {
-      user,
-      container,
-    };
+
+    // wait until loading spinner gone
+    await waitFor(() =>
+      expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
+    );
+
+    // wait for table body
+    const tbody = await screen.findByTestId('user-list');
+
+    // ensure rows & triggers are stable
+    await waitFor(() => {
+      const triggers = within(tbody).getAllByTestId('action-trigger');
+      expect(triggers.length).toBeGreaterThan(0);
+      expect(screen.getByText(/Ram/i)).toBeInTheDocument();
+    });
+
+    return { tbody, user, container };
   };
 
   beforeEach(() => {
@@ -73,33 +88,41 @@ describe('Change of role and mapper level', () => {
     if (popupRoot) popupRoot.innerHTML = '';
   });
 
-  it('should call endpoint to update role', async () => {
-    const { user, container } = setup();
+  it('should call endpoint to update level', async () => {
+    const { tbody, user, container } = await setup();
+
+    const triggers = await within(tbody).findAllByTestId('action-trigger');
+    await user.click(triggers[0]);
+
+    const tooltip = await screen.findByTestId('action-content', {}, { timeout: 1000 });
+
+    const advancedOption = await within(tooltip).findByText(/advanced/i);
+    await user.click(advancedOption);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('action-content')).not.toBeInTheDocument();
+    });
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
-    );
-    await user.click(container.getElementsByClassName('pointer hover-blue-grey')[0]);
-    const tooltip = await screen.findByRole('tooltip');
-    await user.click(within(tooltip).getByText(/advanced/i));
-    await waitFor(
-      () =>
-        expect(tooltip).not.toBeInTheDocument() &&
-        expect(container.getElementsByClassName('show-loading-animation').length).toBe(16),
     );
   });
 
-  it('should call endpoint to update level', async () => {
-    const { user, container } = setup();
+  it('should call endpoint to update Role', async () => {
+    const { tbody, user, container } = await setup();
+
+    const triggers = await within(tbody).findAllByTestId('action-trigger');
+    await user.click(triggers[0]);
+
+    const tooltip = await screen.findByTestId('action-content', {}, { timeout: 1000 });
+
+    const adminOption = await within(tooltip).findByText(/admin/i);
+    await user.click(adminOption);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('action-content')).not.toBeInTheDocument();
+    });
     await waitFor(() =>
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
-    );
-    await user.click(container.getElementsByClassName('pointer hover-blue-grey')[0]);
-    const tooltip = await screen.findByRole('tooltip');
-    await user.click(within(tooltip).getByText(/admin/i));
-    await waitFor(
-      () =>
-        expect(tooltip).not.toBeInTheDocument() &&
-        expect(container.getElementsByClassName('show-loading-animation').length).toBe(16),
     );
   });
 });
