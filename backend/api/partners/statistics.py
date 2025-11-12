@@ -109,11 +109,15 @@ async def get_filtered_statistics(
             sub_code=MAPSWIPE_GROUP_EMPTY_SUBCODE,
             message=MAPSWIPE_GROUP_EMPTY_MESSAGE,
         )
-
     mapswipe = MapswipeService()
-    return mapswipe.fetch_filtered_partner_stats(
-        partner.id, partner.mapswipe_group_id, from_date, to_date
-    )
+    try:
+        result = await mapswipe.fetch_filtered_partner_stats(
+            partner.id, partner.mapswipe_group_id, from_date, to_date
+        )
+    finally:
+        await mapswipe.aclose()
+
+    return result
 
 
 @router.get("/{permalink:str}/general-statistics/")
@@ -176,13 +180,16 @@ async def get_general_statistics(
         )
 
     mapswipe = MapswipeService()
-    group_dto = mapswipe.fetch_grouped_partner_stats(
-        partner.id,
-        partner.mapswipe_group_id,
-        limit,
-        offset,
-        download_as_csv,
-    )
+    try:
+        group_dto = await mapswipe.fetch_grouped_partner_stats(
+            partner.id,
+            partner.mapswipe_group_id,
+            limit,
+            offset,
+            download_as_csv,
+        )
+    finally:
+        await mapswipe.aclose()
 
     if download_as_csv:
         csv_content = group_dto.to_csv()

@@ -1,38 +1,33 @@
 import { useState } from 'react';
+import { baseLayers } from '../config';
 
-import { MAPBOX_TOKEN, BASEMAP_OPTIONS } from '../config';
+export const BasemapMenu = ({ map }: Object) => {
+  const [basemap, setBasemap] = useState('OSM');
 
-export const BasemapMenu = ({ map }) => {
-  // Remove elements that require mapbox token;
-  let styles = BASEMAP_OPTIONS;
-  if (!MAPBOX_TOKEN) {
-    styles = BASEMAP_OPTIONS.filter((s) => typeof s.value === 'object');
-  }
-
-  const [basemap, setBasemap] = useState(styles[0].label);
-
-  const handleClick = (style) => {
-    let styleValue = style.value;
-
-    if (typeof style.value === 'string') {
-      styleValue = 'mapbox://styles/mapbox/' + style.value;
+  const handleClick = (activeLayer) => {
+    // toggle visibiity as per active base layer
+    for (const layer of Object.keys(baseLayers)) {
+      map.setLayoutProperty(
+        `${layer}-layer`,
+        'visibility',
+        `${activeLayer}-layer` === `${layer}-layer` ? 'visible' : 'none',
+      );
     }
-    map.setStyle(styleValue);
-    setBasemap(style.label);
+    setBasemap(activeLayer);
   };
 
   return (
     <div className="bg-white blue-dark flex mt2 ml2 f7 fr br1 shadow-1">
-      {styles.map((style, k) => {
+      {Object.keys(baseLayers).map((baseLayer, k) => {
         return (
           <div
             key={k}
-            onClick={() => handleClick(style)}
+            onClick={() => handleClick(baseLayer)}
             className={`ttc pv2 ph3 pointer link + ${
-              basemap === style.label ? 'bg-grey-light fw6' : ''
+              basemap === baseLayer ? 'bg-grey-light fw6' : ''
             }`}
           >
-            {style.label}
+            {k === 0 ? `Default (${baseLayer})` : baseLayer}
           </div>
         );
       })}

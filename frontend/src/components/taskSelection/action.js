@@ -40,6 +40,7 @@ const Editor = lazy(() => import('../editor'));
 const RapidEditor = lazy(() => import('../rapidEditor'));
 
 const MINUTES_BEFORE_DIALOG = 5;
+const ADVANCED_MAPPER_ORDER = 3;
 
 export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, editor }) {
   useSetProjectPageTitleTag(project);
@@ -316,7 +317,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                           tasksIds={tasksIds}
                           showReadCommentsAlert={readTaskComments && !historyTabChecked}
                           disableBadImagery={
-                            userDetails.mappingLevel !== 'ADVANCED' || disableBadImagery
+                            userDetails.level_ordering < ADVANCED_MAPPER_ORDER || disableBadImagery
                           }
                           contributors={contributors}
                           historyTabSwitch={historyTabSwitch}

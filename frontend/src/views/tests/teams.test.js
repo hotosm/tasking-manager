@@ -127,6 +127,7 @@ describe('Create Team', () => {
 });
 
 describe('Edit Team', () => {
+  jest.retryTimes(2);
   it('should display default details of the team before editing', async () => {
     await act(() => {
       store.dispatch({

@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
@@ -38,8 +38,23 @@ export function ManagementPageIndex() {
     </>
   );
 }
+const adminOnlyAccessRoutes = [
+  '/manage/campaigns',
+  '/manage/partners',
+  '/manage/categories',
+  '/manage/users',
+  '/manage/licenses',
+];
+
+const orgAdminOnlyAccessRoutes = [
+  '/manage/projects',
+  '/manage/organizations',
+  '/manage/teams',
+  '/manage/stats',
+];
 
 export const ManagementSection = (props) => {
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.userDetails);
@@ -58,12 +73,29 @@ export const ManagementSection = (props) => {
     }
   }, [location.pathname, navigate, token]);
 
+  const isAdminRoute = useMemo(
+    () =>
+      [...adminOnlyAccessRoutes, ...orgAdminOnlyAccessRoutes].some(
+        (route) => location.pathname.startsWith(route) || location.pathname === '/manage',
+      ),
+    [location.pathname],
+  );
+
+  const isOrgAdminRoute = useMemo(
+    () =>
+      orgAdminOnlyAccessRoutes.some((route) => location.pathname.startsWith(route)) ||
+      location.pathname === '/manage',
+    [location.pathname],
+  );
+  // access this page from here and restrictd on the page itslf if it has no edit access
+  const isProjectEditRoute = location.pathname.startsWith('/manage/projects') && id;
+
   return (
     <>
-      {isOrgManager ||
-      userDetails.role === 'ADMIN' ||
-      location.pathname.startsWith('/manage/teams/') ||
-      location.pathname.startsWith('/manage/projects/') ? (
+      {isProjectEditRoute ||
+      !(isAdminRoute || isOrgAdminRoute) ||
+      (isAdminRoute && userDetails?.role === 'ADMIN') ||
+      (isOrgAdminRoute && isOrgManager) ? (
         <div className="w-100 ph5-l pb5-l pb2-m ph2-m cf bg-tan blue-dark">
           {(isOrgManager || userDetails.role === 'ADMIN') && (
             <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />

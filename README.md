@@ -40,7 +40,7 @@ Status | Feature | Release
 ✅ | MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.|[v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
 ✅ | iD Editor Latest Features: Integrate the newest features of the iD editor.|[v5.0.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.5)
 ✅ | FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.| [v5 launch 🎉](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.0)
-🔄 | Super Mapper: Redefine Mapper Level Milestones
+✅ | Super Mapper: Redefine Mapper Level Milestones | [v5.2.0](https://github.com/hotosm/tasking-manager/releases/tag/v5.2.0)
 🔄 | OSM Practice Projects: Enable users to engage in OSM practice projects within Tasking Manager workflow.
 📅 | Expanding Project Types beyond basemap features
 📅 | AI Integration: task assignment, difficulty estimation, and validation
