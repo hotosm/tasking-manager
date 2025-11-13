@@ -997,14 +997,19 @@ class UserService:
     ):
         text_template = get_txt_template("level_upgrade_message_en.txt")
 
+        formatted_level = level.strip()
+
+        if not formatted_level.lower().endswith("mapper"):
+            formatted_level = f"{formatted_level} mapper"
+
         replace_list = [
             ["[USERNAME]", username],
-            ["[LEVEL]", level.capitalize()],
+            ["[LEVEL]", formatted_level.capitalize()],
             ["[ORG_CODE]", settings.ORG_CODE],
         ]
         text_template = template_var_replacing(text_template, replace_list)
 
-        subject = f"Congratulations🎉, You're now an {level} mapper."
+        subject = f"Congratulations🎉, You're now an {formatted_level.capitalize()}."
         message_type = MessageType.SYSTEM.value
 
         insert_query = """

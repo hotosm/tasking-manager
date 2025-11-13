@@ -30,6 +30,7 @@ class UserDTO(BaseModel):
     username: Optional[str] = None
     role: Optional[str] = None
     mapping_level: Optional[str] = Field(None, alias="mappingLevel")
+    level_ordering: Optional[int] = None
     projects_mapped: Optional[int] = Field(None, alias="projectsMapped")
     email_address: Optional[str] = Field(None, alias="emailAddress")
     is_email_verified: Optional[bool] = Field(
