@@ -6,7 +6,7 @@ import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
 import { OHSOME_STATS_API_URL } from '../../config';
 
-export const Activity = ({ partner }) => {
+export const Activity = ({ partner }: Object) => {
   const [data, setData] = useState(null);
 
   const fetchData = async () => {
@@ -17,10 +17,12 @@ export const Activity = ({ partner }) => {
       }
       primaryHashtag = primaryHashtag.toLowerCase();
 
-      const secondaryHashtags = partner.secondary_hashtag
-        ?.split(',')
-        ?.map((tag) => tag.trim().replace('#', '').toLowerCase())
-        ?.join(',');
+      const secondaryHashtags =
+        partner.secondary_hashtag
+          ?.split(',')
+          ?.map((tag) => tag.trim().replace('#', '').toLowerCase())
+          ?.join(',') || '';
+
       const response = await fetch(
         OHSOME_STATS_API_URL + `/stats/hashtags/${primaryHashtag},${secondaryHashtags}`,
       );
