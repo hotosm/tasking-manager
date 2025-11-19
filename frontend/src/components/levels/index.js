@@ -8,7 +8,7 @@ import { useState } from 'react';
 import messages from './messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
-import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
+import { nCardPlaceholders } from './nCardPlaceholder';
 import { SwitchToggle } from '../formInputs';
 import { CircleMinusIcon } from '../svgIcons';
 
