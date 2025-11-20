@@ -9,8 +9,9 @@ import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import truncate from '@turf/truncate';
 import toast from 'react-hot-toast';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
+import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css';
+import { TerraDrawPolygonMode } from 'terra-draw';
 
 import messages from './messages';
 import viewsMessages from '../../views/messages';
@@ -33,10 +34,35 @@ import {
   verifyFileSize,
 } from '../../utils/geoFileFunctions';
 import { getErrorMsg } from './fileUploadErrors';
+import { getAllFeatures, removeFeaturesById } from '../../utils/terrawDraw';
 
 const ProjectCreationMap = lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
+
+const polygonModeStyles = {
+  fillColor: '#F1EE8E',
+  fillOpacity: 0.3,
+  outlineColor: '#E69B00',
+  outlineWidth: 1,
+  closingPointColor: '#F1EE8E',
+  closingPointWidth: 1,
+  closingPointOutlineColor: '#E69B00',
+  closingPointOutlineWidth: 1,
+};
+
+//this function Overrides default Terra Draw polygon layer styles to match our theme
+const setPolygonStyle = (map) => {
+  const defaultTdPolygonLayerId = 'td-polygon';
+  const defaultTdPolygonOutlineLayerId = 'td-polygon-outline';
+  const defaultTdPolygonPointLayerId = 'td-point';
+
+  map.setPaintProperty(defaultTdPolygonLayerId, 'fill-color', '#F1EE8E');
+  map.setPaintProperty(defaultTdPolygonLayerId, 'fill-opacity', 0.3);
+  map.setPaintProperty(defaultTdPolygonOutlineLayerId, 'line-color', '#E69B00');
+  map.setPaintProperty(defaultTdPolygonOutlineLayerId, 'line-width', 1);
+  map.setPaintProperty(defaultTdPolygonPointLayerId, 'circle-color', '#E69B00');
+};
 
 const ProjectCreate = () => {
   const intl = useIntl();
@@ -94,12 +120,8 @@ const ProjectCreate = () => {
   };
 
   const deleteHandler = () => {
-    const features = mapObj.draw.getAll();
-    if (features.features.length > 0) {
-      const id = features.features[0].id;
-      mapObj.draw.delete(id);
-    }
-
+    const drawInstance = mapObj.draw.getTerraDrawInstance();
+    drawInstance.clear();
     if (mapObj.map.getSource('aoi')) {
       mapObj.map.getSource('aoi').setData(featureCollection([]));
     }
@@ -107,27 +129,37 @@ const ProjectCreate = () => {
   };
 
   const drawHandler = () => {
+    const drawInstance = mapObj.draw.getTerraDrawInstance();
+    if (!drawInstance) return;
     if (drawModeIsActive) {
       setDrawModeIsActive(false);
-      mapObj.draw.changeMode('simple_select');
+      drawInstance.setMode('select');
       return;
     }
     setDrawModeIsActive(true);
-    const updateArea = (event) => {
-      const features = mapObj.draw.getAll();
-      if (features.features.length > 1) {
-        const id = features.features[0].id;
-        mapObj.draw.delete(id);
+
+    drawInstance.setMode('polygon');
+    drawInstance.on('finish', (id) => {
+      const allFeatures = getAllFeatures(drawInstance);
+      //  keep the latest one and remove everything else
+      const previousFeatureIds = allFeatures.reduce(
+        (prev, curr) => (curr.id !== id ? [...prev, curr.id] : prev),
+        [],
+      );
+      const newFeature = allFeatures.filter((f) => f.id === id);
+
+      if (previousFeatureIds.length > 0) {
+        removeFeaturesById(drawInstance, previousFeatureIds);
       }
-
-      // Validate area first.
-      setDataGeom(featureCollection(event.features), false);
+      setDataGeom(featureCollection(newFeature), false);
+      drawInstance.setMode('select');
+      drawInstance.selectFeature(id);
       setDrawModeIsActive(false);
-    };
 
-    mapObj.map.on('draw.update', updateArea);
-    mapObj.map.once('draw.create', updateArea);
-    mapObj.draw.changeMode('draw_polygon');
+      // Note: We are manually overriding Terra Draw's default layer paint properties
+      // because the “select” mode style config may not apply as expected.
+      setPolygonStyle(mapObj.map);
+    });
   };
   // eslint-disable-next-line
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
@@ -182,11 +214,16 @@ const ProjectCreate = () => {
   }, [metadata.area]);
 
   const drawOptions = {
-    displayControlsDefault: false,
+    modes: ['delete', 'polygon', 'select'],
+    open: true,
+    modeOptions: {
+      polygon: new TerraDrawPolygonMode({ styles: polygonModeStyles }),
+    },
   };
+
   const [mapObj, setMapObj] = useState({
     map: null,
-    draw: new MapboxDraw(drawOptions),
+    draw: new MaplibreTerradrawControl(drawOptions),
   });
 
   const handleCreate = useCallback(

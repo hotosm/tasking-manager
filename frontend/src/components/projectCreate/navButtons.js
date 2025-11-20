@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import messages from './messages';
 import { Button } from '../button';
 import { useAsync } from '../../hooks/UseAsync';
+import { removeFeaturesById } from '../../utils/terrawDraw';
 
 const clearParamsStep = (props) => {
   switch (props.index) {
@@ -58,7 +59,8 @@ const NavButtons = (props) => {
           return { error: true, message: message };
         } else {
           const id = props.metadata.geom.features[0].id;
-          props.mapObj.draw.delete(id);
+          const drawInstance = props.mapObj.draw.getTerraDrawInstance();
+          removeFeaturesById(drawInstance, [id]);
           props.mapObj.map.getSource('aoi').setData(props.metadata.geom);
           props.updateMetadata({
             ...props.metadata,

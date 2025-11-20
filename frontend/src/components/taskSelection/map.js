@@ -3,25 +3,21 @@ import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
 import messages from './messages';
-import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE } from '../../config';
+import { TASK_COLOURS, MAP_STYLE } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
 
 let redlockIcon = new Image(17, 20);
 redlockIcon.src = redlock;
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const TasksMap = ({
   className,
@@ -40,7 +36,6 @@ export const TasksMap = ({
 }) => {
   const intl = useIntl();
   const mapRef = createRef();
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
@@ -60,9 +55,7 @@ export const TasksMap = ({
           center: [0, 0],
           zoom: 1,
           attributionControl: false,
-        })
-          .addControl(new maplibregl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+        }).addControl(new maplibregl.AttributionControl({ compact: false })),
       );
 
     return () => {

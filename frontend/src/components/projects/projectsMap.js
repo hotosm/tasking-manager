@@ -1,23 +1,17 @@
 import { createRef, useLayoutEffect, useState, useCallback } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { MAP_STYLE } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
 
 let markerIcon = new Image(17, 20);
 markerIcon.src = mapMarker;
 
-maplibregl.accessToken = MAPBOX_TOKEN;
-
-const licensedFonts = MAPBOX_TOKEN
-  ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
-  : ['Open Sans Semibold'];
+const licensedFonts = ['Open Sans Semibold'];
 
 export const maplibreLayerDefn = (map, mapResults, clickOnProjectID, disablePoiClick = false) => {
   map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
@@ -95,7 +89,6 @@ export const maplibreLayerDefn = (map, mapResults, clickOnProjectID, disablePoiC
 export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className }) => {
   const mapRef = createRef();
   const [map, setMapObj] = useState(null);
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
   useSetRTLTextPlugin();
 
   const clickOnProjectID = useCallback(
@@ -127,9 +120,7 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
           center: [0, 0],
           zoom: 0.5,
           attributionControl: false,
-        })
-          .addControl(new maplibregl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+        }).addControl(new maplibregl.AttributionControl({ compact: false })),
       );
 
     return () => {

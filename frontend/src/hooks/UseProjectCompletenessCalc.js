@@ -12,9 +12,9 @@ export function useComputeCompleteness(tasks) {
       ).length;
       const validated = getStatusCount(tasks, 'VALIDATED');
       const badImagery = getStatusCount(tasks, 'BADIMAGERY');
-      setPercentMapped(parseInt(((mapped + validated) / (totalTasks - badImagery)) * 100));
-      setPercentValidated(parseInt((validated / (totalTasks - badImagery)) * 100));
-      setPercentBadImagery(parseInt((badImagery / totalTasks) * 100));
+      setPercentMapped(Number.parseInt(((mapped + validated) / (totalTasks - badImagery)) * 100));
+      setPercentValidated(Number.parseInt((validated / (totalTasks - badImagery)) * 100));
+      setPercentBadImagery(Number.parseInt((badImagery / totalTasks) * 100));
     }
   }, [tasks, setPercentMapped, setPercentValidated, setPercentBadImagery]);
   return { percentMapped, percentValidated, percentBadImagery };
