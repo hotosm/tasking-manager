@@ -120,7 +120,14 @@ export const InboxNav = (props) => {
             return (
               <ProjectSearchBox
                 className="dib fl mr2"
-                setQuery={setInboxQuery}
+                setQuery={(value) => {
+                  if (!value.project) {
+                    setInboxQuery({ ...inboxQuery, project: undefined });
+                    return;
+                  }
+                  if (value.project && isNaN(value.project)) return;
+                  setInboxQuery(value);
+                }}
                 fullProjectsQuery={inboxQuery}
                 placeholder={msg}
                 searchField={'project'}
