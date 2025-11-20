@@ -8,7 +8,7 @@ import '@hotosm/id/dist/iD.css';
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
 
-export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
+export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
   const intl = useIntl();
   const session = useSelector((state) => state.auth.session);
@@ -33,7 +33,33 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         }
       }
     }
-  }, [customImageryIsSet, imagery, iDContext, customSource]);
+
+    // wait till iDContext loads background
+    if (!iDContext?.background()) return;
+
+    // this fixes the custom imagery persisting from previous load
+    // when no imagery is selected in project setting
+    if (!imagery) {
+      // set Bing as default
+      const imagerySource = iDContext.background().findSource('Bing');
+      if (!imagerySource) return;
+      iDContext.background().baseLayerSource(imagerySource);
+    }
+
+    // this sets imagery offset from extraIdParams if present
+    if (extraIdParams) {
+      const params = new URLSearchParams(extraIdParams);
+      const offsetStr = params.get('offset'); // "10,-10"
+      if (!offsetStr) return;
+      const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
+      const offset = window.iD.geoMetersToOffset(offsetInMeters);
+      iDContext.background().offset(offset);
+    } else {
+      // reset offset if params not present
+      // this is needed to fix the offset persisting from previous project issue
+      iDContext.background().offset([0, 0]);
+    }
+  }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
   useEffect(() => {
     if (windowInit) {
