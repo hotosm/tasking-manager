@@ -5,11 +5,9 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS } from '../../config';
+import { MAP_STYLE, CHART_COLOURS } from '../../config';
 import messages from './messages';
 import './contributionsHeatmap.css';
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
   const mapContainer = useRef(null);
@@ -171,7 +169,7 @@ export const ContributionsHeatmap = ({ contributionsByGeo = [] }) => {
       const currentZoom = map.current.getZoom();
       const h3ResBasedOnZoom =
         currentZoom >= 1
-          ? zoomToH3ResMapping[parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7)
+          ? zoomToH3ResMapping[Number.parseInt(currentZoom)] ?? Math.floor((currentZoom - 2) * 0.7)
           : 1;
 
       map.current.getSource('hexbin').setData({

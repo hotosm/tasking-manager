@@ -2030,40 +2030,12 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz#4fc56c15c580b9adb7dc3c333a134e540b44bfb1"
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
-"@mapbox/extent@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/extent/-/extent-0.4.0.tgz#3e591f32e1f0c3981c864239f7b0ac06e610f8a9"
-  integrity sha512-MSoKw3qPceGuupn04sdaJrFeLKvcSETVLZCGS8JA9x6zXQL3FWiKaIXYIZEDXd5jpXpWlRxinCZIN49yRy0C9A==
-
 "@mapbox/geojson-area@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@mapbox/geojson-area/-/geojson-area-0.2.2.tgz#18d7814aa36bf23fbbcc379f8e26a22927debf10"
   integrity sha512-bBqqFn1kIbLBfn7Yq1PzzwVkPYQr9lVUeT8Dhd0NL5n76PBuXzOcuLV7GOSbEB1ia8qWxH4COCvFpziEu/yReA==
   dependencies:
     wgs84 "0.0.0"
-
-"@mapbox/geojson-coords@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@mapbox/geojson-coords/-/geojson-coords-0.0.2.tgz#f73d5744c832de0f05c48899f16a4288cefb2606"
-  integrity sha512-YuVzpseee/P1T5BWyeVVPppyfmuXYHFwZHmybkqaMfu4BWlOf2cmMGKj2Rr92MwfSTOCSUA0PAsVGRG8akY0rg==
-  dependencies:
-    "@mapbox/geojson-normalize" "0.0.1"
-    geojson-flatten "^1.0.4"
-
-"@mapbox/geojson-extent@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/geojson-extent/-/geojson-extent-1.0.1.tgz#bd99a6b66ba98e63a29511c9cd1bbd1df4c1e203"
-  integrity sha512-hh8LEO3djT4fqfr8sSC6wKt+p0TMiu+KOLMBUiFOyj+zGq7+IXwQGl0ppCVDkyzCewyd9LoGe9zAvDxXrLfhLw==
-  dependencies:
-    "@mapbox/extent" "0.4.0"
-    "@mapbox/geojson-coords" "0.0.2"
-    rw "~0.1.4"
-    traverse "~0.6.6"
-
-"@mapbox/geojson-normalize@0.0.1", "@mapbox/geojson-normalize@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/geojson-normalize/-/geojson-normalize-0.0.1.tgz#1da1e6b3a7add3ad29909b30f438f60581b7cd80"
-  integrity sha512-82V7YHcle8lhgIGqEWwtXYN5cy0QM/OHq3ypGhQTbvHR57DF0vMHMjjVSQKFfVXBe/yWCBZTyOuzvK7DFFnx5Q==
 
 "@mapbox/geojson-rewind@0.5.2", "@mapbox/geojson-rewind@^0.5.2":
   version "0.5.2"
@@ -2077,24 +2049,6 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==
-
-"@mapbox/mapbox-gl-draw@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.4.3.tgz#3f95362fdeabcffcb46f3392f24bf5914e7be817"
-  integrity sha512-03qIJgyGmm0IoTZbV/cfODru9jRGogi4LcQ3maxIJDKccq1gY3ofgt2UYPkeU143ElxitZahEythNQv1NpsLhg==
-  dependencies:
-    "@mapbox/geojson-area" "^0.2.2"
-    "@mapbox/geojson-extent" "^1.0.1"
-    "@mapbox/geojson-normalize" "^0.0.1"
-    "@mapbox/point-geometry" "^0.1.0"
-    hat "0.0.3"
-    lodash.isequal "^4.5.0"
-    xtend "^4.0.2"
-
-"@mapbox/mapbox-gl-language@^0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-language/-/mapbox-gl-language-0.10.1.tgz#44d19d24205a10a9f27ddd78c55446fe48b94705"
-  integrity sha512-i5+N+FrgR5v8NY4+B+uzFl1Q4gR2OaGoKWgKiayL1bE5715svnx4r4ADTczbZSemI9o426tDKfjAtc3HC2GMCw==
 
 "@mapbox/point-geometry@0.1.0", "@mapbox/point-geometry@^0.1.0", "@mapbox/point-geometry@~0.1.0":
   version "0.1.0"
@@ -3880,6 +3834,11 @@
     "@vitest/pretty-format" "3.2.3"
     loupe "^3.1.3"
     tinyrainbow "^2.0.0"
+
+"@watergis/maplibre-gl-terradraw@^1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@watergis/maplibre-gl-terradraw/-/maplibre-gl-terradraw-1.9.5.tgz#f4801bd78b576bd59ce05346edcbad8ea1a2eaed"
+  integrity sha512-zpKUF3XBl6PKBDxEKJ9Ii/m61mkq/2W+04zA97hU0jDP0/S8Opht5Ju30uiA+f8zKBhb9KvLexxK73fVd1y4Og==
 
 "@webassemblyjs/ast@1.12.1", "@webassemblyjs/ast@^1.12.1":
   version "1.12.1"
@@ -7364,11 +7323,6 @@ gensync@^1.0.0-beta.2:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
 
-geojson-flatten@^1.0.4:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/geojson-flatten/-/geojson-flatten-1.1.1.tgz#601aae07ba6406281ebca683573dcda69eba04c7"
-  integrity sha512-k/6BCd0qAt7vdqdM1LkLfAy72EsLDy0laNwX0x2h49vfYCiQkRc4PSra8DNEdJ10EKRpwEvDXMb0dBknTJuWpQ==
-
 geojson-numeric@0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/geojson-numeric/-/geojson-numeric-0.2.1.tgz#2c8c032f792cca0747a6e02ffa86c00ee3d2df6c"
@@ -7815,11 +7769,6 @@ hastscript@^7.0.0:
     hast-util-parse-selector "^3.0.0"
     property-information "^6.0.0"
     space-separated-tokens "^2.0.0"
-
-hat@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/hat/-/hat-0.0.3.tgz#bb014a9e64b3788aed8005917413d4ff3d502d8a"
-  integrity sha512-zpImx2GoKXy42fVDSEad2BPKuSQdLcqsCYa48K3zHSzM/ugWuYjLDr8IXxpVuL7uCLHw56eaiLxCRthhOzf5ug==
 
 he@^1.2.0:
   version "1.2.0"
@@ -9512,11 +9461,6 @@ lodash.debounce@^4.0.6, lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
-lodash.isequal@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
-  integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
-
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -9640,11 +9584,6 @@ makeerror@1.0.12:
   integrity sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==
   dependencies:
     tmpl "1.0.5"
-
-mapbox-gl-draw-rectangle-mode@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/mapbox-gl-draw-rectangle-mode/-/mapbox-gl-draw-rectangle-mode-1.0.4.tgz#42987d68872a5fb5cc5d76d3375ee20cd8bab8f7"
-  integrity sha512-BdF6nwEK2p8n9LQoMPzBO8LhddW1fe+d5vK8HQIei+4VcRnUbKNsEj7Z15FsJxCHzsc2BQKXbESx5GaE8x0imQ==
 
 mapillary-js@^4.1.2:
   version "4.1.2"
@@ -12756,11 +12695,6 @@ rw@1, rw@^1.3.3:
   resolved "https://registry.yarnpkg.com/rw/-/rw-1.3.3.tgz#3f862dfa91ab766b14885ef4d01124bfda074fb4"
   integrity sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==
 
-rw@~0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/rw/-/rw-0.1.4.tgz#4903cbd80248ae0ede685bf58fd236a7a9b29a3e"
-  integrity sha512-vSj3D96kMcjNyqPcp65wBRIDImGSrUuMxngNNxvw8MQaO+aQ6llzRPH7XcJy5zrpb3wU++045+Uz/IDIM684iw==
-
 rxjs@^7.3.0, rxjs@^7.5.5:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
@@ -13839,6 +13773,11 @@ terminal-link@^2.0.0:
     ansi-escapes "^4.2.1"
     supports-hyperlinks "^2.0.0"
 
+terra-draw@^1.18.1:
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/terra-draw/-/terra-draw-1.18.1.tgz#f08c78f5d157846475115e5fa6e6f1d5108d96c8"
+  integrity sha512-8Bw4jHGdW5lzrlfKNYa2k10dirHs/nIkLRDMLSs8OD7IoZiq59cwNEjQIuXggxIZUTfxVwEPytakcdrmZyLADA==
+
 terser-webpack-plugin@^5.2.5, terser-webpack-plugin@^5.3.10:
   version "5.3.10"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.3.10.tgz#904f4c9193c6fd2a03f693a2150c62a92f40d199"
@@ -14055,15 +13994,6 @@ tr46@~0.0.3:
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
 
-traverse@~0.6.6:
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.10.tgz#4c93482381d794dee046882c036f3c4eee481324"
-  integrity sha512-hN4uFRxbK+PX56DxYiGHsTn2dME3TVr9vbNqlQGcGcPhJAn+tdP126iA+TArMpI4YSgnTkMWyoLl5bf81Hi5TA==
-  dependencies:
-    gopd "^1.0.1"
-    typedarray.prototype.slice "^1.0.3"
-    which-typed-array "^1.1.15"
-
 tributejs@^5.1.3:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/tributejs/-/tributejs-5.1.3.tgz#980600fc72865be5868893078b4bfde721129eae"
@@ -14237,18 +14167,6 @@ typedarray-to-buffer@^3.1.5:
   integrity sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
   dependencies:
     is-typedarray "^1.0.0"
-
-typedarray.prototype.slice@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/typedarray.prototype.slice/-/typedarray.prototype.slice-1.0.3.tgz#bce2f685d3279f543239e4d595e0d021731d2d1a"
-  integrity sha512-8WbVAQAUlENo1q3c3zZYuy5k9VzBQvp8AX9WOtbvyWlLM1v5JaSRmjubLjzHF4JFtptjH/5c/i95yaElvcjC0A==
-  dependencies:
-    call-bind "^1.0.7"
-    define-properties "^1.2.1"
-    es-abstract "^1.23.0"
-    es-errors "^1.3.0"
-    typed-array-buffer "^1.0.2"
-    typed-array-byte-offset "^1.0.2"
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -15322,7 +15240,7 @@ xmlchars@^2.2.0:
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
-xtend@^4.0.0, xtend@^4.0.1, xtend@^4.0.2, xtend@~4.0.0:
+xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.0:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==

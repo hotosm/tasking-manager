@@ -225,6 +225,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                     setDisable={setDisable}
                     comment={project.changesetComment}
                     presets={project.idPresets}
+                    extraIdParams={project.extraIdParams}
                     imagery={formatImageryUrlCallback(project.imagery)}
                     gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
                   />

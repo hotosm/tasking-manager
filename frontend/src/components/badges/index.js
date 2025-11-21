@@ -10,7 +10,7 @@ import { useDropzone } from 'react-dropzone';
 import messages from './messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
-import { nCardPlaceholders } from '../licenses/licensesPlaceholder';
+import { nCardPlaceholders } from './nCardPlaceholders';
 import { CircleMinusIcon } from '../svgIcons';
 import { OHSOME_STATS_TOPICS, IMAGE_UPLOAD_SERVICE } from '../../config';
 import { SwitchToggle } from '../formInputs';
