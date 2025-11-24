@@ -87,8 +87,12 @@ export const ManagementSection = (props) => {
       location.pathname === '/manage',
     [location.pathname],
   );
-  // access this page from here and restrictd on the page itslf if it has no edit access
-  const isProjectEditRoute = location.pathname.startsWith('/manage/projects') && id;
+
+  // access this page from here and restricted on the page itself if it has no edit access
+  const isProjectEditRoute =
+    (location.pathname.startsWith('/manage/projects') ||
+      location.pathname.startsWith('/manage/teams')) &&
+    id;
 
   return (
     <>
