@@ -174,6 +174,8 @@ class DraftProjectDTO(BaseModel):
     tasks: Optional[dict] = Field({})
     has_arbitrary_tasks: bool = Field(False, alias="arbitraryTasks")
     user_id: int = Field(None)
+    sandbox: bool = Field(False)
+    database: str = Field("OSM")
 
     class Config:
         populate_by_name = True
