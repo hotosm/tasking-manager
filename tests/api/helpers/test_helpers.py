@@ -392,9 +392,10 @@ def return_canned_organisation(
     return test_org
 
 
-async def create_canned_organisation(db):
+async def create_canned_organisation(db, test_org=None):
     """Generate a canned organisation in the DB"""
-    test_org = return_canned_organisation()
+    if test_org is None:
+        test_org = return_canned_organisation()
     await db.execute(
         """
         INSERT INTO organisations (id, name, slug, type)
@@ -527,16 +528,22 @@ def return_canned_campaign(
     return test_campaign
 
 
-def create_canned_campaign(
-    id=TEST_CAMPAIGN_ID,
-    name=TEST_CAMPAIGN_NAME,
-    description=None,
-    logo=None,
-) -> Campaign:
-    """Creates test campaign without writing to db"""
-    test_campaign = return_canned_campaign(id, name, description, logo)
-    test_campaign.create()
-
+async def create_canned_campaign(db, test_campaign=None):
+    """Generate a canned campaign in the DB"""
+    if test_campaign is None:
+        test_campaign = return_canned_campaign()
+    await db.execute(
+        """
+        INSERT INTO campaigns (id, name, description, logo)
+        VALUES (:id, :name, :description, :logo)
+        """,
+        {
+            "id": test_campaign.id,
+            "name": test_campaign.name,
+            "description": test_campaign.description,
+            "logo": test_campaign.logo,
+        },
+    )
     return test_campaign
 
 
