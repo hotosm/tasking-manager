@@ -56,10 +56,10 @@ export const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
   const step = AXIS_OFFSET / Math.pow(2, zoomLevel - 1);
 
   // Calculate the min and max task indices at the required zoom level to cover the whole area of interest
-  const xminstep = parseInt(Math.floor((xmin + AXIS_OFFSET) / step));
-  const xmaxstep = parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
-  const yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
-  const ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
+  const xminstep = Number.parseInt(Math.floor((xmin + AXIS_OFFSET) / step));
+  const xmaxstep = Number.parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
+  const yminstep = Number.parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
+  const ymaxstep = Number.parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
 
   let taskFeatures = [];
   // Generate an array of task features

@@ -15,7 +15,7 @@ import {
 // this component is designed to the FREE organisation type
 export function OrganisationUsageLevel({ completedActions, orgName }) {
   const [currentLevel, nextLevelThreshold] = useOrganisationLevel(completedActions);
-  const percent = parseInt((completedActions / nextLevelThreshold) * 100);
+  const percent = Number.parseInt((completedActions / nextLevelThreshold) * 100);
   const yearPrediction = usePredictYearlyTasks(completedActions, new Date());
   const levelPrediction = usePredictLevel(yearPrediction, 'FREE');
   const currentYear = getYear(new Date());
@@ -110,7 +110,7 @@ export function OrganisationTier({ completedActions, type, subscriptionTier }) {
       ? levels.filter((level) => level.level === selectedTier.level + 1)[0].minActions
       : null;
   const nextLevel = useGetLevel(selectedTierMax);
-  const percent = parseInt((completedActions / selectedTierMax) * 100);
+  const percent = Number.parseInt((completedActions / selectedTierMax) * 100);
   const showDiscountLabel = levelPrediction.tier !== 'free' && type === 'DISCOUNTED';
   const currentYear = getYear(new Date());
 

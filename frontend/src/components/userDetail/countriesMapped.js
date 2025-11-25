@@ -1,23 +1,18 @@
 import { createRef, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import maplibregl from 'maplibre-gl';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { MAPBOX_TOKEN, MAP_STYLE } from '../../config';
+import { MAP_STYLE } from '../../config';
 import { maplibreLayerDefn } from '../projects/projectsMap';
 import { BarListChart } from './barListChart';
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
-import useMapboxSupportedLanguage from '../../hooks/UseMapboxSupportedLanguage';
-
-maplibregl.accessToken = MAPBOX_TOKEN;
 
 const UserCountriesMap = ({ projects }) => {
   const navigate = useNavigate();
-  const mapboxSupportedLanguage = useMapboxSupportedLanguage();
 
   const [map, setMap] = useState(null);
   const mapRef = createRef();
@@ -33,9 +28,7 @@ const UserCountriesMap = ({ projects }) => {
           center: [0, 0],
           zoom: 0.5,
           attributionControl: false,
-        })
-          .addControl(new maplibregl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: mapboxSupportedLanguage })),
+        }).addControl(new maplibregl.AttributionControl({ compact: false })),
       );
 
     return () => {
