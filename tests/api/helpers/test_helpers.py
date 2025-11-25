@@ -558,7 +558,7 @@ def create_canned_interest(name="test_interest") -> Interest:
     return test_interest
 
 
-def create_canned_license(name="test_license") -> int:
+async def create_canned_license(db, name="test_license") -> int:
     """Returns test license without writing to db
     param name: name of license
     return: license id
@@ -567,7 +567,7 @@ def create_canned_license(name="test_license") -> int:
     license_dto.name = name
     license_dto.description = "test license"
     license_dto.plain_text = "test license"
-    test_license = LicenseService.create_licence(license_dto)
+    test_license = await LicenseService.create_license(license_dto, db)
     return test_license
 
 
