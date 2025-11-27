@@ -8,6 +8,7 @@ export const types = {
   SET_OSM: 'SET_OSM',
   SET_ORGANISATIONS: 'SET_ORGANISATIONS',
   SET_PM_TEAMS: 'SET_PM_TEAMS',
+  SET_TM_TEAMS: 'SET_TM_TEAMS',
   UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
@@ -75,6 +76,13 @@ export function updatePMsTeams(teams) {
   };
 }
 
+export function updateTMsTeams(teams) {
+  return {
+    type: types.SET_TM_TEAMS,
+    teams: teams,
+  };
+}
+
 export function updateToken(token) {
   return {
     type: types.SET_TOKEN,
@@ -134,6 +142,11 @@ export const setUserDetails =
         )
           .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
           .catch((error) => dispatch(updatePMsTeams([])));
+        dispatch(setLoader(false));
+
+        fetchLocalJSONAPI(`teams/?fullMemberList=false&manager=${userDetails.id}`, encodedToken)
+          .then((teams) => dispatch(updateTMsTeams(teams.teams.map((team) => team.teamId))))
+          .catch((error) => dispatch(updateTMsTeams([])));
         dispatch(setLoader(false));
       })
       .catch((error) => {
