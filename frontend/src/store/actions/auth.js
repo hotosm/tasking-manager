@@ -114,7 +114,7 @@ export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) =
 // UPDATES OSM INFORMATION OF THE USER
 export const setUserDetails =
   (username, encodedToken, update = false) =>
-  (dispatch) => {
+  async (dispatch) => {
     // only trigger the loader if this function is not being triggered to update the user information
     if (!update) dispatch(setLoader(true));
     fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
@@ -123,36 +123,44 @@ export const setUserDetails =
         console.log(error);
         dispatch(setLoader(false));
       });
-    // GET USER DETAILS
-    fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
-      .then((userDetails) => {
-        dispatch(updateUserDetails(userDetails));
-        // GET USER ORGS INFO
-        fetchLocalJSONAPI(
-          `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
-          encodedToken,
-        )
-          .then((orgs) =>
-            dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
-          )
-          .catch((error) => dispatch(updateOrgsInfo([])));
-        fetchLocalJSONAPI(
-          `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
-          encodedToken,
-        )
-          .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
-          .catch((error) => dispatch(updatePMsTeams([])));
-        dispatch(setLoader(false));
 
-        fetchLocalJSONAPI(`teams/?fullMemberList=false&manager=${userDetails.id}`, encodedToken)
-          .then((teams) => dispatch(updateTMsTeams(teams.teams.map((team) => team.teamId))))
-          .catch((error) => dispatch(updateTMsTeams([])));
-        dispatch(setLoader(false));
-      })
-      .catch((error) => {
-        if (error.message === 'InvalidToken') dispatch(logout());
-        dispatch(setLoader(false));
-      });
+    try {
+      const userDetails = await fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken);
+
+      dispatch(updateUserDetails(userDetails));
+
+      const userId = userDetails.id;
+
+      const orgsPromise = fetchLocalJSONAPI(
+        `organisations/?omitManagerList=true&manager_user_id=${userId}`,
+        encodedToken,
+      )
+        .then((orgs) => dispatch(updateOrgsInfo(orgs.organisations.map((o) => o.organisationId))))
+        .catch(() => dispatch(updateOrgsInfo([])));
+
+      const pmsTeamsPromise = fetchLocalJSONAPI(
+        `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userId}`,
+        encodedToken,
+      )
+        .then((teams) => dispatch(updatePMsTeams(teams.teams.map((t) => t.teamId))))
+        .catch(() => dispatch(updatePMsTeams([])));
+
+      const tmsTeamsPromise = fetchLocalJSONAPI(
+        `teams/?fullMemberList=false&manager=${userId}`,
+        encodedToken,
+      )
+        .then((teams) => dispatch(updateTMsTeams(teams.teams.map((t) => t.teamId))))
+        .catch(() => dispatch(updateTMsTeams([])));
+
+      // Run all parallel requests at once
+      await Promise.all([orgsPromise, pmsTeamsPromise, tmsTeamsPromise]);
+    } catch (error) {
+      if (error.message === 'InvalidToken') {
+        dispatch(logout());
+      }
+    } finally {
+      dispatch(setLoader(false));
+    }
   };
 
 export const getUserDetails = (state) => (dispatch) => {
