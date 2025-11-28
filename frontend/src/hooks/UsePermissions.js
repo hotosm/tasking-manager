@@ -29,7 +29,6 @@ export function useEditProjectAllowed(project) {
 export function useEditTeamAllowed(team) {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const organisations = useSelector((state) => state.auth.organisations);
-  // const pmTeams = useSelector((state) => state.auth.pmTeams);
   const tmTeams = useSelector((state) => state.auth.tmTeams);
   const [isAllowed, setIsAllowed] = useState(false);
 
@@ -40,10 +39,8 @@ export function useEditTeamAllowed(team) {
     if (organisations && organisations.includes(team.organisation_id)) setIsAllowed(true);
     // team managers can edit it
     // verify from the redux store
-    // if (pmTeams && pmTeams.includes(team.teamId)) setIsAllowed(true); // removing this cause it is fetching all teams having project project manager role
-
-    // removed pm and test using tm list
-    if (tmTeams && tmTeams.includes(team.teamId)) setIsAllowed(true);
+    // removed pm and use tm list
+    if (tmTeams && tmTeams?.includes(team?.teamId)) setIsAllowed(true);
 
     if (team.members) {
       // and verify based on the team members list
