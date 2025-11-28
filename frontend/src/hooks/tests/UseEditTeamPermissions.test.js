@@ -37,7 +37,7 @@ describe('test edit team permissions based on manager permissions', () => {
   };
   it('team manager CAN edit it - verify based on redux store', () => {
     act(() => {
-      store.dispatch({ type: 'SET_PM_TEAMS', teams: [1, 2, 3] });
+      store.dispatch({ type: 'SET_TM_TEAMS', teams: [1, 2, 3] });
     });
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
     const { result } = renderHook(() => useEditTeamAllowed(team), { wrapper });
@@ -48,7 +48,7 @@ describe('test edit team permissions based on manager permissions', () => {
   it('team manager CAN edit it - verify based on team members', () => {
     const userDetails = { username: 'test', role: 'MAPPER' };
     act(() => {
-      store.dispatch({ type: 'SET_PM_TEAMS', teams: [] });
+      store.dispatch({ type: 'SET_TM_TEAMS', teams: [] });
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
     });
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
@@ -60,7 +60,7 @@ describe('test edit team permissions based on manager permissions', () => {
   it('MAPPER can not edit it - verify based on team members', () => {
     const userDetails = { username: 'another_user', role: 'MAPPER' };
     act(() => {
-      store.dispatch({ type: 'SET_PM_TEAMS', teams: [] });
+      store.dispatch({ type: 'SET_TM_TEAMS', teams: [] });
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
     });
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
@@ -71,7 +71,7 @@ describe('test edit team permissions based on manager permissions', () => {
 
   it('user that is NOT a team manager can not edit it', () => {
     act(() => {
-      store.dispatch({ type: 'SET_PM_TEAMS', teams: [2, 3] });
+      store.dispatch({ type: 'SET_TM_TEAMS', teams: [2, 3] });
     });
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
     const { result } = renderHook(() => useEditTeamAllowed(team), { wrapper });
