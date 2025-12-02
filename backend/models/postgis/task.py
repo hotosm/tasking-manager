@@ -1396,7 +1396,8 @@ class Task(Base):
                 t.task_status,
                 ST_AsGeoJSON(t.geometry) AS geojson,
                 t.locked_by,
-                t.mapped_by
+                t.mapped_by,
+                t.validated_by
             FROM tasks t
             WHERE t.project_id = :project_id
         """
@@ -1449,6 +1450,7 @@ class Task(Base):
                 taskStatus=TaskStatus(row["task_status"]).name,
                 lockedBy=row["locked_by"],
                 mappedBy=row["mapped_by"],
+                validatedBy=row["validated_by"],
             )
             feature = geojson.Feature(
                 geometry=task_geometry, properties=task_properties
