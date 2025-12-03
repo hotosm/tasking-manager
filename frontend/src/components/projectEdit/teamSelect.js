@@ -37,8 +37,8 @@ export const TeamSelect = () => {
     return teamRoles.filter((r) => r.value === value)[0].label;
   };
 
-  const editTeam = (id) => {
-    const team = projectInfo.teams.filter((t) => t.teamId === id)[0];
+  const editTeam = (teamId, roleValue) => {
+    const team = projectInfo.teams.filter((t) => t.teamId === teamId && t.role === roleValue)[0];
     const role = teamRoles.filter((r) => team.role === r.value)[0];
 
     setTeamSelect((t) => {
@@ -69,7 +69,7 @@ export const TeamSelect = () => {
   const updateTeam = () => {
     const teams = projectInfo.teams.map((t) => {
       let item = t;
-      if (t.teamId === teamSelect.team.teamId) {
+      if (t.teamId === teamSelect.team.teamId && t.role === teamSelect.team.role) {
         item = newTeam();
       }
       return item;
@@ -117,7 +117,10 @@ export const TeamSelect = () => {
             </div>
             <div className="w-30 fl">{getLabel(t.role)}</div>
             <div className="w-20 fl pl3 tr">
-              <span className="pa2 br-100 pointer bg-grey-light" onClick={() => editTeam(t.teamId)}>
+              <span
+                className="pa2 br-100 pointer bg-grey-light"
+                onClick={() => editTeam(t.teamId, t.role)}
+              >
                 <PencilIcon className="h1 w1 blue-dark" />
               </span>
               <span
