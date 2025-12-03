@@ -471,11 +471,10 @@ def add_user_to_team(
     return team_member
 
 
-def add_manager_to_organisation(organisation: Organisation, user: User):
-    org_dto = UpdateOrganisationDTO()
+async def add_manager_to_organisation(organisation, user: User, db):
+    org_dto = UpdateOrganisationDTO(**organisation)
     org_dto.managers = [user.username]
-    organisation.update(org_dto)
-    organisation.save()
+    await Organisation.update(org_dto, db)
     return user.username
 
 
