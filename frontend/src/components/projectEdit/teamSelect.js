@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useCallback, useMemo } from 'react';
 import Select from 'react-select';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -27,18 +27,21 @@ export const TeamSelect = () => {
   );
   const { data: teamsData, isFetching: isTeamsLoading } = useTeamsQuery({ omitMemberList: true });
 
-  const teamRoles = [
-    { value: 'MAPPER', label: 'Mapper' },
-    { value: 'VALIDATOR', label: 'Validator' },
-    { value: 'PROJECT_MANAGER', label: 'Project Manager' },
-  ];
+  const teamRoles = useMemo(
+    () => [
+      { value: 'MAPPER', label: 'Mapper' },
+      { value: 'VALIDATOR', label: 'Validator' },
+      { value: 'PROJECT_MANAGER', label: 'Project Manager' },
+    ],
+    [],
+  );
 
   const getLabel = (value) => {
     return teamRoles.filter((r) => r.value === value)[0].label;
   };
 
-  const editTeam = (id) => {
-    const team = projectInfo.teams.filter((t) => t.teamId === id)[0];
+  const editTeam = (teamId, roleValue) => {
+    const team = projectInfo.teams.filter((t) => t.teamId === teamId && t.role === roleValue)[0];
     const role = teamRoles.filter((r) => team.role === r.value)[0];
 
     setTeamSelect((t) => {
@@ -46,8 +49,8 @@ export const TeamSelect = () => {
     });
   };
 
-  const removeTeam = (id) => {
-    const teams = projectInfo.teams.filter((t) => t.teamId !== id);
+  const removeTeam = (teamId, roleValue) => {
+    const teams = projectInfo.teams.filter((t) => !(t.teamId === teamId && t.role === roleValue));
     setProjectInfo({ ...projectInfo, teams: teams });
   };
 
@@ -69,7 +72,7 @@ export const TeamSelect = () => {
   const updateTeam = () => {
     const teams = projectInfo.teams.map((t) => {
       let item = t;
-      if (t.teamId === teamSelect.team.teamId) {
+      if (t.teamId === teamSelect.team.teamId && t.role === teamSelect.team.role) {
         item = newTeam();
       }
       return item;
@@ -99,6 +102,16 @@ export const TeamSelect = () => {
     ];
   }
 
+  // Filter out assigned roles and display only remaining roles in options
+  const roleList = useCallback(() => {
+    const existingRolesOfSelectdTeam = projectInfo.teams.reduce(
+      (prev, curr) => (curr.teamId === teamSelect.team?.teamId ? [...prev, curr.role] : prev),
+      [],
+    );
+
+    return teamRoles.filter((role) => !existingRolesOfSelectdTeam.includes(role.value));
+  }, [projectInfo.teams, teamRoles, teamSelect]);
+
   return (
     <div className="w-80">
       <div className="mb4">
@@ -117,12 +130,15 @@ export const TeamSelect = () => {
             </div>
             <div className="w-30 fl">{getLabel(t.role)}</div>
             <div className="w-20 fl pl3 tr">
-              <span className="pa2 br-100 pointer bg-grey-light" onClick={() => editTeam(t.teamId)}>
+              <span
+                className="pa2 br-100 pointer bg-grey-light"
+                onClick={() => editTeam(t.teamId, t.role)}
+              >
                 <PencilIcon className="h1 w1 blue-dark" />
               </span>
               <span
                 className=" ml1 pa2 br-100 pointer bg-grey-light red"
-                onClick={() => removeTeam(t.teamId)}
+                onClick={() => removeTeam(t.teamId, t.role)}
               >
                 <WasteIcon className="h1 w1" />
               </span>
@@ -161,7 +177,7 @@ export const TeamSelect = () => {
           classNamePrefix="react-select"
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
-          options={teamRoles}
+          options={roleList()}
           onChange={(value) => handleSelect(value, 'role')}
           className="w-40 fl mr2 z-3"
           isDisabled={teamSelect.team.name === null ? true : false}

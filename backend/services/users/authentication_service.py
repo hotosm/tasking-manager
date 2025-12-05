@@ -70,18 +70,18 @@ def verify_token(token):
 class TokenAuthBackend(AuthenticationBackend):
     async def authenticate(self, conn):
         if "authorization" not in conn.headers:
-            return
+            return None
 
         auth = conn.headers["authorization"]
         try:
             scheme, credentials = auth.split()
             if scheme.lower() != "token":
-                return
+                return None
             try:
                 decoded_token = base64.b64decode(credentials).decode("ascii")
             except UnicodeDecodeError:
                 logger.debug("Unable to decode token")
-                return False
+                return None
         except (ValueError, UnicodeDecodeError, binascii.Error):
             raise AuthenticationError("Invalid auth credentials")
 
@@ -90,7 +90,7 @@ class TokenAuthBackend(AuthenticationBackend):
         )
         if not valid_token:
             logger.debug("Token not valid.")
-            return
+            return None
         tm.authenticated_user_id = user_id
         return AuthCredentials(["authenticated"]), SimpleUser(user_id)
 
@@ -251,7 +251,6 @@ async def login_required(
         raise AuthenticationError("Invalid auth credentials")
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        logger.debug("Token not valid")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"Error": "Token is expired or invalid", "SubCode": "InvalidToken"},
@@ -275,17 +274,23 @@ async def login_required_optional(
             decoded_token = base64.b64decode(credentials).decode("ascii")
         except UnicodeDecodeError:
             logger.debug("Unable to decode token")
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "Error": "Token is expired or invalid",
+                    "SubCode": "InvalidToken",
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
     except (ValueError, UnicodeDecodeError, binascii.Error):
         raise AuthenticationError("Invalid auth credentials")
     valid_token, user_id = AuthenticationService.is_valid_token(decoded_token, 604800)
     if not valid_token:
-        logger.debug("Token not valid")
         return None
     return AuthUserDTO(id=user_id)
 
 
-async def pm_only(
+async def admin_only(
     Authorization: str = Security(APIKeyHeader(name="Authorization")),
     db: Database = Depends(get_db),
 ):

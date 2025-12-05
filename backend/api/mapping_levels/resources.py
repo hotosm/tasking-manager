@@ -8,7 +8,7 @@ from backend.models.dtos.mapping_level_dto import (
 )
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_levels import MappingLevelService
-from backend.services.users.authentication_service import pm_only
+from backend.services.users.authentication_service import admin_only
 
 router = APIRouter(
     prefix="/levels",
@@ -36,7 +36,7 @@ async def get_mapping_levels(
 async def create_mapping_level(
     data: MappingLevelCreateDTO,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Create a new mapping level
@@ -70,7 +70,7 @@ async def update_mapping_level(
     data: MappingLevelUpdateDTO,
     level_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Update a given mapping level
@@ -89,7 +89,7 @@ async def update_mapping_level(
 async def delete_mapping_level(
     level_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Delete the specified mapping level

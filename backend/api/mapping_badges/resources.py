@@ -11,7 +11,7 @@ from backend.models.dtos.mapping_badge_dto import (
 )
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_badges import MappingBadgeService
-from backend.services.users.authentication_service import pm_only
+from backend.services.users.authentication_service import admin_only
 
 router = APIRouter(
     prefix="/badges",
@@ -39,7 +39,7 @@ async def get_mapping_badges(
 async def create_mapping_badge(
     data: MappingBadgeCreateDTO,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ) -> MappingBadgeDTO:
     """
     Creates a new MappingBadge
@@ -73,7 +73,7 @@ async def update_mapping_badge(
     data: MappingBadgeUpdateDTO,
     badge_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ) -> MappingBadgeDTO:
     """
     Updates a mapping badge
@@ -92,7 +92,7 @@ async def update_mapping_badge(
 async def delete_mapping_badge(
     badge_id: int,
     db: Database = Depends(get_db),
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
 ):
     """
     Deletes a mapping badge

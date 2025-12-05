@@ -10,7 +10,6 @@ from loguru import logger as log
 from pyinstrument import Profiler
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
-
 from backend.config import settings
 from backend.db import db_connection
 from backend.exceptions import BadRequest, Conflict, Forbidden, NotFound, Unauthorized
@@ -55,16 +54,21 @@ def get_application() -> FastAPI:
     # Custom exception handler for invalid token and logout.
     @_app.exception_handler(HTTPException)
     async def custom_http_exception_handler(request: Request, exc: HTTPException):
-        if exc.status_code == 401 and "InvalidToken" in exc.detail.get("SubCode", ""):
-            return JSONResponse(
-                content={
-                    "Error": exc.detail["Error"],
-                    "SubCode": exc.detail["SubCode"],
-                },
-                status_code=exc.status_code,
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
+        try:
+            if exc.status_code == 401 and "InvalidToken" in exc.detail.get(
+                "SubCode", ""
+            ):
+                return JSONResponse(
+                    content={
+                        "Error": exc.detail["Error"],
+                        "SubCode": exc.detail["SubCode"],
+                    },
+                    status_code=exc.status_code,
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        except Exception as e:
+            logging.debug(f"Exception while handling custom HTTPException: {e}")
+            pass
         if isinstance(exc.detail, dict) and "error" in exc.detail:
             error_response = exc.detail
         else:

@@ -7,7 +7,7 @@ from backend.db import get_db
 from backend.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.mapping_issues_service import MappingIssueCategoryService
-from backend.services.users.authentication_service import pm_only
+from backend.services.users.authentication_service import admin_only
 
 router = APIRouter(
     prefix="/tasks",
@@ -52,7 +52,7 @@ async def get_issue(category_id: int, db: Database = Depends(get_db)):
 async def patch_issue(
     request: Request,
     category_id: int,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
     data: MappingIssueCategoryDTO = Body(...),
 ):
@@ -121,7 +121,7 @@ async def patch_issue(
 async def delete_issue(
     request: Request,
     category_id: int,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -200,7 +200,7 @@ async def get_issues_categories(
 @router.post("/issues/categories/", response_model=MappingIssueCategoryDTO)
 async def post_issues_categories(
     request: Request,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
     data: dict = Body(...),
 ):

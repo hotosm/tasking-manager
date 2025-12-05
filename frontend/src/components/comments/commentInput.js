@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import Tribute from 'tributejs';
@@ -21,6 +21,7 @@ import { CurrentUserAvatar } from '../user/avatar';
 const maxFileSize = 1 * 1024 * 1024; // 1MB
 
 function CommentInputField({
+  sessionkey,
   comment,
   setComment,
   contributors,
@@ -130,6 +131,23 @@ function CommentInputField({
     });
   };
 
+  useEffect(() => {
+    if (!sessionkey) return;
+    const commenEvent = sessionStorage.getItem(sessionkey);
+    if (commenEvent) {
+      setComment(commenEvent);
+    }
+  }, [sessionkey, setComment]);
+
+  const onCommentChange = useCallback(
+    (e) => {
+      setComment(e);
+      if (!sessionkey) return;
+      sessionStorage.setItem(sessionkey, e);
+    },
+    [sessionkey, setComment],
+  );
+
   return (
     <div {...getRootProps()}>
       {isShowTabNavs && (
@@ -165,7 +183,7 @@ function CommentInputField({
           extraCommands={[]}
           height={200}
           value={comment}
-          onChange={setComment}
+          onChange={onCommentChange}
           textareaProps={{
             ...getInputProps(),
             spellCheck: 'true',

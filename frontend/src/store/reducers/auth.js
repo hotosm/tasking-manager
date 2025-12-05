@@ -23,6 +23,9 @@ export function authorizationReducer(state = initialState, action) {
     case types.SET_PM_TEAMS: {
       return { ...state, pmTeams: action.teams };
     }
+    case types.SET_TM_TEAMS: {
+      return { ...state, tmTeams: action.teams };
+    }
     case types.SET_TOKEN: {
       return { ...state, token: action.token };
     }

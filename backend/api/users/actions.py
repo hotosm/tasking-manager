@@ -7,7 +7,7 @@ from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserDTO, UserRegisterEmailDTO
 from backend.services.interests_service import InterestService
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import login_required, pm_only
+from backend.services.users.authentication_service import login_required, admin_only
 from backend.services.users.user_service import UserService, UserServiceError
 
 router = APIRouter(
@@ -117,7 +117,7 @@ async def set_mapping_level(
     request: Request,
     username,
     level,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -173,7 +173,7 @@ async def set_user_role(
     request: Request,
     username: str,
     role: str,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -228,7 +228,7 @@ async def set_user_role(
 async def update_stats(
     request: Request,
     username: str,
-    _: AuthUserDTO = Depends(pm_only),
+    _: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -255,7 +255,7 @@ async def update_stats(
 async def approve_level(
     request: Request,
     username: str,
-    voter: AuthUserDTO = Depends(pm_only),
+    voter: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -282,7 +282,7 @@ async def set_user_is_expert(
     request: Request,
     user_name,
     is_expert,
-    user: AuthUserDTO = Depends(pm_only),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
