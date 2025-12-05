@@ -46,8 +46,8 @@ export const TeamSelect = () => {
     });
   };
 
-  const removeTeam = (id) => {
-    const teams = projectInfo.teams.filter((t) => t.teamId !== id);
+  const removeTeam = (teamId, roleValue) => {
+    const teams = projectInfo.teams.filter((t) => !(t.teamId === teamId && t.role === roleValue));
     setProjectInfo({ ...projectInfo, teams: teams });
   };
 
@@ -125,7 +125,7 @@ export const TeamSelect = () => {
               </span>
               <span
                 className=" ml1 pa2 br-100 pointer bg-grey-light red"
-                onClick={() => removeTeam(t.teamId)}
+                onClick={() => removeTeam(t.teamId, t.role)}
               >
                 <WasteIcon className="h1 w1" />
               </span>
