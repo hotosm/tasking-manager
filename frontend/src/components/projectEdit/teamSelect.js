@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext, useCallback, useMemo } from 'react';
 import Select from 'react-select';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -27,11 +27,14 @@ export const TeamSelect = () => {
   );
   const { data: teamsData, isFetching: isTeamsLoading } = useTeamsQuery({ omitMemberList: true });
 
-  const teamRoles = [
-    { value: 'MAPPER', label: 'Mapper' },
-    { value: 'VALIDATOR', label: 'Validator' },
-    { value: 'PROJECT_MANAGER', label: 'Project Manager' },
-  ];
+  const teamRoles = useMemo(
+    () => [
+      { value: 'MAPPER', label: 'Mapper' },
+      { value: 'VALIDATOR', label: 'Validator' },
+      { value: 'PROJECT_MANAGER', label: 'Project Manager' },
+    ],
+    [],
+  );
 
   const getLabel = (value) => {
     return teamRoles.filter((r) => r.value === value)[0].label;
