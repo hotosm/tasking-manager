@@ -1,6 +1,7 @@
 from databases import Database
 from fastapi import APIRouter, Depends
-
+from fastapi.responses import JSONResponse
+import json
 from backend.db import get_db
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
@@ -99,3 +100,57 @@ async def get_project_user_stats(
     """
     stats_dto = await ProjectService.get_project_user_stats(project_id, username, db)
     return stats_dto
+
+
+@router.get("/{project_id}/tasks/invalidated/")
+async def get_project_invalidated_counts(
+    project_id: int, db: Database = Depends(get_db)
+):
+    """
+    Return all tasks in a project with the number of times each task was invalidated.
+    Only counts task_history rows where action='STATE_CHANGE' and action_text='INVALIDATED'.
+    """
+    query = """
+        SELECT COALESCE(
+            jsonb_agg(
+                jsonb_build_object(
+                    'taskId', t.id,
+                    'invalidatedCount', COALESCE(th.cnt, 0)
+                ) ORDER BY t.id
+            ),
+            '[]'::jsonb
+        ) AS tasks
+        FROM tasks t
+        LEFT JOIN (
+            SELECT task_id, COUNT(*)::int AS cnt
+            FROM task_history
+            WHERE project_id = :project_id
+              AND action = 'STATE_CHANGE'
+              AND action_text = 'INVALIDATED'
+            GROUP BY task_id
+        ) th ON th.task_id = t.id
+        WHERE t.project_id = :project_id;
+    """
+
+    try:
+        row = await db.fetch_one(query=query, values={"project_id": project_id})
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "Error": "Failed to query invalidation counts",
+                "SubCode": "InternalError",
+                "details": str(e),
+            },
+        )
+
+    tasks_raw = row["tasks"] if row else []
+    if isinstance(tasks_raw, str):
+        try:
+            tasks = json.loads(tasks_raw)
+        except Exception:
+            tasks = []
+    else:
+        tasks = tasks_raw or []
+
+    return JSONResponse(status_code=200, content={"tasks": tasks})
