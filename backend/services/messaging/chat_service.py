@@ -85,28 +85,25 @@ class ChatService:
         return await ProjectChat.get_messages(project_id, db, page, per_page)
 
     @staticmethod
-    def get_project_chat_by_id(project_id: int, comment_id: int) -> ProjectChat:
-        """Get a message from a project chat
-        ----------------------------------------
-        :param project_id: The id of the project the message belongs to
-        :param message_id: The message id to fetch
-        ----------------------------------------
-        :raises NotFound: When the message is not found
-        ----------------------------------------
-        returns: The message
+    async def get_project_chat_by_id(project_id: int, comment_id: int, db: Database):
+        await ProjectService.exists(project_id, db)
+        query = """
+            SELECT *
+            FROM project_chat
+            WHERE project_id = :project_id AND id = :comment_id
+            LIMIT 1
         """
-        chat_message = ProjectChat.query.filter(
-            ProjectChat.project_id == project_id,
-            ProjectChat.id == comment_id,
-        ).one_or_none()
-        if chat_message is None:
+        row = await db.fetch_one(
+            query=query, values={"project_id": project_id, "comment_id": comment_id}
+        )
+
+        if row is None:
             raise NotFound(
                 sub_code="MESSAGE_NOT_FOUND",
                 message_id=comment_id,
                 project_id=project_id,
             )
-
-        return chat_message
+        return dict(row)
 
     @staticmethod
     async def delete_project_chat_by_id(
