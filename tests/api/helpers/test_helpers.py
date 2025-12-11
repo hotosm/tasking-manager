@@ -546,15 +546,18 @@ async def create_canned_campaign(db, test_campaign=None):
     return test_campaign
 
 
-def create_canned_interest(name="test_interest") -> Interest:
-    """Returns test interest without writing to db
-    param name: name of interest
-    return: Interest object
-    """
-    test_interest = Interest()
-    test_interest.name = name
-    test_interest.create()
-    return test_interest
+async def create_canned_interest(db, interest_id=111, name="test_interest"):
+    """Generate a canned interest in the DB and return the interest object."""
+    await db.execute(
+        """
+        INSERT INTO interests (id, name)
+        VALUES (:id, :name)
+        """,
+        {"id": interest_id, "name": name},
+    )
+
+    interest = Interest(id=interest_id, name=name)
+    return interest
 
 
 async def create_canned_license(db, name="test_license") -> int:

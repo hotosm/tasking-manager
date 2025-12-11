@@ -1,3 +1,4 @@
+from backend.exceptions import NotFound
 from databases import Database
 from fastapi import HTTPException
 
@@ -21,6 +22,8 @@ class InterestService:
             WHERE id = :interest_id
         """
         interest_dto = await db.fetch_one(query, {"interest_id": interest_id})
+        if interest_dto is None:
+            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_id=interest_id)
         return interest_dto
 
     @staticmethod
@@ -48,6 +51,11 @@ class InterestService:
 
     @staticmethod
     async def update(interest_id: int, interest_dto: InterestDTO, db: Database):
+
+        interest = await Interest.get_by_id(interest_id, db)
+        if interest is None:
+            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_id=interest_id)
+
         query = """
             UPDATE interests
             SET name = :name
@@ -80,6 +88,10 @@ class InterestService:
 
     @staticmethod
     async def delete(interest_id: int, db: Database):
+        interest = await Interest.get_by_id(interest_id, db)
+        if interest is None:
+            raise NotFound(sub_code="INTEREST_NOT_FOUND", interest_id=interest_id)
+
         check_user_association_query = """
             SELECT 1
             FROM user_interests
