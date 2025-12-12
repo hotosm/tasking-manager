@@ -425,14 +425,17 @@ async def return_canned_team(
     test_org = await get_canned_organisation(org_name, db)
     if test_org is None:
         test_org = await create_canned_organisation(db)
+    else:
+        test_org = Organisation(**test_org)
     test_team.organisation = test_org
     test_team.organisation_id = test_org.id
 
     return test_team
 
 
-async def create_canned_team(db):
-    test_team = await return_canned_team(db)
+async def create_canned_team(db, test_team=None):
+    if test_team is None:
+        test_team = await return_canned_team(db)
 
     query = """
         INSERT INTO teams (name, organisation_id, join_method, visibility)
@@ -462,11 +465,18 @@ async def create_canned_team(db):
     return Team(**created_team) if created_team else None
 
 
-def add_user_to_team(
+async def add_user_to_team(
     team: Team, user: User, role: int, is_active: bool, db
 ) -> TeamMembers:
-    team_member = TeamMembers(team=team, member=user, function=role, active=is_active)
-    team_member.create(db)
+    team_member = TeamMembers(
+        team_id=team.id,
+        user_id=user.id,
+        team=team,
+        member=user,
+        function=role,
+        active=is_active,
+    )
+    await team_member.create(db)
 
     return team_member
 
