@@ -69,6 +69,7 @@ export function CompletionTabForMapping({
   const clearLockedTasks = useClearLockedTasks();
   const directedFrom = localStorage.getItem('lastProjectPathname');
   const { projectId } = project;
+  const SESSION_KEY = 'task-comment';
 
   const splitTaskMutation = useMutation({
     mutationFn: () => splitTask(projectId, tasksIds[0], token, locale),
@@ -147,6 +148,7 @@ export function CompletionTabForMapping({
       payload.status = selectedStatus;
     }
     submitTaskMutation.mutate({ url, payload });
+    sessionStorage.removeItem(SESSION_KEY);
   };
 
   const invalidateProjectData = () => {
@@ -266,8 +268,10 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
+        <h1>hahahahah</h1>
         <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}>
           <CommentInputField
+            sessionkey={SESSION_KEY}
             comment={taskComment}
             setComment={setTaskComment}
             contributors={contributors}
