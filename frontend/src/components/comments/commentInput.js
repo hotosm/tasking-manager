@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import MDEditor from '@uiw/react-md-editor';
 import Tribute from 'tributejs';
@@ -137,16 +137,13 @@ function CommentInputField({
     if (commenEvent) {
       setComment(commenEvent);
     }
-  }, [sessionkey, setComment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionkey]);
 
-  const onCommentChange = useCallback(
-    (e) => {
-      setComment(e);
-      if (!sessionkey) return;
-      sessionStorage.setItem(sessionkey, e);
-    },
-    [sessionkey, setComment],
-  );
+  useEffect(() => {
+    if (!sessionkey) return;
+    sessionStorage.setItem(sessionkey, comment);
+  }, [comment, sessionkey]);
 
   return (
     <div {...getRootProps()}>
@@ -183,7 +180,7 @@ function CommentInputField({
           extraCommands={[]}
           height={200}
           value={comment}
-          onChange={onCommentChange}
+          onChange={setComment}
           textareaProps={{
             ...getInputProps(),
             spellCheck: 'true',

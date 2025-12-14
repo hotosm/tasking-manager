@@ -33,7 +33,7 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
     onSuccess: () => {
       refetchComments();
       setComment('');
-      sessionStorage.clear(SESSION_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
     },
   });
 
