@@ -6,6 +6,11 @@ import { Alert } from '../alert';
 
 import { OrganisationSelect } from '../formInputs';
 
+const databaseOptions = [
+  { value: 'OSM', label: 'OSM' },
+  { value: 'sand', label: 'Sandbox' },
+];
+
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
 
@@ -55,6 +60,32 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
           />
         </>
       ) : null}
+
+      <>
+        <label className="f5 fw6 db mb2 pt3">
+          <FormattedMessage {...messages.databse} />
+        </label>
+        {databaseOptions.map((option) => (
+          <label className="dib pr5" key={option.value}>
+            <input
+              value={option.value}
+              checked={
+                option.value === (metadata.sandbox && metadata.database === 'sand' ? 'sand' : 'OSM')
+              }
+              onChange={() =>
+                updateMetadata({
+                  ...metadata,
+                  database: option.value,
+                  sandbox: option.value === 'sand',
+                })
+              }
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`database${option.label}`]} />
+          </label>
+        ))}
+      </>
 
       {error && (
         <Alert type="error">
