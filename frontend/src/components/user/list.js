@@ -371,7 +371,12 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
               <RefreshIcon width={18} height={18} />
             </button>
             <button className="bw0 bg-transparent pb1">
-              <DeleteModal id={row.original.id} type="users" className="bw0" />
+              <DeleteModal
+                id={row.original.id}
+                type="users"
+                className="bw0"
+                message={messages.delete}
+              />
             </button>
           </div>
         ),

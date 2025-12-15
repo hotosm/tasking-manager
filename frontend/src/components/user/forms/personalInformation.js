@@ -265,6 +265,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   className="bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red"
                   type="users"
                   onDelete={() => dispatch(logout())}
+                  message={messages.delete}
                 />
               </div>
               <p className="f6 mt2 tr mb0">
