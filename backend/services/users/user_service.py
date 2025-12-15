@@ -328,9 +328,9 @@ class UserService:
                 await db.execute(
                     query="""
                         DELETE FROM user_licenses
-                        WHERE user = :user_id
+                        WHERE "user" = :user_id
                     """,
-                    values={"user_id": str(user_id)},
+                    values={"user_id": user_id},
                 )
 
                 await db.execute(
