@@ -23,8 +23,37 @@ export const DescriptionForm = ({ languages }) => {
     { value: 'LOW', label: 'LOW' },
   ];
 
+  const databaseOptions = [
+    { value: 'OSM', label: 'OSM' },
+    { value: 'sand', label: 'Sandbox' },
+  ];
+
   return (
     <div className="w-100">
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.databse} />
+        </label>
+        {databaseOptions.map((option) => (
+          <label className="dib pr5" key={option.value}>
+            <input
+              value={option.value}
+              checked={projectInfo.database === option.value}
+              onChange={() =>
+                setProjectInfo({
+                  ...projectInfo,
+                  database: option.value,
+                  sandbox: option.value === 'sand',
+                })
+              }
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`database${option.label}`]} />
+          </label>
+        ))}
+      </div>
+
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.status} />
