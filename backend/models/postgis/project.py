@@ -281,8 +281,8 @@ class Project(Base):
         self.author_id = draft_project_dto.user_id
         self.created = timestamp()
         self.last_updated = timestamp()
-        self.database = self.database
-        self.sandbox = self.sandbox
+        self.database = draft_project_dto.database
+        self.sandbox = draft_project_dto.sandbox
 
     async def set_project_aoi(self, draft_project_dto: DraftProjectDTO, db: Database):
         """Sets the AOI for the supplied project"""
@@ -876,6 +876,8 @@ class Project(Base):
         columns.pop("centroid", None)
         columns.pop("id", None)
         columns.pop("organisation_id", None)
+        columns.pop("sandbox", None)
+        columns.pop("database", None)
         # Update the project in the database
         await db.execute(
             self.__table__.update().where(Project.id == self.id).values(**columns)
