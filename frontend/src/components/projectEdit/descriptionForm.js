@@ -6,6 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
+import { DEFAULT_SANDBOX_DB } from '../../config';
+
+const SANDBOX_DB = DEFAULT_SANDBOX_DB;
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -25,7 +28,7 @@ export const DescriptionForm = ({ languages }) => {
 
   const databaseOptions = [
     { value: 'OSM', label: 'OSM' },
-    { value: 'sand', label: 'Sandbox' },
+    { value: 'sandbox', label: 'Sandbox' },
   ];
 
   return (
@@ -38,12 +41,15 @@ export const DescriptionForm = ({ languages }) => {
           <label className="dib pr5" key={option.value}>
             <input
               value={option.value}
-              checked={projectInfo.database === option.value}
+              checked={
+                (option.value === 'OSM' && !projectInfo.sandbox) ||
+                (projectInfo.sandbox && option.value !== 'OSM')
+              }
               onChange={() =>
                 setProjectInfo({
                   ...projectInfo,
-                  database: option.value,
-                  sandbox: option.value === 'sand',
+                  database: option.value === 'OSM' ? 'OSM' : SANDBOX_DB,
+                  sandbox: option.value !== 'OSM',
                 })
               }
               type="radio"

@@ -5,11 +5,14 @@ import messages from './messages';
 import { Alert } from '../alert';
 
 import { OrganisationSelect } from '../formInputs';
+import { DEFAULT_SANDBOX_DB } from '../../config';
 
 const databaseOptions = [
   { value: 'OSM', label: 'OSM' },
-  { value: 'sand', label: 'Sandbox' },
+  { value: 'sandbox', label: 'Sandbox' },
 ];
+
+const SANDBOX_DB = DEFAULT_SANDBOX_DB;
 
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
@@ -70,13 +73,14 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
             <input
               value={option.value}
               checked={
-                option.value === (metadata.sandbox && metadata.database === 'sand' ? 'sand' : 'OSM')
+                (option.value === 'OSM' && !metadata.sandbox) ||
+                (metadata.sandbox && option.value !== 'OSM')
               }
               onChange={() =>
                 updateMetadata({
                   ...metadata,
-                  database: option.value,
-                  sandbox: option.value === 'sand',
+                  database: option.value === 'OSM' ? 'OSM' : SANDBOX_DB,
+                  sandbox: option.value !== 'OSM',
                 })
               }
               type="radio"
