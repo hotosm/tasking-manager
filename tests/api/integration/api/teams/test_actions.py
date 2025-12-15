@@ -46,6 +46,7 @@ class TestTeamsActionsJoinAPI:
             self.db, username=TEST_ADMIN_USERNAME, id=11111
         )
         self.test_admin = await create_canned_user(self.db, admin_result)
+
         # make admin
         await self.db.execute(
             "UPDATE users SET role = :role WHERE id = :id",
@@ -58,6 +59,7 @@ class TestTeamsActionsJoinAPI:
         raw_user = AuthenticationService.generate_session_token_for_user(
             self.test_user.id
         )
+
         self.admin_token = (
             f"Token {base64.b64encode(raw_admin.encode('utf-8')).decode('utf-8')}"
         )
@@ -96,12 +98,8 @@ class TestTeamsActionsJoinAPI:
     async def test_request_to_join_team_with_invite_only_request_fails(
         self, client: AsyncClient
     ):
-        # set join_method to BY_INVITE directly in DB
-        team_id = (
-            getattr(self.test_team, "id", None)
-            or getattr(self.test_team, "teamId", None)
-            or 1
-        )
+        team_id = self.test_team.id
+
         await self.db.execute(
             "UPDATE teams SET join_method = :join_method WHERE id = :id",
             {"join_method": TeamJoinMethod.BY_INVITE.value, "id": team_id},
@@ -120,10 +118,7 @@ class TestTeamsActionsAddAPI:
     async def _setup(self, db_connection_fixture):
         self.db = db_connection_fixture
 
-        team_result = await create_canned_team(self.db)
-        self.test_team = (
-            team_result if not isinstance(team_result, tuple) else team_result[0]
-        )
+        self.test_team = await create_canned_team(self.db)
         user_result = await return_canned_user(self.db)
         self.test_user = await create_canned_user(self.db, user_result)
 
@@ -148,12 +143,7 @@ class TestTeamsActionsAddAPI:
         self.session_token = (
             f"Token {base64.b64encode(raw_user.encode('utf-8')).decode('utf-8')}"
         )
-
-        team_id = (
-            getattr(self.test_team, "id", None)
-            or getattr(self.test_team, "teamId", None)
-            or 1
-        )
+        team_id = self.test_team.id
         self.endpoint_url = f"/api/v2/teams/{team_id}/actions/add/"
 
     async def test_add_members_to_team_by_admin_passes(self, client: AsyncClient):

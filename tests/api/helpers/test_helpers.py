@@ -583,10 +583,12 @@ async def create_canned_license(db, name="test_license") -> int:
     return test_license
 
 
-def create_canned_mapping_issue(name="Test Issue") -> int:
+async def create_canned_mapping_issue(db, name="Test Issue") -> int:
     issue_dto = MappingIssueCategoryDTO()
     issue_dto.name = name
-    test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
+    test_issue_id = await MappingIssueCategoryService.create_mapping_issue_category(
+        issue_dto, db
+    )
     return test_issue_id
 
 
