@@ -86,6 +86,22 @@ export const useProjectContributionsQuery = (projectId, otherOptions = {}) => {
   });
 };
 
+export const useProjectContributionsLevelQuery = (otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const fetchProjectContributionLevels = ({ signal }) => {
+    return api(token).get(`levels/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-contributions-levels'],
+    queryFn: fetchProjectContributionLevels,
+    select: (data) => data.data.levels,
+    ...otherOptions,
+  });
+};
+
 export const useActivitiesQuery = (projectId) => {
   const token = useSelector((state) => state.auth.token);
   const ACTIVITIES_REFETCH_INTERVAL = 1000 * 60;
