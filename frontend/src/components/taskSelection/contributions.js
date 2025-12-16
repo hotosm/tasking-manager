@@ -12,8 +12,8 @@ import {
   MappedIcon,
   ValidatedIcon,
   AsteriskIcon,
-  // HalfStarIcon,
-  // FullStarIcon,
+  HalfStarIcon,
+  FullStarIcon,
   ChartLineIcon,
 } from '../svgIcons';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
@@ -22,37 +22,37 @@ import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 import { useProjectContributionsLevelQuery } from '../../api/projects.js';
 
-// export const MappingLevelIcon = ({ mappingLevel }) => {
-//   if (!mappingLevel) {
-//     return null;
-//   }
-//   const upperCaseLevelStr = mappingLevel.toUpperCase();
-//   let level = null;
+export const MappingLevelIcon = ({ mappingLevel }) => {
+  if (!mappingLevel) {
+    return null;
+  }
+  const upperCaseLevelStr = mappingLevel.toUpperCase();
+  let level = null;
 
-//   if (upperCaseLevelStr.includes('ADVANCED')) {
-//     level = 'ADVANCED';
-//   } else if (upperCaseLevelStr.includes('INTERMEDIATE')) {
-//     level = 'INTERMEDIATE';
-//   }
+  if (upperCaseLevelStr.includes('ADVANCED')) {
+    level = 'ADVANCED';
+  } else if (upperCaseLevelStr.includes('INTERMEDIATE')) {
+    level = 'INTERMEDIATE';
+  }
 
-//   if (level) {
-//     return (
-//       <FormattedMessage {...messages[`mappingLevel${level}`]}>
-//         {(msg) => (
-//           <span className="blue-grey ttl" title={msg}>
-//             {level === 'ADVANCED' ? (
-//               <FullStarIcon className="h1 w1 v-mid pb1" />
-//             ) : (
-//               <HalfStarIcon className="h1 w1 v-mid pb1" />
-//             )}
-//           </span>
-//         )}
-//       </FormattedMessage>
-//     );
-//   }
+  if (level) {
+    return (
+      <FormattedMessage {...messages[`mappingLevel${level}`]}>
+        {(msg) => (
+          <span className="blue-grey ttl" title={msg}>
+            {level === 'ADVANCED' ? (
+              <FullStarIcon className="h1 w1 v-mid pb1" />
+            ) : (
+              <HalfStarIcon className="h1 w1 v-mid pb1" />
+            )}
+          </span>
+        )}
+      </FormattedMessage>
+    );
+  }
 
-//   return null;
-// };
+  return null;
+};
 
 const sortByLits = [
   {
