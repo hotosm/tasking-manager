@@ -204,8 +204,14 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   const [sortBy, setSortBy] = useState('total');
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
+  const levelList = useMemo(
+    () => mappingLevels?.map((level) => level.value) || [],
+    [mappingLevels],
+  );
+
   const contributors = useFilterContributors(
     contribsData || [],
+    levelList || [],
     level && level.value,
     userFilter && userFilter.value,
     sortBy,

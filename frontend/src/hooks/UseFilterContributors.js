@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 
 import { getPastMonths } from '../utils/date';
 
-export function useFilterContributors(contributors, level, username, sortBy) {
+export function useFilterContributors(contributors, levelList, level, username, sortBy) {
   const [filteredContributors, setFilter] = useState([]);
 
   useEffect(() => {
     let users = contributors || [];
-    if (['ADVANCED', 'INTERMEDIATE', 'BEGINNER'].includes(level)) {
-      users = users.filter(
-        (user) => user.mappingLevel && user.mappingLevel.toUpperCase().includes(level),
-      );
+
+    if (levelList.includes(level)) {
+      users =
+        level === 'ALL'
+          ? contributors
+          : users.filter((user) => user.mappingLevel && user.mappingLevel === level);
     }
     if (level === 'NEWUSER') {
       const monthFiltered = getPastMonths(1);
@@ -26,7 +28,7 @@ export function useFilterContributors(contributors, level, username, sortBy) {
     }
 
     setFilter(users);
-  }, [contributors, level, username, sortBy]);
+  }, [contributors, level, username, sortBy, levelList]);
 
   return filteredContributors;
 }
