@@ -362,7 +362,7 @@ class ProjectSearchDTO(BaseModel):
     organisation_id: Optional[int] = None
     team_id: Optional[int] = None
     campaign: Optional[str] = None
-    database: Optional[str] = "OSM"
+    database: Optional[str] = None
     order_by: Optional[str] = None
     order_by_type: Optional[str] = None
     country: Optional[str] = None
