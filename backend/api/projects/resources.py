@@ -779,6 +779,8 @@ async def get_projects(
         search_dto = ProjectSearchDTO(
             preferred_locale=request.headers.get("accept-language"),
             difficulty=difficulty,
+            sandbox=sandbox,
+            database=database,
             action=action,
             organisation_name=organisation_name,
             organisation_id=organisation_id,
