@@ -149,6 +149,21 @@ class InterestService:
         """
         Create or update the user's interests by directly interacting with the database.
         """
+        existing = await db.fetch_all(
+            """
+            SELECT id
+            FROM interests
+            WHERE id = ANY(:ids)
+            """,
+            {"ids": interests_ids},
+        )
+
+        if len(existing) != len(set(interests_ids)):
+            raise HTTPException(
+                status_code=404,
+                detail="One or more interests not found",
+            )
+
         async with db.transaction():
             delete_query = """
                 DELETE FROM user_interests WHERE user_id = :user_id

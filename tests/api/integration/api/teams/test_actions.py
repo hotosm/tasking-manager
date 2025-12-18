@@ -207,7 +207,7 @@ class TestTeamsActionsAddAPI:
         )
         assert resp.status_code == 404
         err = resp.json().get("error", {})
-        assert err.get("sub_code") == "USER_NOT_FOUND"
+        assert err.get("sub_code") == USER_NOT_FOUND_SUB_CODE
 
     async def test_add_members_to_non_existent_team_fails(self, client: AsyncClient):
         payload = {
@@ -221,7 +221,7 @@ class TestTeamsActionsAddAPI:
         )
         assert resp.status_code == 404
         err = resp.json().get("error", {})
-        assert err.get("sub_code") == "TEAM_NOT_FOUND"
+        assert err.get("sub_code") == TEAM_NOT_FOUND_SUB_CODE
 
 
 @pytest.mark.anyio
