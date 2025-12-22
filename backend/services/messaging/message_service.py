@@ -930,6 +930,7 @@ class MessageService:
         total_count_query = """
             SELECT COUNT(*) AS total_count
             FROM messages m
+            LEFT JOIN users u ON m.from_user_id = u.id
             WHERE m.to_user_id = :user_id
         """
         if filters:
@@ -967,7 +968,7 @@ class MessageService:
 
         if message["to_user_id"] != user_id:
             raise MessageServiceError(
-                f"AccessOtherUserMessage - User {user_id} attempting to access another user's message {message_id}"
+                f"AccessOtherUserMessage- User {user_id} attempting to access another user's message {message_id}"
             )
 
         return message
@@ -1050,6 +1051,8 @@ class MessageService:
     @staticmethod
     async def delete_message(message_id: int, user_id: int, db: Database):
         """Deletes the specified message"""
+        await MessageService.get_message(message_id, user_id, db)
+
         delete_query = """
             DELETE FROM messages WHERE id = :message_id AND to_user_id = :user_id
         """

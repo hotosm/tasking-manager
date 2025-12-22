@@ -33,7 +33,7 @@ class TestUsersActionsSetUsersAPI:
             f"Token {base64.b64encode(raw.encode('utf-8')).decode('utf-8')}"
         )
 
-    async def test_returns_401_if_no_token(self, client: AsyncClient):
+    async def test_returns_403_if_no_token(self, client: AsyncClient):
         resp = await client.patch(self.url)
         assert resp.status_code == 403
         assert resp.json() == {"detail": "Not authenticated"}
