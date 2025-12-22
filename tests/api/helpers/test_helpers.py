@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import json
 import logging
 import os
@@ -592,24 +593,75 @@ async def create_canned_mapping_issue(db, name="Test Issue") -> int:
     return test_issue_id
 
 
-def create_canned_message(
-    subject=TEST_MESSAGE_SUBJECT,
-    message=TEST_MESSAGE_DETAILS,
-    message_type=MessageType.SYSTEM.value,
+async def create_canned_message(
+    subject: str = TEST_MESSAGE_SUBJECT,
+    message: str = TEST_MESSAGE_DETAILS,
+    message_type: int = MessageType.SYSTEM.value,
     db=None,
 ) -> Message:
+    print(subject, "Ya ko subject....")
     test_message = Message()
     test_message.subject = subject
     test_message.message = message
     test_message.message_type = message_type
-    test_message.save(db)
+    test_message.read = False
+    test_message.date = datetime.utcnow()
+
+    # First save (this inserts into DB but returns nothing)
+    await test_message.save(db)
+    print(subject, "the subject......")
+    # Fetch the inserted row to get its ID
+    row = await db.fetch_one(
+        query="""
+            SELECT * FROM messages
+            WHERE subject = :subject
+            AND message = :message
+            AND message_type = :message_type
+            ORDER BY date DESC
+            LIMIT 1
+        """,
+        values={
+            "subject": subject,
+            "message": message,
+            "message_type": message_type,
+        },
+    )
+
+    # Map DB row back into Message model
+    test_message.id = row["id"]
+    test_message.from_user_id = row["from_user_id"]
+    test_message.to_user_id = row["to_user_id"]
+    test_message.project_id = row["project_id"]
+    test_message.task_id = row["task_id"]
+    test_message.read = row["read"]
+    test_message.date = row["date"]
+
     return test_message
 
 
-def create_canned_notification(user_id, unread_count, date) -> Notification:
-    test_notification = Notification()
-    test_notification.user_id = user_id
-    test_notification.unread_count = unread_count
-    test_notification.date = date
-    test_notification.save()
-    return test_notification
+async def create_canned_notification(
+    user_id: int,
+    unread_count: int,
+    date,
+    db,
+) -> Notification:
+    row = await db.fetch_one(
+        """
+        INSERT INTO notifications (user_id, unread_count, date)
+        VALUES (:user_id, :unread_count, :date)
+        RETURNING id, user_id, unread_count, date;
+        """,
+        {
+            "user_id": user_id,
+            "unread_count": unread_count,
+            "date": date,
+        },
+    )
+
+    notification = Notification()
+    notification.id = row["id"]
+    notification.user_id = row["user_id"]
+    notification.unread_count = row["unread_count"]
+    notification.date = row["date"]
+
+    return notification
