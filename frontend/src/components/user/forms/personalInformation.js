@@ -250,7 +250,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   }
                 </Field>
               </div>
-              <div className="pt2">
+              <div className="pt2 flex items-center justify-between">
                 <FormSubmitButton
                   disabled={pristine || hasValidationErrors}
                   className="bg-blue-dark white mv2"
@@ -259,14 +259,16 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                 >
                   <FormattedMessage {...messages.save} />
                 </FormSubmitButton>
-                <DeleteModal
-                  id={userDetails.id}
-                  name={userDetails.username}
-                  className="bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red"
-                  type="users"
-                  onDelete={() => dispatch(logout())}
-                  message={messages.delete}
-                />
+                <div>
+                  <DeleteModal
+                    id={userDetails.id}
+                    name={userDetails.username}
+                    className="bg-transparent bw1 w2 h2 hover-white br-100 hover-bg-red"
+                    onDelete={() => dispatch(logout())}
+                    type="users"
+                    message={messages?.delete}
+                  />
+                </div>
               </div>
               <p className="f6 mt2 tr mb0">
                 <RequiredIndicator /> <FormattedMessage {...messages.required} />
