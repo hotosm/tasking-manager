@@ -1,9 +1,9 @@
+import { SANDBOX_DASHBOARD_API_URL } from '../config';
 import { handleErrors } from './promise';
 
 const TOKEN_BUFFER_MS = 5 * 60 * 1000; // 5 minutes
 // const DASHBOARD_API_URL = 'https://dashboard.osmsandbox.us';
-const DASHBOARD_API_URL = 'https://dashboard.osmsandbox.naxadev.com';
-
+const DASHBOARD_API_URL = SANDBOX_DASHBOARD_API_URL;
 
 /**
  * Check if a token is valid and not expired
