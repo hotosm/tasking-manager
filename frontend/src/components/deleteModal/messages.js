@@ -108,6 +108,10 @@ export default defineMessages({
     id: 'deleteModal.button.delete',
     defaultMessage: 'Delete',
   },
+  deleteUser: {
+    id: 'deleteModal.button.delete.user',
+    defaultMessage: 'Yes, Delete Permanently',
+  },
   InternalServerErrorError: {
     id: 'deleteModal.status.failure.InternalServerErrorError',
     defaultMessage:

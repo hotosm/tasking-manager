@@ -128,7 +128,11 @@ export function DeleteModal({
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                   <Button className="bg-red white" onClick={() => deleteEntity()}>
-                    <FormattedMessage {...message} />
+                    {type === 'users' ? (
+                      <FormattedMessage {...messages.deleteUser} />
+                    ) : (
+                      <FormattedMessage {...message} />
+                    )}
                   </Button>
                 </div>
               </>
