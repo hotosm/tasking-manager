@@ -6,9 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
-import { DEFAULT_SANDBOX_DB } from '../../config';
+// import { DEFAULT_SANDBOX_DB } from '../../config';
 
-const SANDBOX_DB = DEFAULT_SANDBOX_DB;
+// const SANDBOX_DB = DEFAULT_SANDBOX_DB;
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -26,14 +26,14 @@ export const DescriptionForm = ({ languages }) => {
     { value: 'LOW', label: 'LOW' },
   ];
 
-  const databaseOptions = [
-    { value: 'OSM', label: 'OSM' },
-    { value: 'sandbox', label: 'Sandbox' },
-  ];
+  // const databaseOptions = [
+  //   { value: 'OSM', label: 'OSM' },
+  //   { value: 'sandbox', label: 'Sandbox' },
+  // ];
 
   return (
     <div className="w-100">
-      <div className={styleClasses.divClass}>
+      {/* <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.databse} />
         </label>
@@ -58,7 +58,7 @@ export const DescriptionForm = ({ languages }) => {
             <FormattedMessage {...messages[`database${option.label}`]} />
           </label>
         ))}
-      </div>
+      </div> */}
 
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
