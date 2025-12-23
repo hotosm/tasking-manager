@@ -155,7 +155,12 @@ export default defineMessages({
   },
   confirmDeleteTitle_users: {
     id: 'deleteModal.title.users',
-    defaultMessage: "Are you sure you want to delete this user's information?",
+    defaultMessage: 'Are you sure you want to permanently delete this user?',
+  },
+  confirmDeleteDescription_users: {
+    id: 'deleteModal.description.users',
+    defaultMessage:
+      'All user information, history, and associated data will be deleted forever. This action cannot be reversed.',
   },
   confirmDeleteTitle_comments: {
     id: 'deleteModal.title.comments',
@@ -175,14 +180,14 @@ export default defineMessages({
   },
   MAPPING_LEVEL_HAS_USERS: {
     id: 'deleteModal.error.levelHasUsersError',
-    defaultMessage: 'Some users have this level so it can\'t be deleted',
+    defaultMessage: "Some users have this level so it can't be deleted",
   },
   MAPPING_LEVEL_BEGINNER: {
     id: 'deleteModal.error.levelBeginner',
-    defaultMessage: 'You can\'t delete the beginner level',
+    defaultMessage: "You can't delete the beginner level",
   },
   MAPPING_BADGE_HAS_USERS: {
     id: 'deleteModal.error.badgeHasUsersError',
-    defaultMessage: 'You can\'t delete a badge that users have earned',
+    defaultMessage: "You can't delete a badge that users have earned",
   },
 });

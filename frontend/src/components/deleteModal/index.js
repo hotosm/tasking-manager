@@ -112,6 +112,11 @@ export function DeleteModal({
                 <h3 className="barlow-condensed f3">
                   <FormattedMessage {...messages[`confirmDeleteTitle_${type}`]} />
                 </h3>
+                {type === 'users' && (
+                  <p className="i">
+                    <FormattedMessage {...messages[`confirmDeleteDescription_${type}`]} />
+                  </p>
+                )}
                 <div className="pt3">
                   <Button
                     className="bg-white blue-dark mr3"
