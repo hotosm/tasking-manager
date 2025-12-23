@@ -268,7 +268,6 @@ export function CompletionTabForMapping({
         <h4 className="ttu blue-grey f6 fw5">
           <FormattedMessage {...messages.comment} />
         </h4>
-        <h1>hahahahah</h1>
         <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={11} delay={300} />}>
           <CommentInputField
             sessionkey={SESSION_KEY}

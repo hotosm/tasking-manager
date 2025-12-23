@@ -61,7 +61,11 @@ describe('Appearance of unsaved map changes to be dealt with while mapping', () 
     const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} disabled />
+          <CompletionTabForMapping
+            project={{ projectId: 123 }}
+            disabled
+            setTaskComment={() => {}}
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
@@ -76,7 +80,11 @@ describe('Appearance of unsaved map changes to be dealt with while mapping', () 
     const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} disabled />
+          <CompletionTabForMapping
+            project={{ projectId: 123 }}
+            disabled
+            setTaskComment={() => {}}
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
@@ -99,7 +107,11 @@ describe('Miscellaneous modals and prompts', () => {
     const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} tasksIds={[1997]} />
+          <CompletionTabForMapping
+            project={{ projectId: 123 }}
+            tasksIds={[1997]}
+            setTaskComment={() => {}}
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
@@ -121,6 +133,7 @@ describe('Miscellaneous modals and prompts', () => {
             project={{ projectId: 123 }}
             showReadCommentsAlert
             historyTabSwitch={historyTabSwitchMock}
+            setTaskComment={() => {}}
           />
         </ReduxIntlProviders>
       </QueryClientProviders>,
@@ -139,7 +152,11 @@ describe('Miscellaneous modals and prompts', () => {
     const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} showReadCommentsAlert />
+          <CompletionTabForMapping
+            project={{ projectId: 123 }}
+            showReadCommentsAlert
+            setTaskComment={() => {}}
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
@@ -154,7 +171,11 @@ describe('Miscellaneous modals and prompts', () => {
     const { user } = renderWithRouter(
       <QueryClientProviders>
         <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} taskInstructions={instruction} />
+          <CompletionTabForMapping
+            project={{ projectId: 123 }}
+            taskInstructions={instruction}
+            setTaskComment={() => {}}
+          />
         </ReduxIntlProviders>
       </QueryClientProviders>,
     );
