@@ -36,6 +36,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
+  const SESSION_KEY = `task-comment-${taskId}`;
 
   const saveComment = () => {
     if (comment) {
@@ -48,6 +49,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
     onSuccess: (res) => {
       setCommentPayload(res.data);
       setComment('');
+      sessionStorage.removeItem(SESSION_KEY);
     },
   });
 
@@ -55,6 +57,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
     <div className="w-100 pt3 ph3-ns ph1 flex flex-column">
       <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={12} delay={300} />}>
         <CommentInputField
+          sessionkey={SESSION_KEY}
           comment={comment}
           setComment={setComment}
           enableHashtagPaste
