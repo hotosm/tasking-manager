@@ -223,6 +223,7 @@ async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> Use
     test_user.tasks_notifications = True
     test_user.tasks_comments_notifications = False
     test_user.teams_announcement_notifications = True
+    test_user.date_registered = datetime.utcnow()
 
     return test_user
 

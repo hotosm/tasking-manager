@@ -1,3 +1,4 @@
+from backend.exceptions import NotFound
 import geojson
 from databases import Database
 
@@ -242,7 +243,8 @@ class SplitService:
         )
 
         if not original_task:
-            raise SplitServiceError("TASK_NOT_FOUND- Task not found")
+            raise NotFound(sub_code="TASK_NOT_FOUND", task_id=split_task_dto.task_id)
+
         original_geometry = shape.to_shape(
             WKBElement(original_task["geometry"], srid=4326)
         )
