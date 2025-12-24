@@ -12,7 +12,33 @@ import { AlertIcon } from '../svgIcons';
 
 const DeleteTrigger = forwardRef((props, ref) => <DeleteButton {...props} />);
 
-export function DeleteModal({ id, name, type, className, endpointURL, onDelete }: Object) {
+/**
+ * Called when an object is deleted
+ * @callback onDelete
+ * @param success The success object
+ */
+
+/**
+ * Create a delete modal
+ * @param {number} [id] The id of the object to delete. Ignored if className is defined.
+ * @param {str} [name] The name of the object (unused)
+ * @param {('notifications'|'comments'|'users'|'interests'|'categories')} [type] The type of the object to delete. Ignored if className is defined.
+ * @param {str} [className] The additional css class names
+ * @param {str} [endpointURL] The endpoint to call
+ * @param {onDelete} [onDelete] Called when the object is deleted
+ * @typedef {import('@formatjs/intl').MessageDescriptor} MessageDescriptor
+ * @param {MessageDescriptor} [message] The message to show the user
+ * @returns {Element} The delete modal
+ * @constructor
+ */
+export function DeleteModal({
+  id,
+  type,
+  className,
+  endpointURL,
+  onDelete,
+  message = messages.delete,
+}: Object) {
   const navigate = useNavigate();
   const modalRef = useRef();
   const token = useSelector((state) => state.auth.token);
@@ -29,7 +55,7 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
         setDeleteStatus('success');
         if (type === 'notifications') {
           setTimeout(() => navigate(`/inbox`), 750);
-        } else if (type === 'comments') {
+        } else if (type === 'comments' || type === 'users') {
           setTimeout(() => {
             onDelete();
             modalRef.current.close();
@@ -43,7 +69,7 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
         let errorMessage = e.message;
 
         if (Object.prototype.hasOwnProperty.call(messages, errorMessage)) {
-          errorMessage = intl.formatMessage({...messages[e.message]});
+          errorMessage = intl.formatMessage({ ...messages[e.message] });
         }
 
         setDeleteStatus('failure');
@@ -55,7 +81,11 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
     <Popup
       ref={modalRef}
       trigger={
-        <DeleteTrigger className={`${className || ''} dib ml3`} showText={type !== 'comments'} />
+        <DeleteTrigger
+          className={`${className || ''} dib ml3`}
+          showText={type !== 'comments' && type !== 'users'}
+          message={message}
+        />
       }
       modal
       closeOnDocumentClick
@@ -82,6 +112,11 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
                 <h3 className="barlow-condensed f3">
                   <FormattedMessage {...messages[`confirmDeleteTitle_${type}`]} />
                 </h3>
+                {type === 'users' && (
+                  <p className="i">
+                    <FormattedMessage {...messages[`confirmDeleteDescription_${type}`]} />
+                  </p>
+                )}
                 <div className="pt3">
                   <Button
                     className="bg-white blue-dark mr3"
@@ -93,7 +128,11 @@ export function DeleteModal({ id, name, type, className, endpointURL, onDelete }
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                   <Button className="bg-red white" onClick={() => deleteEntity()}>
-                    <FormattedMessage {...messages.delete} />
+                    {type === 'users' ? (
+                      <FormattedMessage {...messages.deleteUser} />
+                    ) : (
+                      <FormattedMessage {...message} />
+                    )}
                   </Button>
                 </div>
               </>

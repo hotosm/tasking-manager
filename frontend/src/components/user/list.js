@@ -18,6 +18,7 @@ import { nCardPlaceholders } from './usersPlaceholder';
 import { OHSOME_STATS_TOPICS } from '../../config';
 import { Button } from '../button';
 import { ChevronUpIcon, ChevronDownIcon } from '../svgIcons';
+import { DeleteModal } from '../deleteModal';
 
 const UserFilter = ({ filters, setFilters, updateFilters }) => {
   const inputRef = useRef(null);
@@ -335,7 +336,7 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
         id: 'actions',
         header: () => <FormattedMessage {...messages.tableActions} />,
         cell: ({ row }) => (
-          <>
+          <div className="flex items-center justify-center">
             {userDetails.username !== row.original.username && (
               <Popup
                 trigger={
@@ -371,7 +372,15 @@ export const UsersTable = ({ filters, setFilters, levels }) => {
             >
               <RefreshIcon width={18} height={18} />
             </button>
-          </>
+            <button className="bw0 bg-transparent pb1">
+              <DeleteModal
+                id={row.original.id}
+                type="users"
+                className="bw0"
+                message={messages.delete}
+              />
+            </button>
+          </div>
         ),
       },
     ],
