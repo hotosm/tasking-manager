@@ -23,18 +23,33 @@ export const AddButton = () => (
   </CustomButton>
 );
 
-export const DeleteButton = ({ className, onClick, showText = true }: Object) => {
+/**
+ * A button for deleting something
+ * @param {string} className Additional css classes
+ * @param {MouseEventHandler<T>} onClick The action to call on click
+ * @param {boolean} [showText=true] true if the message should be shown
+ * @typedef {import('@formatjs/intl').MessageDescriptor} MessageDescriptor
+ * @param {MessageDescriptor} message The message to show
+ * @returns {Element} The delete button
+ * @constructor
+ */
+export const DeleteButton = ({
+  className,
+  onClick,
+  showText = true,
+  message = messages.delete,
+}: Object) => {
   const intl = useIntl();
   return (
     <CustomButton className={`red bg-transparent ba b--red pv1 ${className}`} onClick={onClick}>
       <div
         data-tooltip-id="Delete"
-        data-tooltip-content={!showText ? intl.formatMessage(messages.delete) : ''}
+        data-tooltip-content={!showText ? intl.formatMessage(message) : ''}
       >
         <WasteIcon className="v-mid h1 w1" />
         {showText && (
           <span className="v-mid f4 fw6 ttu barlow-condensed pl2">
-            <FormattedMessage {...messages.delete} />
+            <FormattedMessage {...message} />
           </span>
         )}
       </div>

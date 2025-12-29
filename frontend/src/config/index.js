@@ -30,13 +30,11 @@ export const OSM_REDIRECT_URI = process.env.REACT_APP_OSM_REDIRECT_URI || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
-export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'https://twitter.com/hotosm';
-export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com/hotosm';
-export const ORG_INSTAGRAM =
-  process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com/open.mapping.hubs/';
-export const ORG_YOUTUBE =
-  process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
-export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/hotosm';
+export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || '';
+export const ORG_FB = process.env.REACT_APP_ORG_FB || '';
+export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || '';
+export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || '';
+export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || '';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const SERVICE_DESK = process.env.REACT_APP_SERVICE_DESK || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';

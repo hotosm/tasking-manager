@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'deleteModal.status.success.teams',
     defaultMessage: 'Team deleted successfully.',
   },
+  success_users: {
+    id: 'deleteModal.status.success.users',
+    defaultMessage: 'User deleted successfully.',
+  },
   success_organisations: {
     id: 'deleteModal.status.success.organisations',
     defaultMessage: 'Organisation deleted successfully.',
@@ -84,6 +88,10 @@ export default defineMessages({
     id: 'deleteModal.status.failure.teams',
     defaultMessage: 'An error occurred when trying to delete this team.',
   },
+  failure_users: {
+    id: 'deleteModal.status.failure.users',
+    defaultMessage: 'An error occurred when trying to delete this user.',
+  },
   failure_comments: {
     id: 'deleteModal.status.failure.comments',
     defaultMessage: 'An error occurred when trying to delete this comment.',
@@ -99,6 +107,10 @@ export default defineMessages({
   delete: {
     id: 'deleteModal.button.delete',
     defaultMessage: 'Delete',
+  },
+  deleteUser: {
+    id: 'deleteModal.button.delete.user',
+    defaultMessage: 'Yes, Delete Permanently',
   },
   InternalServerErrorError: {
     id: 'deleteModal.status.failure.InternalServerErrorError',
@@ -145,6 +157,15 @@ export default defineMessages({
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
   },
+  confirmDeleteTitle_users: {
+    id: 'deleteModal.title.users',
+    defaultMessage: 'Are you sure you want to permanently delete this user?',
+  },
+  confirmDeleteDescription_users: {
+    id: 'deleteModal.description.users',
+    defaultMessage:
+      'All user information, history, and associated data will be deleted forever. This action cannot be reversed.',
+  },
   confirmDeleteTitle_comments: {
     id: 'deleteModal.title.comments',
     defaultMessage: 'Are you sure you want to delete this comment?',
@@ -163,14 +184,14 @@ export default defineMessages({
   },
   MAPPING_LEVEL_HAS_USERS: {
     id: 'deleteModal.error.levelHasUsersError',
-    defaultMessage: 'Some users have this level so it can\'t be deleted',
+    defaultMessage: "Some users have this level so it can't be deleted",
   },
   MAPPING_LEVEL_BEGINNER: {
     id: 'deleteModal.error.levelBeginner',
-    defaultMessage: 'You can\'t delete the beginner level',
+    defaultMessage: "You can't delete the beginner level",
   },
   MAPPING_BADGE_HAS_USERS: {
     id: 'deleteModal.error.badgeHasUsersError',
-    defaultMessage: 'You can\'t delete a badge that users have earned',
+    defaultMessage: "You can't delete a badge that users have earned",
   },
 });
