@@ -68,6 +68,16 @@ class Application(Base):
             applications_dto.applications.append(application_dto)
         return applications_dto
 
+    @staticmethod
+    async def delete_all_for_user(user_id: int, db: Database) -> None:
+        """
+        Delete all Application rows for the given user in one async transaction.
+        Pass `db` (from your get_db dependency).
+        """
+        query = 'DELETE FROM application_keys WHERE "user" = :user'
+        async with db.transaction():
+            await db.execute(query=query, values={"user": user_id})
+
     def as_dto(self):
         app_dto = ApplicationDTO()
         app_dto.user = self.user

@@ -22,12 +22,13 @@ import {
 } from '../../config';
 import './styles.scss';
 
+// Only include social networks for which the URLs are non-empty strings
 const socialNetworks = [
-  { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> },
-  { link: ORG_FB, icon: <FacebookIcon style={{ height: '20px', width: '20px' }} /> },
-  { link: ORG_YOUTUBE, icon: <YoutubeIcon style={{ height: '20px', width: '20px' }} /> },
-  { link: ORG_INSTAGRAM, icon: <InstagramIcon style={{ height: '20px', width: '20px' }} /> },
-  { link: ORG_GITHUB, icon: <GithubIcon style={{ height: '20px', width: '20px' }} /> },
+  ...(ORG_TWITTER ? [{ link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} noBg /> }] : []),
+  ...(ORG_FB ? [{ link: ORG_FB, icon: <FacebookIcon style={{ height: '20px', width: '20px' }} />}] : []),
+  ...(ORG_YOUTUBE ? [{ link: ORG_YOUTUBE, icon: <YoutubeIcon style={{ height: '20px', width: '20px' }} />}] : []),
+  ...(ORG_INSTAGRAM ? [{ link: ORG_INSTAGRAM, icon: <InstagramIcon style={{ height: '20px', width: '20px' }} />}] : []),
+  ...(ORG_GITHUB ? [{ link: ORG_GITHUB, icon: <GithubIcon style={{ height: '20px', width: '20px' }} />}] : []),
 ];
 
 export function Footer() {
