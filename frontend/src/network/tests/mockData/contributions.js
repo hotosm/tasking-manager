@@ -4,7 +4,7 @@ export const projectContributions = {
   userContributions: [
     {
       username: 'test',
-      mappingLevel: 'Advanced mapper',
+      mappingLevel: 'ADVANCED',
       pictureUrl: null,
       mapped: 3,
       validated: 2,
@@ -16,7 +16,7 @@ export const projectContributions = {
     },
     {
       username: 'test_1',
-      mappingLevel: 'Beginner mapper',
+      mappingLevel: 'BEGINNER',
       pictureUrl: null,
       mapped: 5,
       validated: 2,
@@ -28,7 +28,7 @@ export const projectContributions = {
     },
     {
       username: 'user_3',
-      mappingLevel: 'Intermediate mapper',
+      mappingLevel: 'INTERMEDIATE',
       pictureUrl: null,
       mapped: 4,
       validated: 0,
@@ -40,7 +40,7 @@ export const projectContributions = {
     },
     {
       username: 'user_4',
-      mappingLevel: 'Intermediate mapper',
+      mappingLevel: 'INTERMEDIATE',
       pictureUrl: null,
       mapped: 0,
       validated: 1,
@@ -52,7 +52,7 @@ export const projectContributions = {
     },
     {
       username: 'user_5',
-      mappingLevel: 'Beginner mapper',
+      mappingLevel: 'BEGINNER',
       pictureUrl: null,
       mapped: 1,
       validated: 0,
