@@ -1547,6 +1547,7 @@ class TestTasksActionsMappingUndoAPI:
         await Task.unlock_task(
             1, self.test_project_id, self.test_author.id, TaskStatus.VALIDATED, self.db
         )
+
         await self.db.execute(
             "UPDATE projects SET validation_permission = :vp WHERE id = :id",
             {"vp": ValidationPermission.TEAMS.value, "id": int(self.test_project_id)},
@@ -1655,7 +1656,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": "abcd"},
         )
         assert response.status_code == 400
@@ -1665,7 +1666,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             "/api/v2/projects/999/tasks/actions/extend/",
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": [1]},
         )
         assert response.status_code == 404
@@ -1675,7 +1676,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": [999]},
         )
         assert response.status_code == 404
@@ -1685,7 +1686,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": [1]},
         )
         assert response.status_code == 403
@@ -1702,7 +1703,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": [1]},
         )
 
@@ -1725,7 +1726,7 @@ class TestTasksActionsExtendAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             json={"taskIds": [1, 2]},
         )
 
@@ -1761,7 +1762,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             "/api/v2/projects/999/tasks/actions/reset-by-user/",
-            headers={"Authorization": self.author_access_token},
+            headers={"Authorization": f"Token {self.author_access_token}"},
             params={"username": "invalid_user", "action": "VALIDATED"},
         )
 
@@ -1771,7 +1772,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.author_access_token},
+            headers={"Authorization": f"Token {self.author_access_token}"},
             params={"username": self.test_user.username, "action": "MAPPED"},
         )
         assert response.status_code == 400
@@ -1782,7 +1783,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             "/api/v2/projects/999/tasks/actions/reset-by-user/",
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             params={"username": "test_user", "action": "VALIDATED"},
         )
         assert response.status_code == 404
@@ -1792,7 +1793,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.user_session_token},
+            headers={"Authorization": f"Token {self.user_session_token}"},
             params={"username": "test_user", "action": "VALIDATED"},
         )
         assert response.status_code == 403
@@ -1828,7 +1829,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.author_access_token},
+            headers={"Authorization": f"Token {self.author_access_token}"},
             params={"username": self.test_user.username, "action": "VALIDATED"},
         )
 
@@ -1850,7 +1851,7 @@ class TestTasksActionsRevertUserTasksAPI:
         response = await client.request(
             "POST",
             self.url,
-            headers={"Authorization": self.author_access_token},
+            headers={"Authorization": f"Token {self.author_access_token}"},
             params={"username": self.test_user.username, "action": "BADIMAGERY"},
         )
 

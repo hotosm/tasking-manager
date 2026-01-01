@@ -21,7 +21,7 @@ from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import (
     OrganisationType,
     TaskStatus,
@@ -233,7 +233,7 @@ def generate_encoded_token(user_id: int):
 
     session_token = AuthenticationService.generate_session_token_for_user(user_id)
     session_token = base64.b64encode(session_token.encode("utf-8"))
-    return "Token " + session_token.decode("utf-8")
+    return session_token.decode("utf-8")
 
 
 async def create_canned_user(db, test_user=None):
@@ -318,7 +318,6 @@ async def create_canned_project(db, name=TEST_PROJECT_NAME) -> Tuple[Project, Us
     test_project = Project()
     test_project.create_draft_project(test_project_dto)
     await test_project.set_project_aoi(test_project_dto, db)
-    test_project.total_tasks = 3
 
     # Setup test task
     test_task = Task.from_geojson_feature(1, task_feature)
@@ -349,6 +348,7 @@ async def create_canned_project(db, name=TEST_PROJECT_NAME) -> Tuple[Project, Us
     test_project.tasks_mapped = 1
     test_project.tasks_validated = 1
     test_project.tasks_bad_imagery = 1
+    test_project.difficulty = 2
     project_id = await test_project.create(name, db)
     query = """
         UPDATE tasks
@@ -490,17 +490,28 @@ async def add_manager_to_organisation(organisation, user: User, db):
     return user.username
 
 
-def assign_team_to_project(project: Project, team: Team, role: int, db) -> ProjectTeams:
-    project_team = ProjectTeams(project=project, team=team, role=role)
-    project_team.create(db)
+async def assign_team_to_project(project_id: int, team_id: int, role: int, db):
+    query = """
+        INSERT INTO project_teams (project_id, team_id, role)
+        VALUES (:project_id, :team_id, :role)
+        RETURNING id, project_id, team_id, role;
+    """
 
-    return project_team
+    record = await db.fetch_one(
+        query=query,
+        values={
+            "project_id": project_id,
+            "team_id": team_id,
+            "role": role,
+        },
+    )
+
+    return record
 
 
-def update_project_with_info(test_project: Project) -> Project:
+async def update_project_with_info(test_project: Project, db) -> Project:
     locales = []
-    test_info = ProjectInfoDTO()
-    test_info.locale = "en"
+    test_info = ProjectInfoDTO(locale="en")
     test_info.name = "Thinkwhere Test"
     test_info.description = "Test Description"
     test_info.short_description = "Short description"
@@ -518,7 +529,7 @@ def update_project_with_info(test_project: Project) -> Project:
     test_dto.validation_editors = ["JOSM"]
     test_dto.changeset_comment = "hot-project"
     test_dto.private = False
-    test_project.update(test_dto)
+    await test_project.update(test_dto, db)
 
     return test_project
 

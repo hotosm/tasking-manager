@@ -64,10 +64,13 @@ async def create_project_campaign(
     if not await ProjectAdminService.is_user_action_permitted_on_project(
         user.id, project_id, db
     ):
-        return {
-            "Error": "User is not a manager of the project",
-            "SubCode": "UserPermissionError",
-        }, 403
+        return JSONResponse(
+            content={
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            },
+            status_code=403,
+        )
 
     # Check if the project is already assigned to the campaign
     query = """
