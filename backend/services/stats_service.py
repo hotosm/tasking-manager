@@ -382,7 +382,7 @@ class StatsService:
                 COALESCE(m.count, 0) AS mapped,
                 COALESCE(v.count, 0) AS validated,
                 COALESCE(b.count, 0) AS bad_imagery,
-                COALESCE(m.count, 0) + COALESCE(v.count, 0) + COALESCE(b.count, 0) AS total,
+                COALESCE(m.count, 0) + COALESCE(v.count, 0) AS total,
                 COALESCE(m.task_ids, '{}') AS mapped_tasks,
                 COALESCE(v.task_ids, '{}') AS validated_tasks,
                 COALESCE(b.task_ids, '{}') AS bad_imagery_tasks
