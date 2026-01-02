@@ -590,7 +590,11 @@ class ProjectService:
             o.name AS organisation_name,
             o.slug AS organisation_slug,
             o.logo AS organisation_logo,
-            ARRAY(SELECT user_id FROM project_allowed_users WHERE project_id = p.id) AS allowed_users
+            ARRAY(SELECT user_id FROM project_allowed_users WHERE project_id = p.id) AS allowed_users,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id AND t.task_status = 2) AS actual_tasks_mapped,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id AND t.task_status = 4) AS actual_tasks_validated,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id AND t.task_status = 6) AS actual_tasks_bad_imagery,
+            (SELECT COUNT(*) FROM tasks t WHERE t.project_id = p.id) AS actual_total_tasks
         FROM projects p
         LEFT JOIN organisations o ON o.id = p.organisation_id
         LEFT JOIN users u ON u.id = p.author_id
@@ -608,24 +612,24 @@ class ProjectService:
         )
         summary.percent_mapped = Project.calculate_tasks_percent(
             "mapped",
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.total_tasks,
-            project.tasks_bad_imagery,
+            project.actual_tasks_mapped,
+            project.actual_tasks_validated,
+            project.actual_total_tasks,
+            project.actual_tasks_bad_imagery,
         )
         summary.percent_validated = Project.calculate_tasks_percent(
             "validated",
-            project.tasks_validated,
-            project.tasks_validated,
-            project.total_tasks,
-            project.tasks_bad_imagery,
+            project.actual_tasks_validated,
+            project.actual_tasks_validated,
+            project.actual_total_tasks,
+            project.actual_tasks_bad_imagery,
         )
         summary.percent_bad_imagery = Project.calculate_tasks_percent(
             "bad_imagery",
-            project.tasks_mapped,
-            project.tasks_validated,
-            project.total_tasks,
-            project.tasks_bad_imagery,
+            project.actual_tasks_mapped,
+            project.actual_tasks_validated,
+            project.actual_total_tasks,
+            project.actual_tasks_bad_imagery,
         )
         return summary
 
