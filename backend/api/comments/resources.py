@@ -74,13 +74,23 @@ async def post_comment(
         )
     request_json = await request.json()
     message = request_json.get("message")
-    chat_dto = ChatMessageDTO(
-        message=message,
-        user_id=user.id,
-        project_id=project_id,
-        timestamp=timestamp(),
-        username=user.username,
-    )
+    try:
+        chat_dto = ChatMessageDTO(
+            message=message,
+            user_id=user.id,
+            project_id=project_id,
+            timestamp=timestamp(),
+            username=user.username,
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={
+                "Error": "Unable to add chat message",
+                "detail": str(e),
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
     try:
         async with db.transaction():
             project_messages = await ChatService.post_message(
@@ -263,7 +273,6 @@ async def post_task_comment(
             content={"Error": "User is on read only mode", "SubCode": "ReadOnly"},
             status_code=403,
         )
-
     try:
         request_json = await request.json()
         comment = request_json.get("comment")
@@ -271,9 +280,12 @@ async def post_task_comment(
             user_id=user.id, task_id=task_id, project_id=project_id, comment=comment
         )
     except Exception as e:
-        logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
-            content={"Error": "Unable to add comment", "SubCode": "InvalidData"},
+            content={
+                "Error": "Unable to add comment",
+                "detail": str(e),
+                "SubCode": "InvalidData",
+            },
             status_code=400,
         )
     try:
