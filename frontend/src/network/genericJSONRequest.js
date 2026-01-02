@@ -25,6 +25,7 @@ export function fetchExternalJSONAPI(url, init = {}) {
 
 export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'en') {
   const url = new URL(endpoint, API_URL);
+
   let headers = {
     'Content-Type': 'application/json',
     'Accept-Language': language.replace('-', '_'),
@@ -68,13 +69,7 @@ export function fetchLocalJSONAPIWithAbort(
     });
 }
 
-export function pushToLocalJSONAPI(
-  endpoint,
-  payload,
-  token,
-  method = 'POST',
-  language = 'en',
-) {
+export function pushToLocalJSONAPI(endpoint, payload, token, method = 'POST', language = 'en') {
   const url = new URL(endpoint, API_URL);
   return fetch(url, {
     method: method,
