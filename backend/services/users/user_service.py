@@ -91,6 +91,7 @@ class UserService:
             FROM task_history
             WHERE user_id = :user_id
             AND action = 'STATE_CHANGE'
+            AND action_text IN ('MAPPED', 'VALIDATED', 'INVALIDATED')
             AND DATE(action_date) > CURRENT_DATE - INTERVAL '1 year'
             GROUP BY day
             ORDER BY day DESC;
