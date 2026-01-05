@@ -52,7 +52,11 @@ function CommentInputField({
     trigger: '@',
     values: async (query, cb) => {
       try {
-        if (!query) return cb(contributors.map((username) => ({ username })));
+        const sortedContriutors = contributors?.sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: 'base' }),
+        );
+
+        if (!query) return cb(sortedContriutors.map((username) => ({ username })));
 
         // address trigger js allowSpaces=true issue
         // which triggers this function every keystroke
