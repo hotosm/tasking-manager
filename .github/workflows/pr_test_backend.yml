@@ -34,7 +34,7 @@ jobs:
           flake8 manage.py backend tests migrations --ignore=E203,W503,F401,E501
           black --check manage.py backend tests migrations
 
-  pytest:
+  pytest-unit:
     uses: hotosm/gh-workflows/.github/workflows/test_compose.yml@3.2.0
     with:
       image_name: ghcr.io/${{ github.repository }}/backend
@@ -49,6 +49,25 @@ jobs:
       compose_file: "docker-compose.yml"
       compose_service: tm-backend
       compose_command: pytest tests/api/unit/ -p no:warnings
+      cache_extra_imgs: |
+        "postgis/postgis:14-3.3"
+    secrets: inherit
+
+  pytest-integration:
+    uses: hotosm/gh-workflows/.github/workflows/test_compose.yml@3.2.0
+    with:
+      image_name: ghcr.io/${{ github.repository }}/backend
+      build_context: .
+      build_dockerfile: ./scripts/docker/Dockerfile
+      pre_command: |
+        cp example.env tasking-manager.env
+        docker compose up -d tm-db tm-backend tm-migration tm-cron-jobs traefik
+        docker compose exec tm-db bash -c "PGPASSWORD=tm psql -U tm -d tasking-manager <<EOF
+        CREATE DATABASE taskingmanagertest;
+        EOF"
+      compose_file: "docker-compose.yml"
+      compose_service: tm-backend
+      compose_command: pytest tests/api/integration/ -p no:warnings
       cache_extra_imgs: |
         "postgis/postgis:14-3.3"
     secrets: inherit
