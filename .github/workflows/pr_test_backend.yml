@@ -41,7 +41,7 @@ jobs:
       build_context: .
       build_dockerfile: ./scripts/docker/Dockerfile
       pre_command: |
-        cp example.env tasking-manager.env
+        cp .env tasking-manager.env
         docker compose up -d tm-db tm-backend tm-migration tm-cron-jobs traefik
         docker compose exec tm-db bash -c "PGPASSWORD=tm psql -U tm -d tasking-manager <<EOF
         CREATE DATABASE taskingmanagertest;
@@ -49,6 +49,8 @@ jobs:
       compose_file: "docker-compose.yml"
       compose_service: tm-backend
       compose_command: pytest tests/api/unit/ -p no:warnings
+      example_env_file_path: example.env
+      environment: develop
       cache_extra_imgs: |
         "postgis/postgis:14-3.3"
     secrets: inherit
@@ -60,7 +62,7 @@ jobs:
       build_context: .
       build_dockerfile: ./scripts/docker/Dockerfile
       pre_command: |
-        cp example.env tasking-manager.env
+        cp .env tasking-manager.env
         docker compose up -d tm-db tm-backend tm-migration tm-cron-jobs traefik
         docker compose exec tm-db bash -c "PGPASSWORD=tm psql -U tm -d tasking-manager <<EOF
         CREATE DATABASE taskingmanagertest;
@@ -68,6 +70,8 @@ jobs:
       compose_file: "docker-compose.yml"
       compose_service: tm-backend
       compose_command: pytest tests/api/integration/ -p no:warnings
+      example_env_file_path: example.env
+      environment: develop
       cache_extra_imgs: |
         "postgis/postgis:14-3.3"
     secrets: inherit
