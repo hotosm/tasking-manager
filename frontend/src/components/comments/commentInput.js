@@ -13,7 +13,7 @@ import HashtagPaste from './hashtagPaste';
 import FileRejections from './fileRejections';
 import DropzoneUploadStatus from './uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
-import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
+import { formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
@@ -172,8 +172,8 @@ function CommentInputField({
           </div>
         </div>
       )}
-      <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">
-        <MDEditor
+      {/* <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light"> */}
+      {/* <MDEditor
           ref={textareaRef}
           preview="edit"
           commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
@@ -188,7 +188,48 @@ function CommentInputField({
             ...markdownTextareaProps,
           }}
           defaultTabEnable
-        />
+        /> */}
+
+      <div className={`bg-white`} data-color-mode="light">
+        {/* <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">*/}
+
+        <div className={`${isShowPreview ? '' : 'dn'}`}>
+          <MDEditor
+            preview={'preview'}
+            commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+            extraCommands={[]}
+            height={500}
+            value={formatUserNamesToLink(comment)}
+            onChange={setComment}
+            textareaProps={{
+              ...getInputProps(),
+              spellCheck: 'true',
+              placeholder: useIntl().formatMessage(placeholderMsg),
+              ...markdownTextareaProps,
+            }}
+            defaultTabEnable
+          />
+        </div>
+
+        <div className={`${isShowPreview ? 'dn' : ''}`}>
+          <MDEditor
+            ref={textareaRef}
+            preview={'edit'}
+            commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+            extraCommands={[]}
+            height={500}
+            value={comment}
+            onChange={setComment}
+            textareaProps={{
+              ...getInputProps(),
+              spellCheck: 'true',
+              placeholder: useIntl().formatMessage(placeholderMsg),
+              ...markdownTextareaProps,
+            }}
+            defaultTabEnable
+          />
+        </div>
+
         <input
           ref={fileInputRef}
           type="file"
@@ -208,7 +249,7 @@ function CommentInputField({
           </div>
         )}
       </div>
-      {isShowPreview && (
+      {/* {isShowPreview && (
         <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
           {comment && (
             <div
@@ -223,7 +264,7 @@ function CommentInputField({
             </span>
           )}
         </div>
-      )}
+      )} */}
       {enableHashtagPaste && !isShowPreview && (
         <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
