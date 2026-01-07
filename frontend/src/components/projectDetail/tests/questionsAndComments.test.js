@@ -37,9 +37,9 @@ describe('test if QuestionsAndComments component', () => {
       </QueryClientProviders>,
     );
     const previewBtn = await screen.findByRole('button', { name: /preview/i });
-    expect(screen.getAllByRole('button').length).toBe(11);
+    expect(screen.getAllByRole('button').length).toBe(19);
     expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(11);
+    expect(screen.getAllByRole('button')).toHaveLength(19);
     expect(previewBtn).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     await user.click(previewBtn);

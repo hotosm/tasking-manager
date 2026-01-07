@@ -1,3 +1,4 @@
+import re
 import bleach
 from databases import Database
 from loguru import logger
@@ -34,9 +35,11 @@ class ProjectChat(Base):
         """Creates a new ProjectInfo class from dto, used from project edit"""
         logger.debug("Create chat message from DTO")
 
-        # Use bleach to remove any potential mischief
+        # Extended allowed tags to support all markdown features
         allowed_tags = [
             "a",
+            "abbr",
+            "acronym",
             "b",
             "blockquote",
             "br",
@@ -45,6 +48,9 @@ class ProjectChat(Base):
             "h1",
             "h2",
             "h3",
+            "h4",
+            "h5",
+            "h6",
             "img",
             "i",
             "li",
@@ -53,14 +59,68 @@ class ProjectChat(Base):
             "pre",
             "strong",
             "ul",
+            "div",
+            "table",
+            "thead",
+            "tbody",
+            "tfoot",
+            "tr",
+            "td",
+            "th",
+            "iframe",
+            "input",
+            "hr",
+            "del",
+            "s",
+            "strike",
+            "span",
+            "caption",
+            "col",
+            "colgroup",
         ]
-        allowed_atrributes = {"a": ["href", "rel"], "img": ["src", "alt"]}
-        clean_message = bleach.clean(
-            markdown(dto.message, output_format="html"),
-            tags=allowed_tags,
-            attributes=allowed_atrributes,
+
+        # Extended allowed attributes
+        allowed_attributes = {
+            "a": ["href", "rel", "target", "title"],
+            "img": ["src", "alt", "title", "width", "height"],
+            "iframe": [
+                "width",
+                "height",
+                "src",
+                "title",
+                "frameborder",
+                "allow",
+                "referrerpolicy",
+                "allowfullscreen",
+            ],
+            "input": ["type", "checked", "disabled"],
+            "th": ["align", "scope"],
+            "td": ["align", "colspan", "rowspan"],
+            "table": ["class"],
+            "code": ["class"],
+            "pre": ["class"],
+        }
+
+        text = re.sub(r"~~(.*?)~~", r"<del>\1</del>", dto.message)
+
+        html_content = markdown(
+            text,
+            extensions=[
+                "markdown.extensions.tables",
+                "markdown.extensions.fenced_code",
+                "markdown.extensions.nl2br",
+                "markdown.extensions.sane_lists",
+                "markdown.extensions.codehilite",
+            ],
         )
-        clean_message = bleach.linkify(clean_message)
+
+        # Sanitize with bleach
+        clean_message = bleach.clean(
+            html_content, tags=allowed_tags, attributes=allowed_attributes, strip=False
+        )
+
+        # Linkify URLs in the message
+        clean_message = bleach.linkify(clean_message, parse_email=True)
 
         query = """
             INSERT INTO project_chat (project_id, user_id, message, time_stamp)

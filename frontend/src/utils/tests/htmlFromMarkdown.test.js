@@ -36,7 +36,7 @@ test('formatUserNamesToLink returns correct content', () => {
       'Hello @[test_user]! Welcome to OpenStreetMap! Contact me at test@test.com.',
     ),
   ).toBe(
-    'Hello <a class="pointer blue-grey b underline" href="/users/test_user">@test_user</a>! Welcome to OpenStreetMap! Contact me at test@test.com.',
+    'Hello <a class="pointer blue-grey underline" style="color: #d73f3f" href="/users/test_user">@test_user</a>! Welcome to OpenStreetMap! Contact me at test@test.com.',
   );
   expect(formatUserNamesToLink('Hello @test, @test2], @[test3!')).toBe(
     'Hello @test, @test2], @[test3!',

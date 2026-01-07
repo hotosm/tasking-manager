@@ -40,3 +40,14 @@
 .project-instructions-link {
   letter-spacing: -0.0857513px;
 }
+
+table, th, td {
+    border: 1px solid rgba(0, 0, 0, 0.089); /* Sets a 1-pixel solid black border */
+  }
+  table {
+    border-collapse: collapse; /* Merges adjacent borders into a single border */
+  }
+  th, td {
+    padding: 10px; /* Optional: Adds space between border and content */
+    text-align: left; /* Optional: Aligns text to the left */
+  }
