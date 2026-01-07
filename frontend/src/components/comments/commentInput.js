@@ -145,6 +145,8 @@ function CommentInputField({
     sessionStorage.setItem(sessionkey, comment);
   }, [comment, sessionkey]);
 
+  console.log(comment, 'comment');
+
   return (
     <div {...getRootProps()}>
       {isShowTabNavs && (
@@ -193,12 +195,12 @@ function CommentInputField({
       <div className={`bg-white`} data-color-mode="light">
         {/* <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">*/}
 
-        <div className={`${isShowPreview ? '' : 'dn'}`}>
+        <div className={`${isShowPreview && comment ? '' : 'dn'}`}>
           <MDEditor
             preview={'preview'}
             commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
             extraCommands={[]}
-            height={500}
+            height={200}
             value={formatUserNamesToLink(comment)}
             onChange={setComment}
             textareaProps={{
@@ -211,13 +213,21 @@ function CommentInputField({
           />
         </div>
 
+        {isShowPreview && !comment && (
+          <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
+            <span className="db mt3">
+              <FormattedMessage {...messages.nothingToPreview} />
+            </span>
+          </div>
+        )}
+
         <div className={`${isShowPreview ? 'dn' : ''}`}>
           <MDEditor
             ref={textareaRef}
             preview={'edit'}
             commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
             extraCommands={[]}
-            height={500}
+            height={200}
             value={comment}
             onChange={setComment}
             textareaProps={{
@@ -265,6 +275,7 @@ function CommentInputField({
           )}
         </div>
       )} */}
+
       {enableHashtagPaste && !isShowPreview && (
         <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
