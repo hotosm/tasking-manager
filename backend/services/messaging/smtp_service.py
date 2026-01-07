@@ -1,7 +1,10 @@
+import re
 import urllib.parse
+from html import unescape
 
 from databases import Database
 from fastapi_mail import MessageSchema, MessageType
+from fastapi_mail.schemas import MultipartSubtypeEnum
 from itsdangerous import URLSafeTimedSerializer
 from loguru import logger
 
@@ -14,6 +17,22 @@ from backend.services.messaging.template_service import (
     format_username_link,
     get_template,
 )
+
+
+def html_to_text(html_content: str) -> str:
+    """Convert HTML to plain text for email alternative body."""
+    if not html_content:
+        return ""
+    text = re.sub(
+        r"<(style|script)[^>]*>.*?</\1>", "", html_content, flags=re.DOTALL | re.I
+    )
+    text = re.sub(r"<br\s*/?>|</p>|</div>|</tr>|</h[1-6]>", "\n", text, flags=re.I)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = unescape(text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n ", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
 
 
 class SMTPService:
@@ -183,11 +202,15 @@ class SMTPService:
         from_address = settings.MAIL_DEFAULT_SENDER
         if from_address is None:
             raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
+        if text_message is None:
+            text_message = html_to_text(html_message)
         msg = MessageSchema(
             recipients=[to_address],
             subject=subject,
             body=html_message,
+            alternative_body=text_message,
             subtype=MessageType.html,
+            multipart_subtype=MultipartSubtypeEnum.alternative,
         )
         logger.debug(f"Sending email via SMTP {to_address}")
         if settings.LOG_LEVEL == "DEBUG":
