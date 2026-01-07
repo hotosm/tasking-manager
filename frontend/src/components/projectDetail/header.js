@@ -76,14 +76,23 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
 
 export function TagLine({ campaigns = [], countries = [], interests = [] }: Object) {
   const locale = useSelector((state) => state.preferences.locale);
-  const formattedCampaigns = campaigns.map((campaign) => campaign.name).join(', ');
+  // const formattedCampaigns = campaigns.map((campaign) => campaign.name).join(', ');
   const formattedCountries = locale.includes('en') ? countries?.join(', ') : countries;
   const formattedInterests = interests.map((interest) => interest.name).join(', ');
   // Remove empty formatted strings
-  const tags = [formattedCampaigns, formattedCountries, formattedInterests].filter((n) => n);
+  const tags = [formattedCountries, formattedInterests].filter((n) => n);
 
   return (
     <span className="blue-light">
+      {/* remove from regular tags and make campaign as a clickable item that redirects to the explore page with the clicked campaign filter */}
+      {campaigns?.map((item) => (
+        <Link
+          to={`/explore?campaign=${item?.name}&omitMapResults=1`}
+          className="mr2 link blue-light underline-hover hover-gray"
+        >
+          {item.name}
+        </Link>
+      ))}
       {tags.map((tag, index) => (
         <span key={tag}>
           {index !== 0 && <span className="ph2">&#183;</span>}
