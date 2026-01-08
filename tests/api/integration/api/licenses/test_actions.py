@@ -93,7 +93,6 @@ class TestLicensesActionsAcceptAPI:
         """
         auth_header = {"Authorization": f"Token {self.test_user_token}"}
         # use the endpoint_url composed in setup
-        print(self.endpoint_url)
         response = await client.post(self.endpoint_url, headers=auth_header)
         assert response.status_code == 200
         body = response.json()

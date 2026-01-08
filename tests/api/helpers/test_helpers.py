@@ -611,7 +611,6 @@ async def create_canned_message(
     message_type: int = MessageType.SYSTEM.value,
     db=None,
 ) -> Message:
-    print(subject, "Ya ko subject....")
     test_message = Message()
     test_message.subject = subject
     test_message.message = message
@@ -621,7 +620,6 @@ async def create_canned_message(
 
     # First save (this inserts into DB but returns nothing)
     await test_message.save(db)
-    print(subject, "the subject......")
     # Fetch the inserted row to get its ID
     row = await db.fetch_one(
         query="""
