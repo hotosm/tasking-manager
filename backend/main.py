@@ -55,6 +55,12 @@ def get_application() -> FastAPI:
     @_app.exception_handler(HTTPException)
     async def custom_http_exception_handler(request: Request, exc: HTTPException):
         try:
+            # make debug info easier
+            logging.info(
+                "HTTPException handled: status=%s detail=%r",
+                exc.status_code,
+                exc.detail,
+            )
             if exc.status_code == 401 and "InvalidToken" in exc.detail.get(
                 "SubCode", ""
             ):

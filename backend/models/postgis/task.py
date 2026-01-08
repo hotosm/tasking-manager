@@ -1536,10 +1536,8 @@ class Task(Base):
         for row in results:
             tasks_mapped_str = row["tasks_mapped"]
             tasks_mapped = json.loads(tasks_mapped_str) if tasks_mapped_str else []
-
-            mapping_level_name = await MappingLevel.get_by_name(
-                row["mapping_level"], db
-            ).name
+            mapping_level = await MappingLevel.get_by_id(row["mapping_level"], db)
+            mapping_level_name = mapping_level.name
 
             user_mapped = MappedTasksByUser(
                 username=row["username"],

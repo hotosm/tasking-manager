@@ -325,7 +325,7 @@ async def unlock_after_mapping(
         )
     except NotFound as e:
         return JSONResponse(
-            content=e.to_dict(),
+            content={"error": {"sub_code": e.sub_code, "message": e.message}},
             status_code=404,
         )
     except Exception as e:
