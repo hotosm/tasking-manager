@@ -494,6 +494,27 @@ export default defineMessages({
     id: 'project.tasks.action.instructions.select_task',
     defaultMessage: 'Select one of the options below that matches your edit status',
   },
+  instructionTabDescription: {
+    id: 'project.tasks.tab.instructions.description',
+    defaultMessage: 'View task instructions',
+  },
+  historyTabDescription: {
+    id: 'project.tasks.tab.history.description',
+    defaultMessage: 'View past activity',
+  },
+  completionTabDescription: {
+    id: 'project.tasks.tab.completion.description',
+    defaultMessage: 'Comment and update status',
+  },
+  resourcesTabDescription: {
+    id: 'project.tasks.tab.resources.description',
+    defaultMessage: ' Learn about resources',
+  },
+  otherTabs: {
+    id: 'project.tasks.tab.heading',
+    defaultMessage: 'Other tabs',
+  },
+
   writeComment: {
     id: 'project.input.placeholder.write_comment',
     defaultMessage: 'Write a comment',
