@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.message_dto.ListChatMessageDTO" name="backend.models.dtos.message_dto.ListChatMessageDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="44,148,259,248"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,81,122,146,117,149,74,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,131,149,131,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="227,5,300,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="259,72,250,99,236,125,227,138,223,134,232,123,245,97,254,70"/>
+</map>

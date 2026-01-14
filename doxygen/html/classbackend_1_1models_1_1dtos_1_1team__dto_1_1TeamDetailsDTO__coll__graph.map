@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.team_dto.TeamDetailsDTO" name="backend.models.dtos.team_dto.TeamDetailsDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="56,177,247,397"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="70,83,109,176,104,178,65,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,161,149,161,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="290,5,327,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="308,72,299,112,282,155,259,188,255,185,277,152,294,111,302,70"/>
+</map>

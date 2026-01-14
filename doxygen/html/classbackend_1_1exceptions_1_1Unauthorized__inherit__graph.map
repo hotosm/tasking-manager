@@ -1,0 +1,7 @@
+<map id="backend.exceptions.Unauthorized" name="backend.exceptions.Unauthorized">
+<area shape="rect" id="Node000001" title=" " alt="" coords="9,272,244,337"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1exceptions_1_1BaseException.html" title=" " alt="" coords="5,119,248,224"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,238,129,272,124,272,124,238"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="71,5,183,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="129,85,129,118,124,118,124,85"/>
+</map>

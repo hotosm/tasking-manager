@@ -1,0 +1,7 @@
+<map id="backend.models.postgis.project_partner.ProjectPartnershipHistory.create" name="backend.models.postgis.project_partner.ProjectPartnershipHistory.create">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,53,292,93"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1models_1_1postgis_1_1project__partner_1_1ProjectPartnershipHistory.html#af555eba98336b7573ae6945d23725bcc" title=" " alt="" coords="340,5,635,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="292,53,326,49,327,54,292,58"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1postgis_1_1project__partner_1_1ProjectPartnership.html#a51a41bf318a146deae40843b46c2d63c" title=" " alt="" coords="362,84,613,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="292,86,348,93,348,98,292,92"/>
+</map>

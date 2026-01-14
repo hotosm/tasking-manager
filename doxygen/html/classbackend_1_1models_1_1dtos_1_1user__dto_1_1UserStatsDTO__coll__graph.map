@@ -1,0 +1,11 @@
+<map id="backend.models.dtos.user_dto.UserStatsDTO" name="backend.models.dtos.user_dto.UserStatsDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="40,276,224,545"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="9,5,95,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="31,84,15,134,8,174,15,213,26,246,42,279,37,282,21,248,9,214,3,174,9,133,26,82"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1dtos_1_1user__dto_1_1UserCountriesContributed.html" title=" " alt="" coords="25,133,239,213"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="80,81,111,132,106,135,76,84"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="135,213,135,259,129,259,129,213"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="149,5,187,71"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="188,39,213,44,242,54,270,70,293,93,313,134,318,171,310,209,293,253,269,295,238,332,234,328,265,292,288,251,305,208,312,171,308,136,288,96,267,74,240,59,211,49,186,44"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="151,64,136,96,132,117,127,116,131,94,147,62"/>
+</map>

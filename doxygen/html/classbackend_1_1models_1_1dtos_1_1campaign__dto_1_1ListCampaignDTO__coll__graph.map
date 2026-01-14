@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.campaign_dto.ListCampaignDTO" name="backend.models.dtos.campaign_dto.ListCampaignDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,148,225,228"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="21,5,108,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,83,104,147,99,149,77,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="133,5,202,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="159,72,137,133,132,132,154,70"/>
+</map>

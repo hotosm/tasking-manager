@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.validator_dto.MappedTasksByUser" name="backend.models.dtos.validator_dto.MappedTasksByUser">
+<area shape="rect" id="Node000001" title=" " alt="" coords="44,221,259,301"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,82,136,220,131,222,67,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,204,149,204,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="288,5,361,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="330,71,329,100,325,134,315,168,297,199,275,221,271,217,293,196,310,166,320,133,324,100,324,71"/>
+</map>

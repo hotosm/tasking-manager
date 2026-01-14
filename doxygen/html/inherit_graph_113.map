@@ -1,0 +1,27 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,365,132,390"/>
+<area shape="rect" id="Node000001" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Area.html" title=" " alt="" coords="196,5,411,45"/>
+<area shape="poly" id="edge235_Node000000_Node000001" title=" " alt="" coords="68,350,75,290,92,210,106,168,125,127,148,89,178,55,195,43,198,47,182,59,153,92,129,130,111,170,97,212,80,290,74,351"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__AsGeoJSON.html" title=" " alt="" coords="196,69,411,109"/>
+<area shape="poly" id="edge236_Node000000_Node000002" title=" " alt="" coords="71,350,81,301,101,239,132,174,153,145,178,119,196,107,199,112,182,123,157,148,137,177,106,241,86,302,76,351"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Buffer.html" title=" " alt="" coords="196,133,411,173"/>
+<area shape="poly" id="edge237_Node000000_Node000003" title=" " alt="" coords="75,350,89,313,110,268,140,222,178,183,198,171,201,176,182,187,144,225,115,270,94,315,80,352"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Centroid.html" title=" " alt="" coords="196,197,411,237"/>
+<area shape="poly" id="edge238_Node000000_Node000004" title=" " alt="" coords="82,351,121,298,148,271,179,247,202,235,204,240,181,252,152,275,125,302,87,355"/>
+<area shape="rect" id="Node000005" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__GeogFromWKB.html" title=" " alt="" coords="196,261,411,301"/>
+<area shape="poly" id="edge239_Node000000_Node000005" title=" " alt="" coords="98,355,136,332,179,311,213,299,215,304,181,316,139,337,101,359"/>
+<area shape="rect" id="Node000006" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__GeomFromGeoJSON.html" title=" " alt="" coords="196,325,411,365"/>
+<area shape="poly" id="edge240_Node000000_Node000006" title=" " alt="" coords="145,364,195,357,196,363,146,370"/>
+<area shape="rect" id="Node000007" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Intersects.html" title=" " alt="" coords="196,389,411,429"/>
+<area shape="poly" id="edge241_Node000000_Node000007" title=" " alt="" coords="146,385,196,392,195,397,145,390"/>
+<area shape="rect" id="Node000008" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__MakeEnvelope.html" title=" " alt="" coords="196,453,411,493"/>
+<area shape="poly" id="edge242_Node000000_Node000008" title=" " alt="" coords="101,395,139,418,181,439,215,451,213,456,179,444,136,423,98,400"/>
+<area shape="rect" id="Node000009" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__SetSRID.html" title=" " alt="" coords="196,517,411,557"/>
+<area shape="poly" id="edge243_Node000000_Node000009" title=" " alt="" coords="87,400,125,453,152,480,181,503,204,515,202,519,179,508,148,484,121,456,82,403"/>
+<area shape="rect" id="Node000010" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Transform.html" title=" " alt="" coords="196,581,411,621"/>
+<area shape="poly" id="edge244_Node000000_Node000010" title=" " alt="" coords="80,402,94,440,115,484,144,529,182,567,201,579,198,583,178,571,140,533,110,487,89,442,75,404"/>
+<area shape="rect" id="Node000011" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__X.html" title=" " alt="" coords="180,646,427,671"/>
+<area shape="poly" id="edge245_Node000000_Node000011" title=" " alt="" coords="76,403,86,453,105,515,136,578,157,607,182,631,202,644,199,648,178,635,153,610,131,581,100,517,80,454,71,404"/>
+<area shape="rect" id="Node000012" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1ST__Y.html" title=" " alt="" coords="180,695,427,721"/>
+<area shape="poly" id="edge246_Node000000_Node000012" title=" " alt="" coords="74,403,81,462,98,537,112,577,130,615,153,650,182,681,200,693,198,697,178,685,149,654,125,618,107,579,93,538,75,462,69,404"/>
+</map>

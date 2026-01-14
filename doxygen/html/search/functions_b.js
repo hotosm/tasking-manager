@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['map_5fall_5ftasks_0',['map_all_tasks',['../classbackend_1_1services_1_1mapping__service_1_1MappingService.html#a18ea67a0467257d0b6a8943f67ffaecc',1,'backend::services::mapping_service::MappingService']]],
+  ['mark_5fall_5fmessages_5fread_1',['mark_all_messages_read',['../classbackend_1_1models_1_1postgis_1_1message_1_1Message.html#a9ba45f549c0faa7f06d7f82be3ef8aaf',1,'backend.models.postgis.message.Message.mark_all_messages_read()'],['../classbackend_1_1services_1_1messaging_1_1message__service_1_1MessageService.html#a20bc12a428be9f224da46536a5c6547c',1,'backend.services.messaging.message_service.MessageService.mark_all_messages_read()']]],
+  ['mark_5fmultiple_5fmessages_5fread_2',['mark_multiple_messages_read',['../classbackend_1_1models_1_1postgis_1_1message_1_1Message.html#a4b6eb7bb7a90f99c322094ac2661f5c3',1,'backend.models.postgis.message.Message.mark_multiple_messages_read()'],['../classbackend_1_1services_1_1messaging_1_1message__service_1_1MessageService.html#ad58f5acc2025f3a8934fbe1f6b9831ed',1,'backend.services.messaging.message_service.MessageService.mark_multiple_messages_read()']]],
+  ['merge_5fto_5fmulti_5fpolygon_3',['merge_to_multi_polygon',['../classbackend_1_1services_1_1grid_1_1grid__service_1_1GridService.html#a679854538a4d34bb567730e41ad33779',1,'backend::services::grid::grid_service::GridService']]],
+  ['mlb_5ftransform_4',['mlb_transform',['../classbackend_1_1services_1_1recommendation__service_1_1ProjectRecommendationService.html#aa4c5a9040ed64f5bcdec6f5fa9ab3974',1,'backend::services::recommendation_service::ProjectRecommendationService']]]
+];
