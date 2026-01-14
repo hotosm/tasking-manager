@@ -54,7 +54,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const token = useSelector((state) => state.auth.token);
   // Determines if any active task has been invalidated by its most recent state change
   const isInvalidatedTask = useMemo(() => {
-    return activeTasks.some((task) => {
+    return activeTasks?.some((task) => {
       const lastStateChange = task.taskHistory.find((history) => history.action === 'STATE_CHANGE');
 
       return lastStateChange?.actionText === 'INVALIDATED';

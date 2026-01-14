@@ -2,7 +2,7 @@ import { FormattedMessage } from 'react-intl';
 import { InfoIcon } from '../svgIcons';
 import messages from './messages';
 
-const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, action }) => {
+const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, action }: Object) => {
   return (
     <div className="bg-lightest-blue pa3">
       <div className="f5 gray">
@@ -19,6 +19,9 @@ const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, actio
             <span
               className="link dark-gray hover-dark-blue pointer mr1"
               onClick={() => setActiveSection('instructions')}
+              tabIndex={0}
+              onKeyDown={() => {}}
+              role="button"
             >
               <FormattedMessage {...messages.instructions} />:
             </span>
@@ -31,6 +34,9 @@ const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, actio
             <span
               className="link dark-gray hover-dark-blue pointer mr1"
               onClick={() => historyTabSwitch()}
+              tabIndex={0}
+              onKeyDown={() => {}}
+              role="button"
             >
               <FormattedMessage {...messages.history} />:
             </span>
@@ -43,6 +49,9 @@ const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, actio
             <span
               className="link dark-gray hover-dark-blue pointer mr1"
               onClick={() => setActiveSection('completion')}
+              tabIndex={0}
+              onKeyDown={() => {}}
+              role="button"
             >
               <FormattedMessage {...messages.completion} />:
             </span>
@@ -54,6 +63,9 @@ const OtherTabInfo = ({ activeSection, setActiveSection, historyTabSwitch, actio
             <span
               className="link dark-gray hover-dark-blue pointer mr1"
               onClick={() => setActiveSection('resources')}
+              tabIndex={0}
+              onKeyDown={() => {}}
+              role="button"
             >
               <FormattedMessage {...messages.resources} />:
             </span>
