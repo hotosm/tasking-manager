@@ -27,15 +27,6 @@ export const ActionTabsNav = ({
         <span
           role="button"
           className={`dib mr4-l mr3 pb2 pointer ${
-            activeSection === 'completion' && 'bb b--red bw1'
-          }`}
-          onClick={() => setActiveSection('completion')}
-        >
-          <FormattedMessage {...messages.completion} />
-        </span>
-        <span
-          role="button"
-          className={`dib mr4-l mr3 pb2 pointer ${
             activeSection === 'instructions' && 'bb b--red bw1'
           }`}
           onClick={() => setActiveSection('instructions')}
@@ -70,6 +61,15 @@ export const ActionTabsNav = ({
             <FormattedMessage {...messages.resources} />
           </span>
         )}
+        <span
+          role="button"
+          className={`dib mr4-l mr3 pb2 pointer ${
+            activeSection === 'completion' && 'bb b--red bw1'
+          }`}
+          onClick={() => setActiveSection('completion')}
+        >
+          <FormattedMessage {...messages.completion} />
+        </span>
       </div>
     </HorizontalScroll>
   );
