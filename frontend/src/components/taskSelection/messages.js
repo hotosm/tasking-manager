@@ -496,19 +496,19 @@ export default defineMessages({
   },
   instructionTabDescription: {
     id: 'project.tasks.tab.instructions.description',
-    defaultMessage: 'View task instructions',
+    defaultMessage: 'Read the task guidelines and mapping steps before you begin.',
   },
   historyTabDescription: {
     id: 'project.tasks.tab.history.description',
-    defaultMessage: 'View past activity',
+    defaultMessage: 'View past mapping and validation activity, including comments.',
   },
   completionTabDescription: {
     id: 'project.tasks.tab.completion.description',
-    defaultMessage: 'Comment and update status',
+    defaultMessage: 'Leave comments, unlock the task, and update its status.',
   },
   resourcesTabDescription: {
     id: 'project.tasks.tab.resources.description',
-    defaultMessage: ' Learn about resources',
+    defaultMessage: 'Access reference materials, links, and supporting data.',
   },
   otherTabs: {
     id: 'project.tasks.tab.heading',
