@@ -181,6 +181,10 @@ class UserSearchQuery(BaseModel):
     def validate_role(cls, v):
         if v is None:
             return None
+        try:
+            UserRole[v.strip()]
+        except KeyError:
+            raise ValueError("Invalid role")
         return v.strip()
 
     def __hash__(self):

@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import json
 import logging
 import os
@@ -20,7 +21,7 @@ from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import (
     OrganisationType,
     TaskStatus,
@@ -222,6 +223,7 @@ async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> Use
     test_user.tasks_notifications = True
     test_user.tasks_comments_notifications = False
     test_user.teams_announcement_notifications = True
+    test_user.date_registered = datetime.utcnow()
 
     return test_user
 
@@ -231,7 +233,7 @@ def generate_encoded_token(user_id: int):
 
     session_token = AuthenticationService.generate_session_token_for_user(user_id)
     session_token = base64.b64encode(session_token.encode("utf-8"))
-    return "Token " + session_token.decode("utf-8")
+    return session_token.decode("utf-8")
 
 
 async def create_canned_user(db, test_user=None):
@@ -316,7 +318,6 @@ async def create_canned_project(db, name=TEST_PROJECT_NAME) -> Tuple[Project, Us
     test_project = Project()
     test_project.create_draft_project(test_project_dto)
     await test_project.set_project_aoi(test_project_dto, db)
-    test_project.total_tasks = 3
 
     # Setup test task
     test_task = Task.from_geojson_feature(1, task_feature)
@@ -347,6 +348,7 @@ async def create_canned_project(db, name=TEST_PROJECT_NAME) -> Tuple[Project, Us
     test_project.tasks_mapped = 1
     test_project.tasks_validated = 1
     test_project.tasks_bad_imagery = 1
+    test_project.difficulty = 2
     project_id = await test_project.create(name, db)
     query = """
         UPDATE tasks
@@ -392,9 +394,10 @@ def return_canned_organisation(
     return test_org
 
 
-async def create_canned_organisation(db):
+async def create_canned_organisation(db, test_org=None):
     """Generate a canned organisation in the DB"""
-    test_org = return_canned_organisation()
+    if test_org is None:
+        test_org = return_canned_organisation()
     await db.execute(
         """
         INSERT INTO organisations (id, name, slug, type)
@@ -424,14 +427,17 @@ async def return_canned_team(
     test_org = await get_canned_organisation(org_name, db)
     if test_org is None:
         test_org = await create_canned_organisation(db)
+    else:
+        test_org = Organisation(**test_org)
     test_team.organisation = test_org
     test_team.organisation_id = test_org.id
 
     return test_team
 
 
-async def create_canned_team(db):
-    test_team = await return_canned_team(db)
+async def create_canned_team(db, test_team=None):
+    if test_team is None:
+        test_team = await return_canned_team(db)
 
     query = """
         INSERT INTO teams (name, organisation_id, join_method, visibility)
@@ -461,34 +467,51 @@ async def create_canned_team(db):
     return Team(**created_team) if created_team else None
 
 
-def add_user_to_team(
+async def add_user_to_team(
     team: Team, user: User, role: int, is_active: bool, db
 ) -> TeamMembers:
-    team_member = TeamMembers(team=team, member=user, function=role, active=is_active)
-    team_member.create(db)
+    team_member = TeamMembers(
+        team_id=team.id,
+        user_id=user.id,
+        team=team,
+        member=user,
+        function=role,
+        active=is_active,
+    )
+    await team_member.create(db)
 
     return team_member
 
 
-def add_manager_to_organisation(organisation: Organisation, user: User):
-    org_dto = UpdateOrganisationDTO()
+async def add_manager_to_organisation(organisation, user: User, db):
+    org_dto = UpdateOrganisationDTO(**organisation)
     org_dto.managers = [user.username]
-    organisation.update(org_dto)
-    organisation.save()
+    await Organisation.update(org_dto, db)
     return user.username
 
 
-def assign_team_to_project(project: Project, team: Team, role: int, db) -> ProjectTeams:
-    project_team = ProjectTeams(project=project, team=team, role=role)
-    project_team.create(db)
+async def assign_team_to_project(project_id: int, team_id: int, role: int, db):
+    query = """
+        INSERT INTO project_teams (project_id, team_id, role)
+        VALUES (:project_id, :team_id, :role)
+        RETURNING id, project_id, team_id, role;
+    """
 
-    return project_team
+    record = await db.fetch_one(
+        query=query,
+        values={
+            "project_id": project_id,
+            "team_id": team_id,
+            "role": role,
+        },
+    )
+
+    return record
 
 
-def update_project_with_info(test_project: Project) -> Project:
+async def update_project_with_info(test_project: Project, db) -> Project:
     locales = []
-    test_info = ProjectInfoDTO()
-    test_info.locale = "en"
+    test_info = ProjectInfoDTO(locale="en")
     test_info.name = "Thinkwhere Test"
     test_info.description = "Test Description"
     test_info.short_description = "Short description"
@@ -506,7 +529,7 @@ def update_project_with_info(test_project: Project) -> Project:
     test_dto.validation_editors = ["JOSM"]
     test_dto.changeset_comment = "hot-project"
     test_dto.private = False
-    test_project.update(test_dto)
+    await test_project.update(test_dto, db)
 
     return test_project
 
@@ -527,31 +550,40 @@ def return_canned_campaign(
     return test_campaign
 
 
-def create_canned_campaign(
-    id=TEST_CAMPAIGN_ID,
-    name=TEST_CAMPAIGN_NAME,
-    description=None,
-    logo=None,
-) -> Campaign:
-    """Creates test campaign without writing to db"""
-    test_campaign = return_canned_campaign(id, name, description, logo)
-    test_campaign.create()
-
+async def create_canned_campaign(db, test_campaign=None):
+    """Generate a canned campaign in the DB"""
+    if test_campaign is None:
+        test_campaign = return_canned_campaign()
+    await db.execute(
+        """
+        INSERT INTO campaigns (id, name, description, logo)
+        VALUES (:id, :name, :description, :logo)
+        """,
+        {
+            "id": test_campaign.id,
+            "name": test_campaign.name,
+            "description": test_campaign.description,
+            "logo": test_campaign.logo,
+        },
+    )
     return test_campaign
 
 
-def create_canned_interest(name="test_interest") -> Interest:
-    """Returns test interest without writing to db
-    param name: name of interest
-    return: Interest object
-    """
-    test_interest = Interest()
-    test_interest.name = name
-    test_interest.create()
-    return test_interest
+async def create_canned_interest(db, interest_id=111, name="test_interest"):
+    """Generate a canned interest in the DB and return the interest object."""
+    await db.execute(
+        """
+        INSERT INTO interests (id, name)
+        VALUES (:id, :name)
+        """,
+        {"id": interest_id, "name": name},
+    )
+
+    interest = Interest(id=interest_id, name=name)
+    return interest
 
 
-def create_canned_license(name="test_license") -> int:
+async def create_canned_license(db, name="test_license") -> int:
     """Returns test license without writing to db
     param name: name of license
     return: license id
@@ -560,35 +592,86 @@ def create_canned_license(name="test_license") -> int:
     license_dto.name = name
     license_dto.description = "test license"
     license_dto.plain_text = "test license"
-    test_license = LicenseService.create_licence(license_dto)
+    test_license = await LicenseService.create_license(license_dto, db)
     return test_license
 
 
-def create_canned_mapping_issue(name="Test Issue") -> int:
+async def create_canned_mapping_issue(db, name="Test Issue") -> int:
     issue_dto = MappingIssueCategoryDTO()
     issue_dto.name = name
-    test_issue_id = MappingIssueCategoryService.create_mapping_issue_category(issue_dto)
+    test_issue_id = await MappingIssueCategoryService.create_mapping_issue_category(
+        issue_dto, db
+    )
     return test_issue_id
 
 
-def create_canned_message(
-    subject=TEST_MESSAGE_SUBJECT,
-    message=TEST_MESSAGE_DETAILS,
-    message_type=MessageType.SYSTEM.value,
+async def create_canned_message(
+    subject: str = TEST_MESSAGE_SUBJECT,
+    message: str = TEST_MESSAGE_DETAILS,
+    message_type: int = MessageType.SYSTEM.value,
     db=None,
 ) -> Message:
     test_message = Message()
     test_message.subject = subject
     test_message.message = message
     test_message.message_type = message_type
-    test_message.save(db)
+    test_message.read = False
+    test_message.date = datetime.utcnow()
+
+    # First save (this inserts into DB but returns nothing)
+    await test_message.save(db)
+    # Fetch the inserted row to get its ID
+    row = await db.fetch_one(
+        query="""
+            SELECT * FROM messages
+            WHERE subject = :subject
+            AND message = :message
+            AND message_type = :message_type
+            ORDER BY date DESC
+            LIMIT 1
+        """,
+        values={
+            "subject": subject,
+            "message": message,
+            "message_type": message_type,
+        },
+    )
+
+    # Map DB row back into Message model
+    test_message.id = row["id"]
+    test_message.from_user_id = row["from_user_id"]
+    test_message.to_user_id = row["to_user_id"]
+    test_message.project_id = row["project_id"]
+    test_message.task_id = row["task_id"]
+    test_message.read = row["read"]
+    test_message.date = row["date"]
+
     return test_message
 
 
-def create_canned_notification(user_id, unread_count, date) -> Notification:
-    test_notification = Notification()
-    test_notification.user_id = user_id
-    test_notification.unread_count = unread_count
-    test_notification.date = date
-    test_notification.save()
-    return test_notification
+async def create_canned_notification(
+    user_id: int,
+    unread_count: int,
+    date,
+    db,
+) -> Notification:
+    row = await db.fetch_one(
+        """
+        INSERT INTO notifications (user_id, unread_count, date)
+        VALUES (:user_id, :unread_count, :date)
+        RETURNING id, user_id, unread_count, date;
+        """,
+        {
+            "user_id": user_id,
+            "unread_count": unread_count,
+            "date": date,
+        },
+    )
+
+    notification = Notification()
+    notification.id = row["id"]
+    notification.user_id = row["user_id"]
+    notification.unread_count = row["unread_count"]
+    notification.date = row["date"]
+
+    return notification

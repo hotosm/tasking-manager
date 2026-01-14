@@ -31,7 +31,7 @@ class TestBannerAPI:
     ):
         logger.info("Starting test: PATCH banner with invalid data")
 
-        test_user = return_canned_user()
+        test_user = await return_canned_user(db_connection_fixture)
         await create_canned_user(db_connection_fixture, test_user)
 
         session_token = AuthenticationService.generate_session_token_for_user(
@@ -59,7 +59,7 @@ class TestBannerAPI:
     ):
         logger.info("Starting test: PATCH banner with non-admin user")
 
-        test_user = return_canned_user()
+        test_user = await return_canned_user(db_connection_fixture)
         await create_canned_user(db_connection_fixture, test_user)
 
         session_token = AuthenticationService.generate_session_token_for_user(
@@ -81,7 +81,7 @@ class TestBannerAPI:
     async def test_patch_banner_admin(self, client: AsyncClient, db_connection_fixture):
         logger.info("Starting test: PATCH banner with admin user")
 
-        test_user = return_canned_user()
+        test_user = await return_canned_user(db_connection_fixture)
         test_user.role = 1  # Admin
         await create_canned_user(db_connection_fixture, test_user)
         await db_connection_fixture.execute(
