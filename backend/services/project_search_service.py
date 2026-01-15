@@ -5,7 +5,6 @@ import geojson
 import pandas as pd
 from aiocache import Cache, cached
 from databases import Database
-from fastapi import HTTPException
 from geoalchemy2 import shape
 from loguru import logger
 from shapely.geometry import Polygon, box
@@ -266,10 +265,20 @@ class ProjectSearchService:
                 "project_manager_role": TeamRoles.PROJECT_MANAGER.value,
             },
         )
+        author_projects_query = """
+        SELECT p.id AS id
+        FROM projects p
+        WHERE p.author_id = :user_id
+        """
+        author_project_ids = await db.fetch_all(
+            author_projects_query, {"user_id": user_id}
+        )
+
         project_ids = tuple(
             set(
                 [row["id"] for row in orgs_projects_ids]
                 + [row["id"] for row in team_project_ids]
+                + [row["id"] for row in author_project_ids]
             )
         )
         return project_ids
@@ -865,9 +874,8 @@ class ProjectSearchService:
         # validate the bbox area is less than or equal to the max area allowed to prevent
         # abuse of the api or performance issues from large requests
         if not await ProjectSearchService.validate_bbox_area(polygon, db):
-            raise HTTPException(
-                status_code=400,
-                detail="Organisation has projects or teams, cannot be deleted.",
+            raise BBoxTooBigError(
+                "BBoxTooBigError- Requested bounding box is too large"
             )
         # get projects intersecting the polygon for created by the author_id
         intersecting_projects = await ProjectSearchService._get_intersecting_projects(

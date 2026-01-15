@@ -1,4 +1,5 @@
 from typing import List
+from backend.exceptions import NotFound
 from backend.models.dtos.team_dto import ProjectTeamPairDTOList
 from databases import Database
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, Request
@@ -368,7 +369,18 @@ async def message_team(
     try:
         request_json = await request.json()
         request_json["from_user_id"] = user.id
-        message_dto = MessageDTO(**request_json)
+        try:
+            message_dto = MessageDTO(**request_json)
+        except Exception as e:
+            logger.error(f"Error validating request: {str(e)}")
+            return JSONResponse(
+                content={
+                    "Error": "Request payload did not match validation",
+                    "SubCode": "InvalidData",
+                },
+                status_code=400,
+            )
+
         # Validate if team is present
         team = await TeamService.get_team_by_id(team_id, db)
         is_manager = await TeamService.is_user_team_manager(team_id, user.id, db)
@@ -387,6 +399,8 @@ async def message_team(
             status_code=403,
         )
     except Exception as e:
+        if isinstance(e, NotFound):
+            raise
         logger.error(f"Error validating request: {str(e)}")
         return JSONResponse(
             content={

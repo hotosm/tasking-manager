@@ -13,7 +13,7 @@ import HashtagPaste from './hashtagPaste';
 import FileRejections from './fileRejections';
 import DropzoneUploadStatus from './uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
-import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
+import { formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
@@ -52,7 +52,11 @@ function CommentInputField({
     trigger: '@',
     values: async (query, cb) => {
       try {
-        if (!query) return cb(contributors.map((username) => ({ username })));
+        const sortedContriutors = contributors?.sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: 'base' }),
+        );
+
+        if (!query) return cb(sortedContriutors.map((username) => ({ username })));
 
         // address trigger js allowSpaces=true issue
         // which triggers this function every keystroke
@@ -145,6 +149,8 @@ function CommentInputField({
     sessionStorage.setItem(sessionkey, comment);
   }, [comment, sessionkey]);
 
+  console.log(comment, 'comment');
+
   return (
     <div {...getRootProps()}>
       {isShowTabNavs && (
@@ -172,8 +178,8 @@ function CommentInputField({
           </div>
         </div>
       )}
-      <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">
-        <MDEditor
+      {/* <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light"> */}
+      {/* <MDEditor
           ref={textareaRef}
           preview="edit"
           commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
@@ -188,7 +194,56 @@ function CommentInputField({
             ...markdownTextareaProps,
           }}
           defaultTabEnable
-        />
+        /> */}
+
+      <div className={`bg-white`} data-color-mode="light">
+        {/* <div className={`${isShowPreview ? 'dn' : ''} bg-white`} data-color-mode="light">*/}
+
+        <div className={`${isShowPreview && comment ? '' : 'dn'}`}>
+          <MDEditor
+            preview={'preview'}
+            commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+            extraCommands={[]}
+            height={200}
+            value={formatUserNamesToLink(comment)}
+            onChange={setComment}
+            textareaProps={{
+              ...getInputProps(),
+              spellCheck: 'true',
+              placeholder: useIntl().formatMessage(placeholderMsg),
+              ...markdownTextareaProps,
+            }}
+            defaultTabEnable
+          />
+        </div>
+
+        {isShowPreview && !comment && (
+          <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
+            <span className="db mt3">
+              <FormattedMessage {...messages.nothingToPreview} />
+            </span>
+          </div>
+        )}
+
+        <div className={`${isShowPreview ? 'dn' : ''}`}>
+          <MDEditor
+            ref={textareaRef}
+            preview={'edit'}
+            commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+            extraCommands={[]}
+            height={200}
+            value={comment}
+            onChange={setComment}
+            textareaProps={{
+              ...getInputProps(),
+              spellCheck: 'true',
+              placeholder: useIntl().formatMessage(placeholderMsg),
+              ...markdownTextareaProps,
+            }}
+            defaultTabEnable
+          />
+        </div>
+
         <input
           ref={fileInputRef}
           type="file"
@@ -208,7 +263,7 @@ function CommentInputField({
           </div>
         )}
       </div>
-      {isShowPreview && (
+      {/* {isShowPreview && (
         <div className="db ba ph3" style={{ minHeight: 200, borderColor: '#F0EEEE' }}>
           {comment && (
             <div
@@ -223,7 +278,8 @@ function CommentInputField({
             </span>
           )}
         </div>
-      )}
+      )} */}
+
       {enableHashtagPaste && !isShowPreview && (
         <span className="db blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />

@@ -4,21 +4,10 @@ import { createComponentWithIntl } from '../../../utils/testWithIntl';
 import { MappingLevelIcon } from '../contributions';
 import { FullStarIcon, HalfStarIcon } from '../../svgIcons';
 
-describe('if user is ADVANCED, MappingLevelIcon should return', () => {
-  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="ADVANCED" />);
-  const instance = element.root;
-  it('FullStarIcon with correct classNames', () => {
-    expect(instance.findByType(FullStarIcon).props.className).toBe('h1 w1 v-mid pb1');
-  });
-  it('FormattedMessage with the correct id', () => {
-    expect(instance.findByType(FormattedMessage).props.id).toBe('project.level.advanced');
-  });
-});
-
-describe('if user is INTERMEDIATE, MappingLevelIcon should return', () => {
+describe('if mappingLevel is "Intermediate mapper"', () => {
   const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="INTERMEDIATE" />);
   const instance = element.root;
-  it('FullStarIcon with correct classNames', () => {
+  it('HalfStarIcon with correct classNames', () => {
     expect(instance.findByType(HalfStarIcon).props.className).toBe('h1 w1 v-mid pb1');
   });
   it('FormattedMessage with the correct id', () => {
@@ -26,18 +15,20 @@ describe('if user is INTERMEDIATE, MappingLevelIcon should return', () => {
   });
 });
 
-describe('if user is BEGINNER, MappingLevelIcon should not return', () => {
-  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="BEGINNER" />);
+describe('if mappingLevel is "Advanced mapper"', () => {
+  const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="ADVANCED" />);
   const instance = element.root;
-  it('icon and FormattedMessage', () => {
-    expect(() => instance.findByType(FullStarIcon)).toThrow(
-      new Error('No instances found with node type: "FullStarIcon"'),
-    );
-    expect(() => instance.findByType(HalfStarIcon)).toThrow(
-      new Error('No instances found with node type: "HalfStarIcon"'),
-    );
-    expect(() => instance.findByType(FormattedMessage)).toThrow(
-      new Error('No instances found with node type: "MemoizedFormattedMessage"'),
-    );
+  it('should render a FullStarIcon', () => {
+    expect(instance.findByType(FullStarIcon).props.className).toBe('h1 w1 v-mid pb1');
+  });
+  it('should render a FormattedMessage with the correct id', () => {
+    expect(instance.findByType(FormattedMessage).props.id).toBe('project.level.advanced');
+  });
+});
+
+describe('if mappingLevel is anything else', () => {
+  it('should not render anything', () => {
+    const element = createComponentWithIntl(<MappingLevelIcon mappingLevel="BEGINNER" />);
+    expect(element.toJSON()).toBeNull();
   });
 });

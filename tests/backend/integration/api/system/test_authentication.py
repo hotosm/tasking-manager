@@ -82,7 +82,6 @@ class TestSystemAuthenticationCallbackAPI(BaseTestCase):
         # Act
         response = self.client.get(url)
         # Assert
-        print(response.json)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["SubCode"], "InvalidData")
         self.assertEqual(response.json["Error"], "Missing code parameter")

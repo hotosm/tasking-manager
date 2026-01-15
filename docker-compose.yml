@@ -22,6 +22,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    labels:
+      - "traefik.enable=false"
     networks:
       - tm-net
 
@@ -144,7 +146,7 @@ services:
       - tm-net
 
   traefik:
-    image: traefik:v2.10
+    image: traefik:v3.6.1
     restart: always
     ports:
       - "${TM_DEV_PORT:-3000}:80"

@@ -35,6 +35,7 @@ import { LockedTaskModalContent } from './lockedTasks';
 import { SessionAboutToExpire, SessionExpired } from './extendSession';
 import { MappingTypes } from '../mappingTypes';
 import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
+import OtherTabInfo from './OtherTabInfo';
 
 const Editor = lazy(() => import('../editor'));
 const RapidEditor = lazy(() => import('../rapidEditor'));
@@ -51,7 +52,19 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const expiredTimeoutRef = useRef();
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
-  const [activeSection, setActiveSection] = useState('completion');
+  // Determines if any active task has been invalidated by its most recent state change
+  const isInvalidatedTask = useMemo(() => {
+    return activeTasks?.some((task) => {
+      const lastStateChange = task.taskHistory.find((history) => history.action === 'STATE_CHANGE');
+
+      return lastStateChange?.actionText === 'INVALIDATED';
+    });
+  }, [activeTasks]);
+
+  const [activeSection, setActiveSection] = useState(
+    action === 'MAPPING' && !isInvalidatedTask ? 'instructions' : 'history',
+  );
+
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
   const [isJosmError, setIsJosmError] = useState(false);
@@ -310,6 +323,13 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   />
                 </div>
                 <div className="pt0">
+                  <OtherTabInfo
+                    activeSection={activeSection}
+                    setActiveSection={setActiveSection}
+                    historyTabSwitch={historyTabSwitch}
+                    action={action}
+                  />
+
                   {activeSection === 'completion' && (
                     <>
                       {action === 'MAPPING' && (

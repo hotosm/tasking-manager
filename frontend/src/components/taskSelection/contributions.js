@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
@@ -20,25 +20,37 @@ import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
+import { useProjectContributionsLevelQuery } from '../../api/projects.js';
 
 export const MappingLevelIcon = ({ mappingLevel }) => {
-  if (['ADVANCED', 'INTERMEDIATE'].includes(mappingLevel)) {
+  if (!mappingLevel) {
+    return null;
+  }
+  const upperCaseLevelStr = mappingLevel.toUpperCase();
+  let level = null;
+
+  if (upperCaseLevelStr.includes('ADVANCED')) {
+    level = 'ADVANCED';
+  } else if (upperCaseLevelStr.includes('INTERMEDIATE')) {
+    level = 'INTERMEDIATE';
+  }
+
+  if (level) {
     return (
-      <>
-        <FormattedMessage {...messages[`mappingLevel${mappingLevel}`]}>
-          {(msg) => (
-            <span className="blue-grey ttl" title={msg}>
-              {mappingLevel === 'ADVANCED' ? (
-                <FullStarIcon className="h1 w1 v-mid pb1" />
-              ) : (
-                <HalfStarIcon className="h1 w1 v-mid pb1" />
-              )}
-            </span>
-          )}
-        </FormattedMessage>
-      </>
+      <FormattedMessage {...messages[`mappingLevel${level}`]}>
+        {(msg) => (
+          <span className="blue-grey ttl" title={msg}>
+            {level === 'ADVANCED' ? (
+              <FullStarIcon className="h1 w1 v-mid pb1" />
+            ) : (
+              <HalfStarIcon className="h1 w1 v-mid pb1" />
+            )}
+          </span>
+        )}
+      </FormattedMessage>
     );
   }
+
   return null;
 };
 
@@ -111,7 +123,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
             </>
           )}
         </FormattedMessage>
-        <MappingLevelIcon mappingLevel={user.mappingLevel} />
+        {/* <MappingLevelIcon mappingLevel={user.mappingLevel} /> */}
       </div>
 
       <div className="w-20 fl tr dib truncate">
@@ -160,13 +172,29 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
 
 const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus, selectTask }) => {
   const intl = useIntl();
-  const mappingLevels = [
-    { value: 'ALL', label: intl.formatMessage(messages.mappingLevelALL) },
-    { value: 'ADVANCED', label: intl.formatMessage(messages.mappingLevelADVANCED) },
-    { value: 'INTERMEDIATE', label: intl.formatMessage(messages.mappingLevelINTERMEDIATE) },
-    { value: 'BEGINNER', label: intl.formatMessage(messages.mappingLevelBEGINNER) },
-    { value: 'NEWUSER', label: intl.formatMessage(messages.mappingLevelNEWUSER) },
-  ];
+  const { data } = useProjectContributionsLevelQuery();
+
+  const mappingLevels = useMemo(() => {
+    const getLevelLabel = (level) => {
+      const word = level?.toLowerCase();
+      if (word.length > 0) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+    };
+
+    const dynamicLevels =
+      data?.map((level) => ({
+        value: level.name,
+        label: getLevelLabel(level.name || ''),
+      })) || [];
+
+    return [
+      { value: 'ALL', label: intl.formatMessage(messages.mappingLevelALL) },
+      ...dynamicLevels,
+      { value: 'NEWUSER', label: intl.formatMessage(messages.mappingLevelNEWUSER) },
+    ];
+  }, [data, intl]);
+
   const defaultUserFilter = {
     label: intl.formatMessage(messages.userFilterDefaultLabel),
     value: null,
@@ -176,8 +204,14 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   const [sortBy, setSortBy] = useState('total');
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
+  const levelList = useMemo(
+    () => mappingLevels?.map((level) => level.value) || [],
+    [mappingLevels],
+  );
+
   const contributors = useFilterContributors(
     contribsData || [],
+    levelList || [],
     level && level.value,
     userFilter && userFilter.value,
     sortBy,

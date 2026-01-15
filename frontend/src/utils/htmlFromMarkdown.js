@@ -96,7 +96,7 @@ export const formatUserNamesToLink = (text) => {
       username = username.substring(0, username.length - 1);
       text = text.replace(
         usernames[i],
-        `<a class="pointer blue-grey b underline" href="/users/${username}">@${username}</a>`,
+        `<a class="pointer blue-grey underline" style="color: #d73f3f" href="/users/${username}">@${username}</a>`,
       );
     }
   }
