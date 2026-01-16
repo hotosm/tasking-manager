@@ -91,7 +91,7 @@ describe('Task Selection Page', () => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
     setup();
-    await waitFor(() => expect(screen.getByRole('link')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('link', { name: /123/ })).toBeInTheDocument());
     const taskItems = await screen.findAllByText(/last updated by/i);
     expect(taskItems.length).toBe(6);
     expect(screen.queryByText(/Project Specific Mapping Notes/i)).not.toBeInTheDocument();

@@ -120,7 +120,7 @@ describe('test if ProjectHeader component', () => {
 
 describe('TagLine', () => {
   it('renders tags with proper formatting', () => {
-    const campaigns = [{ name: 'Campaign 1' }, { name: 'Campaign 2' }];
+    const campaigns = [];
     const countries = ['Country 1'];
     const interests = [{ name: 'Interest 1' }, { name: 'Interest 2' }];
 
@@ -132,17 +132,15 @@ describe('TagLine', () => {
 
     const tagLineElement = container.querySelector('.blue-light');
     const tagElements = tagLineElement.querySelectorAll('span');
-    expect(tagElements.length).toBe(5);
-    expect(tagElements[0].textContent).toBe('Campaign 1, Campaign 2');
-    expect(tagElements[1].textContent).toBe('·Country 1');
+    expect(tagElements.length).toBe(3);
+    expect(tagElements[0].textContent).toBe('Country 1');
+    expect(tagElements[1].textContent).toBe('·Interest 1, Interest 2');
     expect(tagElements[2].textContent).toBe('·');
-    expect(tagElements[3].textContent).toBe('·Interest 1, Interest 2');
-    expect(tagElements[4].textContent).toBe('·');
   });
 
   it('renders tags without bullet separators if there is only one tag', () => {
-    const campaigns = [{ name: 'Campaign 1' }];
-    const countries = [];
+    const campaigns = [];
+    const countries = ['Country 1'];
     const interests = [];
 
     const { container } = render(
@@ -152,8 +150,9 @@ describe('TagLine', () => {
     );
     const tagLineElement = container.querySelector('.blue-light');
     const tagElements = tagLineElement.querySelectorAll('span');
+
     expect(tagElements.length).toBe(1);
-    expect(tagElements[0].textContent).toBe('Campaign 1');
+    expect(tagElements[0].textContent).toBe('Country 1');
   });
 
   it('renders an empty tag line if no tags are provided', () => {

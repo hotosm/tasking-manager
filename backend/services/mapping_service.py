@@ -232,7 +232,6 @@ class MappingService:
         )
         if task is None:
             raise NotFound(
-                status_code=404,
                 sub_code="TASK_NOT_FOUND",
                 project_id=project_id,
                 task_id=task_id,

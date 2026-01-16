@@ -494,6 +494,27 @@ export default defineMessages({
     id: 'project.tasks.action.instructions.select_task',
     defaultMessage: 'Select one of the options below that matches your edit status',
   },
+  instructionTabDescription: {
+    id: 'project.tasks.tab.instructions.description',
+    defaultMessage: 'Read the task guidelines and mapping steps before you begin.',
+  },
+  historyTabDescription: {
+    id: 'project.tasks.tab.history.description',
+    defaultMessage: 'View past mapping and validation activity, including comments.',
+  },
+  completionTabDescription: {
+    id: 'project.tasks.tab.completion.description',
+    defaultMessage: 'Leave comments, unlock the task, and update its status.',
+  },
+  resourcesTabDescription: {
+    id: 'project.tasks.tab.resources.description',
+    defaultMessage: 'Access reference materials, links, and supporting data.',
+  },
+  otherTabs: {
+    id: 'project.tasks.tab.heading',
+    defaultMessage: 'Other tabs',
+  },
+
   writeComment: {
     id: 'project.input.placeholder.write_comment',
     defaultMessage: 'Write a comment',

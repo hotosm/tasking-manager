@@ -49,7 +49,7 @@ export const NotificationBell = () => {
     setBellPosition(e.target.getBoundingClientRect().left);
     setPopoutFocus(!isPopoutFocus);
     if (doesUnreadNotificationsExist) {
-      pushToLocalJSONAPI('/api/v2/notifications/queries/own/post-unread/', null, token);
+      pushToLocalJSONAPI('notifications/queries/own/post-unread/', null, token);
       setDoesUnreadNotificationsExist(false);
     }
   };

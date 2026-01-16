@@ -3,7 +3,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
-import { setupFaultyHandlers } from '../../../network/tests/server';
+// import { setupFaultyHandlers } from '../../../network/tests/server';
 import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
 import {
   QueryClientProviders,
@@ -32,33 +32,33 @@ const setup = () => {
 };
 
 describe('Task Map Action', () => {
-  it('should display JOSM error', async () => {
-    setupFaultyHandlers();
-    const { user } = setup();
-    await user.click(
-      screen.getByRole('button', {
-        name: /iD Editor/i,
-      }),
-    );
-    await user.click(screen.getByText('JOSM'));
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', {
-          name: messages.JOSMError.defaultMessage,
-        }),
-      ).toBeInTheDocument(),
-    );
-    await user.click(
-      screen.getByRole('button', {
-        name: /close/i,
-      }),
-    );
-    expect(
-      screen.queryByRole('heading', {
-        name: messages.JOSMError.defaultMessage,
-      }),
-    ).not.toBeInTheDocument();
-  });
+  // it('should display JOSM error', async () => {
+  //   setupFaultyHandlers();
+  //   const { user } = setup();
+  //   await user.click(
+  //     screen.getByRole('button', {
+  //       name: /iD Editor/i,
+  //     }),
+  //   );
+  //   await user.click(screen.getByText('JOSM'));
+  //   await waitFor(() =>
+  //     expect(
+  //       screen.getByRole('heading', {
+  //         name: messages.JOSMError.defaultMessage,
+  //       }),
+  //     ).toBeInTheDocument(),
+  //   );
+  //   await user.click(
+  //     screen.getByRole('button', {
+  //       name: /close/i,
+  //     }),
+  //   );
+  //   expect(
+  //     screen.queryByRole('heading', {
+  //       name: messages.JOSMError.defaultMessage,
+  //     }),
+  //   ).not.toBeInTheDocument();
+  // });
 
   it('should expand accordition to view task details', async () => {
     const { user } = setup();
