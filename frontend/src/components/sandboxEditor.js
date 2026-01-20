@@ -1,23 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import * as iD from '@osm-sandbox/sandbox-id';
 import '@osm-sandbox/sandbox-id/dist/iD.css';
 
-import { getSandboxAuthToken } from '../store/actions/auth';
+import {
+  getSandboxAuthToken,
+  setSandboxAuthError,
+  setSandboxAuthStatus,
+} from '../store/actions/auth';
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
 
-export default function SandboxEditor({ setDisable, comment, presets, imagery, sandboxId, gpxUrl }) {
+export default function SandboxEditor({
+  setDisable,
+  comment,
+  presets,
+  imagery,
+  sandboxId,
+  gpxUrl,
+}) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const session = useSelector((state) => state.auth.session);
   const sandboxTokens = useSelector((state) => state.auth.sandboxTokens);
   const sandboxAuthError = useSelector((state) => state.auth.sandboxAuthError);
+  const sandboxAuthStatus = useSelector((state) => state.auth.sandboxAuthStatus);
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);  
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  useSandboxOAuthCallback(sandboxId);  
+  useSandboxOAuthCallback(sandboxId);
 
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
@@ -51,30 +65,34 @@ export default function SandboxEditor({ setDisable, comment, presets, imagery, s
       iDContext.defaultChangesetComment(comment);
     }
   }, [comment, iDContext]);
-  
 
   // Initialize sandbox editor
   useEffect(() => {
     const initializeSandbox = async () => {
       if (!session || !locale || !iD || !iDContext || isInitialized) {
         return;
-      }      
-      
+      }
+      const authStatus = sandboxAuthStatus?.[sandboxId];
+      if (authStatus === 'in_progress' || authStatus === 'failed') {
+        return;
+      }
+
       try {
         const tokenData = await getValidTokenOrInitiateAuth({
           dispatch,
           sandboxId,
           sandboxTokens,
           getSandboxAuthToken,
-        });   
-    
+          authStatus,
+        });
+
         if (!tokenData) {
           // auth flow was initiated (user will be redirected)
           return;
         }
 
         // fetch sandbox license info
-        const license = await fetchSandboxLicense(sandboxId);        
+        const license = await fetchSandboxLicense(sandboxId);
 
         // set up presets
         try {
@@ -126,12 +144,30 @@ export default function SandboxEditor({ setDisable, comment, presets, imagery, s
 
         setIsInitialized(true);
       } catch (error) {
-        // Error will be handled by Redux state
+        dispatch(setSandboxAuthError(error?.message));
       }
     };
 
     initializeSandbox();
-  }, [session, iDContext, setDisable, presets, locale, gpxUrl, sandboxId, sandboxTokens, dispatch, isInitialized]);
+  }, [
+    session,
+    iDContext,
+    setDisable,
+    presets,
+    locale,
+    gpxUrl,
+    sandboxId,
+    sandboxTokens,
+    dispatch,
+    isInitialized,
+    sandboxAuthStatus,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
+    };
+  }, [dispatch, sandboxId]);
 
   // Show error message if authentication failed
   if (sandboxAuthError) {
@@ -139,17 +175,26 @@ export default function SandboxEditor({ setDisable, comment, presets, imagery, s
       <div className="w-100 vh-minus-69-ns flex items-center justify-center">
         <div className="bg-washed-red pa4 br2 ma3">
           <h3 className="red mt0">Sandbox Connection Error</h3>
-          <p className="mt2 mb3">
-            {sandboxAuthError}
-          </p>
+          <p className="mt2 mb3">{sandboxAuthError}</p>
           <button
-            className="bg-red white pa2 br2 bn pointer dim"
+            className="bg-red white pa2 br2 bn pointer dim mr2"
             onClick={() => {
               dispatch({ type: 'CLEAR_SANDBOX_AUTH_ERROR' });
+              dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
               window.location.reload();
             }}
           >
             Retry
+          </button>
+          <button
+            className="bg-red white pa2 br2 bn pointer dim"
+            onClick={() => {
+              dispatch({ type: 'CLEAR_SANDBOX_AUTH_ERROR' });
+              dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
+              navigate('/');
+            }}
+          >
+            Return to Home
           </button>
         </div>
       </div>
