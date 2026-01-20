@@ -61,7 +61,7 @@ export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || ''
 export const DEFAULT_VALIDATOR_TEAM_ID = process.env.REACT_APP_DEFAULT_VALIDATOR_TEAM_ID || null;
 
 // For default sandbox db
-export const DEFAULT_SANDBOX_DB = process.env.REACT_APP_SANDBOX_DB || 'sand';
+export const DEFAULT_SANDBOX_DB = process.env.REACT_APP_SANDBOX_DB || 'osm';
 export const SANDBOX_DASHBOARD_API_URL = process.env.REACT_APP_SANDBOX_DASHBOARD_API_URL || null;
 
 export const TASK_COLOURS = {
