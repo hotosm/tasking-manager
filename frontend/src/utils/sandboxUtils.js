@@ -2,7 +2,7 @@ import { SANDBOX_DASHBOARD_API_URL } from '../config';
 import { handleErrors } from './promise';
 
 const TOKEN_BUFFER_MS = 5 * 60 * 1000; // 5 minutes
-// const DASHBOARD_API_URL = 'https://dashboard.osmsandbox.us';
+// const DASHBOARD_API_URL = 'https://sandbox.hotosm.org'; // this is dev sandbox url
 const DASHBOARD_API_URL = SANDBOX_DASHBOARD_API_URL;
 
 /**
@@ -39,7 +39,12 @@ export async function getValidTokenOrInitiateAuth({
   sandboxId,
   sandboxTokens,
   getSandboxAuthToken,
+  authStatus,
 }) {
+  if (authStatus === 'failed') {
+    return null; // no auto retry
+  }
+
   // Check if we have an existing valid token
   const existingToken = sandboxTokens?.[sandboxId];
   if (existingToken && isTokenValid(existingToken)) {
@@ -55,6 +60,10 @@ export async function getValidTokenOrInitiateAuth({
  * Create a new sandbox session
  */
 export async function createSandboxSession(box, endRedirectUri) {
+  if (!DASHBOARD_API_URL) {
+    throw new Error('Sandbox API URL is not configured');
+  }
+
   const url = new URL('/sessions', DASHBOARD_API_URL);
   url.searchParams.append('box', box);
   if (endRedirectUri) {
@@ -65,8 +74,8 @@ export async function createSandboxSession(box, endRedirectUri) {
     method: 'POST',
   });
 
-  await handleErrors(response);
-  return response.json();
+  await handleErrors(response, `Something went wrong on sandbox session creation`);
+  return await response.json();
 }
 
 /**
@@ -88,7 +97,7 @@ export async function getSandboxToken(sessionId) {
     method: 'GET',
   });
 
-  await handleErrors(response);
+  await handleErrors(response, 'Something went wrong on sandbox OAuth token for session');
   return response.json();
 }
 
@@ -96,8 +105,12 @@ export async function getSandboxToken(sessionId) {
  * Fetch sandbox license info
  */
 export async function fetchSandboxLicense(sandboxId) {
+  if (!DASHBOARD_API_URL) throw new Error('Failed to get dashboard URL');
+  if (!sandboxId) throw new Error('Failed to get Sandbox ID');
+
   const response = await fetch(`${DASHBOARD_API_URL}/v1/boxes/${sandboxId}`);
-  await handleErrors(response);
+
+  await handleErrors(response, 'Something went wrong on sandbox license');
   const result = await response.json();
   const license = result && result.license;
 
