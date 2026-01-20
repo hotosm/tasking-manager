@@ -15,7 +15,7 @@ export function useSandboxOAuthCallback(sandboxId) {
       }
       
       const sessionId = new URLSearchParams(window.location.search).get('session_id');
-      if (!sessionId) {
+      if (!sessionId || processedRef.current) {
         return;
       }      
       processedRef.current = true;
