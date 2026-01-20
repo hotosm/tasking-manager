@@ -25,6 +25,7 @@ export const types = {
   CLEAR_SANDBOX_TOKEN: 'CLEAR_SANDBOX_TOKEN',
   SET_SANDBOX_AUTH_ERROR: 'SET_SANDBOX_AUTH_ERROR',
   CLEAR_SANDBOX_AUTH_ERROR: 'CLEAR_SANDBOX_AUTH_ERROR',
+  SET_SANDBOX_AUTH_STATUS: 'SET_SANDBOX_AUTH_STATUS',
 };
 
 export function clearUserDetails() {
@@ -188,8 +189,6 @@ export const pushUserDetails =
     );
   };
 
-
-
 // Sandbox token management actions
 export function setSandboxToken(sandbox, tokenData) {
   return { type: types.SET_SANDBOX_TOKEN, sandbox, tokenData };
@@ -214,7 +213,15 @@ const handleSandboxAuthError = (dispatch, error, showLoader = true) => {
 /**
  * Initiate sandbox authentication flow
  */
-export const initiateSandboxAuth = (sandbox, callbackUrl) => async (dispatch) => {
+export const initiateSandboxAuth = (sandbox, callbackUrl) => async (dispatch, getState) => {
+  const status = getState().auth.sandboxAuthStatus?.[sandbox];
+
+  if (status === 'in_progress') {
+    return null; // hard stop
+  }
+
+  dispatch(setSandboxAuthStatus(sandbox, 'in_progress'));
+
   try {
     dispatch(setLoader(true));
 
@@ -224,6 +231,7 @@ export const initiateSandboxAuth = (sandbox, callbackUrl) => async (dispatch) =>
 
     return session;
   } catch (error) {
+    dispatch(setSandboxAuthStatus(sandbox, 'failed'));
     handleSandboxAuthError(dispatch, error);
     return null;
   }
@@ -234,12 +242,10 @@ export const initiateSandboxAuth = (sandbox, callbackUrl) => async (dispatch) =>
  */
 export const completeSandboxAuth = (sessionId, sandbox) => async (dispatch) => {
   try {
+    dispatch(setSandboxAuthStatus(sandbox, 'in_progress'));
     dispatch(setLoader(true));
 
     const tokenData = await getSandboxToken(sessionId);
-
-    console.log(tokenData, 'token dataXXXXX');
-    
 
     if (!tokenData.access_token) {
       throw new Error('No access token in response');
@@ -256,8 +262,11 @@ export const completeSandboxAuth = (sessionId, sandbox) => async (dispatch) => {
     dispatch(setSandboxToken(sandbox, tokenWithExpiry));
     dispatch(setLoader(false));
 
+    dispatch(setSandboxAuthStatus(sandbox, 'success'));
+
     return tokenWithExpiry;
   } catch (error) {
+    dispatch(setSandboxAuthStatus(sandbox, 'failed'));
     handleSandboxAuthError(dispatch, error);
     throw error;
   }
@@ -291,3 +300,9 @@ export const getSandboxAuthToken = (sandbox, callbackUrl) => async (dispatch) =>
   return dispatch(initiateSandboxAuth(sandbox, callbackUrl));
 };
 
+// Add Auth status
+export const setSandboxAuthStatus = (sandbox, status) => ({
+  type: 'SET_SANDBOX_AUTH_STATUS',
+  sandbox,
+  status,
+});

@@ -35,7 +35,7 @@ export function authorizationReducer(state = initialState, action) {
     case types.CLEAR_SESSION: {
       return initialState;
     }
-      case types.SET_SANDBOX_TOKEN: {
+    case types.SET_SANDBOX_TOKEN: {
       return {
         ...state,
         sandboxTokens: { ...state.sandboxTokens, [action.sandbox]: action.tokenData },
@@ -51,6 +51,15 @@ export function authorizationReducer(state = initialState, action) {
     }
     case types.CLEAR_SANDBOX_AUTH_ERROR: {
       return { ...state, sandboxAuthError: null };
+    }
+    case types.SET_SANDBOX_AUTH_STATUS: {
+      return {
+        ...state,
+        sandboxAuthStatus: {
+          ...state.sandboxAuthStatus,
+          [action.sandbox]: action.status,
+        },
+      };
     }
     default:
       return state;
