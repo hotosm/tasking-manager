@@ -1056,6 +1056,8 @@ class Project(Base):
             p.tasks_mapped,
             p.tasks_validated,
             p.status,
+            p.database,
+            p.sandbox,
             p.mapping_types,
             p.total_tasks,
             p.last_updated,
