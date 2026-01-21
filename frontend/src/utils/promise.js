@@ -28,7 +28,7 @@ export async function handleErrors(response, defaultMessage = 'Something went wr
     });
 
     console.log(text, 'text******');
-    
+
 
   throw Error(text || defaultMessage);
 }

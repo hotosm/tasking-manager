@@ -13,11 +13,11 @@ export function useSandboxOAuthCallback(sandboxId) {
       if (processedRef.current) {
         return;
       }
-      
+
       const sessionId = new URLSearchParams(window.location.search).get('session_id');
       if (!sessionId || processedRef.current) {
         return;
-      }      
+      }
       processedRef.current = true;
 
       try {
