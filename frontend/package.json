@@ -7,7 +7,7 @@
     "@hotosm/id": "^2.34.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@maplibre/maplibre-gl-geocoder": "^1.9.0",
-    "@osm-sandbox/sandbox-id": "https://github.com/osm-sandbox/sandbox-iD.git",
+    "@osm-sandbox/sandbox-id": "https://github.com/osm-sandbox/sandbox-iD.git#v2.34.0",
     "@placemarkio/geo-viewport": "^1.0.2",
     "@rapideditor/rapid": "^2.5.2",
     "@sentry/react": "^7.102.0",
