@@ -5,7 +5,7 @@ import messages from './messages';
 import { Alert } from '../alert';
 
 import { OrganisationSelect } from '../formInputs';
-import { DEFAULT_SANDBOX_DB } from '../../config';
+import { DEFAULT_SANDBOX_DB, IS_SANDBOX_ENABLED } from '../../config';
 
 const databaseOptions = [
   { value: 'OSM', label: 'OSM' },
@@ -64,32 +64,34 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         </>
       ) : null}
 
-      <>
-        <label className="f5 fw6 db mb2 pt3">
-          <FormattedMessage {...messages.databse} />
-        </label>
-        {databaseOptions.map((option) => (
-          <label className="dib pr5" key={option.value}>
-            <input
-              value={option.value}
-              checked={
-                (option.value === 'OSM' && !metadata.sandbox) ||
-                (metadata.sandbox && option.value !== 'OSM')
-              }
-              onChange={() =>
-                updateMetadata({
-                  ...metadata,
-                  database: option.value === 'OSM' ? 'OSM' : SANDBOX_DB,
-                  sandbox: option.value !== 'OSM',
-                })
-              }
-              type="radio"
-              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
-            />
-            <FormattedMessage {...messages[`database${option.label}`]} />
+      {IS_SANDBOX_ENABLED && (
+        <>
+          <label className="f5 fw6 db mb2 pt3">
+            <FormattedMessage {...messages.databse} />
           </label>
-        ))}
-      </>
+          {databaseOptions.map((option) => (
+            <label className="dib pr5" key={option.value}>
+              <input
+                value={option.value}
+                checked={
+                  (option.value === 'OSM' && !metadata.sandbox) ||
+                  (metadata.sandbox && option.value !== 'OSM')
+                }
+                onChange={() =>
+                  updateMetadata({
+                    ...metadata,
+                    database: option.value === 'OSM' ? 'OSM' : SANDBOX_DB,
+                    sandbox: option.value !== 'OSM',
+                  })
+                }
+                type="radio"
+                className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+              />
+              <FormattedMessage {...messages[`database${option.label}`]} />
+            </label>
+          ))}
+        </>
+      )}
 
       {error && (
         <Alert type="error">
