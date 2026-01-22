@@ -17,6 +17,7 @@ import { SwitchToggle } from '../formInputs';
 import DownloadAsCSV from './downloadAsCSV';
 import { GripIcon, ListIcon, FilledNineCellsGridIcon, TableListIcon } from '../svgIcons';
 import getURLSearchParamsObject from '../../utils/getURLSearchParamsObject';
+import { IS_SANDBOX_ENABLED } from '../../config';
 
 export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
@@ -167,11 +168,20 @@ const DatabaseDropdown = (props) => {
       }}
       value={props.fullProjectsQuery.sandbox || []}
       options={[
-        { label: <DifficultyMessage level="ALL" className="" />, value: undefined },
-        { label: <DifficultyMessage level="Sandbox" className="" />, value: 'true' },
-        { label: <DifficultyMessage level="OpenStreetMap" className="" />, value: 'false' },
+        {
+          label: <FormattedMessage {...messages.allDabase} className="" />,
+          value: undefined,
+        },
+        {
+          label: <FormattedMessage {...messages.sandboxDabase} className="" />,
+          value: 'true',
+        },
+        {
+          label: <FormattedMessage {...messages.OSMDatabase} className="" />,
+          value: 'false',
+        },
       ]}
-      display={<FormattedMessage {...messages.mappingDatabse} />}
+      display={<FormattedMessage {...messages.mappingDatabase} />}
       className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
     />
   );
@@ -226,6 +236,7 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   if (searchParams.view) {
     clearFiltersURL = `${clearFiltersURL}&view=${searchParams.view}`;
   }
+console.log(IS_SANDBOX_ENABLED, '***********');
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
@@ -234,9 +245,11 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
       <div className="mt2 mb1 ph3 dib lh-copy w-100 cf">
         <div className="w-80-l w-90-m w-100 fl dib">
           <div className="dib">
-             <div className="mv2 dib">
-              <DatabaseDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
-            </div>
+            {IS_SANDBOX_ENABLED && (
+              <div className="mv2 dib">
+                <DatabaseDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+              </div>
+            )}
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
