@@ -12,10 +12,23 @@ export default defineMessages({
     id: 'project.nav.mappingDifficulty',
     defaultMessage: 'Difficulty level',
   },
-  mappingDatabse: {
+  mappingDatabase: {
     id: 'project.nav.mappingDatabase',
     defaultMessage: 'Database',
   },
+  allDabase: {
+    id: 'project.nav.mappingDatabase.option.all',
+    defaultMessage: 'All',
+  },
+  sandboxDabase: {
+    id: 'project.nav.mappingDatabase.option.sandbox',
+    defaultMessage: 'Sandbox',
+  },
+  OSMDatabase: {
+    id: 'project.nav.mappingDatabase.option.OSM',
+    defaultMessage: 'OpenStreetMap',
+  },
+
   moreFilters: {
     id: 'project.nav.moreFilters',
     defaultMessage: 'More filters',
