@@ -39,6 +39,7 @@ from backend.services.mapping_issues_service import (
 )
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import AuthenticationService
+import sqlalchemy as sa
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,6 +57,38 @@ TEST_CAMPAIGN_NAME = "Test Campaign"
 TEST_CAMPAIGN_ID = 1
 TEST_MESSAGE_SUBJECT = "Test subject"
 TEST_MESSAGE_DETAILS = "This is a test message"
+
+
+async def create_mapping_levels(db):
+    # Ensure clean slate (important for repeated test runs)
+    await db.execute(sa.text("DELETE FROM mapping_levels"))
+
+    await db.execute(
+        sa.text(
+            """
+            INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
+            VALUES (1, 'BEGINNER', 1, true, 0)
+            """
+        )
+    )
+
+    await db.execute(
+        sa.text(
+            """
+            INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
+            VALUES (2, 'INTERMEDIATE', 2, false, 0)
+            """
+        )
+    )
+
+    await db.execute(
+        sa.text(
+            """
+            INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
+            VALUES (3, 'ADVANCED', 3, false, 0)
+            """
+        )
+    )
 
 
 def get_canned_osm_user_details():

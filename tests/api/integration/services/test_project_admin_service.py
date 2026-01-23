@@ -354,53 +354,6 @@ class TestProjectAdminService:
         with pytest.raises(ProjectAdminServiceError):
             await ProjectAdminService.update_project(test_dto, mock_user.id, db=self.db)
 
-    # @patch.object(User, "get_by_id", new_callable=AsyncMock)
-    # @patch.object(Project, "update", new_callable=AsyncMock)
-    # @patch.object(Project, "get", new_callable=AsyncMock)
-    # async def test_updating_a_private_project_with_no_allowed_users_raises_error(
-    #     self, mock_project, mock_project2, mock_user
-    # ):
-    #     # Arrange
-    #     mock_project.return_value = Project()
-
-    #     locales = []
-    #     info = ProjectInfoDTO(locale = "en")
-    #     info.name = "Test"
-    #     info.description = "Test description"
-    #     info.short_description = "Test short description"
-    #     info.instructions = "Test instructions"
-    #     locales.append(info)
-
-    #     test_dto = ProjectDTO(
-    #         project_id=1,
-    #         private = True,
-    #         allowed_usernames = [],
-    #         project_status=ProjectStatus.PUBLISHED.name,
-    #         project_priority=ProjectPriority.MEDIUM.name,
-    #         default_locale="en",
-    #         difficulty="EASY",
-    #         mapping_permission="ANY",
-    #         mapping_permission_level_id=0,
-    #         validation_permission="ANY",
-    #         validation_permission_level_id=0,
-    #         project_info_locales=locales,
-    #         task_creation_mode="GRID",
-    #         mapping_editors=["JOSM", "ID", "RAPID"],
-    #         validation_editors=["JOSM", "ID"],
-    #         mapping_types=["ROADS", "BUILDINGS"],
-    #         changeset_comment="hot-project",
-    #     )
-
-    #     stub_user = User()
-    #     stub_user.username = "admin"
-    #     stub_user.role = UserRole.ADMIN.value
-
-    #     stub_user.id = 1
-    #     mock_user.return_value = stub_user
-
-    #     # Act / Assert: should not raise
-    #     await ProjectAdminService.update_project(test_dto, 1, db=self.db)
-
     @patch.object(User, "get_by_id", new_callable=AsyncMock)
     @patch.object(Project, "update", new_callable=AsyncMock)
     @patch.object(Project, "get", new_callable=AsyncMock)

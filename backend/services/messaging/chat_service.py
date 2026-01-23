@@ -54,16 +54,13 @@ class ChatService:
                     project_id, allowed_roles, authenticated_user_id, db
                 )
                 if not is_team_member:
-                    is_allowed_user = (
-                        len(
-                            [
-                                user
-                                for user in project.allowed_users
-                                if user.id == authenticated_user_id
-                            ]
-                        )
-                        > 0
+                    rows = await db.fetch_all(
+                        "SELECT user_id FROM project_allowed_users WHERE project_id = :id",
+                        {"id": project_id},
                     )
+                    allowed_user_ids = [r["user_id"] for r in rows]
+                    is_allowed_user = authenticated_user_id in allowed_user_ids
+
         if is_manager_permission or is_team_member or is_allowed_user:
             chat_message = await ProjectChat.create_from_dto(chat_dto, db)
             background_tasks.add_task(
