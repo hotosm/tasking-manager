@@ -6,7 +6,6 @@ import geojson
 from aiocache import Cache, cached
 
 from databases import Database
-from fastapi import HTTPException
 from loguru import logger
 
 from backend.config import get_settings
@@ -57,7 +56,7 @@ class ProjectService:
         project = await db.fetch_one(query=query, values={"project_id": project_id})
 
         if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+            raise NotFound("Project not found")
 
         return project
 

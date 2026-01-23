@@ -479,6 +479,7 @@ class MappingService:
         )
 
         for task in tasks_to_map:
+
             task_id = task["id"]
             current_status = TaskStatus(task["task_status"])
 

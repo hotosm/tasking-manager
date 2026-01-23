@@ -1,5 +1,4 @@
 import pytest
-
 from backend.models.dtos.project_dto import ProjectSearchDTO
 from backend.models.postgis.statuses import ProjectDifficulty, ProjectStatus
 from backend.services.project_search_service import ProjectSearchService
