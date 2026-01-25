@@ -2199,7 +2199,7 @@
   resolved "https://registry.yarnpkg.com/@openstreetmap/id-tagging-schema/-/id-tagging-schema-6.6.0.tgz#b39d66c6bf9aa586a1375a5c10668dd5404a1f39"
   integrity sha512-IlQpymfiOEJz+3rAyH2ACPLKyDBdvudV+gd3wwN5rWKeMNjnmeOJqIwHmQ8b4MzMHsf4XJj3EU8UhECnE3DCRw==
 
-"@osm-sandbox/sandbox-id@https://github.com/osm-sandbox/sandbox-iD.git":
+"@osm-sandbox/sandbox-id@https://github.com/osm-sandbox/sandbox-iD.git#9e51118ca32676c17ed5fc5d20faccc078ebc2eb":
   version "2.34.0"
   resolved "https://github.com/osm-sandbox/sandbox-iD.git#9e51118ca32676c17ed5fc5d20faccc078ebc2eb"
   dependencies:
