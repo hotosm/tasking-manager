@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -405,16 +405,23 @@ function PaginatedList({
     }
   }, [items, page, lastPage, setPage]);
 
+  // Keep a ref to items that's always current (updated synchronously on render)
+  // This allows the selection effect to use fresh items without re-running on items changes
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+
   useEffect(() => {
     // switch the taskList page to always show the selected task.
     // Only do it if there is only one task selected
     if (selected.length === 1) {
-      const taskIndex = items.findIndex((task) => task.properties.taskId === selected[0]);
+      const taskIndex = itemsRef.current.findIndex(
+        (task) => task.properties.taskId === selected[0],
+      );
       if (taskIndex >= 0) {
         setPage(Math.ceil((taskIndex + 1) / pageSize));
       }
     }
-  }, [selected, items, setPage, pageSize]);
+  }, [selected, setPage, pageSize]);
 
   return (
     <>
