@@ -452,26 +452,20 @@ class ProjectSearchService:
                 tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
                 ilike_search = f"%{search_text}%"
 
-                subquery_filters.append(
-                    """
+                subquery_filters.append("""
                     text_searchable @@ to_tsquery('english', :tsquery_search)
                     OR name ILIKE :text_search
-                    """
-                )
+                    """)
                 params["tsquery_search"] = tsquery_search
                 params["text_search"] = ilike_search
 
-            filters.append(
-                """
+            filters.append("""
                 p.id = ANY(
                     SELECT project_id
                     FROM project_info
                     WHERE {}
                 )
-                """.format(
-                    " AND ".join(subquery_filters)
-                )
-            )
+                """.format(" AND ".join(subquery_filters)))
 
         if search_dto.project_statuses:
             statuses = [
@@ -675,17 +669,13 @@ class ProjectSearchService:
                 )
                 params["partnership_to"] = partnership_to
 
-            filters.append(
-                """
+            filters.append("""
                 p.id = ANY(
                     SELECT pp.project_id
                     FROM project_partnerships pp
                     WHERE {}
                 )
-                """.format(
-                    " AND ".join(partner_conditions)
-                )
-            )
+                """.format(" AND ".join(partner_conditions)))
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             project_ids = await ProjectSearchService.get_managed_projects(user.id, db)
