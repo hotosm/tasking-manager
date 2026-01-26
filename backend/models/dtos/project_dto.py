@@ -174,6 +174,8 @@ class DraftProjectDTO(BaseModel):
     tasks: Optional[dict] = Field({})
     has_arbitrary_tasks: bool = Field(False, alias="arbitraryTasks")
     user_id: int = Field(None)
+    sandbox: bool = Field(False)
+    database: str = Field("OSM")
 
     class Config:
         populate_by_name = True
@@ -241,6 +243,7 @@ class ProjectDTO(BaseModel):
     id_presets: Optional[List[str]] = Field(default=[], alias="idPresets")
     extra_id_params: Optional[str] = Field(None, alias="extraIdParams")
     rapid_power_user: Optional[bool] = Field(False, alias="rapidPowerUser")
+    sandbox: Optional[bool] = Field(False)
     mapping_types: List[str] = Field(default=[], alias="mappingTypes")
     campaigns: List[CampaignDTO] = Field(default=[])
     organisation: Optional[int] = None
@@ -254,6 +257,7 @@ class ProjectDTO(BaseModel):
     created: Optional[datetime] = None
     last_updated: Optional[datetime] = Field(None, alias="lastUpdated")
     author: Optional[str] = None
+    database: Optional[str] = None
     active_mappers: Optional[int] = Field(None, alias="activeMappers")
     percent_mapped: Optional[int] = Field(None, alias="percentMapped")
     percent_validated: Optional[int] = Field(None, alias="percentValidated")
@@ -358,6 +362,7 @@ class ProjectSearchDTO(BaseModel):
     organisation_id: Optional[int] = None
     team_id: Optional[int] = None
     campaign: Optional[str] = None
+    database: Optional[str] = None
     order_by: Optional[str] = None
     order_by_type: Optional[str] = None
     country: Optional[str] = None
@@ -373,6 +378,7 @@ class ProjectSearchDTO(BaseModel):
     managed_by: Optional[int] = None
     based_on_user_interests: Optional[int] = None
     omit_map_results: Optional[bool] = None
+    sandbox: Optional[bool] = False
     last_updated_lte: Optional[str] = None
     last_updated_gte: Optional[str] = None
     created_lte: Optional[str] = None
@@ -453,6 +459,10 @@ class ListSearchResultDTO(BaseModel):
     due_date: Optional[datetime] = Field(alias="dueDate", default=None)
     total_contributors: Optional[int] = Field(alias="totalContributors", default=None)
     country: Optional[List[str]] = Field(default=None)
+
+    # sandbox fields
+    sandbox: Optional[bool] = Field(default=None)
+    database: Optional[str] = Field(default=None)
 
     # csv fields
     creation_date: Optional[datetime] = Field(alias="creationDate", default=None)
@@ -550,11 +560,13 @@ class ProjectSummary(BaseModel):
     difficulty: Optional[str] = Field(None, alias="difficulty")
     mapping_permission: Optional[str] = Field(None, alias="mappingPermission")
     validation_permission: Optional[str] = Field(None, alias="validationPermission")
+    database: Optional[str] = Field(None)
     allowed_usernames: List[str] = Field(default_factory=list, alias="allowedUsernames")
     random_task_selection_enforced: bool = Field(
         default=False, alias="enforceRandomTaskSelection"
     )
     private: Optional[bool] = Field(None, alias="private")
+    sandbox: Optional[bool] = Field(None)
     allowed_users: List[str] = Field(default_factory=list, alias="allowedUsernames")
     project_teams: List[ProjectTeamDTO] = Field(default_factory=list, alias="teams")
     project_info: Optional[ProjectInfoDTO] = Field(None, alias="projectInfo")

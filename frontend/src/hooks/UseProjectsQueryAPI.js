@@ -17,6 +17,7 @@ import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
 const projectQueryAllSpecification = {
+  sandbox:StringParam,
   difficulty: StringParam,
   organisation: StringParam,
   campaign: StringParam,
@@ -55,6 +56,7 @@ export const useExploreProjectsQueryParams = () => {
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
 const backendToQueryConversion = {
+  sandbox:'sandbox',
   difficulty: 'difficulty',
   campaign: 'campaign',
   team: 'teamId',

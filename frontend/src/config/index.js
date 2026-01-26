@@ -60,6 +60,16 @@ export const EXPORT_TOOL_S3_URL = process.env.REACT_APP_EXPORT_TOOL_S3_URL || ''
 export const ENABLE_EXPORT_TOOL = process.env.REACT_APP_ENABLE_EXPORT_TOOL || '';
 export const DEFAULT_VALIDATOR_TEAM_ID = process.env.REACT_APP_DEFAULT_VALIDATOR_TEAM_ID || null;
 
+// For default sandbox db
+export const DEFAULT_SANDBOX_DB = process.env.REACT_APP_SANDBOX_DB || 'osm';
+export const SANDBOX_DASHBOARD_API_URL = process.env.REACT_APP_SANDBOX_DASHBOARD_API_URL || null;
+
+// Only enable sandbox when the env var is explicitly set to a truthy value
+const truthyValues = ['true', '1', 'yes'];
+export const IS_SANDBOX_ENABLED = truthyValues.includes(
+  process.env.REACT_APP_ENABLE_SANDBOX?.toLowerCase() ?? '',
+);
+
 export const TASK_COLOURS = {
   READY: '#fff',
   LOCKED_FOR_MAPPING: '#fff',
