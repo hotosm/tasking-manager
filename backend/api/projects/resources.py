@@ -626,6 +626,13 @@ async def get_projects(
     based_on_my_interests: bool = Query(False, alias="basedOnMyInterests"),
     mapping_types_str: Optional[str] = Query(None, alias="mappingTypes"),
     mapping_types_exact: Optional[bool] = Query(False, alias="mappingTypesExact"),
+    imagery: Optional[str] = Query(
+        None,
+        description="Allowed values: "
+        "Bing, Mapbox, EsriWorldImagery, "
+        "EsriWorldImageryClarity, Maxar-Standard, "
+        "or 'custom'. ",
+    ),
     project_statuses_str: Optional[str] = Query(None, alias="projectStatuses"),
     interests: Optional[str] = Query(None),
     user: Optional[AuthUserDTO] = Depends(login_required_optional),
@@ -802,6 +809,7 @@ async def get_projects(
                 else None
             ),
             mapping_types_exact=mapping_types_exact,
+            imagery=imagery,
             project_statuses=(
                 list(map(str, project_statuses_str.split(",")))
                 if project_statuses_str

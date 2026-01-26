@@ -595,6 +595,14 @@ class ProjectSearchService:
                 filters.append("p.id = ANY(:validation_project_ids)")
                 params["validation_project_ids"] = tuple(validation_project_ids)
 
+        if search_dto.imagery:
+            if search_dto.imagery.lower() == "custom":
+                filters.append("p.imagery LIKE :imagery")
+                params["imagery"] = "https://%"
+            else:
+                filters.append("p.imagery = :imagery")
+                params["imagery"] = search_dto.imagery
+
         if search_dto.organisation_name:
             filters.append("o.name = :organisation_name")
             params["organisation_name"] = search_dto.organisation_name
