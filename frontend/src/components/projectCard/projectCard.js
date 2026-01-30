@@ -59,6 +59,7 @@ export function ProjectCard({
   priority,
   status,
   difficulty,
+  sandbox = false,
   campaignTag,
   percentMapped,
   percentValidated,
@@ -90,7 +91,7 @@ export function ProjectCard({
     <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative blue-dark`}
+      className={`relative blue-dark ${sandbox ? 'bt bw2 b--blue-dark br1' : ''}`}
     >
       <Link className="no-underline color-inherit" to={`/projects/${projectId}`}>
         <div
@@ -118,7 +119,10 @@ export function ProjectCard({
               </div>
             </div>
             <div className="mt4 w-100">
-              <div className="f7 blue-grey">#{projectId}</div>
+              <div className="flex items-center justify-between">
+                <div className="f7 blue-grey flex-grow">#{projectId}</div>
+                <div className="f7 blue-grey flex-grow">{sandbox ? 'Sandbox' : 'OSM'}</div>
+              </div>
               <h3
                 title={name}
                 className="mt3 f125 fw7 lh-title overflow-y-hidden pr4 project-title"

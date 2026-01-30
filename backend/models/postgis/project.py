@@ -29,6 +29,7 @@ from sqlalchemy import (
     orm,
     select,
     update,
+    text,
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -144,6 +145,7 @@ class Project(Base):
     # Columns
     id = Column(Integer, primary_key=True)
     status = Column(Integer, default=ProjectStatus.DRAFT.value, nullable=False)
+    database = Column(String, nullable=False, default="OSM", server_default="OSM")
     created = Column(DateTime, default=timestamp(), nullable=False)
     priority = Column(Integer, default=ProjectPriority.MEDIUM.value)
     default_locale = Column(
@@ -170,6 +172,9 @@ class Project(Base):
         Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
     private = Column(Boolean, default=False)  # Only allowed users can validate
+    sandbox = Column(
+        Boolean, nullable=False, default=False, server_default=text("false")
+    )  # Is sandbox project or not
     featured = Column(Boolean, default=False)  # Only PMs can set a project as featured
     changeset_comment = Column(String)
     osmcha_filter_id = Column(
@@ -283,6 +288,8 @@ class Project(Base):
         self.author_id = draft_project_dto.user_id
         self.created = timestamp()
         self.last_updated = timestamp()
+        self.database = draft_project_dto.database
+        self.sandbox = draft_project_dto.sandbox
 
     async def set_project_aoi(self, draft_project_dto: DraftProjectDTO, db: Database):
         """Sets the AOI for the supplied project"""
@@ -875,6 +882,8 @@ class Project(Base):
         columns.pop("centroid", None)
         columns.pop("id", None)
         columns.pop("organisation_id", None)
+        columns.pop("sandbox", None)
+        columns.pop("database", None)
         # Update the project in the database
         await db.execute(
             self.__table__.update().where(Project.id == self.id).values(**columns)
@@ -1047,6 +1056,8 @@ class Project(Base):
             p.tasks_mapped,
             p.tasks_validated,
             p.status,
+            p.database,
+            p.sandbox,
             p.mapping_types,
             p.total_tasks,
             p.last_updated,
@@ -1439,6 +1450,8 @@ class Project(Base):
         summary.extra_id_params = project_row.extra_id_params
         summary.rapid_power_user = project_row.rapid_power_user
         summary.imagery = project_row.imagery
+        summary.database = project_row.database
+        summary.sandbox = project_row.sandbox
 
         # Handle organisation details if available
         if project_row.organisation_id:
@@ -1668,7 +1681,7 @@ class Project(Base):
         query = """
             SELECT
                 p.id as project_id, p.status as project_status, p.default_locale, p.priority as project_priority,
-                p.mapping_permission, p.mapping_permission_level_id,
+                p.mapping_permission, p.mapping_permission_level_id, p.sandbox, p.database,
                 p.validation_permission, p.validation_permission_level_id,
                 p.enforce_random_task_selection, p.private,
                 p.difficulty, p.changeset_comment, p.osmcha_filter_id,
@@ -1745,6 +1758,8 @@ class Project(Base):
             created=record.created,
             last_updated=record.last_updated,
             author=record.author,
+            sandbox=record.sandbox,
+            database=record.database,
             active_mappers=active_mappers,
             task_creation_mode=TaskCreationMode(record.task_creation_mode).name,
             mapping_types=(

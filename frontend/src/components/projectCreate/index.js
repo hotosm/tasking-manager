@@ -200,6 +200,8 @@ const ProjectCreate = () => {
     tempTaskGrid: null,
     arbitraryTasks: false,
     organisation: '',
+    database: 'OSM',
+    sandbox: false,
   });
 
   useLayoutEffect(() => {
@@ -254,6 +256,8 @@ const ProjectCreate = () => {
         organisation: metadata.organisation || cloneProjectData.organisation,
         tasks: truncate(metadata.taskGrid, { precision: 6 }),
         arbitraryTasks: metadata.arbitraryTasks,
+        database: metadata.database,
+        sandbox: metadata.sandbox,
       };
 
       if (cloneProjectData.name !== null) {

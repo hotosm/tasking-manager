@@ -231,4 +231,16 @@ export default defineMessages({
     defaultMessage:
       'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
   },
+  databse: {
+    id: 'management.projects.create.review.database',
+    defaultMessage: 'Database',
+  },
+  databaseOSM: {
+    id: 'management.projects.create.review.database.osm',
+    defaultMessage: 'OSM',
+  },
+  databaseSandbox: {
+    id: 'management.projects.create.review.database.sandbox',
+    defaultMessage: 'Sandbox',
+  },
 });
