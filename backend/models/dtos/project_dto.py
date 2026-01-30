@@ -372,6 +372,7 @@ class ProjectSearchDTO(BaseModel):
     favorited_by: Optional[int] = None
     managed_by: Optional[int] = None
     based_on_user_interests: Optional[int] = None
+    imagery: Optional[str] = None
     omit_map_results: Optional[bool] = None
     last_updated_lte: Optional[str] = None
     last_updated_gte: Optional[str] = None
