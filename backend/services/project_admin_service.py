@@ -132,17 +132,14 @@ class ProjectAdminService:
         project_dto: ProjectDTO, authenticated_user_id: int, db: Database
     ):
         project_id = project_dto.project_id
-
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
             ProjectAdminService._validate_default_locale(
                 project_dto.default_locale, project_dto.project_info_locales
             )
-
         if project_dto.license_id:
             await ProjectAdminService._validate_imagery_licence(
                 project_dto.license_id, db
             )
-
         # To be handled before reaching this function
         if await ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id, db
@@ -308,12 +305,12 @@ class ProjectAdminService:
                 continue  # Not mandatory field
 
             if not value:
+
                 raise (
                     ProjectAdminServiceError(
                         f"MissingRequiredAttribute- {attr} not provided for Default Locale"
                     )
                 )
-
         return True  # Indicates valid default locale for unit testing
 
     @staticmethod
@@ -372,7 +369,6 @@ class ProjectAdminService:
                 transferred_by = transferred_by.username
                 project.author_id = new_owner.id
                 await Project.update_project_author(project_id, new_owner.id, db)
-
             background_tasks.add_task(
                 MessageService.send_project_transfer_message,
                 project_id,
@@ -396,12 +392,10 @@ class ProjectAdminService:
         )
         if not project:
             raise NotFound(sub_code="PROJECT_NOT_FOUND", project_id=project_id)
-
         author_id = project.author_id
         organisation_id = project.organisation_id
 
         is_admin = await UserService.is_user_an_admin(authenticated_user_id, db)
-
         # Check if the user is the project author
         is_author = authenticated_user_id == author_id
         is_org_manager = False
@@ -421,5 +415,4 @@ class ProjectAdminService:
                         authenticated_user_id,
                         db,
                     )
-
         return is_admin or is_author or is_org_manager or is_manager_team

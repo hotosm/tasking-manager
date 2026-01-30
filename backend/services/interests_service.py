@@ -1,4 +1,5 @@
 from backend.exceptions import NotFound
+from backend.services.users.user_service import UserService
 from databases import Database
 from fastapi import HTTPException
 
@@ -149,6 +150,8 @@ class InterestService:
         """
         Create or update the user's interests by directly interacting with the database.
         """
+        await UserService.get_user_by_id(user_id, db)
+
         existing = await db.fetch_all(
             """
             SELECT id
@@ -159,10 +162,7 @@ class InterestService:
         )
 
         if len(existing) != len(set(interests_ids)):
-            raise HTTPException(
-                status_code=404,
-                detail="One or more interests not found",
-            )
+            raise NotFound("One or more interests not found")
 
         async with db.transaction():
             delete_query = """
