@@ -40,7 +40,7 @@ jobs:
         run: npm install -g yarn
 
       - name: Load Environment from GitHub variables & secrets.
-        uses: hotosm/gh-workflows/.github/actions/vars_n_secret_to_env@env_substitute/1.0.0
+        uses: hotosm/gh-workflows/.github/actions/vars_n_secret_to_env@vars_n_secret_to_env/1.1.0
         with:
           vars_context: ${{ toJson(vars) }}
           secrets_context: ${{ toJson(secrets) }}

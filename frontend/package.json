@@ -7,6 +7,7 @@
     "@hotosm/id": "^2.34.0",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@maplibre/maplibre-gl-geocoder": "^1.9.0",
+    "@osm-sandbox/sandbox-id": "https://github.com/osm-sandbox/sandbox-iD.git#9e51118ca32676c17ed5fc5d20faccc078ebc2eb",
     "@placemarkio/geo-viewport": "^1.0.2",
     "@rapideditor/rapid": "^2.5.2",
     "@sentry/react": "^7.102.0",
@@ -79,6 +80,7 @@
     "workbox-strategies": "^7.0.0"
   },
   "scripts": {
+    "build-sandbox-id": "cd node_modules/@osm-sandbox/sandbox-id && npm install && npm run all",
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
     "copy-static": "bash -c \"mkdir -p public/static/rapid; if ! (test -a public/static/rapid/rapid.js); then cp -R node_modules/@rapideditor/rapid/dist/* public/static/rapid; fi\"",
     "copy-id-static": "bash -c \"mkdir -p public/static/id; if ! (test -a public/static/id/data); then cp -R node_modules/@hotosm/id/dist/* public/static/id; fi;\"",
@@ -86,8 +88,8 @@
     "update-id-static": "bash -c \"mkdir -p public/static/id; cp -R node_modules/@hotosm/id/dist/* public/static/id;\"",
     "patch-rapid": "bash -c \"cp patch/rapid-imagery.min.json public/static/rapid/data/imagery.min.json\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
-    "start": "npm run preparation && npm run copy-static && npm run copy-id-static && npm run patch-rapid && craco start",
-    "build": "npm run preparation && npm run update-static && npm run update-id-static && npm run patch-rapid && craco build && npm run sentry:sourcemaps",
+    "start": "npm run preparation && npm run build-sandbox-id && npm run copy-static && npm run copy-id-static && npm run patch-rapid && craco start",
+    "build": "npm run preparation && npm run build-sandbox-id && npm run update-static && npm run update-id-static && npm run patch-rapid && craco build && npm run sentry:sourcemaps",
     "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && craco test --env=jsdom",

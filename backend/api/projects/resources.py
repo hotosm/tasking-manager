@@ -603,6 +603,7 @@ async def get_projects(
     action: Optional[str] = Query(None),
     organisation_name: Optional[str] = Query(None, alias="organisationName"),
     organisation_id: Optional[int] = Query(None, alias="organisationId"),
+    database: Optional[str] = Query(None),
     team_id: Optional[int] = Query(None, alias="teamId"),
     campaign: Optional[str] = Query(None),
     order_by: Optional[str] = Query("priority", alias="orderBy"),
@@ -620,12 +621,20 @@ async def get_projects(
     partnership_to: Optional[str] = Query(None, alias="partnershipTo"),
     download_as_csv: Optional[bool] = Query(None, alias="downloadAsCSV"),
     created_by_me: bool = Query(False, alias="createdByMe"),
+    sandbox: Optional[bool] = Query(None),
     mapped_by_me: bool = Query(False, alias="mappedByMe"),
     favorited_by_me: bool = Query(False, alias="favoritedByMe"),
     managed_by_me: bool = Query(False, alias="managedByMe"),
     based_on_my_interests: bool = Query(False, alias="basedOnMyInterests"),
     mapping_types_str: Optional[str] = Query(None, alias="mappingTypes"),
     mapping_types_exact: Optional[bool] = Query(False, alias="mappingTypesExact"),
+    imagery: Optional[str] = Query(
+        None,
+        description="Allowed values: "
+        "Bing, Mapbox, EsriWorldImagery, "
+        "EsriWorldImageryClarity, Maxar-Standard, "
+        "or 'custom'. ",
+    ),
     project_statuses_str: Optional[str] = Query(None, alias="projectStatuses"),
     interests: Optional[str] = Query(None),
     user: Optional[AuthUserDTO] = Depends(login_required_optional),
@@ -777,6 +786,8 @@ async def get_projects(
         search_dto = ProjectSearchDTO(
             preferred_locale=request.headers.get("accept-language"),
             difficulty=difficulty,
+            sandbox=sandbox,
+            database=database,
             action=action,
             organisation_name=organisation_name,
             organisation_id=organisation_id,
@@ -802,6 +813,7 @@ async def get_projects(
                 else None
             ),
             mapping_types_exact=mapping_types_exact,
+            imagery=imagery,
             project_statuses=(
                 list(map(str, project_statuses_str.split(",")))
                 if project_statuses_str

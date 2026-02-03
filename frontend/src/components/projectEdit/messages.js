@@ -751,4 +751,16 @@ export default defineMessages({
     id: 'projects.partner.listing.error',
     defaultMessage: 'Something went wrong!',
   },
+  databse: {
+    id: 'management.projects.create.review.database',
+    defaultMessage: 'Database',
+  },
+  databaseOSM: {
+    id: 'management.projects.create.review.database.osm',
+    defaultMessage: 'OSM',
+  },
+  databaseSandbox: {
+    id: 'management.projects.create.review.database.sandbox',
+    defaultMessage: 'Sandbox',
+  },
 });
