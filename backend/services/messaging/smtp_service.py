@@ -207,9 +207,9 @@ class SMTPService:
         msg = MessageSchema(
             recipients=[to_address],
             subject=subject,
-            body=html_message,
-            alternative_body=text_message,
-            subtype=MessageType.html,
+            body=text_message,
+            alternative_body=html_message,
+            subtype=MessageType.plain,
             multipart_subtype=MultipartSubtypeEnum.alternative,
         )
         logger.debug(f"Sending email via SMTP {to_address}")
