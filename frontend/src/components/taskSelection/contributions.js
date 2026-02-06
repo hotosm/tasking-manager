@@ -172,7 +172,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
 
 const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus, selectTask }) => {
   const intl = useIntl();
-  const { data } = useProjectContributionsLevelQuery();
+  const { data: mappingLevelList } = useProjectContributionsLevelQuery();
 
   const mappingLevels = useMemo(() => {
     const getLevelLabel = (level) => {
@@ -183,7 +183,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
     };
 
     const dynamicLevels =
-      data?.map((level) => ({
+      mappingLevelList?.map((level) => ({
         value: level.name,
         label: getLevelLabel(level.name || ''),
       })) || [];
@@ -193,7 +193,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
       ...dynamicLevels,
       { value: 'NEWUSER', label: intl.formatMessage(messages.mappingLevelNEWUSER) },
     ];
-  }, [data, intl]);
+  }, [mappingLevelList, intl]);
 
   const defaultUserFilter = {
     label: intl.formatMessage(messages.userFilterDefaultLabel),
