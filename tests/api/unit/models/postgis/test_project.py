@@ -30,7 +30,7 @@ class TestProject:
 
         # Act / Assert
         with pytest.raises(NotFound):
-            await Project.clone(12, 777777, self.db)
+            await Project.clone(12, 777777, self.db, False, "OSM")
 
     async def test_clone_project_creates_copy_of_orig_project(self):
         """Test cloning a project creates an identical copy."""
@@ -41,7 +41,7 @@ class TestProject:
             self.db, project_id, orig_project.default_locale
         )
         # Act
-        new_proj = await Project.clone(project_id, author.id, self.db)
+        new_proj = await Project.clone(project_id, author.id, self.db, False, "OSM")
         new_proj_info = await ProjectInfo.get_dto_for_locale(
             self.db, new_proj.id, new_proj.default_locale
         )

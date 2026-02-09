@@ -138,7 +138,7 @@ class TestProjectAdminService:
         await ProjectAdminService.create_draft_project(draft_project_dto, db=self.db)
 
         # Assert
-        mock_project_clone.assert_awaited_once_with(123, 777777, self.db)
+        mock_project_clone.assert_awaited_once_with(123, 777777, self.db, False, "OSM")
 
     @patch.object(UserService, "get_user_by_id", new_callable=AsyncMock)
     @patch.object(UserService, "is_user_an_admin", new_callable=AsyncMock)
