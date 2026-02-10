@@ -70,7 +70,11 @@ class ProjectAdminService:
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
             draft_project = await Project.clone(
-                draft_project_dto.cloneFromProjectId, user_id, db
+                draft_project_dto.cloneFromProjectId,
+                user_id,
+                db,
+                draft_project_dto.sandbox,
+                draft_project_dto.database,
             )
         else:
             draft_project = Project()

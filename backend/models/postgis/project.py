@@ -446,7 +446,9 @@ class Project(Base):
             )
 
     @staticmethod
-    async def clone(project_id: int, author_id: int, db: Database):
+    async def clone(
+        project_id: int, author_id: int, db: Database, sandbox: bool, database: str
+    ):
         """Clone a project using encode databases and raw SQL."""
         # Fetch the original project data
         orig_query = "SELECT * FROM projects WHERE id = :project_id"
@@ -482,6 +484,8 @@ class Project(Base):
                 "created": timestamp(),
                 "author_id": author_id,
                 "status": ProjectStatus.DRAFT.value,
+                "sandbox": sandbox,
+                "database": database,
             }
         )
 
