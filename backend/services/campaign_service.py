@@ -1,6 +1,12 @@
+from backend.models.postgis.message import Message, MessageType
+from backend.services.messaging.message_service import MessageService
+from backend.services.users.user_service import UserService
 from databases import Database
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
+from loguru import logger
+
+from markdown import markdown
 
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import (
@@ -12,6 +18,15 @@ from backend.models.dtos.campaign_dto import (
 from backend.models.postgis.campaign import Campaign
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
+from backend.db import db_connection
+from backend.models.dtos.message_dto import MessageDTO
+
+
+class CampaignServiceError(Exception):
+    """Custom Exception to notify callers an error occurred when handling mapping"""
+
+    def __init__(self, message):
+        logger.debug(message)
 
 
 class CampaignService:
@@ -347,3 +362,72 @@ class CampaignService:
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
+
+    @staticmethod
+    async def _get_all_contributors_for_campaign(campaign_id: int, conn) -> list[int]:
+        """
+        Return a list of distinct user ids who contributed (mapped_by or validated_by)
+        across all projects attached to the campaign.
+        """
+        query = """
+            SELECT DISTINCT contributor
+            FROM (
+                SELECT t.mapped_by AS contributor
+                FROM tasks t
+                INNER JOIN campaign_projects cp ON cp.project_id = t.project_id
+                WHERE cp.campaign_id = :campaign_id
+                  AND t.mapped_by IS NOT NULL
+                UNION
+                SELECT t.validated_by AS contributor
+                FROM tasks t
+                INNER JOIN campaign_projects cp ON cp.project_id = t.project_id
+                WHERE cp.campaign_id = :campaign_id
+                  AND t.validated_by IS NOT NULL
+            ) AS contributors
+        """
+        rows = await conn.fetch_all(query=query, values={"campaign_id": campaign_id})
+        return [r["contributor"] for r in rows]
+
+    @staticmethod
+    async def send_message_to_all_campaign_contributors(
+        campaign_id: int,
+        campaign_name: str,
+        message_dto: MessageDTO,
+        user_id: int,
+    ):
+        """
+        Send message to all contributors of the given campaign.
+        This function uses the global db_connection to open a connection (same pattern as TeamService).
+        """
+        try:
+            async with db_connection.database.connection() as conn:
+                campaign = await CampaignService.get_campaign(campaign_id, conn)
+                is_manager = await UserService.is_user_an_admin(user_id, conn)
+                if not is_manager:
+                    raise ValueError("UserNotPermitted")
+
+                user = await UserService.get_user_by_id(user_id, conn)
+                sender = user.username
+                message_dto.message = "Message for the {} campaign contributors from admin {}:<br/><br/>{}".format(
+                    campaign.name,
+                    MessageService.get_user_profile_link(sender),
+                    markdown(message_dto.message, output_format="html"),
+                )
+                contributors = await CampaignService._get_all_contributors_for_campaign(
+                    campaign_id, conn
+                )
+                messages = []
+                for contributor_id in contributors:
+                    if contributor_id == user_id:
+                        continue
+                    message = Message.from_dto(contributor_id, message_dto)
+                    message.message_type = MessageType.BROADCAST.value
+                    recipient_user = await UserService.get_user_by_id(
+                        contributor_id, conn
+                    )
+                    messages.append(dict(message=message, user=recipient_user))
+
+                await MessageService._push_messages(messages, conn)
+
+        except Exception as e:
+            logger.error(f"Error sending campaign messages: {str(e)}")
