@@ -694,14 +694,23 @@ class Project(Base):
 
         # Cast Editor strings to int array
         mapping_editors_array = []
-        for mapping_editor in project_dto.mapping_editors:
-            mapping_editors_array.append(Editors[mapping_editor].value)
-        self.mapping_editors = mapping_editors_array
+        if project_dto.sandbox:
+            mapping_editors_array.append(Editors.ID.value)
+            self.mapping_editors = mapping_editors_array
+        else:
+            for mapping_editor in project_dto.mapping_editors:
+                mapping_editors_array.append(Editors[mapping_editor].value)
+            self.mapping_editors = mapping_editors_array
 
         validation_editors_array = []
-        for validation_editor in project_dto.validation_editors:
-            validation_editors_array.append(Editors[validation_editor].value)
-        self.validation_editors = validation_editors_array
+        if project_dto.sandbox:
+            validation_editors_array.append(Editors.ID.value)
+            self.validation_editors = validation_editors_array
+        else:
+            for validation_editor in project_dto.validation_editors:
+                validation_editors_array.append(Editors[validation_editor].value)
+            self.validation_editors = validation_editors_array
+
         self.country = project_dto.country_tag
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
