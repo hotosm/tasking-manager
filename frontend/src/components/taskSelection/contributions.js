@@ -12,9 +12,12 @@ import {
   MappedIcon,
   ValidatedIcon,
   AsteriskIcon,
+  StarIcon,
   HalfStarIcon,
   FullStarIcon,
+  FullStartIconYellow,
   ChartLineIcon,
+  FullStartIconBlue,
 } from '../svgIcons';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
@@ -22,36 +25,52 @@ import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 import { useProjectContributionsLevelQuery } from '../../api/projects.js';
 
-export const MappingLevelIcon = ({ mappingLevel }) => {
-  if (!mappingLevel) {
+export const MappingLevelIcon = ({ mappingLevel, mappingLevelList }) => {
+  if (!mappingLevel || !mappingLevelList || mappingLevelList.length === 0) {
     return null;
   }
+
+  // Sort the mapping levels by ordering
+  const sortedLevels = [...mappingLevelList].sort((a, b) => a.ordering - b.ordering);
+
+  // Find the current mapping level in the sorted list
   const upperCaseLevelStr = mappingLevel.toUpperCase();
-  let level = null;
+  const currentLevel = sortedLevels.find((level) => level.name.toUpperCase() === upperCaseLevelStr);
 
-  if (upperCaseLevelStr.includes('ADVANCED')) {
-    level = 'ADVANCED';
-  } else if (upperCaseLevelStr.includes('INTERMEDIATE')) {
-    level = 'INTERMEDIATE';
+  if (!currentLevel) {
+    return null;
   }
 
-  if (level) {
-    return (
-      <FormattedMessage {...messages[`mappingLevel${level}`]}>
-        {(msg) => (
-          <span className="blue-grey ttl" title={msg}>
-            {level === 'ADVANCED' ? (
-              <FullStarIcon className="h1 w1 v-mid pb1" />
-            ) : (
-              <HalfStarIcon className="h1 w1 v-mid pb1" />
-            )}
-          </span>
-        )}
-      </FormattedMessage>
-    );
-  }
+  // Determine which icon to show based on position in sorted array
+  const getStarIcon = () => {
+    // Find the index (position) of the current level in the sorted array
+    const currentIndex = sortedLevels.findIndex((level) => level.name === currentLevel.name);
+    const lastIndex = sortedLevels.length - 1;
 
-  return null;
+    // First 3 positions (indices 0, 1, 2)
+    if (currentIndex === 0) {
+      // Empty star for first position
+      return <StarIcon className="h1 w1 v-mid pb1" />;
+    } else if (currentIndex === 1) {
+      // Half star for second position
+      return <HalfStarIcon className="h1 w1 v-mid pb1" />;
+    } else if (currentIndex === 2) {
+      // Full star for third position
+      return <FullStarIcon className="h1 w1 v-mid pb1" />;
+    } else if (currentIndex === lastIndex) {
+      // Yellow star for last position (highest level)
+      return <FullStartIconYellow className="h1 w1 v-mid pb1" />;
+    } else {
+      // Full stars for anything in between
+      return <FullStartIconBlue className="h1 w1 v-mid pb1" />;
+    }
+  };
+
+  return (
+    <span className="blue-grey ttl" title={currentLevel.name}>
+      {getStarIcon()}
+    </span>
+  );
 };
 
 const sortByLits = [
@@ -95,7 +114,7 @@ const SortingHeader = ({ sortBy, setSortBy }: Object) => {
   );
 };
 
-function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
+function Contributor({ user, activeUser, activeStatus, displayTasks, mappingLevelList }: Object) {
   const intl = useIntl();
   const checkActiveUserAndStatus = (status, username) =>
     activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
@@ -123,7 +142,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
             </>
           )}
         </FormattedMessage>
-        {/* <MappingLevelIcon mappingLevel={user.mappingLevel} /> */}
+        <MappingLevelIcon mappingLevel={user.mappingLevel} mappingLevelList={mappingLevelList} />
       </div>
 
       <div className="w-20 fl tr dib truncate">
@@ -279,6 +298,7 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
               activeStatus={activeStatus}
               displayTasks={displayTasks}
               key={k}
+              mappingLevelList={mappingLevelList}
             />
           ))}
         </ReactPlaceholder>
