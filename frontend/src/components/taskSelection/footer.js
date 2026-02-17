@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
@@ -264,6 +265,15 @@ const TaskSelectionFooter = ({
       </div>
     </div>
   );
+};
+
+TaskSelectionFooter.propTypes = {
+  defaultUserEditor: PropTypes.string,
+  project: PropTypes.object,
+  tasks: PropTypes.object,
+  taskAction: PropTypes.string,
+  selectedTasks: PropTypes.array,
+  setSelectedTasks: PropTypes.func,
 };
 
 export default TaskSelectionFooter;
