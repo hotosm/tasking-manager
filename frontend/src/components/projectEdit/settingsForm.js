@@ -21,7 +21,9 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
     setProjectInfo({ ...projectInfo, defaultLocale: event.target.value });
   };
 
-  const editors = getEditors();
+  const editors =
+    projectInfo?.sandbox && projectInfo?.database !== 'OSM' ? getEditors('ID') : getEditors();
+
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
