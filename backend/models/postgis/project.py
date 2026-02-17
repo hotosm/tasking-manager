@@ -630,7 +630,6 @@ class Project(Base):
     async def update(self, project_dto: ProjectDTO, db: Database):
         """Updates project from DTO"""
         self.status = ProjectStatus[project_dto.project_status].value
-        self.priority = ProjectPriority[project_dto.project_priority].value
         locales = [i.locale for i in project_dto.project_info_locales]
         if project_dto.default_locale not in locales:
             new_locale_dto = ProjectInfoDTO()
@@ -651,6 +650,11 @@ class Project(Base):
         self.rapid_power_user = project_dto.rapid_power_user
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
+
+        if self.sandbox:
+            self.priority = ProjectPriority.LOW.value
+        else:
+            self.priority = ProjectPriority[project_dto.project_priority].value
 
         if project_dto.osmcha_filter_id:
             # Support simple extraction of OSMCha filter id from OSMCha URL
