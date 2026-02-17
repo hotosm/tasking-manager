@@ -144,15 +144,26 @@ const TaskSelectionFooter = ({
       project.mappingEditors &&
       (taskAction.startsWith('validate') || taskAction === 'resumeValidation')
     ) {
-      const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
-      setEditorOptions(validationEditorOptions);
+      let validationEditorOptions = null;
+      if (project?.sandbox && project?.database !== 'OSM') {
+        validationEditorOptions = setEditorOptions(getEditors('ID'));
+      } else {
+        validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
+        setEditorOptions(validationEditorOptions);
+      }
+
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
       if (!project.validationEditors.includes(editor)) {
         updateEditor(validationEditorOptions);
       }
     } else {
-      const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
-      setEditorOptions(mappingEditorOptions);
+      let mappingEditorOptions = null;
+      if (project?.sandbox && project?.database !== 'OSM') {
+        mappingEditorOptions = setEditorOptions(getEditors('ID'));
+      } else {
+        mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
+        setEditorOptions(mappingEditorOptions);
+      }
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
       if (!project.mappingEditors.includes(editor)) {
         updateEditor(mappingEditorOptions);
@@ -165,6 +176,8 @@ const TaskSelectionFooter = ({
     project.validationEditors,
     project.customEditor,
     defaultUserEditor,
+    project?.sandbox,
+    project?.database,
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
