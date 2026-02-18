@@ -16,7 +16,7 @@ export function HeaderLine({
   priority,
   showEditLink,
   organisation,
-  showPriority,
+  showPriority = true,
 }: Object) {
   const projectIdLink = (
     <Link to={`/projects/${projectId}`} className="no-underline pointer">
