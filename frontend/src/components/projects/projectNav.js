@@ -152,7 +152,7 @@ const DifficultyDropdown = (props) => {
   );
 };
 
-const DatabaseDropdown = (props) => {
+export const DatabaseDropdown = (props) => {
   return (
     <Dropdown
       onChange={(n) => {
@@ -236,7 +236,6 @@ export const ProjectNav = ({ isExploreProjectsPage, children }) => {
   if (searchParams.view) {
     clearFiltersURL = `${clearFiltersURL}&view=${searchParams.view}`;
   }
-console.log(IS_SANDBOX_ENABLED, '***********');
 
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
