@@ -1,4 +1,6 @@
 import { useContext } from 'react';
+import { Tooltip } from 'react-tooltip';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage } from 'react-intl';
@@ -87,7 +89,11 @@ export const DescriptionForm = ({ languages }) => {
           <FormattedMessage {...messages.priority} />
         </label>
         {projectPriorityOptions.map((option) => (
-          <label className="dib pr5" key={option.value}>
+          <label
+            className="dib pr5"
+            key={option.value}
+            data-tooltip-id={projectInfo.sandbox ? 'priority-disabled-tooltip' : ''}
+          >
             <input
               value={option.value}
               checked={projectInfo.projectPriority === option.value}
@@ -97,12 +103,18 @@ export const DescriptionForm = ({ languages }) => {
                   projectPriority: option.value,
                 })
               }
+              disabled={projectInfo.sandbox}
               type="radio"
               className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
             />
             <FormattedMessage {...messages[`projectPriority${option.label}`]} />
           </label>
         ))}
+        {projectInfo.sandbox && (
+          <Tooltip id="priority-disabled-tooltip" place="top">
+            <FormattedMessage {...messages.disabledSandboxPriority} />
+          </Tooltip>
+        )}
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="name" type="text" preview={false} maxLength={130}>
