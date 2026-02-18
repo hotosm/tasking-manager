@@ -233,14 +233,14 @@ export default defineMessages({
   },
   databse: {
     id: 'management.projects.create.review.database',
-    defaultMessage: 'Database',
+    defaultMessage: 'Where should edits be saved?',
   },
   databaseOSM: {
     id: 'management.projects.create.review.database.osm',
-    defaultMessage: 'OSM',
+    defaultMessage: 'OpenStreetMap (Live)',
   },
   databaseSandbox: {
     id: 'management.projects.create.review.database.sandbox',
-    defaultMessage: 'Sandbox',
+    defaultMessage: 'Training Sandbox (Practice)',
   },
 });
