@@ -304,6 +304,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   author={project.author}
                   projectId={project.projectId}
                   organisation={project.organisationName}
+                  showPriority={!project.sandbox}
                 />
                 <div className="cf pb3">
                   <h3
