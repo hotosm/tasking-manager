@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
@@ -144,15 +145,26 @@ const TaskSelectionFooter = ({
       project.mappingEditors &&
       (taskAction.startsWith('validate') || taskAction === 'resumeValidation')
     ) {
-      const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
-      setEditorOptions(validationEditorOptions);
+      let validationEditorOptions = null;
+      if (project?.sandbox && project?.database !== 'OSM') {
+        validationEditorOptions = setEditorOptions(getEditors('ID'));
+      } else {
+        validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
+        setEditorOptions(validationEditorOptions);
+      }
+
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
       if (!project.validationEditors.includes(editor)) {
         updateEditor(validationEditorOptions);
       }
     } else {
-      const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
-      setEditorOptions(mappingEditorOptions);
+      let mappingEditorOptions = null;
+      if (project?.sandbox && project?.database !== 'OSM') {
+        mappingEditorOptions = setEditorOptions(getEditors('ID'));
+      } else {
+        mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
+        setEditorOptions(mappingEditorOptions);
+      }
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
       if (!project.mappingEditors.includes(editor)) {
         updateEditor(mappingEditorOptions);
@@ -165,6 +177,8 @@ const TaskSelectionFooter = ({
     project.validationEditors,
     project.customEditor,
     defaultUserEditor,
+    project?.sandbox,
+    project?.database,
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
@@ -251,6 +265,15 @@ const TaskSelectionFooter = ({
       </div>
     </div>
   );
+};
+
+TaskSelectionFooter.propTypes = {
+  defaultUserEditor: PropTypes.string,
+  project: PropTypes.object,
+  tasks: PropTypes.object,
+  taskAction: PropTypes.string,
+  selectedTasks: PropTypes.array,
+  setSelectedTasks: PropTypes.func,
 };
 
 export default TaskSelectionFooter;
