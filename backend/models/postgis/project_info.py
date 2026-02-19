@@ -1,5 +1,6 @@
 from typing import List
 
+from backend.models.postgis.utils import sanitize_markdown
 from databases import Database
 from sqlalchemy import (
     Column,
@@ -57,11 +58,11 @@ class ProjectInfo(Base):
         self.project_id = project_id
         self.project_id_str = str(project_id)  # Allows project_id to be searched
 
-        # Note project info not bleached on basis that admins are trusted users and shouldn't be doing anything bad
-        self.short_description = dto.short_description
-        self.description = dto.description
-        self.instructions = dto.instructions
-        self.per_task_instructions = dto.per_task_instructions
+        self.short_description = sanitize_markdown(dto.short_description)
+        self.description = sanitize_markdown(dto.description)
+        self.instructions = sanitize_markdown(dto.instructions)
+        self.per_task_instructions = sanitize_markdown(dto.per_task_instructions)
+
         columns = {
             c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
         }
@@ -75,11 +76,11 @@ class ProjectInfo(Base):
         self.name = dto.name
         self.project_id_str = str(self.project_id)  # Allows project_id to be searched
 
-        # Note project info not bleached on basis that admins are trusted users and shouldn't be doing anything bad
-        self.short_description = dto.short_description
-        self.description = dto.description
-        self.instructions = dto.instructions
-        self.per_task_instructions = dto.per_task_instructions
+        self.short_description = sanitize_markdown(dto.short_description)
+        self.description = sanitize_markdown(dto.description)
+        self.instructions = sanitize_markdown(dto.instructions)
+        self.per_task_instructions = sanitize_markdown(dto.per_task_instructions)
+
         columns = {
             c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs
         }
