@@ -849,4 +849,12 @@ export default defineMessages({
     defaultMessage:
       'You need to be member of one of the mapping teams to be able to map this project.',
   },
+  infoBox: {
+    id: 'project.detail.sandbox',
+    defaultMessage: 'Sandbox(Practice)',
+  },
+  infoBoxTooltip: {
+    id: 'project.detail.sandbox.tooltip',
+    defaultMessage: 'This is a training project. Edits will not be saved to OpenStreetMap.',
+  },
 });
