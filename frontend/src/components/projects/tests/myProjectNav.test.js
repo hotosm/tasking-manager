@@ -81,7 +81,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     expect(screen.getAllByRole('combobox').length).toBe(2);
     expect(screen.queryByRole('button', { name: /contributed/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /favorited/i })).not.toBeInTheDocument();
-    expect(container.querySelectorAll('svg').length).toBe(7);
+    expect(container.querySelectorAll('svg').length).toBe(8);
     expect(screen.getAllByRole('graphics-symbol').length).toBe(2);
   });
 
