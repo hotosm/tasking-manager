@@ -69,8 +69,9 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
           <label className="f5 fw6 db mb2 pt3">
             <FormattedMessage {...messages.databse} />
           </label>
+
           {databaseOptions.map((option) => (
-            <label className="dib pr5" key={option.value}>
+            <label className="dib pr5 mt2" key={option.value}>
               <input
                 value={option.value}
                 checked={
