@@ -10,7 +10,14 @@ import { ProjectStatusBox } from './statusBox';
 import { EditButton } from '../button';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 
-export function HeaderLine({ author, projectId, priority, showEditLink, organisation }: Object) {
+export function HeaderLine({
+  author,
+  projectId,
+  priority,
+  showEditLink,
+  organisation,
+  showPriority = true,
+}: Object) {
   const projectIdLink = (
     <Link to={`/projects/${projectId}`} className="no-underline pointer">
       <span className="blue-light">#{projectId}</span>
@@ -28,7 +35,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
             <FormattedMessage {...messages.editProject} />
           </EditButton>
         )}
-        {priority && (
+        {priority && showPriority && (
           <div className="mw4 dib">
             <PriorityBox priority={priority} extraClasses={'pv2 ph3 ml2 f8'} showIcon />
           </div>
@@ -50,6 +57,7 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
         priority={project.projectPriority}
         organisation={project.organisationName}
         showEditLink={showEditLink && userCanEditProject}
+        showPriority={!project.sandbox}
       />
       <div>
         <h3

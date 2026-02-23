@@ -109,6 +109,7 @@ export function CurrentProjects({ currentProjects }) {
                   projectId={project.id}
                   priority={project.projectPriority}
                   organisation={project.organisationName}
+                  showPriority={!project.sandbox}
                 />
                 <div>
                   <h3
