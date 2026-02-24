@@ -36,9 +36,11 @@ import { SessionAboutToExpire, SessionExpired } from './extendSession';
 import { MappingTypes } from '../mappingTypes';
 import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
 import OtherTabInfo from './OtherTabInfo';
+import { InfoBox } from '../projectDetail/infoBox';
 
 const Editor = lazy(() => import('../editor'));
 const RapidEditor = lazy(() => import('../rapidEditor'));
+const SandboxEditor = lazy(() => import('../sandboxEditor'));
 
 const MINUTES_BEFORE_DIALOG = 5;
 const ADVANCED_MAPPER_ORDER = 3;
@@ -233,12 +235,24 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   </div>
                 }
               >
-                {editor === 'ID' ? (
+                {project.sandbox && project.database !== 'OSM' ? (
+                  editor === 'ID' ? (
+                    <SandboxEditor
+                      setDisable={setDisable}
+                      comment={project.changesetComment}
+                      presets={project.idPresets}
+                      imagery={formatImageryUrlCallback(project.imagery)}
+                      sandboxId={project.database}
+                      gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                    />
+                  ) : (
+                    <div>Rapid sandbox editor is under developemnt</div>
+                  )
+                ) : editor === 'ID' ? (
                   <Editor
                     setDisable={setDisable}
                     comment={project.changesetComment}
                     presets={project.idPresets}
-                    extraIdParams={project.extraIdParams}
                     imagery={formatImageryUrlCallback(project.imagery)}
                     gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
                   />
@@ -288,6 +302,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   author={project.author}
                   projectId={project.projectId}
                   organisation={project.organisationName}
+                  showPriority={!project.sandbox}
                 />
                 <div className="cf pb3">
                   <h3
@@ -307,6 +322,15 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                       </span>
                     ))}
                   </h3>
+                  <div className="mb1">
+                    {project.sandbox && (
+                      <InfoBox
+                        title={<FormattedMessage {...messages.infoBox} />}
+                        tooltip={<FormattedMessage {...messages.infoBoxTooltip} />}
+                      />
+                    )}
+                  </div>
+
                   <div className="db" title={intl.formatMessage(messages.timeToUnlock)}>
                     <DueDateBox dueDate={timer} isTaskStatusPage intervalMili={60000} />
                   </div>

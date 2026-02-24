@@ -12,8 +12,6 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import false
-
 from backend.db import Base
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
@@ -174,26 +172,48 @@ class Message(Base):
         return [contributor["username"] for contributor in contributors]
 
     @staticmethod
-    def get_unread_message_count(user_id: int):
+    async def get_unread_message_count(user_id: int, db: Database) -> int:
         """Get count of unread messages for user"""
-        return Message.query.filter(
-            Message.to_user_id == user_id, Message.read == false()
-        ).count()
+
+        query = """
+            SELECT COUNT(*) AS unread_count
+            FROM messages
+            WHERE to_user_id = :user_id
+              AND read = FALSE
+        """
+
+        row = await db.fetch_one(query, {"user_id": user_id})
+        return row["unread_count"] if row else 0
 
     @staticmethod
-    def get_all_messages(user_id: int) -> MessagesDTO:
+    async def get_all_messages(user_id: int, db: Database) -> MessagesDTO:
         """Gets all messages to the user"""
-        user_messages = Message.query.filter(Message.to_user_id == user_id).all()
 
-        if len(user_messages) == 0:
+        query = """
+            SELECT
+                id as message_id,
+                from_user_id,
+                subject,
+                to_user_id,
+                message,
+                project_id,
+                date
+            FROM messages
+            WHERE to_user_id = :user_id
+            ORDER BY date DESC
+        """
+
+        async with db.transaction():
+            records = await db.fetch_all(query, {"user_id": user_id})
+
+        if not records:
             raise NotFound(
                 sub_code="MESSAGES_NOT_FOUND",
                 user_id=user_id,
             )
 
         messages_dto = MessagesDTO()
-        for message in user_messages:
-            messages_dto.user_messages.append(message.as_dto())
+        messages_dto.user_messages = [MessageDTO(**record) for record in records]
 
         return messages_dto
 

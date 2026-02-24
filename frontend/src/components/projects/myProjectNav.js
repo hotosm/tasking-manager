@@ -10,8 +10,9 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { ProjectFilterSelect } from './filterSelectFields';
 import { OrderBySelector } from './orderBy';
-import { ShowMapToggle, ProjectListViewToggle } from './projectNav';
+import { ShowMapToggle, ProjectListViewToggle, DatabaseDropdown } from './projectNav';
 import { CustomButton } from '../button';
+import { IS_SANDBOX_ENABLED } from '../../config';
 
 export const MyProjectNav = (props) => {
   const userDetails = useSelector((state) => state.auth.userDetails);
@@ -94,9 +95,14 @@ export const MyProjectNav = (props) => {
               }}
             </FormattedMessage>
             {props.management && <ManagerFilters query={fullProjectsQuery} setQuery={setQuery} />}
-            <div className="w-40-ns w-100 fl dib ph1">
+            {props.management && IS_SANDBOX_ENABLED && (
+              <div className="dib fl ph2 w-20-l w-25-m w-50 pv2">
+                <DatabaseDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+              </div>
+            )}
+            <div className={`${props.management ? 'w-20-l' : 'w-40-ns'} w-100 fl dib ph1`}>
               <OrderBySelector
-                className={`fl f5 mt1 mt2-ns`}
+                className={`fl f5 mt1 mt2-ns w-100`}
                 setQuery={setQuery}
                 allQueryParams={fullProjectsQuery}
               />

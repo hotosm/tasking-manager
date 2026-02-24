@@ -1,4 +1,6 @@
 import { useContext } from 'react';
+import { Tooltip } from 'react-tooltip';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage } from 'react-intl';
@@ -6,6 +8,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
+// import { DEFAULT_SANDBOX_DB } from '../../config';
+
+// const SANDBOX_DB = DEFAULT_SANDBOX_DB;
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -23,8 +28,40 @@ export const DescriptionForm = ({ languages }) => {
     { value: 'LOW', label: 'LOW' },
   ];
 
+  // const databaseOptions = [
+  //   { value: 'OSM', label: 'OSM' },
+  //   { value: 'sandbox', label: 'Sandbox' },
+  // ];
+
   return (
     <div className="w-100">
+      {/* <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.databse} />
+        </label>
+        {databaseOptions.map((option) => (
+          <label className="dib pr5" key={option.value}>
+            <input
+              value={option.value}
+              checked={
+                (option.value === 'OSM' && !projectInfo.sandbox) ||
+                (projectInfo.sandbox && option.value !== 'OSM')
+              }
+              onChange={() =>
+                setProjectInfo({
+                  ...projectInfo,
+                  database: option.value === 'OSM' ? 'OSM' : SANDBOX_DB,
+                  sandbox: option.value !== 'OSM',
+                })
+              }
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`database${option.label}`]} />
+          </label>
+        ))}
+      </div> */}
+
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.status} />
@@ -52,7 +89,11 @@ export const DescriptionForm = ({ languages }) => {
           <FormattedMessage {...messages.priority} />
         </label>
         {projectPriorityOptions.map((option) => (
-          <label className="dib pr5" key={option.value}>
+          <label
+            className="dib pr5"
+            key={option.value}
+            data-tooltip-id={projectInfo.sandbox ? 'priority-disabled-tooltip' : ''}
+          >
             <input
               value={option.value}
               checked={projectInfo.projectPriority === option.value}
@@ -62,12 +103,18 @@ export const DescriptionForm = ({ languages }) => {
                   projectPriority: option.value,
                 })
               }
+              disabled={projectInfo.sandbox}
               type="radio"
               className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
             />
             <FormattedMessage {...messages[`projectPriority${option.label}`]} />
           </label>
         ))}
+        {projectInfo.sandbox && (
+          <Tooltip id="priority-disabled-tooltip" place="top">
+            <FormattedMessage {...messages.disabledSandboxPriority} />
+          </Tooltip>
+        )}
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="name" type="text" preview={false} maxLength={130}>

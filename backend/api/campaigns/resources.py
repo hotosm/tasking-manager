@@ -1,6 +1,9 @@
+from backend.exceptions import NotFound
+from backend.models.dtos.message_dto import MessageDTO
 from databases import Database
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
+from loguru import logger
 
 from backend.db import get_db
 from backend.models.dtos.campaign_dto import (
@@ -11,7 +14,7 @@ from backend.models.dtos.campaign_dto import (
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
-from backend.services.users.authentication_service import login_required
+from backend.services.users.authentication_service import admin_only, login_required
 
 router = APIRouter(
     prefix="/campaigns",
@@ -320,3 +323,68 @@ async def create_campaign(
             content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
             status_code=409,
         )
+
+
+@router.post("/{campaign_id}/actions/message-contributors/")
+async def message_campaign_contributors(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    user: AuthUserDTO = Depends(admin_only),
+    db=Depends(get_db),
+    campaign_id: int = None,
+):
+    """
+    Message all contributors of a campaign
+    """
+    try:
+        request_json = await request.json()
+        request_json["from_user_id"] = user.id
+        try:
+            message_dto = MessageDTO(**request_json)
+        except Exception as e:
+            logger.exception("MessageDTO validation failed", exc_info=e)
+            return JSONResponse(
+                content={
+                    "Error": "Request payload did not match validation",
+                    "SubCode": "InvalidData",
+                },
+                status_code=400,
+            )
+        campaign = await CampaignService.get_campaign(campaign_id, db)
+        if not message_dto.message.strip() or not message_dto.subject.strip():
+            raise Exception(
+                {"Error": "Empty message not allowed", "SubCode": "EmptyMessage"}
+            )
+
+    except ValueError:
+        return JSONResponse(
+            content={
+                "Error": "Unauthorised to send message to campaign contributors",
+                "SubCode": "UserNotPermitted",
+            },
+            status_code=403,
+        )
+    except Exception as e:
+        if isinstance(e, NotFound):
+            raise
+        return JSONResponse(
+            content={
+                "Error": "Request payload did not match validation",
+                "SubCode": "InvalidData",
+            },
+            status_code=400,
+        )
+
+    try:
+        background_tasks.add_task(
+            CampaignService.send_message_to_all_campaign_contributors,
+            campaign_id,
+            campaign.name,
+            message_dto,
+            user.id,
+        )
+        return JSONResponse(
+            content={"Success": "Message sent successfully"}, status_code=200
+        )
+    except ValueError as e:
+        return JSONResponse(content={"Error": str(e)}, status_code=400)

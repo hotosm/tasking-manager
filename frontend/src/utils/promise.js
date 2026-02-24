@@ -14,7 +14,7 @@ export function cancelablePromise(promise: Promise<*>) {
   };
 }
 
-export async function handleErrors(response) {
+export async function handleErrors(response, defaultMessage = 'Something went wrong!') {
   if (response.ok) {
     return response;
   }
@@ -27,7 +27,10 @@ export async function handleErrors(response) {
       text = res.SubCode || res.error?.sub_code || response.statusText;
     });
 
-  throw Error(text);
+    console.log(text, 'text******');
+
+
+  throw Error(text || defaultMessage);
 }
 
 export function cancelableFetchJSON(url: string) {

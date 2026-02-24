@@ -94,9 +94,16 @@ export function Footer() {
           </div>
         </div>
 
-        {/* AWS logo */}
-        <div className="flex justify-end-ns">
-          <a href="https://aws.amazon.com/what-is-cloud-computing" target="_blank" rel="noreferrer">
+        {/* Badges (AWS + DPG) */}
+        <div className="flex justify-end-ns items-center gap3">
+          <a href="https://digitalpublicgoods.net/r/hot-tasking-manager" target="_blank" rel="noopener noreferrer">
+            <img
+              src="https://www.digitalpublicgoods.net/_next/image?url=%2Fimg%2FDPG_verified_logo_turqoise_blue_white.png&w=640&q=75"
+              alt="Digital Public Goods Badge"
+              style={{ height: '3rem' }}
+            />
+          </a>
+          <a href="https://aws.amazon.com/what-is-cloud-computing" target="_blank" rel="noreferrer" className="ml3">
             <img
               src="https://d0.awsstatic.com/logos/powered-by-aws-white.png"
               alt="Powered by AWS Cloud Computing"
