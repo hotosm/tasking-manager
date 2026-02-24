@@ -28,7 +28,7 @@ const TaskSelectionFooter = ({
   const { pathname } = useLocation();
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
-  const [editor, setEditor] = useState(defaultUserEditor);
+  const [editor, setEditor] = useState(project?.sandbox ? 'ID' : defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const [lockError, setLockError] = useState(null);
@@ -181,7 +181,7 @@ const TaskSelectionFooter = ({
     project?.database,
   ]);
 
-  const updateEditor = (arr) => setEditor(arr[0].value);
+  const updateEditor = (arr) => setEditor(arr?.[0].value);
   const titleClasses = 'db ttu f7 blue-grey mb2 fw5';
 
   return (
