@@ -763,4 +763,8 @@ export default defineMessages({
     id: 'management.projects.create.review.database.sandbox',
     defaultMessage: 'Sandbox',
   },
+  disabledSandboxPriority: {
+    id: 'projects.formInputs.priority.disabled_sandbox',
+    defaultMessage: 'Priority cannot be changed for sandbox projects.',
+  },
 });

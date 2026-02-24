@@ -14,7 +14,7 @@ export default defineMessages({
   },
   mappingDatabase: {
     id: 'project.nav.mappingDatabase',
-    defaultMessage: 'Database',
+    defaultMessage: 'Mapping Mode',
   },
   allDabase: {
     id: 'project.nav.mappingDatabase.option.all',
@@ -22,11 +22,11 @@ export default defineMessages({
   },
   sandboxDabase: {
     id: 'project.nav.mappingDatabase.option.sandbox',
-    defaultMessage: 'Sandbox',
+    defaultMessage: 'Sandbox (No real OSM edits)',
   },
   OSMDatabase: {
     id: 'project.nav.mappingDatabase.option.OSM',
-    defaultMessage: 'OpenStreetMap',
+    defaultMessage: 'OpenStreetMap (Live)',
   },
 
   moreFilters: {

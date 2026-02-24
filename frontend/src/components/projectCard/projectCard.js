@@ -72,6 +72,7 @@ export function ProjectCard({
   const showBottomButtonsHovered = showBottomButtons === true ? isHovered : false;
   const bottomButtonSpacer = showBottomButtons ? 'pt3 pb4' : 'pv3';
   const bottomButtonMargin = showBottomButtons ? 'project-card-with-btn' : 'project-card';
+  const showPriorityIndicator = !sandbox && !['DRAFT', 'ARCHIVED'].includes(status);
 
   const bottomButtons = (
     <div className="absolute bottom-0 w-100">
@@ -107,7 +108,7 @@ export function ProjectCard({
                 />
               </div>
               <div className="">
-                {['DRAFT', 'ARCHIVED'].includes(status) ? (
+                {!showPriorityIndicator ? (
                   <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
                 ) : (
                   <PriorityBox
