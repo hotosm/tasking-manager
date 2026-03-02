@@ -51,7 +51,6 @@ from backend.services.users.osm_service import OSMService
 from backend.services.mapping_levels import MappingLevelService
 from fastapi import HTTPException
 
-
 settings = Settings()
 
 

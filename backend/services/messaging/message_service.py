@@ -542,8 +542,10 @@ class MessageService:
         team_link = MessageService.get_team_link(team_name, team_id, False)
         user_link = MessageService.get_user_link(from_username)
         message.subject = f"You have been added to team {team_link}"
-        message.message = f"You have been added  to the team {team_link} as {role} by {user_link}.\
+        message.message = (
+            f"You have been added  to the team {team_link} as {role} by {user_link}.\
             Access the {team_link}'s page to view more info about this team."
+        )
         message.date = timestamp()
         message.read = False
         user = await UserService.get_user_by_id(to_user, db)

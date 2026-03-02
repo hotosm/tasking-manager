@@ -755,26 +755,22 @@ class StatsService:
             values["org_id"] = int(org_id)
 
         if org_name:
-            filters.append(
-                """
+            filters.append("""
                 AND organisation_id = (
                     SELECT id FROM organisations WHERE name = :org_name
                 )
-            """
-            )
+            """)
             values["org_name"] = org_name
 
         if campaign:
-            filters.append(
-                """
+            filters.append("""
                 AND id IN (
                     SELECT project_id FROM campaign_projects
                     WHERE campaign_id = (
                         SELECT id FROM campaigns WHERE name = :campaign
                     )
                 )
-            """
-            )
+            """)
             values["campaign"] = campaign
 
         if project_id:
@@ -782,15 +778,13 @@ class StatsService:
             values["project_id"] = project_id
 
         if country:
-            filters.append(
-                """
+            filters.append("""
                 AND EXISTS (
                     SELECT 1
                     FROM unnest(country) AS c
                     WHERE c ILIKE :country
                 )
-            """
-            )
+            """)
             values["country"] = f"%{country}%"
 
         final_query = base_query.format(filters=" ".join(filters))
