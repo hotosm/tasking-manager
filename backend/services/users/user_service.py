@@ -173,25 +173,38 @@ class UserService:
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
         hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
-        url = (
+        oh_some_url = (
             f"{settings.OHSOME_STATS_API_URL}/stats/user?"
             f"hashtag={hashtag}-%2A&userId={user_id}"
             f"&topics={settings.OHSOME_STATS_TOPICS}"
         )
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
-        headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
+
+        oh_some_headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
 
         async with AsyncClient(timeout=10.0) as client:
-            response = await client.get(url, headers=headers)
+            oh_some_response = await client.get(oh_some_url, headers=oh_some_headers)
             changeset_response = await client.get(osm_user_details_url)
 
-        if response.status_code != 200:
-            raise UserServiceError("External-Error in Ohsome API")
+        if oh_some_response.status_code != 200:
+            error_msg = "External-Error in Ohsome API: url=%s status_code=%s response=%s" % (
+                oh_some_url,
+                oh_some_response.status_code,
+                oh_some_response.text[:500]
+            )
+            logger.exception(error_msg)
+            return {}
 
-        topic_data = response.json()
+        topic_data = oh_some_response.json()
 
         if changeset_response.status_code != 200:
-            raise UserServiceError("External-Error in OSM API")
+            error_msg = "External-Error in OSM API: url=%s status_code=%s response=%s" % (
+                osm_user_details_url,
+                changeset_response.status_code,
+                changeset_response.text[:500]
+            )
+            logger.exception(error_msg)
+            return {}
 
         changeset_data = changeset_response.json()
 
