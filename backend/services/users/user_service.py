@@ -187,10 +187,13 @@ class UserService:
             changeset_response = await client.get(osm_user_details_url)
 
         if oh_some_response.status_code != 200:
-            error_msg = "External-Error in Ohsome API: url=%s status_code=%s response=%s" % (
-                oh_some_url,
-                oh_some_response.status_code,
-                oh_some_response.text[:500]
+            error_msg = (
+                "External-Error in Ohsome API: url=%s status_code=%s response=%s"
+                % (
+                    oh_some_url,
+                    oh_some_response.status_code,
+                    oh_some_response.text[:500],
+                )
             )
             logger.exception(error_msg)
             return {}
@@ -198,10 +201,13 @@ class UserService:
         topic_data = oh_some_response.json()
 
         if changeset_response.status_code != 200:
-            error_msg = "External-Error in OSM API: url=%s status_code=%s response=%s" % (
-                osm_user_details_url,
-                changeset_response.status_code,
-                changeset_response.text[:500]
+            error_msg = (
+                "External-Error in OSM API: url=%s status_code=%s response=%s"
+                % (
+                    osm_user_details_url,
+                    changeset_response.status_code,
+                    changeset_response.text[:500],
+                )
             )
             logger.exception(error_msg)
             return {}
