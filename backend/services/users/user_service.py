@@ -5,7 +5,8 @@ from typing import List, Optional
 from databases import Database
 from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
-from httpx import AsyncClient
+import requests
+import asyncio
 
 from backend.config import Settings
 from backend.exceptions import NotFound
@@ -172,6 +173,9 @@ class UserService:
 
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
+        def sync_get(url, headers):
+            return requests.get(url, headers=headers, timeout=10.0)
+
         hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
         oh_some_url = (
             f"{settings.OHSOME_STATS_API_URL}/stats/user?"
@@ -180,11 +184,17 @@ class UserService:
         )
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
 
-        oh_some_headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-
-        async with AsyncClient(timeout=10.0) as client:
-            oh_some_response = await client.get(oh_some_url, headers=oh_some_headers)
-            changeset_response = await client.get(osm_user_details_url)
+        oh_some_headers = {
+            "Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}",
+            "User-Agent": "HOT-Tasking-Manager/5.0",
+        }
+        osm_headers = {
+            "User-Agent": "HOT-Tasking-Manager/5.0",
+        }
+        oh_some_response, changeset_response = await asyncio.gather(
+            asyncio.to_thread(sync_get, oh_some_url, oh_some_headers),
+            asyncio.to_thread(sync_get, osm_user_details_url, osm_headers),
+        )
 
         if oh_some_response.status_code != 200:
             error_msg = (
@@ -217,9 +227,7 @@ class UserService:
         topic_data["result"]["topics"]["changeset"] = {
             "value": changeset_data["user"]["changesets"]["count"],
         }
-
         new_stats = await UserStats.update(user_id, topic_data, db)
-
         return new_stats
 
     @staticmethod
