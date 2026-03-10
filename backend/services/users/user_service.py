@@ -181,11 +181,15 @@ class UserService:
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
 
         oh_some_headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        osm_headers = {"User-Agent": "HOT-TaskingManager-API/2.0 (https://tasking-manager-production-api.hotosm.org)"}
+        osm_headers = {
+            "User-Agent": "HOT-TaskingManager-API/2.0 (https://tasking-manager-production-api.hotosm.org)"
+        }
 
         async with AsyncClient(timeout=10.0) as client:
             oh_some_response = await client.get(oh_some_url, headers=oh_some_headers)
-            changeset_response = await client.get(osm_user_details_url, headers=osm_headers)
+            changeset_response = await client.get(
+                osm_user_details_url, headers=osm_headers
+            )
 
         if oh_some_response.status_code != 200:
             error_msg = (
