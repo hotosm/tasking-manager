@@ -81,7 +81,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       }
 
       if (newFeature.length > 0) {
-        const geom = transformScale(newFeature[0].geometry, 0.5);
+        const geom = newFeature[0].geometry;
         const taskGrid = mapObj.map.getSource('grid')._data;
         if (metadata.tempTaskGrid === null) {
           updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
@@ -179,16 +179,18 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
           </p>
           <div role="group">
             <CustomButton
-              className={`bg-white ph3 pv2 mr2 ba ${splitMode === 'click' ? 'red b--red' : 'blue-dark b--grey-light'
-                }`}
+              className={`bg-white ph3 pv2 mr2 ba ${
+                splitMode === 'click' ? 'red b--red' : 'blue-dark b--grey-light'
+              }`}
               onClick={() => setSplitMode(splitMode === 'click' ? null : 'click')}
               icon={<CircleIcon className="v-mid" style={{ width: '0.5rem' }} />}
             >
               <FormattedMessage {...messages.splitByClicking} />
             </CustomButton>
             <CustomButton
-              className={`bg-white ph3 pv2 mr2 ba ${splitMode === 'draw' ? 'red b--red' : 'blue-dark b--grey-light'
-                }`}
+              className={`bg-white ph3 pv2 mr2 ba ${
+                splitMode === 'draw' ? 'red b--red' : 'blue-dark b--grey-light'
+              }`}
               onClick={splitDrawing}
               icon={<MappedIcon className="h1 w1 v-mid" />}
             >
