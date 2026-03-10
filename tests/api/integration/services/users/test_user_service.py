@@ -12,6 +12,8 @@ from tests.api.helpers.test_helpers import (
     return_canned_user,
     create_mapping_levels,
 )
+from httpx import AsyncClient
+from backend.config import test_settings as settings
 
 
 @pytest.mark.anyio
@@ -143,3 +145,14 @@ class TestUserService:
         user = await UserService.get_user_by_id(canned.id, db=self.db)
         assert user.username == canned.username
         assert user.mapping_level == 1
+
+    async def test_osm_user_endpoint_not_rate_limited(self):
+        url = "https://www.openstreetmap.org/api/0.6/user/490556.json"
+
+        async with AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                url,
+                headers={"User-Agent": settings.OSM_USER_AGENT},
+            )
+        assert response.status_code == 200
+        assert response.status_code != 429

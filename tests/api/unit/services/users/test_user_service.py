@@ -137,24 +137,45 @@ class TestUserService:
         stats = await UserStats.get_for_user(self.test_user.id, self.db)
         assert stats.stats == '{"changeset": 251.0}'
 
-    @patch.object(AsyncClient, "get")
-    async def test_get_and_save_stats_error(self, mock_get):
-        # Arrange
-        mock_response = AsyncMock()
-        mock_response.status_code = 500
-        mock_response.json = MagicMock(
+    async def test_get_and_save_stats_handles_ohsome_500(self):
+        # Arrange: prepare an OHsome error response (500) and a harmless OSM response (200)
+        ohsome_resp = AsyncMock()
+        ohsome_resp.status_code = 500
+        ohsome_resp.text = "Internal Server Error"
+        ohsome_resp.json = MagicMock(
             return_value={
                 "status": 500,
                 "error": "Internal Server Error",
                 "path": "/api/stats/user",
-            },
+            }
         )
-        mock_get.return_value = mock_response
 
-        # Assert
-        with pytest.raises(UserServiceError):
+        changeset_resp = AsyncMock()
+        changeset_resp.status_code = 200
+        changeset_resp.json = MagicMock(
+            return_value={"user": {"changesets": {"count": 0}}}
+        )
+
+        # Patch AsyncClient.get and UserStats.update
+        with (
+            patch.object(AsyncClient, "get", new_callable=AsyncMock) as mock_get,
+            patch.object(UserStats, "update", new_callable=AsyncMock) as mock_update,
+        ):
+            # The function does two gets in sequence: ohsome then changeset
+            mock_get.side_effect = [ohsome_resp, changeset_resp]
+
             # Act
-            await UserService.get_and_save_stats(self.test_user.id, self.db)
+            result = await UserService.get_and_save_stats(self.test_user.id, self.db)
+
+            # Assert
+            # function should return empty dict on OHsome 500
+            assert result == {}
+
+            # Ensure we tried the external calls (at least awaited once)
+            mock_get.assert_awaited()
+
+            # And we must NOT call UserStats.update when an upstream failed
+            mock_update.assert_not_awaited()
 
     @patch.object(AsyncClient, "get")
     async def test_check_and_update_mapper_level_happy_path(self, mock_get):

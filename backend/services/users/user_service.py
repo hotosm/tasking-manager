@@ -7,7 +7,6 @@ from loguru import logger
 from sqlalchemy import and_, desc, distinct, func, insert, select
 from httpx import AsyncClient
 
-from backend.config import Settings
 from backend.exceptions import NotFound
 from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -50,9 +49,7 @@ from backend.services.messaging.template_service import (
 from backend.services.users.osm_service import OSMService
 from backend.services.mapping_levels import MappingLevelService
 from fastapi import HTTPException
-
-
-settings = Settings()
+from backend.config import settings
 
 
 class UserServiceError(Exception):
@@ -181,9 +178,7 @@ class UserService:
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
 
         oh_some_headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
-        osm_headers = {
-            "User-Agent": "HOT-TaskingManager-API/2.0 (https://tasking-manager-production-api.hotosm.org)"
-        }
+        osm_headers = {"User-Agent": settings.OSM_USER_AGENT}
 
         async with AsyncClient(timeout=10.0) as client:
             oh_some_response = await client.get(oh_some_url, headers=oh_some_headers)
@@ -192,6 +187,7 @@ class UserService:
             )
 
         if oh_some_response.status_code != 200:
+
             error_msg = (
                 "External-Error in Ohsome API: url=%s status_code=%s response=%s"
                 % (
