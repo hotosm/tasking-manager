@@ -280,6 +280,10 @@ class Settings(BaseSettings):
         "OHSOME_STATS_API_URL", "https://stats.now.ohsome.org/api"
     )
     OHSOME_STATS_TOPICS: str = os.getenv("OHSOME_STATS_TOPICS", None)
+    OSM_USER_AGENT: str = os.getenv(
+        "OSM_USER_AGENT",
+        "HOT-TaskingManager-API/5.0 (https://tasking-manager-production-api.hotosm.org)",
+    )
 
 
 class TestEnvironmentConfig(Settings):
@@ -297,6 +301,10 @@ class TestEnvironmentConfig(Settings):
     )
 
     LOG_LEVEL: str = "DEBUG"
+    OSM_USER_AGENT: str = os.getenv(
+        "OSM_USER_AGENT",
+        "HOT-TaskingManager-API/5.0 (https://tasking-manager-production-api.hotosm.org)",
+    )
 
 
 @lru_cache
