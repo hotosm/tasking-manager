@@ -20,8 +20,6 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Product Roadmap
 
-[Discussion](https://github.com/hotosm/tasking-manager/discussions/6688) | [Roadmap Kanban](https://github.com/orgs/hotosm/projects/41/views/1)
-
 
 ✅ Completed: Finished, available on [production instance](https://tasks.hotosm.org)
 
@@ -34,23 +32,45 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 Status | Feature | Release
 -------|---------|---------
 ✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
+
+
+### 2024
+
+Status | Feature | Release
+-------|---------|---------
 ✅ | Downloadable OSM Exports: Export data directly from each project. | Available in[ v4.7.0](https://github.com/hotosm/tasking-manager/releases/tag/v4.7.0).
 ✅ | Rapid Editor Upgrade: Enhanced mapping experience with the latest rapid editor updates.| Last updated in [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
 ✅ | Public-Facing Partner Pages: Create and display dedicated pages for partners running remote mapathons.| [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
 ✅ | Downloadable Project List View: Allow users to explore projects via a downloadable list. [View issue](https://github.com/hotosm/tasking-manager/issues/3394).| [v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
 ✅ | MapSwipe Stats Integration: Display MapSwipe statistics on Partner Pages.|[v4.8.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.8.2)
-✅ | iD Editor Latest Features: Integrate the newest features of the iD editor.|[v5.0.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.5)
+
+
+### 2025
+
+Status | Feature | Release
+-------|---------|---------
 ✅ | FastAPI Migration: Improve performance and scalability of Tasking Manager to handle large scale validation and mapping efforts.| [v5 launch 🎉](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.0)
+✅ | iD Editor Latest Features: Integrate the newest features of the iD editor.|[v5.0.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.0.5)
 ✅ | Super Mapper: Redefine Mapper Level Milestones | [v5.2.0](https://github.com/hotosm/tasking-manager/releases/tag/v5.2.0)
 ✅ | Ability to unlink projects and subsequent team deletion | [v5.3.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.3.1)
 ✅ | User account deletion (self-service + admin initiated) | [v5.4.0](https://github.com/hotosm/tasking-manager/releases/tag/v5.4.0)
+
+### 2026
+
+Status | Feature | Release
+-------|---------|---------
 ✅ | Markdown support in Project Q&A | [v5.4.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.4.1)
 ✅ | Improved panel arrangement in task contribution section | [v5.4.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.4.1)
 ✅ | OSM Practice Projects (sandbox): Enable users to engage in OSM practice projects within Tasking Manager workflow. |[v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Complete migration to MapLibre libraries | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | [Digital Public Goods](https://www.digitalpublicgoods.net/registry) badge display | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Filter by imagery type using API | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
-✅ | backend support for messaging all Campaign Contributors | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
+✅ | Backend support for messaging all Campaign Contributors | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
+🔄 | Allow data downloads for sandbox projects through frontend |
+🔄 | Custom data reference layer for sandbox projects |
+🔄 | Choropleth layer to highlight most invalidated tasks |
+🔄 | Dependency & Framework health check |
+🔄 | Additional imagery filter under explore projects section |
 📅 | Expanding Project Types beyond basemap features
 📅 | AI Integration: task assignment, difficulty estimation, and validation
 📅 | External tools Integration: MapSwipe, uMap, Maproulette
