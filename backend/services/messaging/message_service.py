@@ -206,12 +206,16 @@ class MessageService:
                 and obj.message_type == MessageType.TASK_COMMENT_NOTIFICATION.value
             ):
                 continue
-
-            if user.tasks_notifications is False and obj.message_type in (
-                MessageType.VALIDATION_NOTIFICATION.value,
-                MessageType.INVALIDATION_NOTIFICATION.value,
+            if (
+                user.task_validation_notification is False
+                and obj.message_type == MessageType.VALIDATION_NOTIFICATION.value
             ):
-                messages_objs.append(obj)
+                continue
+
+            if (
+                user.task_invalidation_notification is False
+                and obj.message_type == MessageType.INVALIDATION_NOTIFICATION.value
+            ):
                 continue
             # If the notification is enabled, send an email
             messages_objs.append(obj)
