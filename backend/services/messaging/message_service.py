@@ -727,6 +727,38 @@ class MessageService:
         await SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
+    async def get_all_tasks_mappers(
+        project_id: int, task_id: int, db: Database
+    ) -> List[str]:
+        query = """
+            SELECT DISTINCT u.username
+            FROM task_history th
+            JOIN users u ON th.user_id = u.id
+            WHERE th.project_id = :project_id
+            AND th.task_id = :task_id
+            AND th.action = 'STATE_CHANGE'
+            AND th.action_text = 'MAPPED'
+        """
+        rows = await db.fetch_all(
+            query,
+            {"project_id": project_id, "task_id": task_id},
+        )
+        return [r["username"] for r in rows]
+
+    @staticmethod
+    async def get_all_project_mappers(project_id: int, db: Database) -> List[str]:
+        query = """
+            SELECT DISTINCT u.username
+            FROM task_history th
+            JOIN users u ON th.user_id = u.id
+            WHERE th.project_id = :project_id
+            AND th.action = 'STATE_CHANGE'
+            AND th.action_text = 'MAPPED'
+        """
+        rows = await db.fetch_all(query, {"project_id": project_id})
+        return [r["username"] for r in rows]
+
+    @staticmethod
     async def _parse_message_for_bulk_mentions(
         message: str, project_id: int, task_id: int = None, db: Database = None
     ) -> List[str]:
@@ -796,6 +828,16 @@ class MessageService:
                 project_id, task_id, db
             )
             usernames.extend(contributors)
+
+        if "mappers" in parsed:
+            if task_id:
+                mappers = await MessageService.get_all_tasks_mappers(
+                    project_id, task_id, db
+                )
+            else:
+                mappers = await MessageService.get_all_project_mappers(project_id, db)
+            usernames.extend(mappers)
+
         return list(set(usernames))
 
     @staticmethod
