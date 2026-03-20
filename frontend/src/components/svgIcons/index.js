@@ -23,13 +23,7 @@ export { ExitIcon } from './exit';
 export { EyeIcon } from './eye';
 export { HomeIcon } from './home';
 export { LockIcon } from './lock';
-export {
-  StarIcon,
-  FullStarIcon,
-  HalfStarIcon,
-  FullStartIconYellow,
-  FullStartIconBlue,
-} from './star';
+export { StarIcon, FullStarIcon, HalfStarIcon, FullStarIconYellow, FullStarIconBlue } from './star';
 export { GripIcon } from './grip';
 export { GithubIcon } from './github';
 export { RightIcon } from './right';

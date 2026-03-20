@@ -41,7 +41,7 @@ export class HalfStarIcon extends PureComponent {
   }
 }
 
-export class FullStartIconYellow extends PureComponent {
+export class FullStarIconYellow extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 576 512" {...this.props}>
@@ -53,7 +53,7 @@ export class FullStartIconYellow extends PureComponent {
     );
   }
 }
-export class FullStartIconBlue extends PureComponent {
+export class FullStarIconBlue extends PureComponent {
   render() {
     return (
       <svg viewBox="0 0 576 512" {...this.props}>

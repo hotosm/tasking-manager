@@ -15,9 +15,9 @@ import {
   StarIcon,
   HalfStarIcon,
   FullStarIcon,
-  FullStartIconYellow,
+  FullStarIconYellow,
   ChartLineIcon,
-  FullStartIconBlue,
+  FullStarIconBlue,
 } from '../svgIcons';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
@@ -59,10 +59,10 @@ export const MappingLevelIcon = ({ mappingLevel, mappingLevelList }) => {
       return <FullStarIcon className="h1 w1 v-mid pb1" />;
     } else if (currentIndex === lastIndex) {
       // Yellow star for last position (highest level)
-      return <FullStartIconYellow className="h1 w1 v-mid pb1" />;
+      return <FullStarIconYellow className="h1 w1 v-mid pb1" />;
     } else {
       // Full stars for anything in between
-      return <FullStartIconBlue className="h1 w1 v-mid pb1" />;
+      return <FullStarIconBlue className="h1 w1 v-mid pb1" />;
     }
   };
 
