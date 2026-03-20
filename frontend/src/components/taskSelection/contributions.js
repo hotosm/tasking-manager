@@ -25,7 +25,7 @@ import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 import { useProjectContributionsLevelQuery } from '../../api/projects.js';
 
-export const MappingLevelIcon = ({ mappingLevel, mappingLevelList }) => {
+export const MappingLevelIcon = ({ mappingLevel, mappingLevelList }: Object) => {
   if (!mappingLevel || !mappingLevelList || mappingLevelList.length === 0) {
     return null;
   }
@@ -189,7 +189,14 @@ function Contributor({ user, activeUser, activeStatus, displayTasks, mappingLeve
   );
 }
 
-const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus, selectTask }) => {
+const Contributions = ({
+  project,
+  tasks,
+  contribsData,
+  activeUser,
+  activeStatus,
+  selectTask,
+}: Object) => {
   const intl = useIntl();
   const { data: mappingLevelList } = useProjectContributionsLevelQuery();
 
