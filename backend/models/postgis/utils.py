@@ -1,9 +1,11 @@
 import datetime
 import json
-import re
 from geoalchemy2 import Geometry
 from geoalchemy2.functions import GenericFunction
 from loguru import logger
+import re
+from markdown import markdown
+import bleach
 
 
 class NotFound(Exception):
@@ -154,6 +156,100 @@ def parse_duration(time_str):
         name: float(param) for name, param in parts.groupdict().items() if param
     }
     return datetime.timedelta(**time_params)
+
+
+def sanitize_markdown(text: str | None) -> str | None:
+    """Convert markdown to sanitized HTML. Returns None for empty input."""
+    if not text:
+        return None
+
+    # Extended allowed tags to support markdown features
+    allowed_tags = [
+        "a",
+        "abbr",
+        "acronym",
+        "b",
+        "blockquote",
+        "br",
+        "code",
+        "em",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "img",
+        "i",
+        "li",
+        "ol",
+        "p",
+        "pre",
+        "strong",
+        "ul",
+        "div",
+        "table",
+        "thead",
+        "tbody",
+        "tfoot",
+        "tr",
+        "td",
+        "th",
+        "iframe",
+        "input",
+        "hr",
+        "del",
+        "s",
+        "strike",
+        "span",
+        "caption",
+        "col",
+        "colgroup",
+    ]
+
+    allowed_attributes = {
+        "a": ["href", "rel", "target", "title"],
+        "img": ["src", "alt", "title", "width", "height"],
+        "iframe": [
+            "width",
+            "height",
+            "src",
+            "title",
+            "frameborder",
+            "allow",
+            "referrerpolicy",
+            "allowfullscreen",
+        ],
+        "input": ["type", "checked", "disabled"],
+        "th": ["align", "scope"],
+        "td": ["align", "colspan", "rowspan"],
+        "table": ["class"],
+        "code": ["class"],
+        "pre": ["class"],
+    }
+
+    # Support markdown ~~strike~~ -> <del>
+    text = re.sub(r"~~(.*?)~~", r"<del>\1</del>", text)
+
+    html_content = markdown(
+        text,
+        extensions=[
+            "markdown.extensions.tables",
+            "markdown.extensions.fenced_code",
+            "markdown.extensions.nl2br",
+            "markdown.extensions.sane_lists",
+            "markdown.extensions.codehilite",
+        ],
+    )
+
+    clean_message = bleach.clean(
+        html_content, tags=allowed_tags, attributes=allowed_attributes, strip=False
+    )
+
+    # Turn URLs into links and parse emails
+    clean_message = bleach.linkify(clean_message, parse_email=True)
+
+    return clean_message
 
 
 class DateTimeEncoder(json.JSONEncoder):
