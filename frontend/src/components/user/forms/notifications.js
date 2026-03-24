@@ -19,9 +19,15 @@ export function UserNotificationsForm(props) {
       default: false,
     },
     {
-      labelId: 'taskUpdates',
-      descriptionId: 'taskUpdatesDescription',
-      fieldName: 'tasksNotifications',
+      labelId: 'taskValidationUpdates',
+      descriptionId: 'taskValidationUpdatesDescription',
+      fieldName: 'taskValidationNotification',
+      default: true,
+    },
+    {
+      labelId: 'taskInvalidationUpdates',
+      descriptionId: 'taskInvalidationUpdatesDescription',
+      fieldName: 'taskInvalidationNotification',
       default: true,
     },
     {
