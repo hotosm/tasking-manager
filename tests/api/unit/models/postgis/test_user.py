@@ -31,6 +31,8 @@ class TestUser:
             "projects_comments_notifications": False,
             "projects_notifications": True,
             "tasks_notifications": True,
+            "task_validation_notification": True,
+            "task_invalidation_notification": True,
             "tasks_comments_notifications": False,
             "teams_announcement_notifications": True,
         }
@@ -42,6 +44,7 @@ class TestUser:
             is_email_verified, is_expert, default_editor,
             mentions_notifications, projects_comments_notifications,
             projects_notifications, tasks_notifications,
+            task_validation_notification, task_invalidation_notification,
             tasks_comments_notifications, teams_announcement_notifications
         )
         VALUES (
@@ -50,6 +53,7 @@ class TestUser:
             :is_email_verified, :is_expert, :default_editor,
             :mentions_notifications, :projects_comments_notifications,
             :projects_notifications, :tasks_notifications,
+            :task_validation_notification, :task_invalidation_notification,
             :tasks_comments_notifications, :teams_announcement_notifications
         )
         ON CONFLICT (id) DO NOTHING

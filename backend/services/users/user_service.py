@@ -251,6 +251,8 @@ class UserService:
             "projects_comments_notifications": False,
             "projects_notifications": True,
             "tasks_notifications": True,
+            "task_validation_notification": True,
+            "task_invalidation_notification": True,
             "tasks_comments_notifications": False,
             "teams_announcement_notifications": True,
             "date_registered": datetime.datetime.utcnow(),
