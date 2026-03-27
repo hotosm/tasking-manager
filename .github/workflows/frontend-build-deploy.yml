@@ -62,7 +62,7 @@ jobs:
           yarn build
 
       - name: Upload Builds Artifacts
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: tm-fe-${{ github.sha }}
           path: ./frontend/build
@@ -87,7 +87,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: tm-fe-${{ github.sha }}
           path: ./build
