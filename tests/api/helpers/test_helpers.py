@@ -254,6 +254,8 @@ async def return_canned_user(db, username=TEST_USERNAME, id=TEST_USER_ID) -> Use
     test_user.projects_comments_notifications = False
     test_user.projects_notifications = True
     test_user.tasks_notifications = True
+    test_user.task_validation_notification = True
+    test_user.task_invalidation_notification = True
     test_user.tasks_comments_notifications = False
     test_user.teams_announcement_notifications = True
     test_user.date_registered = datetime.utcnow()
@@ -281,6 +283,7 @@ async def create_canned_user(db, test_user=None):
             id, username, role, mapping_level, tasks_mapped, tasks_validated, tasks_invalidated,
             email_address, is_email_verified, is_expert, default_editor, mentions_notifications,
             projects_comments_notifications, projects_notifications, tasks_notifications,
+            task_validation_notification, task_invalidation_notification,
             tasks_comments_notifications, teams_announcement_notifications, date_registered,
             last_validation_date
         )
@@ -288,6 +291,7 @@ async def create_canned_user(db, test_user=None):
             :id, :username, :role, :mapping_level, :tasks_mapped, :tasks_validated, :tasks_invalidated,
             :email_address, :is_email_verified, :is_expert, :default_editor, :mentions_notifications,
             :projects_comments_notifications, :projects_notifications, :tasks_notifications,
+            :task_validation_notification, :task_invalidation_notification,
             :tasks_comments_notifications, :teams_announcement_notifications, :date_registered,
             :last_validation_date
         )
@@ -308,6 +312,8 @@ async def create_canned_user(db, test_user=None):
             "projects_comments_notifications": test_user.projects_comments_notifications,
             "projects_notifications": test_user.projects_notifications,
             "tasks_notifications": test_user.tasks_notifications,
+            "task_validation_notification": test_user.task_validation_notification,
+            "task_invalidation_notification": test_user.task_invalidation_notification,
             "tasks_comments_notifications": test_user.tasks_comments_notifications,
             "teams_announcement_notifications": test_user.teams_announcement_notifications,
             "date_registered": test_user.date_registered,

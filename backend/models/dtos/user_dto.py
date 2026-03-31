@@ -54,6 +54,10 @@ class UserDTO(BaseModel):
     )
     projects_notifications: bool = Field(None, alias="projectsNotifications")
     tasks_notifications: bool = Field(None, alias="tasksNotifications")
+    task_validation_notification: bool = Field(None, alias="taskValidationNotification")
+    task_invalidation_notification: bool = Field(
+        None, alias="taskInvalidationNotification"
+    )
     tasks_comments_notifications: bool = Field(None, alias="taskCommentsNotifications")
     teams_announcement_notifications: bool = Field(
         None, alias="teamsAnnouncementNotifications"
