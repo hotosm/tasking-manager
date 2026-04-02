@@ -443,6 +443,7 @@ ProjectDetail.propTypes = {
     mappingPermission: PropTypes.string,
     validationPermission: PropTypes.string,
     teams: PropTypes.arrayOf(PropTypes.object),
+    sandbox: PropTypes.bool,
   }).isRequired,
   className: PropTypes.string,
 };
