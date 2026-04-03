@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useQueryParam, BooleanParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
+import Select from 'react-select';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -13,6 +14,7 @@ import { ProjectFilterSelect } from './filterSelectFields';
 import { PartnersFilterSelect } from './partnersFilterSelect';
 import { CommaArrayParam } from '../../utils/CommaArrayParam';
 import { formatFilterCountriesData } from '../../utils/countries';
+import { IMAGERY_OPTIONS } from '../../hooks/UseImageryOption';
 
 export const MoreFiltersForm = (props) => {
   /* one useQueryParams for the main form */
@@ -27,6 +29,7 @@ export const MoreFiltersForm = (props) => {
     organisation: orgInQuery,
     location: countryInQuery,
     interests: interestInQuery,
+    imagery: imageryInQuery,
   } = formQuery;
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [orgAPIState] = useTagAPI([], 'organisations');
@@ -130,6 +133,25 @@ export const MoreFiltersForm = (props) => {
           setQueryParams={setFormQuery}
         />
       )}
+
+      <fieldset id="imageryFilter" className={`${fieldsetStyle} mb3`}>
+        <legend className={titleStyle}>
+          <FormattedMessage {...messages.imagery} />
+        </legend>
+        <Select
+          classNamePrefix="react-select"
+          isClearable={true}
+          options={IMAGERY_OPTIONS}
+          value={IMAGERY_OPTIONS.find((o) => o.value === imageryInQuery) || null}
+          placeholder={<FormattedMessage {...messages.selectImagery} />}
+          onChange={(option) =>
+            setFormQuery(
+              { ...formQuery, page: undefined, imagery: option ? option.value : undefined },
+              'pushIn',
+            )
+          }
+        />
+      </fieldset>
 
       <div className="tr w-100 mt3 pb3 ph2">
         <Link to="/explore">
