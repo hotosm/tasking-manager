@@ -9,6 +9,7 @@ from backend.config import settings
 # Set up Jinja2 environment
 env = Environment(
     loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")),
+    autoescape=True,
 )
 
 
