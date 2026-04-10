@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -11,7 +12,7 @@ import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 import { TextField } from '../formInputs';
 
-export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }: Object) {
+export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }) {
   const [query, setQuery] = useState('');
 
   const onSearchInputChange = (e) => setQuery(e.target.value);
@@ -57,7 +58,7 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
   );
 }
 
-export function CampaignCard({ campaign }: Object) {
+export function CampaignCard({ campaign }) {
   return (
     <Link to={`${campaign.id}/`} className="w-50-ns w-100 fl pr3">
       <div className="cf bg-white blue-dark br1 mv2 pv4 ph3 ba br1 b--grey-light shadow-hover">
@@ -84,7 +85,14 @@ export function CampaignInformation(props) {
         <label className={labelClasses} htmlFor="name">
           <FormattedMessage {...messages.name} />
         </label>
-        <Field id="name" name="name" component="input" type="text" className={fieldClasses} required />
+        <Field
+          id="name"
+          name="name"
+          component="input"
+          type="text"
+          className={fieldClasses}
+          required
+        />
       </div>
     </>
   );
@@ -153,3 +161,14 @@ export function CampaignForm({
     ></Form>
   );
 }
+
+CampaignForm.propTypes = {
+  userDetails: PropTypes.object,
+  campaign: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+  }),
+  updateCampaignAsync: PropTypes.object,
+  disabled: PropTypes.bool,
+  disableErrorAlert: PropTypes.func,
+};

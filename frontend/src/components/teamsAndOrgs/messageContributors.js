@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import toast from 'react-hot-toast';
+import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -104,3 +105,6 @@ export function MessageContributors({ campaignId }) {
     </>
   );
 }
+MessageContributors.propTypes = {
+  campaignId: PropTypes.number,
+};
