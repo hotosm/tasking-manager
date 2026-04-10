@@ -81,10 +81,10 @@ export function CampaignInformation(props) {
   return (
     <>
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="name">
           <FormattedMessage {...messages.name} />
         </label>
-        <Field name="name" component="input" type="text" className={fieldClasses} required />
+        <Field id="name" name="name" component="input" type="text" className={fieldClasses} required />
       </div>
     </>
   );
@@ -99,6 +99,7 @@ export function CampaignForm({
 }) {
   return (
     <Form
+      key={campaign.id || 'new'}
       onSubmit={(values) => updateCampaignAsync.execute(values)}
       initialValues={campaign}
       render={({
