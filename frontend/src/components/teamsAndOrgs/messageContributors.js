@@ -75,7 +75,7 @@ export function MessageContributors({ campaignId }) {
             <CommentInputField comment={message} setComment={setMessage} isShowTabNavs />
           </Suspense>
         </div>
-        {!message && <MessageStatus status={status} />}
+        {!message && status && <MessageStatus status={status} />}
       </div>
       {(message || subject) && (
         <div className="cf pt0">
@@ -94,7 +94,7 @@ export function MessageContributors({ campaignId }) {
           <div className="w-30-l w-50 fr dib">
             <Button
               className="white bg-red h3 w-100"
-              onClick={() => sendMessage()}
+              onClick={sendMessage}
               disabled={!message || !subject}
             >
               <FormattedMessage {...messages.send} />

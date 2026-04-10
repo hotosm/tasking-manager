@@ -58,6 +58,19 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
   );
 }
 
+CampaignsManagement.propTypes = {
+  campaigns: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
+  userDetails: PropTypes.shape({
+    role: PropTypes.string,
+  }),
+  isCampaignsFetched: PropTypes.bool,
+};
+
 export function CampaignCard({ campaign }) {
   return (
     <Link to={`${campaign.id}/`} className="w-50-ns w-100 fl pr3">
@@ -74,6 +87,13 @@ export function CampaignCard({ campaign }) {
     </Link>
   );
 }
+
+CampaignCard.propTypes = {
+  campaign: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+  }),
+};
 
 export function CampaignInformation(props) {
   const labelClasses = 'db pt3 pb2';
@@ -98,13 +118,9 @@ export function CampaignInformation(props) {
   );
 }
 
-export function CampaignForm({
-  userDetails,
-  campaign,
-  updateCampaignAsync,
-  disabled,
-  disableErrorAlert,
-}) {
+CampaignInformation.propTypes = {};
+
+export function CampaignForm({ campaign, updateCampaignAsync, disabled, disableErrorAlert }) {
   return (
     <Form
       key={campaign.id || 'new'}
@@ -117,7 +133,6 @@ export function CampaignForm({
         dirtySinceLastSubmit,
         form,
         submitting,
-        values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         if (dirtySinceLastSubmit) {
@@ -163,7 +178,6 @@ export function CampaignForm({
 }
 
 CampaignForm.propTypes = {
-  userDetails: PropTypes.object,
   campaign: PropTypes.shape({
     id: PropTypes.number,
     name: PropTypes.string,
