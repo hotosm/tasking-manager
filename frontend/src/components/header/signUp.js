@@ -88,9 +88,14 @@ const SignupForm = ({ data, setData, step, setStep }) => {
   };
 
   const checkFields = () => {
+    if (data.email.length > 254) {
+      setStep({ ...step, errMessage: <FormattedMessage {...messages.invalidEmail} /> });
+      return;
+    }
+
     const re =
       // eslint-disable-next-line no-useless-escape
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      /^(?=.{1,254}$)(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (re.test(data.email) === false) {
       setStep({ ...step, errMessage: <FormattedMessage {...messages.invalidEmail} /> });
       return;

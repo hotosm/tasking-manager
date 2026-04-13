@@ -1,5 +1,5 @@
 import datetime
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from databases import Database
 from fastapi import BackgroundTasks

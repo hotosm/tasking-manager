@@ -1,5 +1,5 @@
 import datetime
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from unittest.mock import patch
 
 from backend.services.project_service import ProjectService

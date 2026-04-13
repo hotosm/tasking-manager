@@ -256,7 +256,7 @@ async def release(db: Database = Depends(get_db)):
     """
     response = requests.get(
         "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
-    )
+    ,timeout=30).json()
     try:
         tag_name = response.json()["tag_name"]
         published_date = response.json()["published_at"]

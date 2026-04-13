@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 import logging
 import os
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from typing import Tuple
 
 from backend.exceptions import NotFound
