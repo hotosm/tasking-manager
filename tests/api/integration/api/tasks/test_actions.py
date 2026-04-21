@@ -655,6 +655,9 @@ class TestTasksActionsMappingUnlockAPI:
             task_status=TaskStatus.LOCKED_FOR_MAPPING.value,
             locked_by=self.test_user.id,
         )
+        await Task.lock_task_for_mapping(
+            1, self.test_project_id, self.test_user.id, self.db
+        )
         resp = await client.post(
             self.url,
             headers={"Authorization": f"Token {self.user_session_token}"},
@@ -673,10 +676,13 @@ class TestTasksActionsMappingUnlockAPI:
     async def test_mapping_unlock_returns_200_on_success_with_comment(
         self, client: AsyncClient
     ):
+
         await self._update_task(
             1,
-            task_status=TaskStatus.LOCKED_FOR_MAPPING.value,
-            locked_by=self.test_user.id,
+            task_status=TaskStatus.READY.value,
+        )
+        await Task.lock_task_for_mapping(
+            1, self.test_project_id, self.test_user.id, self.db
         )
         resp = await client.post(
             self.url,
@@ -778,8 +784,11 @@ class TestTasksActionsMappingStopAPI:
     async def test_mapping_stop_returns_200_on_success(self, client: AsyncClient):
         await self._update_task(
             1,
-            task_status=TaskStatus.LOCKED_FOR_MAPPING.value,
+            task_status=TaskStatus.READY.value,
             locked_by=self.test_user.id,
+        )
+        await Task.lock_task_for_mapping(
+            1, self.test_project_id, self.test_user.id, self.db
         )
         resp = await client.post(
             self.url,
@@ -797,8 +806,11 @@ class TestTasksActionsMappingStopAPI:
     ):
         await self._update_task(
             1,
-            task_status=TaskStatus.LOCKED_FOR_MAPPING.value,
+            task_status=TaskStatus.READY.value,
             locked_by=self.test_user.id,
+        )
+        await Task.lock_task_for_mapping(
+            1, self.test_project_id, self.test_user.id, self.db
         )
         resp = await client.post(
             self.url,
@@ -883,9 +895,7 @@ class TestTasksActionsValidationLockAPI:
         self, client: AsyncClient
     ):
         # set task 1 to READY (not allowed)
-        await self._update_task(
-            1, task_status=TaskStatus.READY.value, locked_by=self.test_user.id
-        )
+        await self._update_task(1, task_status=TaskStatus.READY.value)
         resp = await client.post(
             self.url,
             headers={"Authorization": f"Token {self.user_session_token}"},
@@ -1021,6 +1031,14 @@ class TestTasksActionsValidationUnlockAPI:
         self.user_session_token = _encode_token(raw)
         self.url = f"/api/v2/projects/{self.test_project_id}/tasks/actions/unlock-after-validation/"
 
+    async def _update_task(self, task_id, **fields):
+        set_clause = ", ".join(f"{k} = :{k}" for k in fields)
+        params = {**fields, "id": int(task_id), "proj": int(self.test_project_id)}
+        await self.db.execute(
+            f"UPDATE tasks SET {set_clause} WHERE id = :id AND project_id = :proj",
+            params,
+        )
+
     async def _lock_for_validation(self, task_id, user_id, mapped_by=None):
         params = {
             "task_status": TaskStatus.LOCKED_FOR_VALIDATION.value,
@@ -1148,14 +1166,21 @@ class TestTasksActionsValidationUnlockAPI:
     async def test_validation_unlock_returns_200_if_validated(
         self, client: AsyncClient
     ):
-        # lock two tasks for validation with mapped_by set (validator)
-        await self._lock_for_validation(
-            1, self.test_user.id, mapped_by=self.test_user.id
-        )
-        await self._lock_for_validation(
-            2, self.test_user.id, mapped_by=self.test_user.id
+        # set task 1 mapped_by test_user
+
+        await self._update_task(
+            1, task_status=TaskStatus.MAPPED.value, mapped_by=self.test_user.id
         )
 
+        await self._update_task(
+            2, task_status=TaskStatus.MAPPED.value, mapped_by=self.test_user.id
+        )
+        await Task.lock_task_for_validating(
+            1, self.test_project_id, self.test_user.id, self.db
+        )
+        await Task.lock_task_for_validating(
+            2, self.test_project_id, self.test_user.id, self.db
+        )
         resp = await client.post(
             self.url,
             headers={"Authorization": f"Token {self.user_session_token}"},
@@ -1182,8 +1207,12 @@ class TestTasksActionsValidationUnlockAPI:
     async def test_validation_unlock_returns_200_if_validated_with_comment(
         self, client: AsyncClient
     ):
-        await self._lock_for_validation(
-            1, self.test_user.id, mapped_by=self.test_user.id
+
+        await self._update_task(
+            1, task_status=TaskStatus.MAPPED.value, mapped_by=self.test_user.id
+        )
+        await Task.lock_task_for_validating(
+            1, self.test_project_id, self.test_user.id, self.db
         )
         resp = await client.post(
             self.url,
@@ -1218,6 +1247,14 @@ class TestTasksActionsValidationStopAPI:
         self.user_session_token = _encode_token(raw)
         self.url = (
             f"/api/v2/projects/{self.test_project_id}/tasks/actions/stop-validation/"
+        )
+
+    async def _update_task(self, task_id, **fields):
+        set_clause = ", ".join(f"{k} = :{k}" for k in fields)
+        params = {**fields, "id": int(task_id), "proj": int(self.test_project_id)}
+        await self.db.execute(
+            f"UPDATE tasks SET {set_clause} WHERE id = :id AND project_id = :proj",
+            params,
         )
 
     async def _lock_for_validation(self, task_id, user_id, mapped_by=None):
@@ -1323,13 +1360,11 @@ class TestTasksActionsValidationStopAPI:
     async def test_validation_stop_returns_200_if_task_locked_by_user(
         self, client: AsyncClient
     ):
-        # unlock task to MAPPED before locking for validation
-        await self.db.execute(
-            "UPDATE tasks SET task_status = :s WHERE id = :id AND project_id = :proj",
-            {"s": TaskStatus.MAPPED.value, "id": 1, "proj": int(self.test_project_id)},
+        await self._update_task(
+            1, task_status=TaskStatus.MAPPED.value, mapped_by=self.test_user.id
         )
-        await self._lock_for_validation(
-            1, self.test_user.id, mapped_by=self.test_user.id
+        await Task.lock_task_for_validating(
+            1, self.test_project_id, self.test_user.id, self.db
         )
         # Now call stop
         resp = await client.post(
@@ -1348,13 +1383,13 @@ class TestTasksActionsValidationStopAPI:
     async def test_validation_stop_returns_200_if_task_locked_by_user_with_comment(
         self, client: AsyncClient
     ):
-        await self.db.execute(
-            "UPDATE tasks SET task_status = :s WHERE id = :id AND project_id = :proj",
-            {"s": TaskStatus.MAPPED.value, "id": 1, "proj": int(self.test_project_id)},
+        await self._update_task(
+            1, task_status=TaskStatus.MAPPED.value, mapped_by=self.test_user.id
         )
-        await self._lock_for_validation(
-            1, self.test_user.id, mapped_by=self.test_user.id
+        await Task.lock_task_for_validating(
+            1, self.test_project_id, self.test_user.id, self.db
         )
+
         resp = await client.post(
             self.url,
             headers={"Authorization": f"Token {self.user_session_token}"},
