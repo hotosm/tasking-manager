@@ -167,6 +167,7 @@ export const ProjectDetail = (props) => {
   const minimumValidationLevel = levels
     .find((level) => level.id === props.project.validationPermissionLevelId);
 
+  const isSandbox = props.project.sandbox;
   return (
     <div className={`${props.className || 'blue-dark'}`}>
       <div className="db flex-l tasks-map-height">
@@ -255,32 +256,32 @@ export const ProjectDetail = (props) => {
           alignItems: "baseline",
           gap: "1rem",
         }}>
-          <h4 className="mb2 mt0 fw6">
-            <FormattedMessage {...messages.whoCanMap} />
-          </h4>
-          <PermissionBox
-            permission={props.project.mappingPermission}
-            className="dib pv2 ph3 red"
-          />
-          <FormattedMessage {...messages.having} />
-          <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
-            {minimumMappingLevel && minimumMappingLevel.name}
-          </div>
-          <FormattedMessage {...messages.levelOrAbove} />
+            <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanMap} />
+            </h4>
+            <PermissionBox
+              permission={props.project.mappingPermission}
+              className="dib pv2 ph3 red"
+            />
+            <FormattedMessage {...messages.having} />
+            <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+              {minimumMappingLevel && minimumMappingLevel.name}
+            </div>
+            <FormattedMessage {...messages.levelOrAbove} />
 
-          <h4 className="mb2 mt0 fw6">
-            <FormattedMessage {...messages.whoCanValidate} />
-          </h4>
-          <PermissionBox
-            permission={props.project.validationPermission}
-            validation
-            className="dib pv2 ph3 red"
-          />
-          <FormattedMessage {...messages.having} />
-          <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
-            {minimumValidationLevel && minimumValidationLevel.name}
-          </div>
-          <FormattedMessage {...messages.levelOrAbove} />
+            <h4 className="mb2 mt0 fw6">
+              <FormattedMessage {...messages.whoCanValidate} />
+            </h4>
+            <PermissionBox
+              permission={props.project.validationPermission}
+              validation
+              className="dib pv2 ph3 red"
+            />
+            <FormattedMessage {...messages.having} />
+            <div className={`tc br1 f6 ba dib pv2 ph3 red`}>
+              {minimumValidationLevel && minimumValidationLevel.name}
+            </div>
+            <FormattedMessage {...messages.levelOrAbove} />
         </div>}
 
         <div className="mt3">
@@ -375,10 +376,12 @@ export const ProjectDetail = (props) => {
               <FormattedMessage {...messages.moreStats} />
             </CustomButton>
           </Link>
-          <OSMChaButton
-            project={props.project}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
+          {!isSandbox && (
+            <OSMChaButton
+              project={props.project}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          )}
           <DownloadAOIButton
             projectId={props.project.projectId}
             className="bg-white blue-dark ba b--grey-light pa3"
@@ -440,6 +443,7 @@ ProjectDetail.propTypes = {
     mappingPermission: PropTypes.string,
     validationPermission: PropTypes.string,
     teams: PropTypes.arrayOf(PropTypes.object),
+    sandbox: PropTypes.bool,
   }).isRequired,
   className: PropTypes.string,
 };
