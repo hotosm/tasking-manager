@@ -81,6 +81,10 @@ export default defineMessages({
     id: 'management.teams.members.send_message',
     defaultMessage: 'Team messaging',
   },
+  messageContributors: {
+    id: 'management.campaigns.contributors.send_message',
+    defaultMessage: 'Message contributors',
+  },
   sendMessageSuccess: {
     id: 'management.teams.members.send_message.success',
     defaultMessage: 'Message sent',

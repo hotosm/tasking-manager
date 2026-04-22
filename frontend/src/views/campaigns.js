@@ -20,6 +20,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert, EntityError } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
 import { updateEntity } from '../utils/management';
+import { MessageContributors } from '../components/teamsAndOrgs/messageContributors';
 
 export const CampaignError = ({ error }) => {
   return (
@@ -159,6 +160,8 @@ export function EditCampaign() {
           disableErrorAlert={() => nameError && setNameError(false)}
         />
         <CampaignError error={nameError} />
+        <div className="h1"></div>
+        <MessageContributors campaignId={campaign.id} />
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects
