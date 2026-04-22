@@ -12,7 +12,7 @@ export const ProjectTypeAreaStats = ({
   projectTypeAreaStats = [],
   areaSwipedByProjectType = [],
 }) => {
-  const data = {
+  const rawData = {
     find: {
       totalcontributions: 0,
       totalArea: 0,
@@ -27,22 +27,38 @@ export const ProjectTypeAreaStats = ({
   };
 
   projectTypeAreaStats.forEach((stat) => {
-    if (['build_area', 'buildarea'].includes(stat.projectType.toLowerCase())) {
-      data.find.totalcontributions = getShortNumber(stat.totalcontributions || 0);
-    } else if (['foot_print', 'footprint'].includes(stat.projectType.toLowerCase())) {
-      data.validate.totalcontributions = getShortNumber(stat.totalcontributions || 0);
-    } else if (['change_detection', 'changedetection'].includes(stat.projectType.toLowerCase())) {
-      data.compare.totalcontributions = getShortNumber(stat.totalcontributions || 0);
+    const type = stat.projectType.toLowerCase();
+    if (['build_area', 'buildarea', 'find'].includes(type)) {
+      rawData.find.totalcontributions += Number(stat.totalcontributions || 0);
+    } else if (['foot_print', 'footprint', 'validate'].includes(type)) {
+      rawData.validate.totalcontributions += Number(stat.totalcontributions || 0);
+    } else if (['change_detection', 'changedetection', 'compare'].includes(type)) {
+      rawData.compare.totalcontributions += Number(stat.totalcontributions || 0);
     }
   });
 
   areaSwipedByProjectType.forEach((stat) => {
-    if (['build_area', 'buildarea'].includes(stat.projectType.toLowerCase())) {
-      data.find.totalArea = getShortNumber(stat.totalArea || 0);
-    } else if (['change_detection', 'changedetection'].includes(stat.projectType.toLowerCase())) {
-      data.compare.totalArea = getShortNumber(stat.totalArea || 0);
+    const type = stat.projectType.toLowerCase();
+    if (['build_area', 'buildarea', 'find'].includes(type)) {
+      rawData.find.totalArea += Number(stat.totalArea || 0);
+    } else if (['change_detection', 'changedetection', 'compare'].includes(type)) {
+      rawData.compare.totalArea += Number(stat.totalArea || 0);
     }
   });
+
+  const data = {
+    find: {
+      totalcontributions: getShortNumber(rawData.find.totalcontributions),
+      totalArea: getShortNumber(rawData.find.totalArea),
+    },
+    validate: {
+      totalcontributions: getShortNumber(rawData.validate.totalcontributions),
+    },
+    compare: {
+      totalcontributions: getShortNumber(rawData.compare.totalcontributions),
+      totalArea: getShortNumber(rawData.compare.totalArea),
+    },
+  };
 
   return (
     <div
