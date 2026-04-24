@@ -255,6 +255,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                     presets={project.idPresets}
                     imagery={formatImageryUrlCallback(project.imagery)}
                     gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                    extraIdParams={project.extraIdParams}
                   />
                 ) : (
                   <RapidEditor
