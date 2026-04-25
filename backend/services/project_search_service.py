@@ -120,7 +120,8 @@ class ProjectSearchService:
                 u.name AS author_name,
                 u.username AS author_username,
                 o.name AS organisation_name,
-                o.logo AS organisation_logo
+                o.logo AS organisation_logo,
+                p.featured
             FROM projects p
             LEFT JOIN organisations o ON o.id = p.organisation_id
             LEFT JOIN users u ON u.id = p.author_id
@@ -715,7 +716,17 @@ class ProjectSearchService:
                 filters.append("p.id = ANY(:managed_projects)")
                 params["managed_projects"] = project_ids
 
-        order_by_clause = ""
+        order_by_clause = """
+            ORDER BY
+                CASE
+                    WHEN p.priority = 0 THEN 0
+                    WHEN p.featured = TRUE THEN 1
+                    WHEN p.priority = 1 THEN 2
+                    WHEN p.priority = 2 THEN 3
+                    ELSE 4
+                END,
+                p.id DESC
+        """
 
         if search_dto.order_by:
             order_by = search_dto.order_by
