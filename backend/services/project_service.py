@@ -814,6 +814,7 @@ class ProjectService:
             ST_AsGeoJSON(geometry) AS geometry
         FROM projects
         WHERE status = :status
+        AND sandbox = FALSE
         AND id = ANY(:project_ids)
         """
         project_result = await db.fetch_all(
