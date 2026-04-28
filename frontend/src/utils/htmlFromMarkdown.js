@@ -1,6 +1,7 @@
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import TurndownService from 'turndown';
+import { gfm } from 'turndown-plugin-gfm';
 
 const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
 
@@ -104,7 +105,37 @@ export const formatUserNamesToLink = (text) => {
   return text;
 };
 
-const turndownService = new TurndownService();
+const turndownService = new TurndownService({
+  headingStyle: 'atx',
+  codeBlockStyle: 'fenced',
+  hr: '---',
+  bullet: '-',
+});
+turndownService.use(gfm);
+
+// Rule to convert YouTube iframes back to ::youtube[id] syntax
+turndownService.addRule('youtube', {
+  filter: (node) => {
+    return (
+      node.nodeName === 'IFRAME' &&
+      node.getAttribute('src')?.startsWith('https://www.youtube.com/embed/')
+    );
+  },
+  replacement: (content, node) => {
+    const src = node.getAttribute('src');
+    const id = src.split('/').pop();
+    return `\n\n::youtube[${id}]\n\n`;
+  },
+});
+
+// Rule to use double tildes for strikethrough
+turndownService.addRule('strikethrough', {
+  filter: ['del', 's', 'strike'],
+  replacement: (content) => `~~${content}~~`,
+});
+
+// Rule to keep other iframes
+turndownService.keep(['iframe']);
 
 export const markdownFromHtml = (html) => {
   return turndownService.turndown(html);
