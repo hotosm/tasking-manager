@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import TurndownService from 'turndown';
 
 const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
 
@@ -101,4 +102,10 @@ export const formatUserNamesToLink = (text) => {
     }
   }
   return text;
+};
+
+const turndownService = new TurndownService();
+
+export const markdownFromHtml = (html) => {
+  return turndownService.turndown(html);
 };
