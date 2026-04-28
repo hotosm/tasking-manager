@@ -13,7 +13,7 @@ import HashtagPaste from './hashtagPaste';
 import FileRejections from './fileRejections';
 import DropzoneUploadStatus from './uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
-import { formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
+import { formatUserNamesToLink, markdownFromHtml } from '../../utils/htmlFromMarkdown';
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
@@ -37,6 +37,7 @@ function CommentInputField({
   const textareaRef = useRef();
   const fileInputRef = useRef(null);
   const isBundle = useRef(false);
+  const lastConvertedRef = useRef(null);
   const [isShowPreview, setIsShowPreview] = useState(false);
 
   const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
@@ -149,7 +150,21 @@ function CommentInputField({
     sessionStorage.setItem(sessionkey, comment);
   }, [comment, sessionkey]);
 
-  console.log(comment, 'comment');
+  useEffect(() => {
+    if (
+      comment &&
+      comment !== lastConvertedRef.current &&
+      /<\/?(?:p|div|h[1-6]|ul|ol|li|br|strong|em|a|table|thead|tbody|tr|th|td|blockquote|pre|code|span)[\s>]/i.test(comment) &&
+      document.activeElement !== textareaRef.current?.textarea
+    ) {
+      const converted = markdownFromHtml(comment);
+      if (converted !== comment) {
+        lastConvertedRef.current = converted;
+        setComment(converted);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comment]);
 
   return (
     <div {...getRootProps()}>
