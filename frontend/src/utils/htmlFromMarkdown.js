@@ -110,21 +110,40 @@ const turndownService = new TurndownService({
   codeBlockStyle: 'fenced',
   hr: '---',
   bullet: '-',
+  emDelimiter: '*',
 });
+
+// Custom escape function to avoid escaping brackets [ ] and other common characters
+// which fixes the task list issue \[x\] and makes the output cleaner.
+turndownService.escape = (string) => {
+  return string
+    .replace(/\\/g, '\\\\')
+    .replace(/\*/g, '\\*')
+    .replace(/_/g, '\\_')
+    .replace(/`/g, '\\`')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/#/g, '\\#');
+};
+
 turndownService.use(gfm);
 
-// Rule to convert YouTube iframes back to ::youtube[id] syntax
-turndownService.addRule('youtube', {
-  filter: (node) => {
-    return (
-      node.nodeName === 'IFRAME' &&
-      node.getAttribute('src')?.startsWith('https://www.youtube.com/embed/')
-    );
-  },
-  replacement: (content, node) => {
-    const src = node.getAttribute('src');
-    const id = src.split('/').pop();
-    return `\n\n::youtube[${id}]\n\n`;
+// Rule to force '-' bullets for unordered lists
+turndownService.addRule('listItem', {
+  filter: 'li',
+  replacement: function (content, node, options) {
+    content = content
+      .replace(/^\n+/, '') // remove leading newlines
+      .replace(/\n+$/, '\n') // replace trailing newlines with just one
+      .replace(/\n/gm, '\n    '); // indent content
+    let prefix = options.bullet + ' ';
+    const parent = node.parentNode;
+    if (parent.nodeName === 'OL') {
+      const start = parent.getAttribute('start');
+      const index = Array.prototype.indexOf.call(parent.children, node);
+      prefix = (start ? Number(start) + index : index + 1) + '. ';
+    }
+    return prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '');
   },
 });
 
@@ -134,9 +153,19 @@ turndownService.addRule('strikethrough', {
   replacement: (content) => `~~${content}~~`,
 });
 
+// Rule to keep HTML comments
+turndownService.addRule('keepComments', {
+  filter: (node) => node.nodeType === 8,
+  replacement: (content, node) => `\n<!--${node.data}-->\n`,
+});
+
 // Rule to keep other iframes
 turndownService.keep(['iframe']);
 
 export const markdownFromHtml = (html) => {
-  return turndownService.turndown(html);
+  const markdown = turndownService.turndown(html);
+  return markdown
+    .replace(/(#+ .+\n)\n+(?=#+ .+)/g, '$1') // Remove blank lines between consecutive headers
+    .replace(/\n{3,}/g, '\n\n') // Max two newlines
+    .trim();
 };
