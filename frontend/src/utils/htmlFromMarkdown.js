@@ -132,10 +132,8 @@ turndownService.use(gfm);
 turndownService.addRule('listItem', {
   filter: 'li',
   replacement: function (content, node, options) {
-    content = content
-      .replace(/^\n+/, '') // remove leading newlines
-      .replace(/\n+$/, '\n') // replace trailing newlines with just one
-      .replace(/\n/gm, '\n    '); // indent content
+    content = content.trimStart().trimEnd();
+    content = content.replace(/\n/gm, '\n    '); // indent content
     let prefix = options.bullet + ' ';
     const parent = node.parentNode;
     if (parent.nodeName === 'OL') {
@@ -143,7 +141,7 @@ turndownService.addRule('listItem', {
       const index = Array.prototype.indexOf.call(parent.children, node);
       prefix = (start ? Number(start) + index : index + 1) + '. ';
     }
-    return prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '');
+    return prefix + content + (node.nextSibling ? '\n' : '');
   },
 });
 
@@ -164,8 +162,23 @@ turndownService.keep(['iframe']);
 
 export const markdownFromHtml = (html) => {
   const markdown = turndownService.turndown(html);
-  return markdown
-    .replace(/(#+ .+\n)\n+(?=#+ .+)/g, '$1') // Remove blank lines between consecutive headers
-    .replace(/\n{3,}/g, '\n\n') // Max two newlines
-    .trim();
+
+  // Split into lines to avoid complex regex that can lead to ReDoS (security hotspots)
+  const lines = markdown.split('\n');
+  const filteredLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const nextLine = lines[i + 1];
+
+    filteredLines.push(line);
+
+    // If current line is a header and next line is empty,
+    // and the line after that is also a header, skip the empty line.
+    if (line.startsWith('#') && nextLine === '' && lines[i + 2]?.startsWith('#')) {
+      i++; // Skip the next empty line
+    }
+  }
+
+  return filteredLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 };
