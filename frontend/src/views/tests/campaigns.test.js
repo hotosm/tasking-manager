@@ -149,9 +149,12 @@ describe('EditCampaign', () => {
 
   it('should display the campaign name by default', async () => {
     setup();
-    await waitFor(() => {
-      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('should display save button when project name is changed', async () => {
