@@ -1,27 +1,20 @@
-import { useState, useEffect } from 'react';
-
 export const useAvatarText = (name, username, number) => {
-  const [text, setText] = useState('');
-  useEffect(() => {
-    if (name) {
-      setText(
-        name
-          .split(' ')
-          .map((word) => word[0])
-          .join('')
-          .substr(0, 3),
-      );
-    } else if (number) {
-      setText(number);
-    } else {
-      setText(
-        username
-          .split(' ')
-          .map((word) => word[0])
-          .join('')
-          .substr(0, 3),
-      );
-    }
-  }, [name, number, username]);
-  return text;
+  if (name) {
+    return name
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .substr(0, 3);
+  }
+  if (number) {
+    return number;
+  }
+  if (username) {
+    return username
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .substr(0, 3);
+  }
+  return '';
 };

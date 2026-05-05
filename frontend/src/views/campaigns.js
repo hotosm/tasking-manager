@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -155,7 +156,7 @@ export function EditCampaign({ id: campaignId }) {
       <div className="w-40-l w-100 mt4 fl">
         <CampaignForm
           userDetails={userDetails}
-          campaign={{ name: campaign.name }}
+          campaign={campaign}
           updateCampaignAsync={updateCampaignAsync}
           disabled={error || loading}
           disableErrorAlert={() => nameError && setNameError(false)}
@@ -174,3 +175,11 @@ export function EditCampaign({ id: campaignId }) {
     </div>
   );
 }
+
+CampaignError.propTypes = {
+  error: PropTypes.any,
+};
+
+EditCampaign.propTypes = {
+  id: PropTypes.number,
+};
