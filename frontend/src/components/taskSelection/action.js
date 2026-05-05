@@ -244,6 +244,8 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                       imagery={formatImageryUrlCallback(project.imagery)}
                       sandboxId={project.database}
                       gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                      projectId={project.projectId}
+                      taskId={tasksIds[0]}
                     />
                   ) : (
                     <div>Rapid sandbox editor is under developemnt</div>
