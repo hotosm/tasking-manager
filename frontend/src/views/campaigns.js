@@ -123,8 +123,9 @@ export function CreateCampaign() {
   );
 }
 
-export function EditCampaign() {
-  const { id } = useParams();
+export function EditCampaign({ id: campaignId }) {
+  const { id: routeCampaignId } = useParams();
+  const id = campaignId || routeCampaignId;
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
   const [error, loading, campaign] = useFetch(`campaigns/${id}/`, id);
