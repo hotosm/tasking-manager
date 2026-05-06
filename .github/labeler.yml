@@ -1,20 +1,34 @@
 "scope: frontend":
-  - frontend/**/*
+- changed-files:
+  - any-glob-to-any-file:
+    - frontend/**/*
+
 "scope: backend":
-  - backend/**/*
-  - tests/**/*
-  - migrations/**/*
-  - ./manage.py
-  - ./pyproject.toml
+- changed-files:
+  - any-glob-to-any-file:
+    - backend/**/*
+    - tests/**/*
+    - migrations/**/*
+    - manage.py
+    - pyproject.toml
+
 "scope: infrastructure":
-  - .circleci/*
-  - .github/**/*
-  - scripts/aws/**/*
-  - scripts/docker/**/*
-  - scripts/install/**/*
-  - docker-*.yml
+- changed-files:
+  - any-glob-to-any-file:
+    - .circleci/*
+    - .github/**/*
+    - scripts/aws/**/*
+    - scripts/docker/**/*
+    - scripts/install/**/*
+    - docker-*.yml
+
 "dependencies":
-  - frontend/yarn.lock
-  - ./pyproject.toml
+- changed-files:
+  - any-glob-to-any-file:
+    - frontend/yarn.lock
+    - pyproject.toml
+
 "scope: translations":
-  - frontend/src/locales/*
+- changed-files:
+  - any-glob-to-any-file:
+    - frontend/src/locales/*
