@@ -40,6 +40,22 @@ def get_application() -> FastAPI:
         docs_url="/api/docs",
     )
 
+    @_app.middleware("http")
+    async def add_security_headers(request: Request, call_next):
+        response = await call_next(request)
+        # Prevents MIME-sniffing
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        # Prevents Clickjacking by restricting framing
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        # Basic Content Security Policy
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' "
+            "'unsafe-inline';"
+        )
+        # Obscures the specific server software version
+        response.headers["Server"] = "Tasking-Manager"
+        return response
+
     # Initialize Sentry only if USE_SENTRY is enabled
     if settings.USE_SENTRY:
         sentry_sdk.init(
