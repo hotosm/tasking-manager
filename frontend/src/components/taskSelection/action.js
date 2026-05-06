@@ -68,7 +68,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   );
 
   const [activeEditor, setActiveEditor] = useState(editor);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [isJosmError, setIsJosmError] = useState(false);
   const tasksIds = useMemo(
     () =>
