@@ -21,6 +21,7 @@ from backend.api.projects import activities as project_activities
 from backend.api.projects import campaigns as project_campaigns
 from backend.api.projects import contributions as project_contributions
 from backend.api.projects import favorites as project_favorites
+from backend.api.projects import osm_features as project_osm_features
 from backend.api.projects import partnerships as project_partnerships
 from backend.api.projects import resources as project_resources
 from backend.api.projects import statistics as project_statistics
@@ -55,6 +56,7 @@ def add_api_end_points(api):
     v2.include_router(project_actions.router)
     v2.include_router(project_favorites.router)
     v2.include_router(project_partnerships.router)
+    v2.include_router(project_osm_features.router)
 
     # Comments REST endpoint
     v2.include_router(comment_resources.router)
