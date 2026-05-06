@@ -2,19 +2,31 @@ import '@testing-library/jest-dom';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { setupFaultyHandlers } from '../../../network/tests/server';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../../network/genericJSONRequest';
 import { store } from '../../../store';
 import { ActionButtons } from '../actionButtons';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { generateSampleNotifications } from '../../../network/tests/mockData/notifications';
 
+jest.mock('../../../network/genericJSONRequest', () => ({
+  fetchLocalJSONAPI: jest.fn(),
+  pushToLocalJSONAPI: jest.fn(),
+}));
+
 describe('Action Buttons', () => {
   const retryFnMock = jest.fn();
   const setSelectedMock = jest.fn();
   beforeEach(() => {
+    jest.clearAllMocks();
+    fetchLocalJSONAPI.mockResolvedValue({ pagination: { total: 2 } });
+    pushToLocalJSONAPI.mockResolvedValue(null);
     act(() => {
       store.dispatch({ type: 'SET_TOKEN', token: 'validToken' });
     });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
   it('should return nothing if no notification is selected', () => {
     const { container } = render(
@@ -124,9 +136,9 @@ describe('Action Buttons', () => {
 
   // Error are consoled in all cases of POST error
   it('should catch error when marking multiple selected notifications as read', async () => {
-    global.console = { ...global.console, log: jest.fn() };
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    pushToLocalJSONAPI.mockRejectedValueOnce(new Error('Network request failed'));
     const user = userEvent.setup();
-    setupFaultyHandlers();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -145,13 +157,14 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(consoleLogSpy).toBeCalledWith('Network request failed'));
+    consoleLogSpy.mockRestore();
   });
 
   it('should catch error when marking all notifications in a category as read', async () => {
-    global.console = { ...global.console, log: jest.fn() };
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    pushToLocalJSONAPI.mockRejectedValueOnce(new Error('Network request failed'));
     const user = userEvent.setup();
-    setupFaultyHandlers();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -169,13 +182,14 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(consoleLogSpy).toBeCalledWith('Network request failed'));
+    consoleLogSpy.mockRestore();
   });
 
   it('should catch error when deleting multiple selected notifications', async () => {
-    global.console = { ...global.console, log: jest.fn() };
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    pushToLocalJSONAPI.mockRejectedValueOnce(new Error('Network request failed'));
     const user = userEvent.setup();
-    setupFaultyHandlers();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -194,13 +208,14 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(consoleLogSpy).toBeCalledWith('Network request failed'));
+    consoleLogSpy.mockRestore();
   });
 
   it('should catch error when deleting all notifications in a category', async () => {
-    global.console = { ...global.console, log: jest.fn() };
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    pushToLocalJSONAPI.mockRejectedValueOnce(new Error('Network request failed'));
     const user = userEvent.setup();
-    setupFaultyHandlers();
     render(
       <ReduxIntlProviders>
         <ActionButtons
@@ -218,7 +233,8 @@ describe('Action Buttons', () => {
       }),
     );
     // Error is then consoled
-    await waitFor(() => expect(console.log).toBeCalledWith('Network request failed'));
+    await waitFor(() => expect(consoleLogSpy).toBeCalledWith('Network request failed'));
+    consoleLogSpy.mockRestore();
   });
 
   it('should decrement the page query by 1 if the user deletes all notifications on the last page', async () => {
