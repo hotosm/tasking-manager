@@ -2,11 +2,12 @@ import datetime
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
 
+from backend.models.dtos.mapping_dto import ExtendLockTimeDTO
 from backend.services.project_service import ProjectService
 import pytest
 
 from backend.services.mapping_service import MappingService, Task
-from backend.models.postgis.task import TaskStatus
+from backend.models.postgis.task import TaskAction, TaskHistory, TaskStatus
 from tests.api.helpers.test_helpers import create_canned_project
 
 ORG_NAME = "HOT Tasking Manager"
@@ -181,3 +182,107 @@ class TestMappingService:
         for task in self.test_project.tasks:
             task = await Task.get(task.id, self.test_project_id, self.db)
             assert task.task_status != TaskStatus.BADIMAGERY.value
+
+    async def test_task_extend_duration_is_recorded(self):
+        if self.skip_tests:
+            pytest.skip("skipping mapping heavy tests")
+
+        # Arrange
+        task = await Task.get(2, self.test_project_id, self.db)
+        await Task.lock_task_for_mapping(
+            2, self.test_project_id, self.test_user.id, self.db
+        )
+
+        extend_lock_dto = ExtendLockTimeDTO(
+            task_ids=[task.id],
+            project_id=self.test_project_id,
+            user_id=self.test_user.id,
+        )
+
+        # Act
+        await MappingService.extend_task_lock_time(extend_lock_dto, self.db)
+        await Task.reset_lock(
+            task_id=2,
+            project_id=self.test_project_id,
+            task_status=TaskStatus.MAPPED,
+            user_id=self.test_user.id,
+            comment=None,
+            db=self.db,
+        )
+
+        # Assert
+        extended_task_history = await self.db.fetch_all(
+            """
+            SELECT action, action_text
+            FROM task_history
+            WHERE task_id = :task_id
+            AND project_id = :project_id
+            AND action = :action
+            ORDER BY action_date DESC
+            """,
+            values={
+                "task_id": task.id,
+                "project_id": self.test_project_id,
+                "action": TaskAction.EXTENDED_FOR_MAPPING.name,
+            },
+        )
+
+        assert len(extended_task_history) == 1
+        assert (
+            extended_task_history[0]["action"] == TaskAction.EXTENDED_FOR_MAPPING.name
+        )
+        assert extended_task_history[0]["action_text"] is not None
+
+    async def test_update_task_locked_with_duration_removes_duplicate_rows(self):
+        if self.skip_tests:
+            pytest.skip("skipping mapping heavy tests")
+
+        # Arrange
+        task = await Task.get(2, self.test_project_id, self.db)
+        await Task.lock_task_for_mapping(
+            2, self.test_project_id, self.test_user.id, self.db
+        )
+
+        extend_lock_dto = ExtendLockTimeDTO(
+            task_ids=[task.id],
+            project_id=self.test_project_id,
+            user_id=self.test_user.id,
+        )
+
+        # Create the duplicate-history state through the real service path
+        await MappingService.extend_task_lock_time(extend_lock_dto, self.db)
+        # Relocking
+        await Task.lock_task_for_mapping(
+            2, self.test_project_id, self.test_user.id, self.db
+        )
+        await MappingService.extend_task_lock_time(extend_lock_dto, self.db)
+
+        # Act
+        await TaskHistory.update_task_locked_with_duration(
+            task.id,
+            self.test_project_id,
+            TaskAction.EXTENDED_FOR_MAPPING,
+            self.test_user.id,
+            self.db,
+        )
+
+        # Assert
+        remaining_rows = await self.db.fetch_all(
+            """
+            SELECT id, action, action_text
+            FROM task_history
+            WHERE task_id = :task_id
+            AND project_id = :project_id
+            AND action = :action
+            ORDER BY action_date DESC
+            """,
+            values={
+                "task_id": task.id,
+                "project_id": self.test_project_id,
+                "action": TaskAction.EXTENDED_FOR_MAPPING.name,
+            },
+        )
+
+        assert len(remaining_rows) == 1
+        assert remaining_rows[0]["action"] == TaskAction.EXTENDED_FOR_MAPPING.name
+        assert remaining_rows[0]["action_text"] is not None

@@ -286,12 +286,12 @@ describe('Completion Tab for Validation', () => {
     );
     await user.click(
       screen.getAllByRole('radio', {
-        name: /yes/i,
+        name: /Task well mapped, thanks for mapping/i,
       })[0],
     );
     await user.click(
       screen.getAllByRole('radio', {
-        name: /yes/i,
+        name: /Task well mapped, thanks for mapping/i,
       })[1],
     );
     await user.click(

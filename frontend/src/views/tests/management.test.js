@@ -6,8 +6,41 @@ import { ManagementPageIndex } from '../management';
 import { teams } from '../../network/tests/mockData/teams';
 import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
 import { projects } from '../../network/tests/mockData/projects';
+import { useFetch } from '../../hooks/UseFetch';
+
+jest.mock('../../hooks/UseFetch', () => ({
+  useFetch: jest.fn(),
+}));
 
 describe('Management Page Overview Section', () => {
+  beforeEach(() => {
+    const teamsWithoutMemberLinks = {
+      ...teams,
+      teams: teams.teams.map((team) => ({
+        ...team,
+        members: [],
+        managersCount: 0,
+        membersCount: 0,
+      })),
+    };
+
+    useFetch.mockImplementation((url) => {
+      if (url.startsWith('projects/')) {
+        return [null, false, projects];
+      }
+
+      if (url.startsWith('teams/')) {
+        return [null, false, teamsWithoutMemberLinks];
+      }
+
+      return [null, false, {}];
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should list projects and teams fetched', async () => {
     act(() => {
       store.dispatch({

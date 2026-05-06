@@ -926,10 +926,15 @@ class Project(Base):
             "project_partnerships",
         ]
 
+        # Whitelist of allowed table names to prevent SQL injection via
+        # dynamic table name interpolation, since table names cannot be parameterized.
+        allowed_tables = set(related_tables)
+
         # Start a transaction to ensure atomic deletion
         async with db.transaction():
-            # Loop through each table and execute the delete query
             for table in related_tables:
+                if table not in allowed_tables:
+                    raise ValueError(f"Invalid table name: {table}")
                 await db.execute(
                     f"DELETE FROM {table} WHERE project_id = :project_id",
                     {"project_id": self.id},

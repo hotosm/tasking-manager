@@ -383,15 +383,22 @@ class TaskHistory(Base):
         try:
             # Fetch the last locked task history entry with raw SQL
             query = """
-                SELECT id, action_date
-                FROM task_history
-                WHERE task_id = :task_id
-                AND project_id = :project_id
-                AND action = :action
-                AND action_text IS NULL
-                AND user_id = :user_id
-                ORDER BY action_date DESC
-                LIMIT 1
+                WITH locked_rows AS (
+                    SELECT
+                        id,
+                        action_date,
+                        COUNT(*) OVER() AS total_rows
+                    FROM task_history
+                    WHERE task_id = :task_id
+                    AND project_id = :project_id
+                    AND action = :action
+                    AND action_text IS NULL
+                    AND user_id = :user_id
+                    ORDER BY action_date DESC, id DESC
+                    FETCH FIRST 1 ROW ONLY
+                )
+                SELECT id, action_date, total_rows
+                FROM locked_rows
             """
             values = {
                 "task_id": task_id,
@@ -409,6 +416,9 @@ class TaskHistory(Base):
                 # rather than showing the user an error that they can't fix.
                 # No record found, possibly a race condition or auto-unlock scenario.
                 return
+
+            if last_locked["total_rows"] > 1:
+                raise MultipleResultsFound()
 
             # Calculate the duration the task was locked for
             duration_task_locked = (
@@ -1183,6 +1193,14 @@ class Task(Base):
     ):
         """Unlock the task and change its state."""
         # Add task comment history if provided
+        if not undo:
+            last_history = await TaskHistory.get_last_action(project_id, task_id, db)
+            # To unlock a task the last action must have been either lock or extension
+            last_action = TaskAction[last_history.action]
+            await TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, last_action, user_id, db
+            )
+
         if comment:
             await Task.set_task_history(
                 task_id,
@@ -1283,12 +1301,6 @@ class Task(Base):
                             "project_id": project_id,
                         },
                     )
-
-            # Update task locked duration in the history when `undo` is False
-            # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            await TaskHistory.update_task_locked_with_duration(
-                task_id, project_id, TaskStatus(current_status), user_id, db
-            )
         # Final query for updating task status
         final_update_query = """
             UPDATE tasks
@@ -1333,10 +1345,12 @@ class Task(Base):
                 db=db,
             )
         # Update task lock history with duration
+        last_history = await TaskHistory.get_last_action(project_id, task_id, db)
+        last_action = TaskAction[last_history.action]
         await TaskHistory.update_task_locked_with_duration(
             task_id=task_id,
             project_id=project_id,
-            lock_action=TaskStatus(task_status),
+            lock_action=last_action,
             user_id=user_id,
             db=db,
         )

@@ -282,6 +282,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   taskBordersOnly={false}
                   animateZoom={false}
                   selected={tasksIds}
+                  zoomedTaskId={tasksIds}
                   showTaskIds={action === 'VALIDATION'}
                   priorityAreas={priorityArea}
                 />
@@ -437,6 +438,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                                   taskBordersOnly={false}
                                   animateZoom={false}
                                   selected={tasksIds}
+                                  zoomedTaskId={tasksIds}
                                   showTaskIds={action === 'VALIDATION'}
                                   priorityAreas={priorityArea}
                                 />
