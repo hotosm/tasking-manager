@@ -19,7 +19,7 @@ describe('ElementsMapped & TaskStats components', () => {
           deleted: 0,
           value: 4,
         },
-        highway: {
+        road: {
           added: 6,
           modified: {
             count_modified: 21,
