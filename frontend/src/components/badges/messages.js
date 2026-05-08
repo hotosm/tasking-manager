@@ -11,6 +11,7 @@ export default defineMessages({
   description: { id: 'management.fields.description', defaultMessage: 'Description' },
   hidden: { id: 'management.badges.hidden', defaultMessage: 'Hide this badge from users' },
   highway: { id: 'management.badges.highway', defaultMessage: 'km of highways added' },
+  road: { id: 'management.badges.road', defaultMessage: 'km of roads added' },
   image: { id: 'management.fields.organisation.image', defaultMessage: 'Image' },
   imageError: { id: 'management.badges.imageError', defaultMessage: 'Error uploading image' },
   manage: { id: 'management.link.manage', defaultMessage: 'Manage {entity}' },

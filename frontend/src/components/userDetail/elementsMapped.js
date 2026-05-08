@@ -147,12 +147,12 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
           subDescription="Created + Modified - Deleted"
-          mapped={osmStats?.topics?.highway?.value}
-          created={osmStats?.topics?.highway?.added}
-          modified={osmStats?.topics?.highway?.modified?.count_modified}
-          deleted={osmStats?.topics?.highway?.deleted}
-          unitMore={osmStats?.topics?.highway?.modified?.unit_more}
-          unitLess={osmStats?.topics?.highway?.modified?.unit_less}
+          mapped={osmStats?.topics?.road?.value}
+          created={osmStats?.topics?.road?.added}
+          modified={osmStats?.topics?.road?.modified?.count_modified}
+          deleted={osmStats?.topics?.road?.deleted}
+          unitMore={osmStats?.topics?.road?.modified?.unit_more}
+          unitLess={osmStats?.topics?.road?.modified?.unit_less}
         />
         <DetailedStatsCard
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}

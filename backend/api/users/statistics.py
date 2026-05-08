@@ -176,7 +176,7 @@ async def get_ohsome_stats(
     db: Database = Depends(get_db),
     userId: int = Query(..., description="OSM user ID"),
     topics: str = Query(
-        ..., description="Comma-separated list of OSM topics, e.g. building,highway"
+        ..., description="Comma-separated list of OSM topics, e.g. building,road"
     ),
     startdate: Optional[str] = Query(
         None, description="YYYY-MM-DD, start of time range"
