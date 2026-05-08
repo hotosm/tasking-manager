@@ -584,9 +584,18 @@ export default defineMessages({
     id: 'project.tasks.action.options.complete',
     defaultMessage: 'Yes',
   },
+  validMapping: {
+    id: 'project.tasks.action.options.valid_mapping',
+    defaultMessage: 'Task well mapped, thanks for mapping',
+  },
   incomplete: {
     id: 'project.tasks.action.options.incomplete',
     defaultMessage: 'No',
+  },
+  invalidMapping: {
+    id: 'project.tasks.action.options.invalid_mapping',
+    defaultMessage:
+      'More work is required to complete this task. Please carefully read the comment section for further information.',
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',

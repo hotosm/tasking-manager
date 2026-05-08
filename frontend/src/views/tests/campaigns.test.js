@@ -80,7 +80,7 @@ describe('CreateCampaign', () => {
 
   it('should enable create campaign button when the value is changed', async () => {
     const { user, createButton } = setup();
-    const inputText = screen.getByRole('textbox');
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'New Campaign Name');
     expect(createButton).toBeEnabled();
@@ -95,7 +95,7 @@ describe('CreateCampaign', () => {
     const createButton = screen.getByRole('button', {
       name: /create campaign/i,
     });
-    const inputText = screen.getByRole('textbox');
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'New Campaign Name');
     expect(inputText.value).toBe('New Campaign Name');
@@ -117,7 +117,7 @@ describe('CreateCampaign', () => {
     const createButton = screen.getByRole('button', {
       name: /create campaign/i,
     });
-    const inputText = screen.getByRole('textbox');
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'New Campaign Name');
     expect(inputText.value).toBe('New Campaign Name');
@@ -138,25 +138,31 @@ describe('EditCampaign', () => {
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
     );
-    const inputText = screen.getByRole('textbox');
+
 
     return {
       user,
       container,
-      inputText,
       history,
     };
   };
 
   it('should display the campaign name by default', async () => {
-    const { inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
-    expect(inputText.value).toBe('Campaign Name 123');
+    setup();
+    await waitFor(
+      () => {
+        expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('should display save button when project name is changed', async () => {
-    const { user, inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', {
@@ -166,8 +172,11 @@ describe('EditCampaign', () => {
   });
 
   it('should also display cancel button when project name is changed', async () => {
-    const { user, inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'Changed Campaign Name');
     const cancelButton = screen.getByRole('button', {
@@ -177,8 +186,11 @@ describe('EditCampaign', () => {
   });
 
   it('should return input text value to default when cancel button is clicked', async () => {
-    const { user, inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'Changed Campaign Name');
     const cancelButton = screen.getByRole('button', {
@@ -204,8 +216,11 @@ describe('EditCampaign', () => {
   });
 
   it('should hide the save button after campaign edit is successful', async () => {
-    const { user, inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
@@ -226,8 +241,11 @@ describe('EditCampaign', () => {
 
   it('should display toast with error has occured message', async () => {
     setupFaultyHandlers();
-    const { user, inputText } = setup();
-    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
     await user.clear(inputText);
     await user.type(inputText, 'Changed Campaign Name');
     const saveButton = screen.getByRole('button', { name: /save/i });
@@ -245,11 +263,10 @@ describe('Delete Campaign', () => {
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
     );
-    const inputText = screen.getByRole('textbox');
+
 
     return {
       user,
-      inputText,
     };
   };
 

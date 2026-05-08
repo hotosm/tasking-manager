@@ -544,7 +544,6 @@ class MappingService:
             raise NotFound(
                 sub_code="TASK_NOT_FOUND", project_id=project_id, task_id=task_id
             )
-
         if TaskStatus(task.task_status) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
@@ -574,14 +573,18 @@ class MappingService:
             task = await Task.get(task_id, extend_dto.project_id, db)
             action = (
                 TaskAction.EXTENDED_FOR_MAPPING
-                if task["task_status"] == TaskStatus.LOCKED_FOR_MAPPING
+                if TaskStatus(task.task_status) == TaskStatus.LOCKED_FOR_MAPPING
                 else TaskAction.EXTENDED_FOR_VALIDATION
             )
 
+            last_history = await TaskHistory.get_last_action(
+                extend_dto.project_id, task_id, db
+            )
+            last_action = TaskAction[last_history.action]
             await TaskHistory.update_task_locked_with_duration(
                 task_id,
                 extend_dto.project_id,
-                TaskStatus(task["task_status"]),
+                last_action,
                 extend_dto.user_id,
                 db,
             )

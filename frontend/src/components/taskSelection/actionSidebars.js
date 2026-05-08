@@ -473,23 +473,23 @@ export function CompletionTabForValidation({
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
         </h4>
-        <p className="b mb2">
+        {/* <p className="b mb2">
           <FormattedMessage {...messages.validatedQuestion} values={{ number: tasksIds.length }} />
-        </p>
+        </p> */}
         {tasksIds.length > 3 && (
           <div className="cf w-100 db pt1 pv2 blue-dark mb2 bb b--light-gray">
             <div className="cf w-100">
-              <div className="fw8 f5 w-10 dib">
+              <div className="fw8 f5 w-10 dib v-top pt2">
                 <FormattedMessage {...messages.filterAll} />
               </div>
-              <div className="w-auto dib">
+              <div className="w-80 dib">
                 {['VALIDATED', 'INVALIDATED'].map((value, index) => (
-                  <div className="dib" key={index}>
+                  <div className="flex items-start mb2" key={index}>
                     <input
                       type="radio"
                       id={value}
                       value={value}
-                      className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+                      className="radio-input input-reset pointer flex-shrink-0 h2 w2 mr2 br-100 ba b--blue-light"
                       checked={
                         Object.values(validationStatus).every((status) => status === value) &&
                         Object.values(validationStatus).length === tasksIds.length
@@ -500,11 +500,11 @@ export function CompletionTabForValidation({
                         setValidationStatus(tempObj);
                       }}
                     />
-                    <label htmlFor={value}>
+                    <label htmlFor={value} className="pointer lh-copy">
                       {index ? (
-                        <FormattedMessage {...messages.incomplete} />
+                        <FormattedMessage {...messages.invalidMapping} />
                       ) : (
-                        <FormattedMessage {...messages.complete} />
+                        <FormattedMessage {...messages.validMapping} />
                       )}
                     </label>
                   </div>
@@ -604,34 +604,38 @@ const TaskValidationSelector = ({
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
       <div className="cf w-100">
-        <div className="fw8 f5 w-10 dib">#{id}</div>
-        <div className="w-auto dib">
-          <input
-            type="radio"
-            value="VALIDATED"
-            id={`#${id}-VALIDATED`}
-            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
-            checked={currentStatus === 'VALIDATED'}
-            onChange={() => updateStatus(id, 'VALIDATED')}
-          />
-          <label htmlFor={`#${id}-VALIDATED`}>
-            <FormattedMessage {...messages.complete} />
-          </label>
-          <input
-            type="radio"
-            value="INVALIDATED"
-            id={`#${id}-INVALIDATED`}
-            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
-            checked={currentStatus === 'INVALIDATED'}
-            onChange={() => updateStatus(id, 'INVALIDATED')}
-          />
-          <label htmlFor={`#${id}-INVALIDATED`}>
-            <FormattedMessage {...messages.incomplete} />
-          </label>
+        <div className="fw8 f5 w-10 dib v-top pt2">#{id}</div>
+        <div className="w-80 dib">
+          <div className="flex items-start mb2">
+            <input
+              type="radio"
+              value="VALIDATED"
+              id={`#${id}-VALIDATED`}
+              className="radio-input input-reset pointer flex-shrink-0 h2 w2 mr2 br-100 ba b--blue-light"
+              checked={currentStatus === 'VALIDATED'}
+              onChange={() => updateStatus(id, 'VALIDATED')}
+            />
+            <label htmlFor={`#${id}-VALIDATED`} className="pointer lh-copy">
+              <FormattedMessage {...messages.validMapping} />
+            </label>
+          </div>
+          <div className="flex items-start mb2">
+            <input
+              type="radio"
+              value="INVALIDATED"
+              id={`#${id}-INVALIDATED`}
+              className="radio-input input-reset pointer flex-shrink-0 h2 w2 mr2 br-100 ba b--blue-light"
+              checked={currentStatus === 'INVALIDATED'}
+              onChange={() => updateStatus(id, 'INVALIDATED')}
+            />
+            <label htmlFor={`#${id}-INVALIDATED`} className="pointer lh-copy">
+              <FormattedMessage {...messages.invalidMapping} />
+            </label>
+          </div>
           <CustomButton
             className={`${
               showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
-            } bg-white ba br1 ml3 pv2 ph3`}
+            } bg-white ba br1 mt1 pv2 ph3`}
             onClick={() => setShowCommentInput(!showCommentInput)}
             icon={
               comment ? (

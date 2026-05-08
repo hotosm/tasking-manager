@@ -409,6 +409,7 @@ export default defineMessages({
   tableUpgrade: { id: 'user.table.upgrade', defaultMessage: 'Level upgrade' },
   tableUsername: { id: 'user.table.username', defaultMessage: 'Username' },
   tableCol_highway: { id: 'user.table.highway', defaultMessage: 'Highways' },
+  tableCol_road: { id: 'user.table.road', defaultMessage: 'Roads' },
   tableCol_waterway: { id: 'user.table.waterway', defaultMessage: 'Waterways' },
   tableCol_building: { id: 'user.table.building', defaultMessage: 'Buildings' },
   tableCol_changeset: { id: 'user.table.changeset', defaultMessage: 'Changesets' },
@@ -423,6 +424,7 @@ export default defineMessages({
   progress_changeset: { id: 'user.progress.changeset', defaultMessage: 'changesets' },
   progress_waterway: { id: 'user.progress.waterway', defaultMessage: 'km of waterways' },
   progress_highway: { id: 'user.progress.highway', defaultMessage: 'km of highways' },
+  progress_road: { id: 'user.progress.road', defaultMessage: 'km of roads' },
   progress_poi: { id: 'user.progress.poi', defaultMessage: 'points of interest' },
   progress_building: { id: 'user.progress.building', defaultMessage: 'buildings' },
 });

@@ -23,43 +23,49 @@ export const ResourcesTab = ({ project, tasksIds, tasksGeojson }) => {
     [bbox, project.created, project.changesetComment],
   );
 
+  const isSandbox = project && project.sandbox;
+
   return (
     <>
-      <h4 className="ttu blue-grey f5">
-        <FormattedMessage {...messages.changesets} />
-      </h4>
-      <div className="ph2">
-        <p>
-          <OSMChaButton project={project}>
-            <CustomButton className="bg-white blue-dark ba b--grey-light pv2 ph3">
-              <FormattedMessage {...messages.entireProject} />
-              <ExternalLinkIcon className="pl2" />
-            </CustomButton>
-          </OSMChaButton>
-        </p>
-        <div className="w-100 cf flex flex-wrap">
-          {tasksIds.length > 1 && (
-            <Select
-              classNamePrefix="react-select"
-              className="z-4 flex-auto fl mr3 pb2"
-              isClearable={false}
-              getOptionLabel={(option) => option.label}
-              getOptionValue={(option) => option.value}
-              isMulti={false}
-              options={tasksIds.map((id) => ({ label: id, value: id }))}
-              placeholder={<FormattedMessage {...messages.selectTask} />}
-              isSearchable={true}
-              onChange={(selected) => setActiveTask(selected.value)}
-            />
-          )}
-          <a href={osmchaLink} target="_blank" rel="noopener noreferrer">
-            <CustomButton className={'bg-red b--red white ba pv2 ph3'} disabled={!activeTask}>
-              <FormattedMessage {...messages.seeTaskChangesets} />
-              <ExternalLinkIcon className="pl2" />
-            </CustomButton>
-          </a>
-        </div>
-      </div>
+      {!isSandbox && (
+        <>
+          <h4 className="ttu blue-grey f5">
+            <FormattedMessage {...messages.changesets} />
+          </h4>
+          <div className="ph2">
+            <p>
+              <OSMChaButton project={project}>
+                <CustomButton className="bg-white blue-dark ba b--grey-light pv2 ph3">
+                  <FormattedMessage {...messages.entireProject} />
+                  <ExternalLinkIcon className="pl2" />
+                </CustomButton>
+              </OSMChaButton>
+            </p>
+            <div className="w-100 cf flex flex-wrap">
+              {tasksIds.length > 1 && (
+                <Select
+                  classNamePrefix="react-select"
+                  className="z-4 flex-auto fl mr3 pb2"
+                  isClearable={false}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.value}
+                  isMulti={false}
+                  options={tasksIds.map((id) => ({ label: id, value: id }))}
+                  placeholder={<FormattedMessage {...messages.selectTask} />}
+                  isSearchable={true}
+                  onChange={(selected) => setActiveTask(selected.value)}
+                />
+              )}
+              <a href={osmchaLink} target="_blank" rel="noopener noreferrer">
+                <CustomButton className={'bg-red b--red white ba pv2 ph3'} disabled={!activeTask}>
+                  <FormattedMessage {...messages.seeTaskChangesets} />
+                  <ExternalLinkIcon className="pl2" />
+                </CustomButton>
+              </a>
+            </div>
+          </div>
+        </>
+      )}
       <h4 className="ttu blue-grey f5">
         <FormattedMessage {...messages.projectData} />
       </h4>

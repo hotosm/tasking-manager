@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -11,7 +12,7 @@ import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 import { TextField } from '../formInputs';
 
-export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }: Object) {
+export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }) {
   const [query, setQuery] = useState('');
 
   const onSearchInputChange = (e) => setQuery(e.target.value);
@@ -57,7 +58,20 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
   );
 }
 
-export function CampaignCard({ campaign }: Object) {
+CampaignsManagement.propTypes = {
+  campaigns: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
+  userDetails: PropTypes.shape({
+    role: PropTypes.string,
+  }),
+  isCampaignsFetched: PropTypes.bool,
+};
+
+export function CampaignCard({ campaign }) {
   return (
     <Link to={`${campaign.id}/`} className="w-50-ns w-100 fl pr3">
       <div className="cf bg-white blue-dark br1 mv2 pv4 ph3 ba br1 b--grey-light shadow-hover">
@@ -74,6 +88,13 @@ export function CampaignCard({ campaign }: Object) {
   );
 }
 
+CampaignCard.propTypes = {
+  campaign: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+  }),
+};
+
 export function CampaignInformation(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
@@ -81,24 +102,28 @@ export function CampaignInformation(props) {
   return (
     <>
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="name">
           <FormattedMessage {...messages.name} />
         </label>
-        <Field name="name" component="input" type="text" className={fieldClasses} required />
+        <Field
+          id="name"
+          name="name"
+          component="input"
+          type="text"
+          className={fieldClasses}
+          required
+        />
       </div>
     </>
   );
 }
 
-export function CampaignForm({
-  userDetails,
-  campaign,
-  updateCampaignAsync,
-  disabled,
-  disableErrorAlert,
-}) {
+CampaignInformation.propTypes = {};
+
+export function CampaignForm({ campaign, updateCampaignAsync, disabled, disableErrorAlert }) {
   return (
     <Form
+      key={campaign.id || 'new'}
       onSubmit={(values) => updateCampaignAsync.execute(values)}
       initialValues={campaign}
       render={({
@@ -108,7 +133,6 @@ export function CampaignForm({
         dirtySinceLastSubmit,
         form,
         submitting,
-        values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         if (dirtySinceLastSubmit) {
@@ -152,3 +176,13 @@ export function CampaignForm({
     ></Form>
   );
 }
+
+CampaignForm.propTypes = {
+  campaign: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+  }),
+  updateCampaignAsync: PropTypes.object,
+  disabled: PropTypes.bool,
+  disableErrorAlert: PropTypes.func,
+};

@@ -1,4 +1,4 @@
-import { createRef, useLayoutEffect, useState } from 'react';
+import { createRef, useLayoutEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import maplibregl from 'maplibre-gl';
@@ -40,6 +40,7 @@ export const TasksMap = ({
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);
+  const lastZoomedIdRef = useRef(null);
 
   useSetRTLTextPlugin();
 
@@ -65,14 +66,32 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    // should run only when triggered from tasks list
-    if (typeof zoomedTaskId === 'number') {
-      const taskGeom = mapResults.features.filter(
-        (task) => task.properties.taskId === zoomedTaskId,
-      )[0].geometry;
-      map.fitBounds(bbox(taskGeom), { padding: 40, maxZoom: 22, animate: true });
+    // scale to a specific task or a group of tasks
+    if (map && zoomedTaskId && mapResults?.features) {
+      // Avoid re-zooming to the same task ID(s) repeatedly
+      // if mapResults or other dependencies change.
+      const serializedId = JSON.stringify(zoomedTaskId);
+      if (lastZoomedIdRef.current === serializedId) return;
+
+      const ids = Array.isArray(zoomedTaskId) ? zoomedTaskId : [zoomedTaskId];
+      const selectedFeatures = mapResults.features.filter((feature) =>
+        ids.includes(feature.properties.taskId),
+      );
+
+      if (selectedFeatures.length > 0) {
+        const fc = {
+          type: 'FeatureCollection',
+          features: selectedFeatures,
+        };
+        map.fitBounds(bbox(fc), { padding: 40, animate: animateZoom, maxZoom: 22 });
+        lastZoomedIdRef.current = serializedId;
+      }
     }
-  }, [zoomedTaskId, map, mapResults]);
+
+    if (!zoomedTaskId || (Array.isArray(zoomedTaskId) && zoomedTaskId.length === 0)) {
+      lastZoomedIdRef.current = null;
+    }
+  }, [zoomedTaskId, map, mapResults, animateZoom]);
 
   useLayoutEffect(() => {
     const onSelectTaskClick = (e) => {
@@ -94,33 +113,14 @@ export const TasksMap = ({
     ];
 
     const updateTMZoom = () => {
-      // fit bounds to last mapped/validated task(s), if exists
-      // otherwise fit bounds to all tasks
-      if (zoomedTaskId?.length > 0) {
-        const lastLockedTasks = mapResults.features.filter((task) =>
-          zoomedTaskId.includes(task.properties.taskId),
-        );
-
-        const lastLockedTasksGeom = lastLockedTasks.reduce(
-          (acc, curr) => {
-            const geom = curr.geometry;
-            return {
-              type: 'MultiPolygon',
-              coordinates: [...acc.coordinates, ...geom.coordinates],
-            };
-          },
-          { type: 'MultiPolygon', coordinates: [] },
-        );
-
-        const screenWidth = window.innerWidth;
-        map.fitBounds(bbox(lastLockedTasksGeom), {
-          padding: screenWidth / 8,
-          animate: false,
-        });
-      } else if (!taskBordersOnly) {
-        map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
-      } else {
-        map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
+      // if zoomedTaskId is present, the effect above handles it.
+      // otherwise, fit bounds to all tasks.
+      if (!zoomedTaskId || (Array.isArray(zoomedTaskId) && zoomedTaskId.length === 0)) {
+        if (!taskBordersOnly) {
+          map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
+        } else {
+          map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
+        }
       }
     };
 

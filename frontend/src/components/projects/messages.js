@@ -273,6 +273,14 @@ export default defineMessages({
     id: 'project.results.retry',
     defaultMessage: 'Retry',
   },
+  imagery: {
+    id: 'project.navFilters.imagery',
+    defaultMessage: 'Imagery',
+  },
+  selectImagery: {
+    id: 'project.navFilters.selectImagery',
+    defaultMessage: 'Select imagery',
+  },
   partner: {
     id: 'project.navFilters.partner',
     defaultMessage: 'Partner',

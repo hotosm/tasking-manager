@@ -45,6 +45,7 @@ const projectQueryAllSpecification = {
   partnershipTo: StringParam,
   downloadAsCSV: BooleanParam,
   view: StringParam,
+  imagery: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -79,6 +80,7 @@ const backendToQueryConversion = {
   createdFrom: 'createdFrom',
   basedOnMyInterests: 'basedOnMyInterests',
   omitMapResults: 'omitMapResults',
+  imagery: 'imagery',
 };
 
 const dataFetchReducer = (state, action) => {

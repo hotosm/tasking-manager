@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 
 import { getProjectSummary } from '../../../network/tests/mockData/projects';
 import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
