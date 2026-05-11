@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
+import { useProjectSummaryQuery } from '../../api/projects';
 
 import messages from './messages';
 import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
@@ -34,6 +35,13 @@ export const Header = () => {
   const userDetails = useSelector((state) => state.auth.userDetails);
   const organisations = useSelector((state) => state.auth.organisations);
   const showOrgBar = useSelector((state) => state.orgBarVisibility.isVisible);
+
+  // Matches URLs containing '/projects/' followed by digits (the project ID), like '/projects/130' or '/manage/projects/130'
+  const match = location.pathname.match(/\/projects\/(\d+)/);
+  const projectId = match ? match[1] : null;
+  const { data: project } = useProjectSummaryQuery(projectId, {
+    enabled: !!projectId,
+  });
 
   const linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu lh-solid nowrap pv2';
 
@@ -125,6 +133,11 @@ export const Header = () => {
           />
           <span className="barlow-condensed f3 fw6 ml2 blue-dark nowrap">Tasking Manager</span>
         </Link>
+        {project && project.sandbox && (
+          <div className="tc br1 f7 ttu ba b--red red pv1 ph2 ml3 v-mid dib nowrap">
+            <FormattedMessage {...messages.sandbox} />
+          </div>
+        )}
         <HorizontalScroll
           className={'dn dib-l ml5-l mr4-l pl6-xl'}
           style={{ flexGrow: 1 }}
