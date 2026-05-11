@@ -277,6 +277,7 @@ export function CompletionTabForMapping({
             enableHashtagPaste={true}
             enableContributorsHashtag
             isShowTabNavs
+            enableMappersHashtag
           />
         </Suspense>
       </div>
@@ -662,6 +663,7 @@ const TaskValidationSelector = ({
                 enableHashtagPaste
                 enableContributorsHashtag
                 isShowTabNavs
+                enableMappersHashtag
               />
             </Suspense>
           </div>
