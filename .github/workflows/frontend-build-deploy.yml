@@ -23,10 +23,10 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v6
 
-      - name: Use Node.js 22.11.0
+      - name: Use Node.js 22.12.0
         uses: actions/setup-node@v6
         with:
-          node-version: 22.11.0
+          node-version: 22.12.0
 
       - name: Cache node_modules
         uses: actions/cache@v5
