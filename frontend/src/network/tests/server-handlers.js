@@ -368,7 +368,7 @@ const handlers = [
   rest.get(`${OHSOME_STATS_API_URL}/hot-tm-user`, (req, res, ctx) => {
     return res(ctx.json(ohsomeNowUserStats));
   }),
-  rest.get(`${OHSOME_STATS_API_URL}/stats/:projectId`, (req, res, ctx) => {
+  rest.get(`${OHSOME_STATS_API_URL}/stats/hashtags/:projectId`, (req, res, ctx) => {
     return res(ctx.json(osmStatsProject));
   }),
   rest.get(`${OHSOME_STATS_API_URL}/metadata`, (req, res, ctx) => {
