@@ -1,5 +1,7 @@
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import TurndownService from 'turndown';
+import { gfm } from 'turndown-plugin-gfm';
 
 const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
 
@@ -101,4 +103,82 @@ export const formatUserNamesToLink = (text) => {
     }
   }
   return text;
+};
+
+const turndownService = new TurndownService({
+  headingStyle: 'atx',
+  codeBlockStyle: 'fenced',
+  hr: '---',
+  bullet: '-',
+  emDelimiter: '*',
+});
+
+// Custom escape function to avoid escaping brackets [ ] and other common characters
+// which fixes the task list issue \[x\] and makes the output cleaner.
+turndownService.escape = (string) => {
+  return string
+    .replace(/\\/g, '\\\\')
+    .replace(/\*/g, '\\*')
+    .replace(/_/g, '\\_')
+    .replace(/`/g, '\\`')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/#/g, '\\#');
+};
+
+turndownService.use(gfm);
+
+// Rule to force '-' bullets for unordered lists
+turndownService.addRule('listItem', {
+  filter: 'li',
+  replacement: function (content, node, options) {
+    content = content.trimStart().trimEnd();
+    content = content.replace(/\n/gm, '\n    '); // indent content
+    let prefix = options.bullet + ' ';
+    const parent = node.parentNode;
+    if (parent.nodeName === 'OL') {
+      const start = parent.getAttribute('start');
+      const index = Array.prototype.indexOf.call(parent.children, node);
+      prefix = (start ? Number(start) + index : index + 1) + '. ';
+    }
+    return prefix + content + (node.nextSibling ? '\n' : '');
+  },
+});
+
+// Rule to use double tildes for strikethrough
+turndownService.addRule('strikethrough', {
+  filter: ['del', 's', 'strike'],
+  replacement: (content) => `~~${content}~~`,
+});
+
+// Rule to keep HTML comments
+turndownService.addRule('keepComments', {
+  filter: (node) => node.nodeType === 8,
+  replacement: (content, node) => `\n<!--${node.data}-->\n`,
+});
+
+// Rule to keep other iframes
+turndownService.keep(['iframe']);
+
+export const markdownFromHtml = (html) => {
+  const markdown = turndownService.turndown(html);
+
+  // Split into lines to avoid complex regex that can lead to ReDoS (security hotspots)
+  const lines = markdown.split('\n');
+  const filteredLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const nextLine = lines[i + 1];
+
+    filteredLines.push(line);
+
+    // If current line is a header and next line is empty,
+    // and the line after that is also a header, skip the empty line.
+    if (line.startsWith('#') && nextLine === '' && lines[i + 2]?.startsWith('#')) {
+      i++; // Skip the next empty line
+    }
+  }
+
+  return filteredLines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 };
