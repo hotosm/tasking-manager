@@ -1,4 +1,5 @@
 import { formatISO } from 'date-fns';
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
 
 export const newUsersStats = {
   total: 1044,
@@ -79,9 +80,11 @@ export const ohsomeNowUserStats = {
   },
 };
 
+const projectHashtag = `${TM_DEFAULT_CHANGESET_COMMENT.replace(/^#/, '')}-1`;
+
 export const osmStatsProject = {
   result: {
-    'hotosm-project-1': {
+    [projectHashtag]: {
       changesets: 987654321,
       users: 112,
       roads: 5658.62006919192,
