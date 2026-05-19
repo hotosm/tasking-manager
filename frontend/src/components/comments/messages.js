@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'comment.hashtags.help.contributors',
     defaultMessage: 'Add "{hashtag}" to notify the task contributors about your comment.',
   },
+  mappersHashtagTip: {
+    id: 'comment.hashtags.help.mappers',
+    defaultMessage: 'Add "{hashtag}" to notify the task mappers about your comment.',
+  },
   nothingToPreview: {
     id: 'comment.preview.nothingToPreview',
     defaultMessage: 'Nothing to preview',

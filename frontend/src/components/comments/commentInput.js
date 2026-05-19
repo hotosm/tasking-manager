@@ -32,6 +32,7 @@ function CommentInputField({
   isShowUserPicture = false,
   placeholderMsg = messages.leaveAComment,
   markdownTextareaProps = {},
+  enableMappersHashtag = false,
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
@@ -289,6 +290,12 @@ function CommentInputField({
             <>
               <span>, </span>
               <HashtagPaste text={comment} setFn={setComment} hashtag="#contributors" />
+            </>
+          )}
+          {enableMappersHashtag && (
+            <>
+              <span>, </span>
+              <HashtagPaste text={comment} setFn={setComment} hashtag="#mappers" />
             </>
           )}
         </span>
