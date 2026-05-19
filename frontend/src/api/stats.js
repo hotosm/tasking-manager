@@ -61,18 +61,20 @@ export const useOsmStatsQuery = ({ topics = [] }) => {
 };
 
 export const useOsmHashtagStatsQuery = (defaultComment) => {
+  const hashtag = defaultComment?.[0]?.replace(/^#/, '').trim().toLowerCase();
+
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_API_URL}/stats/${defaultComment[0].replace('#', '')}`, {
+    return api().get(`${OHSOME_STATS_API_URL}/stats/hashtags/${encodeURIComponent(hashtag)}`, {
       signal,
     });
   };
 
   return useQuery({
-    queryKey: ['osm-hashtag-stats'],
+    queryKey: ['osm-hashtag-stats', hashtag],
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
-    enabled: Boolean(defaultComment?.[0]),
-    select: (data) => data.data.result,
+    enabled: Boolean(hashtag),
+    select: (data) => data.data.result?.[hashtag] || {},
   });
 };
 
