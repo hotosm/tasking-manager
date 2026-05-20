@@ -106,48 +106,48 @@ inputs = {
   cpu_scaling_config = {
     enabled             = true
     threshold           = 60
-    evaluation_periods  = 1
-    period              = 30
-    scale_up_cooldown   = 60
+    evaluation_periods  = 2
+    period              = 60
+    scale_up_cooldown   = 90
     scale_down_cooldown = 180
     scale_up_steps = [
-      { lower_bound = 0, upper_bound = 10, adjustment = 1 },
-      { lower_bound = 10, upper_bound = null, adjustment = 2 }
+      { lower_bound = 0, upper_bound = 15, adjustment = 1 },
+      { lower_bound = 15, upper_bound = null, adjustment = 2 }
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = -60, adjustment = -1 }
+      { lower_bound = null, upper_bound = -30, adjustment = -1 }
     ]
   }
 
   memory_scaling_config = {
     enabled             = true
-    threshold           = 70
-    evaluation_periods  = 1
-    period              = 30
-    scale_up_cooldown   = 60
+    threshold           = 65
+    evaluation_periods  = 2
+    period              = 60
+    scale_up_cooldown   = 90
     scale_down_cooldown = 180
     scale_up_steps = [
-      { lower_bound = 0, upper_bound = 10, adjustment = 1 },
-      { lower_bound = 10, upper_bound = null, adjustment = 2 },
+      { lower_bound = 0, upper_bound = 15, adjustment = 1 },
+      { lower_bound = 15, upper_bound = null, adjustment = 2 },
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = -40, adjustment = -1 }
+      { lower_bound = null, upper_bound = -15, adjustment = -1 }
     ]
   }
 
   request_scaling_config = {
     enabled             = true
-    threshold           = 100
+    threshold           = 300
     evaluation_periods  = 1
-    period              = 30
-    scale_up_cooldown   = 60
+    period              = 60
+    scale_up_cooldown   = 90
     scale_down_cooldown = 180
     scale_up_steps = [
-      { lower_bound = 0, upper_bound = 100, adjustment = 1 },
-      { lower_bound = 100, upper_bound = null, adjustment = 2 },
+      { lower_bound = 0, upper_bound = 300, adjustment = 1 },
+      { lower_bound = 300, upper_bound = null, adjustment = 2 },
     ]
     scale_down_steps = [
-      { lower_bound = null, upper_bound = 0, adjustment = -1 }
+      { lower_bound = null, upper_bound = -100, adjustment = -1 }
     ]
   }
 }
