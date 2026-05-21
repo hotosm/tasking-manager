@@ -64,9 +64,10 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
   const hashtag = defaultComment?.[0]?.replace(/^#/, '').trim().toLowerCase();
 
   const fetchOsmStats = ({ signal }) => {
-    return api().get(`${OHSOME_STATS_API_URL}/stats/hashtags/${encodeURIComponent(hashtag)}`, {
-      signal,
-    });
+    return api().get(
+      `${OHSOME_STATS_API_URL}/stats?topics=contributor,road,building,edit&hashtag=${encodeURIComponent(hashtag)}`,
+      { signal },
+    );
   };
 
   return useQuery({
@@ -74,7 +75,15 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
     queryFn: fetchOsmStats,
     useErrorBoundary: true,
     enabled: Boolean(hashtag),
-    select: (data) => data.data.result?.[hashtag] || {},
+    select: (data) => {
+      const topics = data.data.result?.topics || {};
+      return {
+        changesets: topics.contributor?.value,
+        edits: topics.edit?.value,
+        buildings: topics.building?.value,
+        roads: topics.road?.value,
+      };
+    },
   });
 };
 

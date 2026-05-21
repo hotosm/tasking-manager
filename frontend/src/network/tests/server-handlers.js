@@ -368,13 +368,14 @@ const handlers = [
   rest.get(`${OHSOME_STATS_API_URL}/hot-tm-user`, (req, res, ctx) => {
     return res(ctx.json(ohsomeNowUserStats));
   }),
-  rest.get(`${OHSOME_STATS_API_URL}/stats/hashtags/:projectId`, (req, res, ctx) => {
-    return res(ctx.json(osmStatsProject));
-  }),
   rest.get(`${OHSOME_STATS_API_URL}/metadata`, (req, res, ctx) => {
     return res(ctx.json(ohsomeNowMetadata));
   }),
   rest.get(`${OHSOME_STATS_API_URL}/stats`, (req, res, ctx) => {
+    const hashtag = req.url.searchParams.get('hashtag');
+    if (hashtag && !hashtag.includes('*') && !hashtag.includes('%2A')) {
+      return res(ctx.json(osmStatsProject));
+    }
     return res(ctx.json(updatedOhsomeStats));
   }),
 
