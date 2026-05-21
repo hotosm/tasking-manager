@@ -84,13 +84,11 @@ const projectHashtag = `${TM_DEFAULT_CHANGESET_COMMENT.replace(/^#/, '')}-1`;
 
 export const osmStatsProject = {
   result: {
-    [projectHashtag]: {
-      changesets: 987654321,
-      users: 112,
-      roads: 5658.62006919192,
-      buildings: 12923,
-      edits: 123456789,
-      latest: '2020-10-05T23:21:22.000Z',
+    topics: {
+      contributor: { value: 987654321 },
+      edit: { value: 123456789 },
+      road: { value: 5658.62, added: 5000, modified: { count_modified: 500 }, deleted: 0 },
+      building: { value: 12923, added: 12800, modified: { count_modified: 100 }, deleted: 0 },
     },
   },
 };
