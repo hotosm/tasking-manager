@@ -56,6 +56,7 @@ export const PostProjectComment = ({ projectId, refetchComments, contributors })
             contributors={
               Array.isArray(contributors) ? contributors.map((user) => user.username) : undefined
             }
+            enableMappersHashtag
           />
         </Suspense>
       </div>

@@ -65,6 +65,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
           enableContributorsHashtag
           isShowUserPicture
           isShowTabNavs
+          enableMappersHashtag
         />
       </Suspense>
       <div className="ml-auto mb5 flex flex-column gap-1 items-end">
