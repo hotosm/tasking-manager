@@ -17,6 +17,7 @@ import { formatUserNamesToLink, markdownFromHtml } from '../../utils/htmlFromMar
 import { iconConfig } from './editorIconConfig';
 import messages from './messages';
 import { CurrentUserAvatar } from '../user/avatar';
+import * as safeStorage from '../../utils/safe_storage';
 
 const maxFileSize = 1 * 1024 * 1024; // 1MB
 
@@ -40,6 +41,7 @@ function CommentInputField({
   const isBundle = useRef(false);
   const lastConvertedRef = useRef(null);
   const [isShowPreview, setIsShowPreview] = useState(false);
+  const hasMounted = useRef(false);
 
   const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
@@ -139,17 +141,28 @@ function CommentInputField({
 
   useEffect(() => {
     if (!sessionkey) return;
-    const commenEvent = sessionStorage.getItem(sessionkey);
-    if (commenEvent) {
-      setComment(commenEvent);
+    const saved = safeStorage.getItem(sessionkey);
+    if (saved) {
+      setComment(saved);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionkey]);
 
   useEffect(() => {
     if (!sessionkey) return;
-    sessionStorage.setItem(sessionkey, comment);
+    if (comment) {
+      safeStorage.setItem(sessionkey, comment);
+    } else if (hasMounted.current) {
+      // Only purge after mount — avoids deleting the saved draft before
+      // the restore effect above has had a chance to apply it.
+      safeStorage.removeItem(sessionkey);
+    }
   }, [comment, sessionkey]);
+
+  // Mark component as mounted after all initial effects run
+  useEffect(() => {
+    hasMounted.current = true;
+  }, []);
 
   useEffect(() => {
     if (
