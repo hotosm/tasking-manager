@@ -1,5 +1,7 @@
 # Análisis de pruebas unitarias de Modelos, DTOs y Validaciones Base
 
+**Responsable:** *Yordano Hernan Boza Portilla*
+
 ## Objetivo
 
 Realizar un análisis exhaustivo de las pruebas unitarias existentes relacionadas con modelos de dominio, entidades PostGIS y DTOs del sistema, con el fin de evaluar la cobertura actual, identificar vacíos funcionales y proponer nuevos escenarios de prueba alineados con la arquitectura y reglas de validación del proyecto.

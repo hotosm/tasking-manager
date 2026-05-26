@@ -1,5 +1,7 @@
 # Análisis de pruebas unitarias de Seguridad, Usuarios y Servicios de Comunicación
 
+**Responsable:** *Paul Andre Cari Lipe*
+
 ## Objetivo
 
 Realizar un análisis detallado de las pruebas unitarias relacionadas con autenticación, autorización, usuarios, mensajería y flujos de comunicación del sistema, identificando vulnerabilidades funcionales, vacíos de cobertura y oportunidades de mejora en pruebas de seguridad y resiliencia.

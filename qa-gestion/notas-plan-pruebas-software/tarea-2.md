@@ -1,5 +1,7 @@
 # Análisis de pruebas unitarias de Servicios Core y Lógica de Negocio
 
+**Responsable:** *Jorge Luis Mamani Huarsaya*
+
 ## Objetivo
 
 Analizar las pruebas unitarias existentes relacionadas con servicios principales y lógica de negocio del sistema, evaluando la cobertura funcional actual y definiendo nuevos escenarios de prueba orientados a robustez, validaciones, consistencia transaccional y reglas de negocio críticas.
