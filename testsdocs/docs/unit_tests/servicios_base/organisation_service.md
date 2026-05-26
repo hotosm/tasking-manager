@@ -17,6 +17,8 @@ A través de estos tests, el proyecto mitiga riesgos funcionales críticos. El p
 
 Como observación técnica para la ejecución y mantenimiento de estos tests, destaca la dependencia de *canned factories* (como `create_canned_organisation` y `create_canned_user`). Estas herramientas permiten inyectar estados predecibles en la base de datos en memoria, aislando cada prueba para evitar falsos positivos. Asimismo, se hace uso intensivo de *mocks* para interceptar llamadas internas, asegurando que la transformación de modelos de base de datos a objetos de transferencia (DTOs) ocurra en la capa adecuada.
 
+### Ejemplo técnico
+
 ```python
     @pytest.fixture(autouse=True)
     async def setup_test_data(self, db_connection_fixture, request):
@@ -30,14 +32,16 @@ Como observación técnica para la ejecución y mantenimiento de estos tests, de
         assert self.test_user is not None, "Failed to create test user"
 ```
 
-## 1.4. Casos de Prueba Implementados
+## 1.3. Casos de Prueba Implementados
 
-A continuación, se detallan los casos de prueba extraídos del código actual. La siguiente tabla mapea el comportamiento esperado y obtenido para cada escenario validado en el servicio de organizaciones.
+La siguiente tabla mapea el comportamiento esperado y obtenido para cada escenario validado en el servicio de organizaciones.
 
 | ID del Caso | Módulo | Objetivo | Precondiciones | Entrada | Resultado Esperado | Resultado Obtenido | Estado | Riesgo Asociado |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **TC-ORG-001** | OrganisationService | Validar la correcta recuperación de una organización mediante un ID válido. | Debe existir al menos una organización creada en la base de datos de pruebas. | ID numérico de la organización existente. | El servicio devuelve la entidad exacta que coincide con el identificador. | Retorna el objeto de la organización correcta. | Aprobado | Inconsistencia de datos al cruzar información entre entidades diferentes. |
 
-## 1.5. Cobertura validada
+## 1.4. Cobertura validada
 
-## 1.6. Riesgos no cubiertos
+### Captura de cobertura
+
+## 1.5. Riesgos no cubiertos
