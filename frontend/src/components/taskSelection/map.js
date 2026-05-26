@@ -5,6 +5,8 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { NineCellsGridIcon } from '../svgIcons';
+
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
 import useSetRTLTextPlugin from '../../utils/useSetRTLTextPlugin';
@@ -33,6 +35,9 @@ export const TasksMap = ({
   animateZoom = true,
   showTaskIds = false,
   selected: selectedOnMap,
+  invalidatedTasksData,
+  showChoropleth = false,
+  onToggleChoropleth,
 }) => {
   const intl = useIntl();
   const mapRef = createRef();
@@ -500,6 +505,120 @@ export const TasksMap = ({
     intl,
   ]);
 
+  /* ------------------------------------------------------------------
+   * Choropleth effect: add / update / remove the invalidation-count layer
+   * ------------------------------------------------------------------ */
+  useLayoutEffect(() => {
+    if (!map) return;
+
+    const CHOROPLETH_SOURCE = 'tasks-invalidation-choropleth';
+    const CHOROPLETH_LAYER = 'tasks-invalidation-fill';
+
+    const buildChoroplethGeoJSON = () => {
+      if (!mapResults || !invalidatedTasksData) return null;
+      const countMap = {};
+      invalidatedTasksData.forEach(({ taskId, invalidatedCount }) => {
+        countMap[taskId] = invalidatedCount;
+      });
+      return {
+        type: 'FeatureCollection',
+        features: mapResults.features.map((f) => ({
+          ...f,
+          properties: {
+            ...f.properties,
+            invalidatedCount: countMap[f.properties.taskId] || 0,
+          },
+        })),
+      };
+    };
+
+    if (!showChoropleth) {
+      // Restore the normal task-status fill opacity
+      if (map.getLayer('tasks-fill')) {
+        map.setPaintProperty('tasks-fill', 'fill-opacity', 0.8);
+      }
+      // Hide the choropleth overlay
+      if (map.getLayer(CHOROPLETH_LAYER)) {
+        map.setLayoutProperty(CHOROPLETH_LAYER, 'visibility', 'none');
+      }
+      return;
+    }
+
+    if (!invalidatedTasksData || !mapResults?.features?.length) return;
+
+    const geojson = buildChoroplethGeoJSON();
+    if (!geojson) return;
+
+    const addOrUpdateLayer = () => {
+      try {
+        // Make tasks-fill invisible (opacity=0) but keep it in the layer stack
+        // so MapLibre click hit-testing still works on it.
+        if (map.getLayer('tasks-fill')) {
+          map.setPaintProperty('tasks-fill', 'fill-opacity', 0);
+        }
+
+        if (map.getSource(CHOROPLETH_SOURCE)) {
+          map.getSource(CHOROPLETH_SOURCE).setData(geojson);
+          if (map.getLayer(CHOROPLETH_LAYER)) {
+            map.setLayoutProperty(CHOROPLETH_LAYER, 'visibility', 'visible');
+          }
+          return;
+        }
+
+        map.addSource(CHOROPLETH_SOURCE, { type: 'geojson', data: geojson });
+
+        const layerDef = {
+          id: CHOROPLETH_LAYER,
+          type: 'fill',
+          source: CHOROPLETH_SOURCE,
+          paint: {
+            'fill-color': [
+              'interpolate', ['linear'], ['get', 'invalidatedCount'],
+              0, '#f9fafb',   // never invalidated: near-white
+              1, '#fde68a',   // once: light amber
+              3, '#f97316',   // moderate: orange
+              6, '#b91c1c',   // high: deep red
+            ],
+            'fill-opacity': 1,
+          },
+          layout: { visibility: 'visible' },
+        };
+
+        // Insert BEFORE the border layers so grid lines always render on top.
+        // Fall back to appending only if no border layers exist yet.
+        const beforeLayer = map.getLayer('unselected-tasks-border')
+          ? 'unselected-tasks-border'
+          : map.getLayer('selected-tasks-border')
+          ? 'selected-tasks-border'
+          : undefined;
+
+        if (beforeLayer) {
+          map.addLayer(layerDef, beforeLayer);
+        } else {
+          map.addLayer(layerDef);
+        }
+      } catch (err) {
+        console.error('[Choropleth] Failed to add/update invalidation layer:', err);
+      }
+    };
+
+    // Attempt to add the layer immediately if the map is fully ready.
+    // If not (e.g. style still loading or tasks source not yet registered),
+    // defer to the next 'idle' event, which fires once all sources/tiles settle.
+    if (map.isStyleLoaded() && map.getSource('tasks') !== undefined) {
+      addOrUpdateLayer();
+    } else {
+      // 'load' only fires once and may already have fired; use 'idle' as
+      // a reliable one-shot that fires after all pending operations settle.
+      const onIdle = () => {
+        addOrUpdateLayer();
+        map.off('idle', onIdle);
+      };
+      map.on('idle', onIdle);
+      return () => map.off('idle', onIdle);
+    }
+  }, [map, showChoropleth, invalidatedTasksData, mapResults]);
+
   if (!isWebglSupported()) {
     return <WebglUnsupported className={`w-100 h-100 fr ${className || ''}`} />;
   } else {
@@ -510,6 +629,44 @@ export const TasksMap = ({
             <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
           </div>
         )}
+
+        {/* Choropleth toggle — icon-only square, grouped below zoom controls */}
+        {onToggleChoropleth && (
+          <button
+            id="invalidation-choropleth-toggle"
+            onClick={onToggleChoropleth}
+            title={showChoropleth ? 'Hide invalidation heatmap' : 'Show invalidation heatmap'}
+            style={{
+              position: 'absolute',
+              top: 103,   // 10px margin + 58px zoom cluster + 29px compass + 6px gap
+              right: 10,
+              zIndex: 5,
+              width: 29,
+              height: 29,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 0,
+              border: 'none',
+              borderRadius: 4,
+              background: showChoropleth ? '#fff0f0' : '#ffffff',
+              cursor: 'pointer',
+              // Matches MapLibre's .maplibregl-ctrl-group box-shadow exactly
+              boxShadow: '0 0 0 2px rgba(0,0,0,.1)',
+              transition: 'background 0.15s',
+            }}
+          >
+            <NineCellsGridIcon
+              style={{
+                width: 15,
+                height: 15,
+                fill: showChoropleth ? '#d73f3f' : '#404040',
+                transition: 'fill 0.15s',
+              }}
+            />
+          </button>
+        )}
+
         <div id="map" className={className} ref={mapRef}></div>
       </>
     );
