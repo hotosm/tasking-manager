@@ -866,4 +866,64 @@ export default defineMessages({
     id: 'project.detail.sandbox.tooltip',
     defaultMessage: 'This is a training project. Edits will not be saved to OpenStreetMap.',
   },
+  osmDataControlsTitle: {
+    id: 'project.tasks.osm_data_controls.title',
+    defaultMessage: 'OSM Data Controls',
+  },
+  osmDataControlsOpacityDescription: {
+    id: 'project.tasks.osm_data_controls.opacity.description',
+    defaultMessage: 'Adjust OSM data layer opacity',
+  },
+  osmDataControlsOpacityHidden: {
+    id: 'project.tasks.osm_data_controls.opacity.hidden',
+    defaultMessage: '0% (Hidden)',
+  },
+  osmDataControlsOpacitySolid: {
+    id: 'project.tasks.osm_data_controls.opacity.solid',
+    defaultMessage: '100% (Solid)',
+  },
+  osmDataControlsFetching: {
+    id: 'project.tasks.osm_data_controls.fetching',
+    defaultMessage: 'Fetching OSM features...',
+  },
+  osmDataControlsErrorTitle: {
+    id: 'project.tasks.osm_data_controls.error.title',
+    defaultMessage: 'Error Loading Features',
+  },
+  osmDataControlsErrorDescription: {
+    id: 'project.tasks.osm_data_controls.error.description',
+    defaultMessage: 'Failed to fetch OSM features for this task.',
+  },
+  osmDataControlsReset: {
+    id: 'project.tasks.osm_data_controls.reset',
+    defaultMessage: 'Reset',
+  },
+  osmDataControlsLayerTitle: {
+    id: 'project.tasks.osm_data_controls.layer.title',
+    defaultMessage: 'OSM Features Layer',
+  },
+  osmDataControlsLayerDescriptionInitial: {
+    id: 'project.tasks.osm_data_controls.layer.description.initial',
+    defaultMessage: 'Load and display existing OpenStreetMap features.',
+  },
+  osmDataControlsLayerDescriptionReady: {
+    id: 'project.tasks.osm_data_controls.layer.description.ready',
+    defaultMessage: 'OSM features are loaded and ready.',
+  },
+  osmDataControlsLoadButton: {
+    id: 'project.tasks.osm_data_controls.load.button',
+    defaultMessage: 'Load OSM Features',
+  },
+  osmDataControlsShowButton: {
+    id: 'project.tasks.osm_data_controls.show.button',
+    defaultMessage: 'Show OSM Features',
+  },
+  osmDataControlsHideTitle: {
+    id: 'project.tasks.osm_data_controls.hide.title',
+    defaultMessage: 'Hide OSM features',
+  },
+  osmDataControlsShowTitle: {
+    id: 'project.tasks.osm_data_controls.show.title',
+    defaultMessage: 'Show OSM features',
+  },
 });

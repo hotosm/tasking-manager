@@ -34,9 +34,10 @@ import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
 import { SessionAboutToExpire, SessionExpired } from './extendSession';
 import { MappingTypes } from '../mappingTypes';
-import { usePriorityAreasQuery, useTaskDetail } from '../../api/projects';
+import { usePriorityAreasQuery, useTaskDetail, useOsmFeaturesQuery } from '../../api/projects';
 import OtherTabInfo from './OtherTabInfo';
 import { InfoBox } from '../projectDetail/infoBox';
+import { OsmDataControls } from './OsmDataControls';
 
 const Editor = lazy(() => import('../editor'));
 const RapidEditor = lazy(() => import('../rapidEditor'));
@@ -91,6 +92,8 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [showSessionExpiringDialog, setShowSessionExpiringDialog] = useState(false);
   const [showSessionExpiredDialog, setSessionTimeExpiredDialog] = useState(false);
+  const [showOsmFeatures, setShowOsmFeatures] = useState(false);
+  const [osmLayerOpacity, setOsmLayerOpacity] = useState(1);
 
   const activeTask = activeTasks?.[0];
   const timer = new Date(activeTask.lastUpdated);
@@ -100,6 +103,11 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const { data: priorityArea, isError: isPriorityAreaError } = usePriorityAreasQuery(
     project.projectId,
   );
+  const {
+    isFetching: isOsmFetching,
+    isSuccess: isOsmSuccess,
+    isError: isOsmError,
+  } = useOsmFeaturesQuery(project.projectId, tasksIds[0], !!project.sandbox && showOsmFeatures);
 
   const contributors = taskDetail?.taskHistory
     ? getTaskContributors(taskDetail.taskHistory, userDetails.username)
@@ -246,6 +254,8 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                       gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
                       projectId={project.projectId}
                       taskId={tasksIds[0]}
+                      showOsmFeatures={showOsmFeatures}
+                      osmLayerOpacity={osmLayerOpacity}
                     />
                   ) : (
                     <div>Rapid sandbox editor is under developemnt</div>
@@ -453,6 +463,17 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                   )}
                   {activeSection === 'instructions' && (
                     <>
+                      {project.sandbox && (
+                        <OsmDataControls
+                          showOsmFeatures={showOsmFeatures}
+                          setShowOsmFeatures={setShowOsmFeatures}
+                          osmLayerOpacity={osmLayerOpacity}
+                          setOsmLayerOpacity={setOsmLayerOpacity}
+                          isFetching={isOsmFetching}
+                          isSuccess={isOsmSuccess}
+                          isError={isOsmError}
+                        />
+                      )}
                       <ProjectInstructions
                         instructions={project.projectInfo && project.projectInfo.instructions}
                       />

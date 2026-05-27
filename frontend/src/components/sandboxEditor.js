@@ -25,6 +25,8 @@ export default function SandboxEditor({
   gpxUrl,
   projectId,
   taskId,
+  showOsmFeatures,
+  osmLayerOpacity,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,9 +40,12 @@ export default function SandboxEditor({
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [gpxGeojson, setGpxGeojson] = useState(null);
-  const [showOsmFeatures, setShowOsmFeatures] = useState(false);
 
-  const { data: osmFeatures, isError: osmFeaturesError } = useOsmFeaturesQuery(projectId, taskId, !!sandboxId);
+  const { data: osmFeatures } = useOsmFeaturesQuery(
+    projectId,
+    taskId,
+    !!sandboxId && showOsmFeatures,
+  );
 
   useSandboxOAuthCallback(sandboxId);
 
@@ -196,12 +201,17 @@ export default function SandboxEditor({
     if (isInitialized && iDContext && (osmFeatures || gpxGeojson)) {
       // Assign stable IDs to ensure iD can maintain hover/select states
       const features = [
-        ...(gpxGeojson?.features || []).map((f, i) => ({ ...f, id: f.id || `gpx-${i}` })),
-        ...(showOsmFeatures && osmFeatures?.features ? osmFeatures.features : []).map((f) => ({
+        ...(gpxGeojson?.features || []).map((f, i) => ({
+          ...f,
+          id: f.id || `gpx-${i}`,
+          __layerID__: 'gpx-features',
+        })),
+        ...(showOsmFeatures && osmFeatures?.features ? osmFeatures.features : []).map((f, i) => ({
           ...f,
           id:
             f.id ||
-            (f.properties?.osm_id ? `osm-${f.properties.osm_id}` : `osm-gen-${Math.random()}`),
+            (f.properties?.osm_id ? `osm-${f.properties.osm_id}` : `osm-${i}`),
+          __layerID__: 'osm-features',
         })),
       ];
 
@@ -215,94 +225,42 @@ export default function SandboxEditor({
   }, [isInitialized, iDContext, osmFeatures, gpxGeojson, showOsmFeatures]);
 
   useEffect(() => {
-    if (isInitialized && iDContext) {
-      const injectButton = () => {
-        if (document.getElementById('osm-features-toggle')) return true;
-
-        // Find the undo button - we want to insert our button inside the same group
-        const undoButton =
-          document.querySelector('.undo-button') ||
-          document.querySelector('.undo');
-
-        if (undoButton) {
-          const group = undoButton.parentElement;
-          const button = document.createElement('button');
-          button.id = 'osm-features-toggle';
-          // Use bar-button base class only — don't inherit undo's disabled state
-          button.className = 'bar-button';
-          button.disabled = false;
-          button.title = 'Toggle OSM Features Overlay';
-          button.style.cssText = `
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer !important;
-          `;
-          button.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 8 8">
-              <path fill="currentColor" d="M4.03 0c-2.53 0-4.03 3-4.03 3s1.5 3 4.03 3c2.47 0 3.97-3 3.97-3s-1.5-3-3.97-3zm-.03 1c1.11 0 2 .9 2 2 0 1.11-.89 2-2 2-1.1 0-2-.89-2-2 0-1.1.9-2 2-2zm0 1c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1c0-.1-.04-.19-.06-.28-.08.16-.24.28-.44.28-.28 0-.5-.22-.5-.5 0-.2.12-.36.28-.44-.09-.03-.18-.06-.28-.06z" transform="translate(0 1)"></path>
-            </svg>
-          `;
-          button.onclick = () => setShowOsmFeatures((prev) => !prev);
-          // Insert before the undo button, inside the same group
-          group.insertBefore(button, undoButton);
-          // Apply initial visibility based on current osmFeatures state
-          const hasData = osmFeatures?.features?.length > 0;
-          button.style.display = hasData && !osmFeaturesError ? 'inline-flex' : 'none';
-          return true;
-        }
-        return false;
-      };
-
-      // Try immediately
-      if (!injectButton()) {
-        // If not found, check every 500ms for up to 10 seconds
-        let attempts = 0;
-        const interval = setInterval(() => {
-          attempts++;
-          if (injectButton() || attempts > 20) {
-            clearInterval(interval);
-          }
-        }, 500);
-        return () => clearInterval(interval);
+    if (!isInitialized || !iDContext) return;
+    const container = document.getElementById('id-container');
+    if (container) {
+      const dataLayer = container.querySelector('.layer-data');
+      if (dataLayer) {
+        dataLayer.style.opacity = '';
       }
     }
-  }, [isInitialized, iDContext, osmFeatures, osmFeaturesError]);
 
-  useEffect(() => {
-    const btn = document.getElementById('osm-features-toggle');
-    if (btn) {
-      if (showOsmFeatures) {
-        btn.dataset.active = 'true';
-        btn.style.background = '#11120B';
-        btn.style.color = '#fff';
-        btn.style.borderColor = '#11120B';
-      } else {
-        btn.dataset.active = 'false';
-        btn.style.background = '#fff';
-        btn.style.color = '#3d3d3d';
-        btn.style.borderColor = '#d8dae4';
+    let styleEl = document.getElementById('osm-layer-opacity-style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'osm-layer-opacity-style';
+      document.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      #id-container .layer-data .osm-features {
+        opacity: ${osmLayerOpacity ?? 1} !important;
       }
-    }
-  }, [showOsmFeatures]);
+      #id-container .layer-data .gpx-features {
+        opacity: 1 !important;
+      }
+    `;
 
-  useEffect(() => {
-    const btn = document.getElementById('osm-features-toggle');
-    if (!btn) return;
-    const hasData = osmFeatures?.features?.length > 0;
-    if (!hasData || osmFeaturesError) {
-      btn.style.display = 'none';
-    } else {
-      btn.style.display = 'inline-flex';
-    }
-  }, [osmFeatures, osmFeaturesError]);
+    return () => {
+      const el = document.getElementById('osm-layer-opacity-style');
+      if (el) {
+        el.remove();
+      }
+    };
+  }, [isInitialized, iDContext, osmLayerOpacity]);
 
   useEffect(() => {
     return () => {
       dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
-      // Clean up injected button to prevent stale closures on re-mount
-      const btn = document.getElementById('osm-features-toggle');
-      if (btn) btn.remove();
     };
   }, [dispatch, sandboxId]);
 
