@@ -31,11 +31,14 @@ Durante la fase de investigación, se evaluaron las dos versiones disponibles en
 
 Se ha desplegado un entorno de gestión robusto que estandariza la forma en que el equipo documenta, reporta y soluciona tareas.
 
-### 3.1 Diseño del Flujo Kanban
-Se estableció un tablero central ("Proyecto Metamorfosis") con tres estados principales que reflejan el ciclo de vida de las tareas:
-*    **Para hacer (To Do):** Backlog de tareas e investigaciones pendientes.
-*    **En progreso (In Progress):** Tareas asignadas que están siendo activamente desarrolladas.
-*    **Hecho (Done):** Tareas finalizadas, validadas y cerradas en el repositorio.
+### 3.1 Diseño del Flujo Kanban (Enfoque QA)
+Tras evaluar las mejores prácticas de la industria para equipos de Calidad de Software, se determinó que un flujo básico de 3 columnas era insuficiente para garantizar la integridad del código. Por ello, se implementó un **Pipeline de QA de 5 estados**:
+
+*   **Para hacer (To Do / Backlog):** Requerimientos técnicos, bugs y tareas de investigación pendientes o planificadas para el Sprint actual.
+*   **En progreso (In Progress):** El responsable está desarrollando activamente el código o redactando la documentación.
+*   **En Revisión (Code Review):** El desarrollo finalizó y se ha creado un Pull Request. El código está esperando revisión por pares (Peer Review) para asegurar cumplimiento de estándares.
+*   **En Pruebas (QA Testing):** El código fue aprobado visualmente, pero se encuentra bajo ejecución de pruebas (unitarias, integración o manuales). Actúa como compuerta de calidad estricta.
+*   **Hecho (Done):** Las pruebas fueron exitosas, el Pull Request fue integrado (Merge) y la rama original fue eliminada.
 
 ### 3.2 Integración de Metadatos y Trazabilidad
 Para un control detallado, cada Issue dentro del tablero ha sido enriquecido con metadatos específicos:
