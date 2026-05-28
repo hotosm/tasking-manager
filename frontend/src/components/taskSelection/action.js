@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import * as safeStorage from '../../utils/safe_storage';
 import { ProjectInstructions } from './instructions';
 import { TasksMap } from './map';
 import { HeaderLine } from '../projectDetail/header';
@@ -85,7 +86,14 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
-  const [validationComments, setValidationComments] = useState({});
+  const [validationComments, setValidationComments] = useState(() => {
+    const restored = {};
+    tasksIds.forEach((id) => {
+      const saved = safeStorage.getItem(`tm-comment-validation-${project.projectId}-${id}`);
+      if (saved) restored[id] = saved;
+    });
+    return restored;
+  });
   const [validationStatus, setValidationStatus] = useState({});
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
