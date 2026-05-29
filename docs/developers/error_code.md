@@ -1,89 +1,92 @@
-# Tasking Manager API Error Codes
+# Códigos de Error de la API del Tasking Manager
 
-In this document you can find detailed descriptions of the error codes you might encounter when using the different endpoints of the Tasking Manager API.
+En este documento puedes encontrar descripciones detalladas de los códigos de error que se podria encontrar al utilizar los diferentes puntos de enlace (endpoints) de la API del Tasking Manager.
 
-## Error Messages and Codes
-When the TM API returns error messages, it does so in JSON format. For example, an error might look like this:
+## Mensajes y Códigos de Error
+Cuando la API del TM devuelve mensajes de error, lo hace en formato JSON. Por ejemplo, un error podría verse así:
+
 ```js
 {"error":"Task in invalid state for mapping","SubCode": "InvalidTaskState"}
+
 ```
 
-### Error Codes
-In addition to descriptive error text, error messages also contains SubCodes. While the **text for an error message may change, the SubCode will stay the same**.
+### Códigos de Error
 
-| Code | Subcode                  | Text                                                                               |
-| ---- | ------------------------ | ---------------------------------------------------------------------------------- |
-| 401  | InvalidToken             | Token is expired or invalid                                                        |
-| 403  | AlreadyFeatured          | Project is already featured                                                        |
-| 403  | CannotValidateMappedTask | Tasks cannot be validated by the same user who marked task as mapped or badimagery |
-| 500  | InternalServerError      | Internal Server Error                                                              |
-| 400  | InvalidData              | Error validating request                                                           |
-| 400  | InvalidDateRange         | Date range can not be bigger than 1 year                                           |
-| 400  | InvalidMultipolygon      | Area of Interest: Invalid MultiPolygon                                             |
-| 403  | InvalidNewOwner          | New owner must be project's org manager or TM admin                                |
-| 400  | InvalidStartDate         | Start date must be earlier than end date                                           |
-| 403  | InvalidTaskState         | Task in invalid state for mapping                                                  |
-| 403  | InvalidUnlockState       | Can only set status to MAPPED, BADIMAGERY, READY after mapping                     |
-| 403  | LockBeforeUnlocking      | Status must be LOCKED\_FOR\_MAPPING to unlock                                      |
-| 403  | LockToSplit              | Status must be LOCKED\_FOR\_MAPPING to split                                       |
-| 400  | MissingDate              | Missing start date parameter                                                       |
-| 400  | MustBeMultiPloygon       | Geometry must be a MultiPolygon                                                    |
-| 400  | MustHaveFeatures         | Geojson does not contain any features                                              |
-| 403  | NotFeatured              | Project is not featured                                                            |
-| 404  | NotFound                 | Not Found                                                                          |
-| 403  | NotLockedForValidation   | Task is not LOCKED\_FOR\_VALIDATION                                                |
-| 403  | NotReadyForValidation    | Task is not MAPPED, BADIMAGERY or INVALIDATED                                      |
-| 403  | OnlyAdminAccess          | This endpoint action is restricted to ADMIN users                                  |
-| 403  | ProjectNotPublished      | Mapping not allowed because: Project not published                                 |
-| 403  | SmallToSplit             | Task is too small to be split                                                      |
-| 403  | SplitGeoJsonError        | New split task does not intersect original task                                    |
-| 403  | SplitOtherUserTask       | Attempting to split a task owned by another user                                   |
-| 403  | TaskNotOwned             | Attempting to unlock a task owned by another user                                  |
-| 403  | UndoPermissionError      | Undo not allowed for this user                                                     |
-| 403  | UserAlreadyHasTaskLocked | Mapping not allowed because: User already has task locked                          |
-| 409  | UserLicenseError         | User not accepted license terms                                                    |
-| 403  | UserNotAllowed           | Mapping not allowed because: User not on allowed list                              |
-| 403  | UserNotPermitted         | User action not permitted                                                          |
-| 403  | UserPermissionError      | User is not a manager of the project                                               |
-| 403  | PrivateProject           | User not permitted: Private Project                                                |
-| 403  | ProjectNotFetched        | Unable to fetch project                                                            |
-| 403  | NotPermittedToCreate     | User is not permitted to create project                                            |
-| 400  | MustBeFeatureCollection  | GeoJson must be FeatureCollection                                                  |
-| 400  | InvalidFeatureCollection | Invalid GeoJson: Invalid feature collection                                        |
-| 400  | MustBeFeature            | Invalid GeoJson should be a feature                                                |
-| 400  | InvalidMultiPolygon      | Invalid GeoJson: Invalid feature collection                                        |
-| 400  | PropertyNotFound         | Expected property not found                                                        |
-| 403  | InfoForLocaleRequired    | Project Info for Default Locale not provided                                       |
-| 403  | MissingRequiredAttribute | Missing required attribute                                                         |
-| 403  | RequireLicenseId         | LicenseId not found                                                                |
-| 403  | HasMappedTasks           | Project has mapped tasks, cannot be deleted                                        |
-| 403  | DeletePermissionError    | User does not have permissions to delete project                                   |
-| 403  | BBoxTooBigError          | Requested bounding box is too large                                                |
-| 403  | UserAlreadyInList        | User is already a member of this team or has already requested to join             |
-| 403  | UserJoinDisallowed       | User not allowed to join team                                                      |
-| 403  | ApproveJoinError         | You don't have permissions to approve this join team request                       |
-| 403  | RemoveUserError          | You don't have permissions to remove from this team.                               |
-| 400  | EmptyMessage             | Empty message not allowed                                                          |
-| 401  | UserNotTeamManager       | User is not a admin or a manager for the team                                      |
-| 403  | CreateTeamNotPermitted   | User not permitted to create team for the Organisation                             |
-| 401  | UnableToAuth             | Unable to authenticate                                                             |
-| 400  | UnknownUserRole          | Unknown role accepted values are BEGINNER, INTERMEDIATE, ADVANCED                  |
-| 403  | UnknownAddRole           | Unknown role accepted values are ADMIN, PROJECT\_MANAGER, VALIDATOR                |
-| 403  | NeedAdminRole            | You must be an Admin to assign Admin role                                          |
-| 400  | DateRangeGreaterThan3    | Date range can not be bigger than 3 years                                          |
-| 400  | MissingDate              | Missing start date parameter                                                       |
-| 403  | AuthError                | Unable to authenticate                                                             |
-| 400  | UnsupportedFile          | Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif.       |
-| 400  | MissingFilename          | Missing filename parameter                                                         |
-| 500  | UndefinedImageService    | Image upload service not defined                                                   |
-| 409  | NameExists               | Name already exists                                                                |
-| 409  | NullName                 | Name cannot be null                                                                |
-| 403  | ReadOnly                 | User is on read only mode                                                          |
-| 403  | AccessOtherUserMessage   | User attempting to access another users message                                    |
-| 403  | CampaignAlreadyAssigned  | Campaign is already assigned to organization                                       |
-| 403  | UserNotOrgAdmin          | User is not an admin for the org                                                   |
-| 403  | OrgHasProjects           | Organization has some projects                                                     |
-| 403  | MustHaveAdmin            | Must have at least one admin                                                       |
-| 403  | LoginToFilterManager     | Filter by manager\_user\_id is not allowed to unauthenticated requests             |
-| 400  | SelfIntersectingAOI      | Invalid geometry. Polygon is self-intersecting                                     |
-| 400  | TransferPermissionError  | Project ownership transfer is only allowed to TM Admin, Organization admin and project author|
+Además del texto descriptivo del error, los mensajes de error también contienen SubCodes (subcódigos). Mientras que el **texto de un mensaje de error puede cambiar, el SubCode se mantendrá igual**.
+
+| Código | Subcode | Texto |
+| --- | --- | --- |
+| 401 | InvalidToken | El token ha expirado o no es válido |
+| 403 | AlreadyFeatured | El proyecto ya es destacado |
+| 403 | CannotValidateMappedTask | Las tareas no pueden ser validadas por el mismo usuario que las marcó como mapeadas o con mala imagen |
+| 500 | InternalServerError | Error interno del servidor |
+| 400 | InvalidData | Error al validar la solicitud |
+| 400 | InvalidDateRange | El rango de fechas no puede ser superior a 1 año |
+| 400 | InvalidMultipolygon | Área de interés: MultiPolygon no válido |
+| 403 | InvalidNewOwner | El nuevo propietario debe ser el gestor de la organización del proyecto o un administrador del TM |
+| 400 | InvalidStartDate | La fecha de inicio debe ser anterior a la fecha de finalización |
+| 403 | InvalidTaskState | Tarea en estado no válido para mapeo |
+| 403 | InvalidUnlockState | Solo se puede establecer el estado a MAPPED, BADIMAGERY o READY después del mapeo |
+| 403 | LockBeforeUnlocking | El estado debe ser LOCKED_FOR_MAPPING para desbloquear |
+| 403 | LockToSplit | El estado debe ser LOCKED_FOR_MAPPING para dividir |
+| 400 | MissingDate | Falta el parámetro de fecha de inicio |
+| 400 | MustBeMultiPloygon | La geometría debe ser un MultiPolygon |
+| 400 | MustHaveFeatures | El GeoJSON no contiene ninguna característica (features) |
+| 403 | NotFeatured | El proyecto no es destacado |
+| 404 | NotFound | No encontrado |
+| 403 | NotLockedForValidation | La tarea no está en estado LOCKED_FOR_VALIDATION |
+| 403 | NotReadyForValidation | La tarea no está como MAPPED, BADIMAGERY o INVALIDATED |
+| 403 | OnlyAdminAccess | Esta acción del endpoint está restringida a usuarios ADMIN |
+| 403 | ProjectNotPublished | Mapeo no permitido: El proyecto no está publicado |
+| 403 | SmallToSplit | La tarea es demasiado pequeña para ser dividida |
+| 403 | SplitGeoJsonError | La nueva tarea dividida no intersecta con la tarea original |
+| 403 | SplitOtherUserTask | Intento de dividir una tarea que pertenece a otro usuario |
+| 403 | TaskNotOwned | Intento de desbloquear una tarea que pertenece a otro usuario |
+| 403 | UndoPermissionError | Deshacer no permitido para este usuario |
+| 403 | UserAlreadyHasTaskLocked | Mapeo no permitido: El usuario ya tiene una tarea bloqueada |
+| 409 | UserLicenseError | El usuario no ha aceptado los términos de la licencia |
+| 403 | UserNotAllowed | Mapeo no permitido: El usuario no está en la lista de permitidos |
+| 403 | UserNotPermitted | Acción de usuario no permitida |
+| 403 | UserPermissionError | El usuario no es gestor del proyecto |
+| 403 | PrivateProject | Usuario no permitido: Proyecto privado |
+| 403 | ProjectNotFetched | No se pudo obtener el proyecto |
+| 403 | NotPermittedToCreate | El usuario no tiene permiso para crear el proyecto |
+| 400 | MustBeFeatureCollection | El GeoJSON debe ser una FeatureCollection |
+| 400 | InvalidFeatureCollection | GeoJSON no válido: FeatureCollection no válida |
+| 400 | MustBeFeature | El GeoJSON no válido debe ser una feature |
+| 400 | InvalidMultiPolygon | GeoJSON no válido: FeatureCollection no válida |
+| 400 | PropertyNotFound | No se encontró la propiedad esperada |
+| 403 | InfoForLocaleRequired | No se proporcionó la información del proyecto para la configuración regional por defecto |
+| 403 | MissingRequiredAttribute | Falta un atributo requerido |
+| 403 | RequireLicenseId | No se encontró el LicenseId |
+| 403 | HasMappedTasks | El proyecto tiene tareas mapeadas, no se puede eliminar |
+| 403 | DeletePermissionError | El usuario no tiene permisos para eliminar el proyecto |
+| 403 | BBoxTooBigError | El cuadro delimitador (bounding box) solicitado es demasiado grande |
+| 403 | UserAlreadyInList | El usuario ya es miembro de este equipo o ya ha solicitado unirse |
+| 403 | UserJoinDisallowed | El usuario no tiene permitido unirse al equipo |
+| 403 | ApproveJoinError | No tienes permisos para aprobar esta solicitud de unión al equipo |
+| 403 | RemoveUserError | No tienes permisos para eliminar de este equipo |
+| 400 | EmptyMessage | No se permiten mensajes vacíos |
+| 401 | UserNotTeamManager | El usuario no es administrador ni gestor del equipo |
+| 403 | CreateTeamNotPermitted | El usuario no tiene permitido crear un equipo para la organización |
+| 401 | UnableToAuth | No se pudo autenticar |
+| 400 | UnknownUserRole | Rol desconocido. Los valores aceptados son BEGINNER, INTERMEDIATE, ADVANCED |
+| 403 | UnknownAddRole | Rol desconocido. Los valores aceptados son ADMIN, PROJECT_MANAGER, VALIDATOR |
+| 403 | NeedAdminRole | Debes ser administrador para asignar el rol de administrador |
+| 400 | DateRangeGreaterThan3 | El rango de fechas no puede ser superior a 3 años |
+| 400 | MissingDate | Falta el parámetro de fecha de inicio |
+| 403 | AuthError | No se pudo autenticar |
+| 400 | UnsupportedFile | El tipo MIME no está permitido. Los formatos soportados son: png, jpeg, webp y gif |
+| 400 | MissingFilename | Falta el parámetro del nombre de archivo |
+| 500 | UndefinedImageService | Servicio de subida de imágenes no definido |
+| 409 | NameExists | El nombre ya existe |
+| 409 | NullName | El nombre no puede ser nulo |
+| 403 | ReadOnly | El usuario está en modo de solo lectura |
+| 403 | AccessOtherUserMessage | El usuario intenta acceder al mensaje de otro usuario |
+| 403 | CampaignAlreadyAssigned | La campaña ya está asignada a la organización |
+| 403 | UserNotOrgAdmin | El usuario no es administrador de la organización |
+| 403 | OrgHasProjects | La organización tiene algunos proyectos |
+| 403 | MustHaveAdmin | Debe tener al menos un administrador |
+| 403 | LoginToFilterManager | Filtrar por manager_user_id no está permitido para solicitudes no autenticadas |
+| 400 | SelfIntersectingAOI | Geometría no válida. El polígono se auto-intersecta |
+| 400 | TransferPermissionError | La transferencia de propiedad del proyecto solo está permitida para Admin de TM, administrador de la organización y el autor del proyecto |
