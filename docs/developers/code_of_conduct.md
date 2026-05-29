@@ -1,7 +1,5 @@
 # Código de conducta
 
-(La última versión se puede encontrar en https://www.hotosm.org/code-of-conduct)
-
 Bienvenido al Equipo Humanitario OpenStreetMap. HOT se compromete a
 proporcionar un ambiente acogedor y seguro para personas de todas las razas,
 identidades de género, expresiones de género, orientaciones sexuales, capacidades
@@ -118,35 +116,3 @@ puedan ayudarte a resolver la situación. Esto puede adoptar varias formas:
   emociones a menudo faltan en las comunicaciones digitales. Muchos de nuestros
   modos de comunicación digital tienden a la brevedad, lo que puede ser
   más fácil de interpretar incorrectamente como algo negativo.
-
-- Contactar con un representante del [Grupo de Trabajo de la
-  Comunidad](https://www.hotosm.org/community/working-groups/), el cual
-  existe para apoyar a la Comunidad de HOT. Los representantes están disponibles
-  par discutir cualquier inquietud sobre el comportamiento dentro de la comunidad, o
-  ideas para promover conductas positivas. Puedes enviarles un correo electrónico a
-  [community@hotosm.org](mailto:community@hotosm.org).
-
-- Contactar con un representante del [Grupo de Trabajo de
-  Gobernanza](https://www.hotosm.org/community/working-groups/), el cual
-  redactó estas recomendaciones y el Código de Conducta. Los representantes están
-  disponibles para brindar asesoramiento sobre escenarios particulares, así como sobre
-  los procesos relacionados con el Código de Conducta.
-
-- Contactar con el Presidente de Miembros con Derecho a Voto de HOT.
-
-- Contactar con un [Miembro de la Junta Directiva de HOT](https://www.hotosm.org/board). Los
-  miembros de la junta conocen bien a la comunidad y su gestión. Ellos
-  pueden ofrecerte asesoramiento sobre tu situación particular y conocen los
-  recursos de la organización que podrían estar disponibles para ti.
-
-- Contactar con el Gerente de Alianzas Comunitarias de HOT.
-
-Cuando estos procesos informales fallen, o cuando una situación justifique una
-respuesta inmediata por parte de HOT, puedes recurrir al **Proceso de Gestión de Quejas
-de la Política y el Código de Conducta de HOT**. Este proceso fue adoptado por los
-Miembros con Derecho a Voto de HOT en 2016 para proporcionar un medio más formal de hacer
-cumplir nuestros estándares comunitarios. Puedes iniciarlo enviando un correo electrónico a
-[complaints@hotosm.org](mailto:complaints@hotosm.org) con una
-descripción de tu queja, tu nombre y el nombre de la parte infractora. Todas
-las quejas se considerarán confidenciales. El proceso completo se describe
-[aquí](https://docs.google.com/document/d/1xb-SPADtSbgwl6mAgglHMPHpknt-E7lKRoIcSbW431A/edit)
