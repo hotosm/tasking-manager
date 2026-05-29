@@ -71,13 +71,8 @@ nav:
       - Guias de contribución: developers/contributing-guidelines.md
       - Configuración de desarrollo: developers/development-setup.md
       - Códigos de Error: developers/error_code.md
-  - Arquitectura y Diseño:
       - Diagramas de Flujo de Datos: dataflow.md
-      - Esquema de Base de Datos: developers/tmschema.md
-      - Jerarquía de Clases: apidocs/html/index.html
-  - Administradores del Sistema:
       - Arquitectura: sysadmins/architecture.md
       - CI: sysadmins/ci-cd.md
   - Validación: validation.md
-  - License: LICENSE.md
 #  - Changelog: CHANGELOG.md
