@@ -39,12 +39,13 @@ El cuerno representa nuestra forma de analizar, cuestionar y proponer ideas, ya 
 | Diferentes ritmos de trabajo | Coordinar mejor para que las seis “patas” avancen en la misma dirección |
 | Muchas ideas al inicio | Convertir las ideas en tareas concretas y cerrables |
 
-## Estrategias del equipo
+## Estrategia del Escarabajo Rinoceronte
 
-Para que la analogía no quede solo como una idea, el equipo trabajará con roles definidos, tareas registradas en Issues y seguimiento por hitos
-
-También se buscará que cada avance tenga una evidencia clara, que los documentos estén ubicados en la carpeta correcta y que las herramientas nuevas se aprendan de forma práctica
-
-La idea es avanzar como el escarabajo rinoceronte, no necesariamente rápido, pero sí con fuerza, dirección y estabilidad
+- Avanzar con dirección y priorizar las tareas que realmente aporten al hito correspondiente
+- Revisar entre integrantes los entregables importantes para detectar errores antes de la entrega
+- Guardar evidencias desde el inicio del trabajo para no reconstruir resultados al final
+- Probar primero en pequeño antes de aplicar cambios importantes en Wiki, Pages o Actions
+- Evitar que una tarea clave dependa de una sola persona y apoyar cuando alguna parte se retrase
+- Cerrar una tarea solo cuando tenga resultado claro, evidencia y relación directa con el entregable
 
 ## Equipo Escarabajo Rinoceronte
