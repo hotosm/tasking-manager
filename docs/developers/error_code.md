@@ -90,9 +90,3 @@ Además del texto descriptivo del error, los mensajes de error también contiene
 | 403 | LoginToFilterManager | Filtrar por manager_user_id no está permitido para solicitudes no autenticadas |
 | 400 | SelfIntersectingAOI | Geometría no válida. El polígono se auto-intersecta |
 | 400 | TransferPermissionError | La transferencia de propiedad del proyecto solo está permitida para Admin de TM, administrador de la organización y el autor del proyecto |
-
-```
-
-By the way, to unlock the full functionality of all Apps, enable [Gemini Apps Activity](https://myactivity.google.com/product/gemini).
-
-```
