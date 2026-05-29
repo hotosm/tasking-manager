@@ -33,7 +33,7 @@ El siguiente diagrama detalla las capas arquitectónicas que serán sometidas a 
 3. Establecer un marco de trazabilidad documental total utilizando el estándar **ISO/IEC/IEEE 29119**, conectando el diseño de pruebas directamente con el código fuente del repositorio.
 
 ## 5. Alcance del Testing
-Este Plan Maestro cubre el aseguramiento de la calidad mediante pruebas dinámicas.
+Este Plan General cubre el aseguramiento de la calidad mediante pruebas dinámicas.
 
 **Dentro del Alcance (In-Scope):**
 *   Pruebas Unitarias de Backend (FastAPI, Lógica de servicios, DTOs).
@@ -58,8 +58,3 @@ Para cumplir con el ciclo de vida del estándar, el proyecto se dividirá en las
     *   *Riesgo:* Cambios abruptos en las APIs externas (OSM, Ohsome) pueden romper las pruebas de integración. 
     *   *Mitigación:* Implementar contratos de prueba (Contract Testing) y uso extensivo de Mocks durante las Fases 1 y 2.
 
-## 8. Actores Involucrados en QA
-*   **Integrante 1 (Lead QA):** Consolidación documental, validación de planes, pruebas unitarias de Seguridad, Usuarios y Comunicaciones.
-*   **Integrante 2 (QA Automation):** Diseño y trazabilidad de pruebas para Servicios Core y Lógica de Negocio.
-*   **Integrante 3 (QA Analyst):** Diseño y trazabilidad de pruebas para Modelos, DTOs y validaciones base.
-*   **Integrantes 4, 5 y 6:** (Se incorporarán en las fases de Integración y Sistema).

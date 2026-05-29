@@ -1,4 +1,4 @@
-# Plan Maestro de Pruebas: Recursos y Entornos
+# Plan General de Pruebas: Recursos y Entornos
 
 **Proyecto:** HOT OSM Tasking Manager  
 **Estándar de Referencia:** ISO/IEC/IEEE 29119-3 (Especificación del Entorno de Pruebas)  
@@ -24,7 +24,7 @@ El stack tecnológico de pruebas ha sido estandarizado para todo el equipo:
 
 ## 3. Integración Continua (CI/CD)
 El proyecto confía en **GitHub Actions** como orquestador de pruebas.
-*   Todo *Pull Request* hacia la rama `develop` o `main` disparará automáticamente el *Test Pipeline*.
+*   Todo *Pull Request* hacia la rama `develop` o disparará automáticamente el *Test Pipeline*.
 *   **Bloqueo de Merge:** Si el reporte de cobertura automatizado (generado por `coverage.py`) cae por debajo del umbral del 80%, el PR será bloqueado automáticamente en GitHub.
 
 ## 4. Limitaciones Técnicas y Restricciones
