@@ -1,64 +1,57 @@
-# Tasking Manager Dataflow
+# Flujo de Datos del Tasking Manager
 
-## Activity
+## Actividad
 
-The Tasking Manager has several user data flows, as there are
-differences between a project manager, a mapper, and a validator as
-seen in this diagram.
+El Tasking Manager tiene varios flujos de datos de usuario, ya que existen
+diferencias entre un gerente de proyecto, un mapeador y un validador, como
+se ve en este diagrama.
 
 <a href="images/activity.png">
-![Activity](images/activity.png){ width=30%,height:30px }</a>
+![Actividad](images/activity.png){ width=30%,height:30px }</a>
 
-Initially most Tasking Manager projects start with a disaster
-notification. The activation team discusses the notification, and if a
-response is needed creates a project. The project is an Area Of
-Interest (AOI) as a polygon, and a description and instructions. Then
-the AOI is split into tasks.
+Inicialmente, la mayoría de los proyectos del Tasking Manager comienzan con una notificación de desastre. El equipo de activación discute la notificación y, si se necesita una respuesta, crea un proyecto. 
 
-Then when the project is announced, mappers select a task, and map the
-desired features for the project. Once the complete a task, it's
-marked as mapped, and then the mapper can select another task, and so
-on.
+El proyecto consiste en un Área de Interés (AOI) representada como un polígono, junto con una descripción e instrucciones. Luego, el AOI se divide en tareas.
 
-Then the validator reviews all the tasks marked as mapped. There is
-more information on the [Validation process](validation.md) at this
-link.
+Cuando se anuncia el proyecto, los mapeadores seleccionan una tarea y mapean los elementos requeridos para el proyecto. Una vez que completan una tarea, se marca como mapeada, y luego el mapeador puede seleccionar otra tarea, y así sucesivamente.
 
-# Solution User
+Posteriormente, el validador revisa todas las tareas marcadas como mapeadas. Hay más información sobre el [Proceso de validación](validation.md) en este enlace.
+
+# Solución de Usuario
 
 <a href="https://raw.githubusercontent.com/hotosm/tasking-manager/develop/docs/images/solution-user.png">
-![Solution User](images/solution-user.png){ width=30%,height:30px }</a>
+![Solución de Usuario](images/solution-user.png){ width=30%,height:30px }</a>
 
-## Component
+## Componente
 
-The Tasking Manager has multiple components. WHat the user sees is the
-REACT based frontend in their browser.
+El Tasking Manager tiene múltiples componentes. Lo que el usuario ve es el
+frontend basado en REACT en su navegador.
 <a href="https://raw.githubusercontent.com/hotosm/tasking-manager/develop/docs/images/component.png">
-![Component](images/component.png){ width=40%,height:30px }</a>
+![Componente](images/component.png){ width=40%,height:30px }</a>
 
-The backend for the Tasking Mamnager is written using Flask, which is
-in python. This supplies the REST API, which the frontend uses. This
-API is also open to other projects.
+El backend del Tasking Manager está escrito usando Flask, que está en Python.
+Este proporciona la API REST que utiliza el frontend. Esta API también está
+abierta para otros proyectos.
 
-The data of course is OpenStreetMap, which is stored in a postgres
-database.
+Los datos, por supuesto, provienen de OpenStreetMap, los cuales se almacenan en
+una base de datos Postgres.
 
 ## Conceptual
 
-The Tasking Manager uses other projects for some of it's data needs of
-the backend. This includes Oshome for mapping statistics, the HOT raw
-data API for data extracts, and OpenStreetMap of course.
+El Tasking Manager utiliza otros proyectos para algunas de las necesidades de datos
+del backend. Esto incluye Oshome para estadísticas de mapeo, la API de datos brutos
+de HOT para extracciones de datos y, por supuesto, OpenStreetMap.
 
 <a href="https://raw.githubusercontent.com/hotosm/tasking-manager/develop/docs/images/conceptual.png">
 ![Conceptual](images/conceptual.png){ width=30%,height:30px }</a>
 
-# Information Flow
+# Flujo de Información
 
-This diagram shows the other projects that the Tasking Manager
-exchanges informstion with. OpenStreetNap(OSM) of course supplies
-data, and data from Tasking Manager projects goes into
-OSM. OpenAerialMap may be used as a source of imagery. Also projects
-may be transfered thh the Field Mapping Tasking Manager(FMTM).
+Este diagrama muestra los otros proyectos con los que el Tasking Manager
+intercambia información. OpenStreetMap (OSM), por supuesto, suministra datos,
+y los datos de los proyectos del Tasking Manager se integran en OSM.
+OpenAerialMap puede utilizarse como fuente de imágenes. Además, los proyectos
+pueden transferirse a través del Field Mapping Tasking Manager (FMTM).
 
 <a href="https://raw.githubusercontent.com/hotosm/tasking-manager/develop/docs/images/information_flow.png">
-![Information Flow](images/information_flow.png){ width=30%,height:30px }</a>
+![Flujo de Información](images/information_flow.png){ width=30%,height:30px }</a>
