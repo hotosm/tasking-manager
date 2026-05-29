@@ -74,10 +74,13 @@ Se establece la siguiente cadena de trazabilidad bidireccional (registrada en `m
 El estándar internacional exige medir la efectividad de las técnicas de diseño de pruebas empleadas. Para ello, define una fórmula universal que el equipo aplicará obligatoriamente.
 
 **Fórmula de Cobertura de Diseño:**
-$$ Cobertura\ de\ Diseño\ (\%) = \left( \frac{N}{T} \right) \times 100 $$
 
-*   **T (Total de Elementos de Cobertura Identificados):** Representa el número total de escenarios o condiciones que *deberían* probarse según el análisis de caja negra (por ejemplo, el total de valores límite identificados en un módulo).
-*   **N (Elementos Cubiertos / Ejecutados):** Representa el número de esos escenarios que efectivamente tienen un caso de prueba documentado y ejecutado.
+```math
+$$ Cobertura\ de\ Diseño\ (\%) = \left( \frac{N}{T} \right) \times 100 $$
+```
+
+*   **T** (Total de Elementos de Cobertura Identificados): Representa el número total de escenarios o condiciones que *deberían* probarse según el análisis de caja negra (por ejemplo, el total de valores límite identificados en un módulo).
+*   **N** (Elementos Cubiertos / Ejecutados): Representa el número de esos escenarios que efectivamente tienen un caso de prueba documentado y ejecutado.
 
 *Ejemplo de aplicación:* Si al analizar el módulo de "Creación de Tareas" se identifican 20 combinaciones posibles usando tablas de decisión ($T=20$), pero solo se han automatizado y ejecutado 15 ($N=15$), la cobertura de diseño de esa técnica es del **75%**.
 
@@ -92,9 +95,9 @@ Adicionalmente a la cobertura de diseño de la ISO, el equipo recolectará y ana
 **Tasa de Ejecución de Pruebas:**
 *   *Definición:* Refleja el estado operacional de la suite de pruebas.
 *   *Desglose:*
-    *   **% Éxito (Passed):** (Pruebas Exitosas / Total Ejecutadas) * 100.
-    *   **% Fallo (Failed):** (Pruebas Fallidas / Total Ejecutadas) * 100.
-    *   **% Bloqueadas (Blocked):** Pruebas que no pudieron ejecutarse por dependencias caídas o errores de entorno.
+    *   % Éxito (Passed): $(Pruebas Exitosas / Total Ejecutadas) \times 100$.
+    *   % Fallo (Failed): $(Pruebas Fallidas / Total Ejecutadas) \times 100$.
+    *   % Bloqueadas (Blocked): Pruebas que no pudieron ejecutarse por dependencias caídas o errores de entorno.
 
 **Densidad de Defectos (Defect Density):**
 *   *Definición:* Indica la madurez y fragilidad de un módulo de código específico.
