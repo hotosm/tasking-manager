@@ -1,16 +1,16 @@
 # CI/CD
 
-We use CircleCI to manage Continuous Integration and Continuous Deployment.
+Utilizamos CircleCI para gestionar la Integración Continua (Continuous Integration) y el Despliegue Continuo (Continuous Deployment).
 
-| **Environment**     | **Branch**                              |
-|---------------------|-----------------------------------------|
-| Production          | deployment/hot-tasking-manager          |
+| **Entorno** | **Rama (Branch)** |
+| :--- | :--- |
+| Production | deployment/hot-tasking-manager |
 | Production-frontend | deployment/hot-tasking-manager-frontend |
-| Staging             | develop                                 |
-| TeachOSM            | deployment/teachosm-tasking-manager     |
-| Indonesia           | deployment/id-tasking-manager           |
+| Staging | develop |
+| TeachOSM | deployment/teachosm-tasking-manager |
+| Indonesia | deployment/id-tasking-manager |
 
-Each environment has its own set of environment variables which are stored as secrets in the CircleCI Organization Settings under Contexts. At the moment, these variables are for the frontend builds only. See the [deployment docs](deployment.md) for updating backend variables.
+Cada entorno tiene su propio conjunto de variables de entorno que se almacenan como secretos en la configuración de la organización de CircleCI bajo la sección Contexts (Contextos). Por el momento, estas variables son únicamente para las compilaciones (builds) del frontend. Consulta la [documentación de despliegue](deployment.md) para actualizar las variables del backend.
 
 - OPSGENIE_API
 - TM_APP_API_URL
@@ -28,9 +28,9 @@ Each environment has its own set of environment variables which are stored as se
 - TM_ORG_URL
 - TM_SERVICE_DESK
 
-## Automated Tests
+## Pruebas Automatizadas
 
-For each Pull Request and branch, the CI runs a set of frontend and backend tests. We have a context in place called "tasking-manager-testing" for setting up the database with the following environment variables:
+Para cada Pull Request y rama, la CI ejecuta un conjunto de pruebas tanto para el frontend como para el backend. Disponemos de un contexto llamado "tasking-manager-testing" para configurar la base de datos con las siguientes variables de entorno:
 
 - POSTGRES_DB
 - POSTGRES_ENDPOINT
@@ -38,11 +38,10 @@ For each Pull Request and branch, the CI runs a set of frontend and backend test
 - TM_ORG_CODE
 - TM_ORG_NAME
 
-Note that the POSTGRES_DB variable should be for the default database (in our case `tm`) the testing script will create a database called `test_$POSTGRES_DB` during setup.
-The `TM_ORG_*` vars are required for certain tests to pass; most notably )`test_variable_replacing` in the `TestTemplateService`.
+Ten en cuenta que la variable `POSTGRES_DB` debe corresponder a la base de datos por defecto (en nuestro caso `tm`). El script de pruebas creará una base de datos llamada `test_$POSTGRES_DB` durante la configuración. Las variables `TM_ORG_*` son obligatorias para que ciertas pruebas se ejecuten con éxito; de manera más notable `test_variable_replacing` en el `TestTemplateService`.
 
-## Refreshing CircleCI Cache
+## Actualización de la Caché de CircleCI
 
-The CI stores the frontend node_modules folder to save time on builds. Sometimes it will be necessary to force all builds to use a fresh installation, so the cache will have to be refreshed manually.
+La CI almacena la carpeta `node_modules` del frontend para ahorrar tiempo en las compilaciones. A veces será necesario forzar a que todas las compilaciones utilicen una instalación limpia, por lo que la caché tendrá que actualizarse manualmente.
 
-In the Tasking Manager CircleCI settings there is an environment variable "CACHEVERSION". Set this value to `v{n}` where {n} is an integer increased by 1 each time you wish to clear the cache.
+En la configuración de CircleCI del Tasking Manager existe una variable de entorno llamada "CACHEVERSION". Establece este valor en `v{n}`, donde `{n}` es un número entero que se incrementa en 1 cada vez que desees limpiar la caché.

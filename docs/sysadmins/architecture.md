@@ -1,158 +1,113 @@
-# Architecture
+# Arquitectura
 
 ![TM Architecture](../images/tm-architecture.svg)
 
-Reference for the [Cloudformation script](https://github.com/hotosm/tasking-manager/blob/develop/scripts/aws/cloudformation/tasking-manager.template.js):
+**TaskingManagerASG** AutoScalingGroup configura las propiedades del Grupo de Autoescalado. Existe una condición que determina tres niveles de autoescalado: desarrollo (1 sola instancia), demo (máximo 3 instancias) y producción (mínimo 2 y máximo 6 instancias).
 
-**TaskingManagerASG** AutoScalingGroup configures the properties of
-the Autoscaling Group. There is a condition that determines three
-levels of autoscaling: development (1 instance only), demo (max 3
-instances), and production (min 2 max 6 instances).
+**TaskingManagerScaleUp** La Política de Escalado determina el umbral en el cual el ASG escala hacia arriba. Utilizamos la métrica de CloudWatch `ALBRequestCountPerTarget` para mantener el número de solicitudes por instancia por debajo de un nivel determinado.
 
-**TaskingManagerScaleUp** Scaling Policy determines the threshold at
-which the ASG scales up. We use the CloudWatch metric
-ALBRequestCountPerTarget to keep the number of requests per instance
-below a certain level.
+**TaskingManagerLaunchConfiguration** contiene una serie de archivos de metadatos y comandos que se cargan y ejecutan durante la instanciación de un nuevo servidor dentro del ASG. Las variables de entorno del Tasking Manager se configuran en este recurso.
 
-**TaskingManagerLaunchConfiguration** has a number of metadata files
-and commands which are loaded and run during instantiation of a new
-server into the ASG. The Tasking Manager environment variables are set
-in this resource.
+**TaskingManagerEC2Role** El rol de IAM permite que los servidores del backend se comuniquen con CodeDeploy, el monitoreo de CloudWatch, Cloudformation y la base de datos RDS.
 
-**TaskingManagerEC2Role** IAM role enables the backend servers to
-communicate with CodeDeploy, CloudWatch monitoring, Cloudformation,
-and the RDS Database.
+**TaskingManagerDatabaseDumpAccessRole** es un Rol de IAM para EC2 que solo se utiliza si se proporciona un archivo de volcado (dump) de la base de datos en la configuración, permitiendo el acceso al bucket de S3 que contiene dicho archivo.
 
-**TaskingManagerDatabaseDumpAccessRole** is an EC2 IAM Role that is
-only used if a database dump file is given in the configuration,
-enabling access to the s3 bucket containing that file.
+**TaskingManagerEC2InstanceProfile** es un recurso requerido para otorgar a un servidor acceso programático a los servicios de AWS.
 
-**TaskingManagerEC2InstanceProfile** is a required resource for giving
-a server programmatic access to AWS services.
+**TaskingManagerLoadBalancer** configura los grupos de seguridad y las subredes para el recurso de AWS Application Load Balancer.
 
-**TaskingManagerLoadBalancer** configures the security groups and
-subnets for the Application Load Balancer AWS resource.
+**TaskingManagerLoadBalancerRoute53** conjunto de registros de Route53 para el balanceador de carga.
 
-**TaskingManagerLoadBalancerRoute53** record set for the load
-balancer.
+**TaskingManagerTargetGroup** configura las verificaciones de estado (health checks) para cada objetivo en el Balanceador de Carga.
 
-**TaskingManagerTargetGroup** configures health checks for each target
-in the Load Balancer.
+**TaskingManagerLoadBalancerHTTPSListener** asigna el Certificado SSL, el protocolo y el puerto al Listener HTTPS.
 
-**TaskingManagerLoadBalancerHTTPSListener** assigns the SSL
-Certificate, protocol, and port to the HTTPS Listener.
+**TaskingManagerLoadBalancerHTTPListener** redirige las solicitudes a HTTPS.
 
-**TaskingManagerLoadBalancerHTTPListener** redirects requests to
-HTTPS.
+**TaskingManagerRDS** configura todas las propiedades de la base de datos RDS.
 
-**TaskingManagerRDS** configures all the properties of the database
-RDS.
+**TaskingManagerReactBucket** es el bucket donde se almacena y desde el cual se sirve el código del frontend.
 
-**TaskingManagerReactBucket** is the bucket where the frontend code is
-stored and served.
+**TaskingManagerReactBucketPolicy** otorga acceso de lectura a los objetos almacenados en el bucket.
 
-**TaskingManagerReactBucketPolicy** gives read access to the objects
-stored in the bucket.
+**TaskingManagerReactCloudfront** configura la Distribución de CloudFront para el frontend estático almacenado en S3.
 
-**TaskingManagerReactCloudfront** configures the CloudFront
-Distribution for the static frontend stored on S3.
+**TaskingManagerRoute53** es el Registro de Route53 para el frontend, por ejemplo, `tasks.hotosm.org`
 
-**TaskingManagerRoute53** is the Route53 Record for the frontend,
-i.e. `tasks.hotosm.org`
+### Parámetros
 
-### Parameters
+**GitSha** es el hash del commit del repositorio de HOTOSM Tasking Manager que se va a desplegar.
 
-**GitSha** is the commit hash from the HOTOSM Tasking Manager
-repository to be deployed.
+**NetworkEnvironment** tiene solo dos opciones: `staging` y `production`, y determina los grupos de seguridad utilizados para las instancias EC2 y el Balanceador de Carga.
 
-**NetworkEnvironment** has only two options- `staging` and
-`production`, and determines the security groups used for the EC2s and
-Load Balancer.
+**AutoscalingPolicy** puede ser `development`, `demo` o `production` y determina el número mínimo/máximo de instancias.
 
-**AutoscalingPolicy** can be `development`, `demo`, or `production`
-and determines the min/max number of instances.
+**DBSnapshot** es un parámetro opcional. Especifica el ID de la Instantánea (Snapshot) de RDS para crear la base de datos a partir de una instantánea.
 
-**DBSnapshot** is an optional parameter. Specify the RDS Snapshot ID
-to create the database from a snapshot.
+**DatabaseDump** es un parámetro opcional. Especifica la ruta del objeto en el bucket de S3 para crear la base de datos a partir de un archivo de volcado en texto plano.
 
-**DatabaseDump** is an optional parameter. Specify the s3 bucket
-object path to create the database from a plaintext dump file.
+**NewRelicLicense** licencia de New Relic.
 
-**NewRelicLicense**
+**PostgresDB** es el nombre de la base de datos.
 
-**PostgresDB** is the name of the database
+**PostgresPassword** es la contraseña de la base de datos.
 
-**PostgresPassword** is the database password
+**PostgresUser** es el usuario de la base de datos.
 
-**PostgresUser** is the database user
+**DatabaseEngineVersion** versión del motor de PostgreSQL en AWS.
 
-**DatabaseEngineVersion** AWS PostgreSQL Engine version
+**DatabaseInstanceType** es el tipo de instancia de la base de datos de AWS (por ejemplo, db.t3.large).
 
-**DatabaseInstanceType** is the AWS database instance tier (eg
-db.t3.large)
+**DatabaseDiskSize** es el tamaño (en GB) de la instancia RDS. Se recomiendan al menos 100 GB para un mejor IOPS.
 
-**DatabaseDiskSize** is the size (in GB) of the RDS
-instance. Recommended at least 100GB for better IOPS
+**DatabaseParameterGroupName** utiliza el grupo de parámetros por defecto si no sabes qué es esto.
 
-**DatabaseParameterGroupName** use the default parameter group if you
-don't know what this is.
+**DatabaseSnapshotRetentionPeriod** período de retención para las instantáneas automáticas (programadas) en días.
 
-**DatabaseSnapshotRetentionPeriod** Retention period for automatic
-(scheduled) snapshots in days.
+**ELBSubnets** es una cadena de texto separada por comas con las subredes para tu región de AWS. Asegúrate de que las subredes sean compatibles con el tipo de instancia EC2.
 
-**ELBSubnets** is a comma-separated string of subnets for your AWS
-region. Make sure the subnets support the EC2 instance type.
+**SSLCertificateIdentifier** el ID para el Certificado SSL de AWS.
 
-**SSLCertificateIdentifier** the ID for the AWS SSL Certificate
+**TaskingManagerLogDirectory** la ruta en la instancia donde se almacenan los registros (logs) en el servidor, por ejemplo, `/var/log/tasking-manager/`.
 
-**TaskingManagerLogDirectory** the path on the instance where the logs
-are stored on the server, e.g. `/var/log/tasking-manager/`
+**TaskingManagerClientId** es una clave generada al crear una Aplicación Cliente OAuth en OSM.
 
-**TaskingManagerClientId** is a key generated by creating and OSM
-OAuth Client Application.
+**TaskingManagerClientSecret** es una clave secreta generada al crear una Aplicación Cliente OAuth en OSM.
 
-**TaskingManagerClientSecret** is a secret key generated by creating
-and OSM OAuth Client Application.
+**TaskingManagerRedirectUri** URIs permitidas a las que el usuario puede ser redirigido después de autorizar la aplicación.
 
-**TaskingManagerRedirectUri** allowed URIs to which the user can be
-redirected after authorizing the application.
+**TaskingManagerScope** son los alcances (scopes) que pueden ser solicitados por un cliente.
 
-**TaskingManagerScope** are scope(s) which may be requested by a client.
+**TaskingManagerSecret** una cadena de texto aleatoria para la comunicación entre el frontend y el backend.
 
-**TaskingManagerSecret** a random string for the frontend and backend
-to communicate.
+**TaskingManagerAppBaseUrl** la URL base completa del sitio, por ejemplo, `https://tasks.hotosm.org/`.
 
-**TaskingManagerAppBaseUrl** the full base url of the site,
-e.g. `https://tasks.hotosm.org/`.
+**TaskingManagerEmailFromAddress** una dirección de correo electrónico desde la cual se enviarán los mensajes a los usuarios.
 
-**TaskingManagerEmailFromAddress** an email address from which
-messages will be sent to users.
+**TaskingManagerEmailContactAddress** una dirección de contacto que aparecerá en varios lugares del sitio.
 
-**TaskingManagerEmailContactAddress** a contact address which will
-show up in places around the site
+**TaskingManagerLogLevel** puede ser `DEBUG` o `INFO`.
 
-**TaskingManagerLogLevel** can be either `DEBUG` or `INFO`
+**TaskingManagerImageUploadAPIURL** URL de la API para la carga de imágenes.
 
-**TaskingManagerImageUploadAPIURL**
+**TaskingManagerImageUploadAPIKey** clave de la API para la carga de imágenes.
 
-**TaskingManagerImageUploadAPIKey**
+**TaskingManagerSMTPHost** la URL del host para el Servicio de Correo Simple de AWS (AWS SES).
 
-**TaskingManagerSMTPHost** the host url for the AWS Simple Email Service
+**TaskingManagerSMTPPassword** la contraseña de autenticación para AWS SES.
 
-**TaskingManagerSMTPPassword** the authentication password for AWS SES
+**TaskingManagerSMTPUser** el usuario de autenticación para AWS SES.
 
-**TaskingManagerSMTPUser** the authentication user for AWS SES
+**TaskingManagerSMTPPort** el puerto para AWS SES.
 
-**TaskingManagerSMTPPort** the port for AWS SES
+**TaskingManagerDefaultChangesetComment** el hashtag del comentario por defecto del proyecto para los conjuntos de cambios (changesets).
 
-**TaskingManagerDefaultChangesetComment** the project default comment hashtag
+**TaskingManagerURL** la URL sin el protocolo, por ejemplo, `tasks.hotosm.org`.
 
-**TaskingManagerURL** the url without the protocol- e.g. `tasks.hotosm.org`
+**TaskingManagerOrgName** nombre de la aplicación u organización que aloja la app.
 
-**TaskingManagerOrgName** Name of the app/org hosting the app
+**TaskingManagerOrgCode** código de 3 letras para el nombre de la organización.
 
-**TaskingManagerOrgCode** 3 letter code for the org name
+**SentryBackendDSN** si usas Sentry, ingresa la URL del DSN aquí.
 
-**SentryBackendDSN** If using sentry, input DSN url here
-
-**TaskingManagerLogo** URL for a logo
+**TaskingManagerLogo** URL para un logotipo.
