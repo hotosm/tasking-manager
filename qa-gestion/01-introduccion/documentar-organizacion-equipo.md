@@ -2,19 +2,19 @@
 
 ## 1. Propósito
 
-Este documento resume la organización del equipo, su misión, visión, roles principales y lineamientos básicos para el uso de GitHub Actions, GitHub Pages, GitHub Wiki, labels y plantillas de Issues.
+Organizar y desarrollar un proceso de pruebas sobre el software Tasking Manager para analizar sus funcionalidades principales, diseñar casos de prueba, ejecutar validaciones y registrar evidencias de manera ordenada, usando GitHub como herramienta de seguimiento, documentación y control del avance del proyecto
 
 ---
 
 ## 2. Misión
 
-Desarrollar un proceso de pruebas organizado sobre el software seleccionado, aplicando buenas prácticas de análisis, diseño de casos, documentación y seguimiento mediante herramientas de GitHub.
+Organizar y ejecutar un proceso de pruebas sobre el software Tasking Manager, mediante el análisis de sus funcionalidades, el diseño de casos de prueba, el registro de evidencias y el seguimiento del avance con herramientas de GitHub
 
 ---
 
 ## 3. Visión
 
-Consolidarnos como un equipo QA capaz de planificar, documentar y sustentar un proceso de pruebas completo, manteniendo orden en las responsabilidades, evidencias y entregables de cada hito.
+Consolidarnos como un equipo QA ordenado y capaz de sustentar un proceso de pruebas completo, con roles definidos, evidencias claras y entregables bien organizados para cada hito del proyecto
 
 ---
 
