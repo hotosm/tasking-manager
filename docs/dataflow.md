@@ -9,7 +9,7 @@ se ve en este diagrama.
 <a href="images/activity.png">
 ![Actividad](images/activity.png){ width=30%,height:30px }</a>
 
-Inicialmente, la mayoría de los proyectos del Tasking Manager comienzan con una notificación de desastre. El equipo de activación discute la notificación y, si se necesita una respuesta, crea un proyecto. 
+Inicialmente, la mayoría de los proyectos del Tasking Manager comienzan con una notificación de desastre. El equipo de activación discute la notificación y, si se necesita una respuesta, crea un proyecto.
 
 El proyecto consiste en un Área de Interés (AOI) representada como un polígono, junto con una descripción e instrucciones. Luego, el AOI se divide en tareas.
 
