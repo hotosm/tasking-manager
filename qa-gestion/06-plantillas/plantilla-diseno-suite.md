@@ -1,44 +1,39 @@
-# Suite de Pruebas: `<Nombre del Módulo o Dominio>`
+# Especificación de Pruebas Unitarias: [Nombre de la Suite, ej. Servicios Core]
 
-> **Módulo:** `<Ej: Autenticación, Gestión de Organizaciones>`  
-> **Responsable QA:** `<Nombre o Equipo>`  
-> **Última Actualización:** `<Fecha>`  
+**Responsable:** [Nombre del Integrante]
 
-## 1. Objetivo y Contexto de Negocio
-Esta suite de pruebas agrupa todas las validaciones (unitarias, integración y funcionales) orientadas a garantizar el comportamiento del módulo `<Nombre del Módulo>`. 
+## 1. Base de Pruebas (Test Basis)
+*(Indicar qué archivos, requisitos o épicas del proyecto cubre esta suite).*
+*   **Componente(s):** `backend/services/project_service.py`
+*   **Dependencias Mokeadas:** Base de datos, API externa de OSM.
 
-Dentro de la lógica de negocio, estas pruebas aseguran que:
-* `<Regla crítica 1: Ej. Solo usuarios admin pueden crear organizaciones>`
-* `<Regla crítica 2: Ej. El formato del RUC debe ser validado antes de persistir>`
+## 2. Condiciones de Prueba (TD2) y Cobertura (TD3)
+Identificación de las funcionalidades a probar dentro del módulo aplicando técnicas ISO 29119-4 (ej. Valores límite).
 
-**Riesgos mitigados:** `<Ej: Elevación de privilegios, Corrupción de datos, Exposición de información>`.
+| ID Condición | Funcionalidad a Evaluar | Técnica Aplicada |
+| :--- | :--- | :--- |
+| COND-01 | Crear proyecto con parámetros válidos | Partición de Equivalencia |
+| COND-02 | Crear proyecto con área excediendo límite | Valor Límite (Boundary Value) |
+| COND-03 | Manejo de DTOs con campos faltantes | Tabla de Decisiones |
 
-## 2. Estrategia Técnica y Herramientas
-Para la ejecución y mantenimiento de esta suite, el equipo de QA/Dev utiliza las siguientes estrategias de aislamiento:
-* **Fixtures / Data Setup:** `<Ej: Uso de factories de usuarios con permisos pre-calculados>`
-* **Mocks principales:** `<Ej: Intercepción del servicio de envío de correos (AWS SES)>`
-* **Dependencias:** `<Ej: Base de datos transaccional en memoria para pruebas de integración>`
+## 3. Casos de Prueba (TD4 y TD6)
+*(Mapeo de pruebas existentes y diseño de pruebas faltantes).*
 
-## 3. Matriz de Casos de Prueba
+### 3.1 Pruebas Implementadas Existentes (Test Scripts)
+Estas pruebas ya existen en el repositorio.
+| ID Caso | ID Condición | Descripción | URL del Test Script (GitHub) | Estado |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-001 | COND-01 | Retorna HTTP 201 al crear proyecto | `[Enlace a test_project.py#L45]` | Automatizado |
+| TC-002 | COND-03 | Error 400 si falta 'author_id' | `[Enlace a test_dto.py#L12]` | Automatizado |
 
-### 3.1. Pruebas Unitarias (Lógica Interna y DTOs)
-| ID | Objetivo del Test | Precondiciones | Entradas (Input) | Resultado Esperado | Riesgo Asociado |
+### 3.2 Brechas / Nuevas Pruebas a Implementar (TDD)
+Pruebas diseñadas que aún no existen en código y deben desarrollarse.
+| ID Caso | ID Condición | Descripción de la Prueba | Input Esperado | Resultado Esperado | Estado |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TC-MOD-U01` | `<Qué valida>` | `<Estado requerido>` | `<Datos>` | `<Comportamiento o Excepción>` | `<Riesgo>` |
-| `TC-MOD-U02` | `<Qué valida>` | `<Estado requerido>` | `<Datos>` | `<Comportamiento o Excepción>` | `<Riesgo>` |
+| TC-003 | COND-02 | Rechazar proyecto si polígono > 5000km2 | Polígono = 5001km2 | Excepción `AreaTooLargeError` | Pendiente TDD |
+| TC-004 | COND-02 | Aceptar proyecto si polígono = 5000km2 | Polígono = 5000km2 | Proyecto Creado con Éxito | Pendiente TDD |
 
-### 3.2. Pruebas de Integración (Interacción entre componentes / BD)
-| ID | Objetivo del Test | Precondiciones | Flujo / Acciones | Resultado Esperado | Riesgo Asociado |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `TC-MOD-I01` | `<Qué valida>` | `<Estado requerido>` | `<Paso a paso>` | `<Cambio en BD o Respuesta HTTP>` | `<Riesgo>` |
-
-### 3.3. Pruebas Funcionales / E2E (Opcional)
-| ID | Objetivo del Test | Precondiciones | Flujo de Usuario | Resultado Esperado | Riesgo Asociado |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `TC-MOD-F01` | `<Qué valida>` | `<Estado requerido>` | `<Paso a paso UI/API>` | `<Cambio en la interfaz o sistema>` | `<Riesgo>` |
-
-## 4. Deuda Técnica y Pruebas Futuras
-Actualmente la suite **NO** cubre los siguientes escenarios, los cuales deben ser priorizados en próximos Sprints:
-* [ ] `<Escenarios concurrentes>`
-* [ ] `<Timeouts o fallos de red externos>`
-* [ ] `<Condiciones de borde específicas>`
+## 4. Métricas de Cobertura de Diseño (ISO 29119)
+*   **Total de Elementos de Cobertura Identificados (T):** 4 (Casos TC-001 al TC-004)
+*   **Total de Elementos Ejecutados/Automatizados (N):** 2 (Casos TC-001 y TC-002)
+*   **Fórmula de Cobertura ($N/T * 100\%$):** 50%
