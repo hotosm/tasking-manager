@@ -64,30 +64,20 @@ plugins:
             merge_init_into_class: true
 
 nav:
-  - Home: index.md
-  - About: about.md
-  - For Developers:
-      - Contributing: developers/contributing.md
-      - Code Of Conduct: developers/code_of_conduct.md
-      - Contributing Guidelines: developers/contributing-guidelines.md
-      - Development Setup: developers/development-setup.md
-      - Reviewing PRs: developers/review-pr.md
-      - Submitting a PR: developers/submit-pr.md
-      - Translations: developers/translations.md
-      - Versions and Releases: developers/versions-and-releases.md
-      - Error Codes: developers/error_code.md
-  - Deep Tech Dives:
-      - Data Flow Diagrams: dataflow.md
-      - Database Schema: developers/tmschema.md
-      - Class Hierarchy: apidocs/html/index.html
-  - For Sysadmins:
-      - Deployment: sysadmins/deployment.md
-      - Architecture: sysadmins/architecture.md
-      - Migration: sysadmins/migration.md
-      - Deployment: sysadmins/deployment.md
-      - Customize: sysadmins/customize.md
+  - Inicio: index.md
+  - Sobre el desarrollo:
+      - Contribuciones: developers/contributing.md
+      - Codigo de conducta: developers/code_of_conduct.md
+      - Guias de contribución: developers/contributing-guidelines.md
+      - Configuración de desarrollo: developers/development-setup.md
+      - Códigos de Error: developers/error_code.md
+  - Arquitectura y Diseño:
+      - Diagramas de Flujo de Datos: dataflow.md
+      - Esquema de Base de Datos: developers/tmschema.md
+      - Jerarquía de Clases: apidocs/html/index.html
+  - Administradores del Sistema:
+      - Arquitectura: sysadmins/architecture.md
       - CI: sysadmins/ci-cd.md
-  - Working Groups: working-groups.md
-  - Validation: validation.md
+  - Validación: validation.md
   - License: LICENSE.md
 #  - Changelog: CHANGELOG.md
