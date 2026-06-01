@@ -248,6 +248,11 @@ export default function SandboxEditor({
       #id-container .layer-data .gpx-features {
         opacity: 1 !important;
       }
+      #id-container .layer-data text.osm-features,
+      #id-container .layer-data .osm-features text {
+        display: none;
+      }
+        
     `;
 
     return () => {
