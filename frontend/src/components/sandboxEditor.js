@@ -252,7 +252,7 @@ export default function SandboxEditor({
       #id-container .layer-data .osm-features text {
         display: none;
       }
-        
+
     `;
 
     return () => {
