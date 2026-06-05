@@ -1,0 +1,25 @@
+name: Generación de Reportes de Pruebas
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  prueba-basica:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Verificar pytest
+        run: |
+          python --version
+          pip install pytest
+          pytest --version
