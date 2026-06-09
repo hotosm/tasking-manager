@@ -1,38 +1,35 @@
-#  Definición de Módulos Finales para Pruebas (Hito 2)
-**Analistas de Pruebas (Test Analysts):** Jhonatan Arias & Alexandra Quispe
-**Objetivo:** Proveer a los Test Designers los módulos funcionales core del Tasking Manager y sus reglas de negocio para el diseño de Casos de Prueba de Caja Negra.
+#  Definición de Módulos para Pruebas Funcionales (Caja Negra) - Hito 2
+**Test Analysts:** Alexandra Quispe & Jhonatan Arias
 
-Tras realizar un análisis profundo de la arquitectura Full-Stack y el mapa de código del repositorio, hemos filtrado la lógica de negocio y definido **3 Módulos Funcionales Core** que deberán ser cubiertos para alcanzar los objetivos del Sprint 2.
-
----
-
-###  Módulo 1: Gestión de Proyectos (Project Service)
-* **Ref. Arquitectura:** Backend `project_service.py` [Módulo 2 del CodeMap] y API Endpoints `/api/v2/projects` [Módulo 6].
-* **Descripción Funcional:** Módulo encargado del CRUD (Creación, Lectura, Actualización y Borrado) de las campañas de mapeo.
-* **Directrices para Test Designers (Diseño Caja Negra):**
-  * **Partición de Equivalencia:** Probar la creación de proyectos con polígonos GeoJSON válidos vs. inválidos o vacíos.
-  * **Reglas de Negocio:** Validar el método `is_user_permitted_to_validate()`. ¿Qué ocurre si un usuario sin rol de Administrador intenta borrar o editar un proyecto que no le pertenece?
-  * **Manejo de Errores:** Forzar la consulta de un `project_id` inexistente para validar que el sistema retorne correctamente la excepción `HTTP 404 Project not found`.
+Alineados a los requerimientos del Hito 2 y las buenas prácticas de QA, hemos definido los siguientes **3 Módulos de Interfaz (UI)** del Tasking Manager sobre los cuales los Test Designers deberán diseñar y ejecutar los Casos de Prueba Manuales de Caja Negra.
 
 ---
 
-###  Módulo 2: Flujo de Mapeo y Bloqueo de Tareas (Mapping Service)
-* **Ref. Arquitectura:** Backend `mapping_service.py` [Módulo 3 del CodeMap] y Cron Jobs `cron_jobs.py` [Módulo 10].
-* **Descripción Funcional:** El corazón transaccional del sistema. Gestiona cómo los usuarios reservan (bloquean) un cuadrante del mapa para editarlo y cómo el sistema libera esos bloqueos.
-* **Directrices para Test Designers (Diseño Caja Negra):**
-  * **Transiciones de Estado:** Validar el cambio de estado de una tarea: de `READY` a `LOCKED_FOR_MAPPING`.
-  * **Valores Límite y Concurrencia:** ¿Qué ocurre si dos usuarios intentan ejecutar `lock_task_for_mapping()` sobre el mismo `task_id` en el mismo milisegundo?
-  * **Pruebas de Tiempo (Time-based):** Diseñar un caso para el "Auto-desbloqueo de Tareas" (`auto_unlock_tasks`). Validar que si el tiempo expira, la tarea regresa a `READY`.
+###  Módulo 1: Formulario de Creación y Edición de Proyectos (Admin UI)
+* **Descripción Funcional:** Interfaz donde el usuario Administrador o Project Manager crea una campaña, sube el área de interés (GeoJSON) y configura las reglas del proyecto (prioridad, dificultad).
+* **Directrices de Técnicas de Caja Negra para Test Designers:**
+  * **Análisis de Valores Límite (AVL):** Evaluar los campos de texto como "Project Name" (ej. validar comportamiento con 0 caracteres, 1 carácter, y el límite máximo permitido).
+  * **Partición de Equivalencia (PE):** Al subir el archivo del mapa (AoI), probar la clase válida (archivo `.geojson` de menos de 1MB) vs clases inválidas (archivo `.pdf`, o `.geojson` mayor a 1MB).
 
 ---
 
-###  Módulo 3: Validación y Permisos de Usuarios (Validator & User Service)
-* **Ref. Arquitectura:** Backend `validator_service.py` [Módulo 4 del CodeMap] y `user_service.py` [Módulo 5].
-* **Descripción Funcional:** Módulo de control de calidad interno del Tasking Manager. Gestiona quién tiene permiso para aprobar o rechazar el mapeo realizado por otros.
-* **Directrices para Test Designers (Diseño Caja Negra):**
-  * **Restricción de Auto-validación:** Probar la regla estricta de la línea 82 (`CannotValidateMappedTask`). Un usuario NO debe poder validar una tarea que él mismo ha mapeado.
-  * **Autenticación (OAuth2):** Validar qué ocurre si se intenta acceder al endpoint de validación (`actions.py /tasks/{task_id}/state`) con un token de sesión vencido o inválido (`USER_NOT_FOUND`).
-  * **Roles:** Diferenciar los permisos entre roles globales (MAPPER vs ADMIN).
+###  Módulo 2: Interfaz de Mapeo y Bloqueo de Tareas (Task Grid UI)
+* **Descripción Funcional:** La pantalla principal donde el voluntario interactúa con el mapa, selecciona un cuadrante (Task) y lo bloquea para mapearlo.
+* **Directrices de Técnicas de Caja Negra para Test Designers:**
+  * **Transición de Estados:** Diseñar casos que validen el cambio visual y lógico de la tarjeta de la tarea: de `READY` (gris) a `LOCKED` (azul) y finalmente a `MAPPED` (amarillo).
+  * **Tabla de Decisión (TD):** Evaluar el comportamiento del botón "Lock Task". (Condiciones: ¿El usuario está logueado? ¿Tiene el nivel de experiencia requerido para la dificultad del proyecto? Acción: Permite bloqueo o Muestra Error).
+
+---
+
+###  Módulo 3: Interfaz de Validación de Tareas (Validation UI)
+* **Descripción Funcional:** Pantalla donde los usuarios con rol de Validador revisan el trabajo de los mapeadores y lo aprueban o rechazan.
+* **Directrices de Técnicas de Caja Negra para Test Designers:**
+  * **Tabla de Decisión (TD):** Evaluar los permisos de validación cruzada. (Regla estricta: Si Usuario X mapeó la tarea 5 -> Usuario X intenta validar la tarea 5 -> Resultado: El sistema bloquea el botón "Validate" y muestra error).
+  * **Partición de Equivalencia (PE):** En el campo de "Comentarios de Validación", probar el envío con texto válido, texto vacío y texto con caracteres especiales no permitidos.
+
+---
+**Instrucciones para Test Designers (Jorge y Yordano):**
+Utilicen estos 3 módulos visuales para diseñar el *Informe de Casos de Pruebas Funcionales*. Deben incluir capturas de pantalla de la interfaz (Evidencias) y aplicar las técnicas mencionadas (PE, AVL, TD) tal como lo requieren las plantillas del curso.
 
 ---
 **Instrucciones para Jorge y Yordano (Test Designers):** 
