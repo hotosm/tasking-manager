@@ -30,7 +30,7 @@ El alcance de estas pruebas cubre las interacciones de los siguientes actores cl
 ### 2.2. Técnicas de Caja Negra Utilizadas
 
 * **Transición de Estados:** Utilizada para modelar y evaluar el flujo del login delegado (RF-1001) y la actualización de perfil (RF-1004). Permite verificar cómo cambia la interfaz entre diferentes estados (ej. Usuario Anónimo, Pantalla Externa de OSM, Sesión Activa, o Alertas de Validación en el formulario) basándose puramente en las interacciones y clics del usuario.
-* **Partición de Equivalencia (PE) y Análisis de Valores Límite (AVL):** Aplicadas de manera conjunta para el cálculo del nivel de Mapper (RF-1002). Permiten agrupar los rangos numéricos de las ediciones en clases representativas y evaluar con total precisión en la pantalla los "bordes" o fronteras exactas donde la etiqueta visual del nivel debe cambiar de forma automática.
+* **Partición de Equivalencia (PE)** y **Análisis de Valores Límite (AVL):** Aplicadas de manera conjunta para el cálculo del nivel de Mapper (RF-1002). Permiten agrupar los rangos numéricos de las ediciones en clases representativas y evaluar con total precisión en la pantalla los "bordes" o fronteras exactas donde la etiqueta visual del nivel debe cambiar de forma automática.
 * **Tablas de Decisión:** Utilizada para la funcionalidad de aceptación de licencias (RF-1003). Permite validar de forma rigurosa las combinaciones lógicas de entrada (estado de la autenticación y configuración de restricciones del proyecto) para asegurar que el sistema ejecute correctamente la acción de habilitar o mantener bloqueado el botón de contribución en el mapa.
 
 ---
@@ -90,7 +90,7 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
 
 **B. Aplicación de Técnicas (Análisis)**
 
-#### B.1. Matriz de Partición de Equivalencia (PE)
+#### B.1. Partición de Equivalencia (PE)
 Se agrupa el universo de datos del contador numérico de ediciones en base a las categorías lógicas del sistema:
 
 | Clase Válida | Clases No Válidas | Rango de Ediciones |
@@ -100,7 +100,7 @@ Se agrupa el universo de datos del contador numérico de ediciones en base a las
 | **PE-V03** (Advanced) | - | mas 1001 |
 | - | **PE-NV01** (Valores Corruptos) | < 0 |
 
-#### B.2. Matriz de Análisis de Valores Límite (AVL)
+#### B.2. Análisis de Valores Límite (AVL)
 Se identifican los valores de prueba críticos situados en los extremos numéricos exactos de las particiones:
 
 | Límite Inferior Válido | Límite Inferior No Válido | Límite Superior Válido | Límite Superior No Válido | Rango de Clase Asociado |
@@ -147,7 +147,7 @@ Para este escenario, se modela el comportamiento lógico de la interfaz mediante
     * `CS-3`: Mantener inhabilitado el botón de contribución ("Mapear Tarea") en gris.
     * `CS-4`: Habilitar por completo el botón de contribución ("Mapear Tarea") en color activo.
 
-#### B.1. Matriz de Tabla de Decisión Racionalizada
+#### B.1. Tablas de Decisión
 Se cruzan las condiciones utilizando la simplificación por equivalencias (guiones) para optimizar la cobertura de pruebas de la interfaz:
 
 | Tipo de Control | Variables de la Interfaz de Usuario | A | B | C | D |
@@ -178,7 +178,7 @@ Se cruzan las condiciones utilizando la simplificación por equivalencias (guion
 **A. Definición del Escenario**
 | Atributo | Detalle |
 | :--- | :--- |
-| **Descripción** | Validar que la interfaz del perfil de usuario permita modificar las preferencias personales (idioma, correo, editor preferido), controlando visualmente los estados del formulario desde la edición hasta el guardado exitoso o el rechazo por datos inválidos. |
+| **Descripción** | Validar que la interfaz del perfil de usuario permita modificar las preferencias personales (idioma, correo, editor preferido), controlling visualmente los estados del formulario desde la edición hasta el guardado exitoso o el rechazo por datos inválidos. |
 | **RF Asociados** | RF-1004 |
 | **Precondiciones** | El usuario (ACT-02) debe tener una sesión activa (`SesionActiva`), haber ingresado a la sección "Ajustes de Perfil" y el formulario debe cargarse con sus datos actuales en modo lectura. |
 | **Técnicas aplicadas**| Transición de Estados |
