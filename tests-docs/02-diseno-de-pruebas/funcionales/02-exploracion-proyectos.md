@@ -79,3 +79,50 @@ Se cruzan las condiciones de los selectores aplicando guiones (**-**) para repre
 | **CP-2001-02** | 1. Hacer clic en el selector de Estado y marcar "Activo".<br>2. Mantener el resto de filtros vacíos. | **Estado:** Activo.<br>**Dificultad:** Sin filtro.<br>*(Regla de Columna B)* | La pantalla se actualiza asíncronamente mostrando únicamente las tarjetas de proyectos cuyo estado sea "Activo" (`CS-1 = V`). |
 | **CP-2001-03** | 1. Manteniendo el filtro "Activo", abrir el selector de Dificultad y marcar "Beginner". | **Estado:** Activo.<br>**Dificultad:** Beginner.<br>*(Regla de Columna C)* | La lista reduce sus elementos, mostrando solo los proyectos que son "Activos" y que simultáneamente aceptan mappers "Beginner" (`CS-1 = V`). |
 | **CP-2001-04** | 1. Mantener activos los filtros anteriores.<br>2. Abrir el selector de Campañas y marcar una campaña existente (ej. "Malaria"). | **Estado:** Activo.<br>**Dificultad:** Beginner.<br>**Campaña:** Malaria.<br>*(Regla de Columna D)* | La interfaz procesa la intersección final. Muestra en pantalla solo los proyectos que cumplan estrictamente con los tres criterios en simultáneo (`CS-1 = V`). |
+
+---
+
+### 3.2. Escenario: ESC-2002 - Validación de Barra de Búsqueda por Texto y Límites del BBOX
+
+**A. Definición del Escenario**
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar la precisión del motor de búsqueda al ingresar cadenas de caracteres de texto en el input flotante, y la correcta recepción de coordenadas numéricas límites del Bounding Box (BBOX) que encuadran geográficamente un proyecto en el mapa. |
+| **RF Asociados** | RF-2002 |
+| **Precondiciones** | El usuario se encuentra en la pantalla de exploración. El mapa interactivo base (OpenStreetMap) está completamente cargado y listo para recibir coordenadas perimetrales de renderizado. |
+| **Técnicas aplicadas**| Partición de Equivalencia (PE) y Análisis de Valores Límite (AVL) |
+| **Resultado Esperado** | El input de texto debe filtrar los proyectos en tiempo real aceptando un número prudente de caracteres, mientras que el motor cartográfico debe interpretar con exactitud los límites decimales del BBOX sin desbordar el renderizado en la pantalla. |
+
+**B. Aplicación de Técnicas (Análisis)**
+
+#### B.1. Matriz de Partición de Equivalencia (PE)
+Se agrupa el universo de datos para la barra de búsqueda (longitud de caracteres del string) y las coordenadas geográficas de latitud válidas para el encuadre del BBOX:
+
+| Clase Válida | Clases No Válidas | Rango Evaluado |
+| :--- | :--- | :---: |
+| **PE-V01** (Texto estándar) | - | De 1 a 50 caracteres |
+| - | **PE-NV01** (Texto Vacío) | 0 caracteres |
+| - | **PE-NV02** (Texto Excesivo) | mas de 51 caracteres |
+| **PE-V02** (Latitud Válida BBOX) | - | De -90.00 a +90.00 |
+| - | **PE-NV03** (Latitud Fuera de Rango)| < -90.00 o > +90.00 |
+
+#### B.2. Matriz de Análisis de Valores Límite (AVL)
+Se identifican los valores de prueba críticos situados en las fronteras exactas de longitud de caracteres de búsqueda y bordes geográficos de latitud para el BBOX:
+
+| Límite Inferior Válido | Límite Inferior No Válido | Límite Superior Válido | Límite Superior No Válido | Rango de Clase Asociado |
+| :---: | :---: | :---: | :---: | :---: |
+| **1** | **0** | **50** | **51** | Longitud del Input de Búsqueda |
+| **-90.0000** | **-90.0001** | **90.0000** | **90.0001** | Coordenadas de Latitud (BBOX) |
+
+---
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Pasos de Ejecución | Datos de Entrada (Clases aplicadas) | Resultado Esperado |
+| :--- | :--- | :--- | :--- |
+| **CP-2002-01** | 1. Hacer clic en el input de búsqueda.<br>2. Presionar la barra espaciadora o dejar el campo vacío y presionar Enter. | **Texto de búsqueda:** (Vacío)<br>*(Límite Inferior No Válido)* | El sistema ignora la acción de filtrado por texto, no realiza peticiones asíncronas innecesarias y mantiene el catálogo base intacto. |
+| **CP-2002-02** | 1. Digitar un solo carácter válido (ej: "P") en la barra de búsqueda de proyectos. | **Texto de búsqueda:** "P"<br>*(Límite Inferior Válido)* | La interfaz responde de inmediato al primer carácter, desplegando las tarjetas de proyectos cuyos nombres inicien o contengan la letra "P". |
+| **CP-2002-03** | 1. Introducir una cadena de texto que contenga exactamente 50 caracteres alfabéticos en el input. | **Texto de búsqueda:** String de 50 caracteres.<br>*(Límite Superior Válido)* | La interfaz de usuario procesa el texto completo sin truncar la caja de edición y actualiza la lista con los proyectos coincidentes. |
+| **CP-2002-04** | 1. Intentar escribir o pegar una cadena de texto que posea 51 caracteres en la barra de búsqueda. | **Texto de búsqueda:** String de 51 caracteres.<br>*(Límite Superior No Válido)* | La interfaz restringe el exceso de datos mediante un bloqueo de entrada físico (`maxlength="50"`) impidiendo que el carácter número 51 sea renderizado en pantalla. |
+| **CP-2002-05** | 1. Seleccionar un proyecto cuyas coordenadas perimetrales del BBOX toquen el extremo del polo sur geográfico. | **Latitud del BBOX:** -90.0000<br>*(Límite Inferior Válido)* | El mapa interactivo se reubica de forma correcta, encuadrando y dibujando el polígono del proyecto en el límite exacto de la visualización cartográfica. |
+| **CP-2002-06** | 1. Simular mediante la URL o la carga de mapa un proyecto con un BBOX corrupto que sobrepase el límite norte. | **Latitud del BBOX:** 90.0001<br>*(Límite Superior No Válido)* | La interfaz atrapa la excepción de desborde geográfico, el mapa evita romperse (pantalla en blanco) y renderiza una alerta visual de "Error al cargar la delimitación espacial". |
