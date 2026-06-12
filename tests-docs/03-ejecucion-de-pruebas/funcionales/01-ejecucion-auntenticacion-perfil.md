@@ -130,3 +130,25 @@
 | Evidencia |
 | :-- |
 | Medalla de Máximo Nivel Advanced<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-autenticacion-perfil/CP-1002-05-nivel-advanced.png" width="800px" alt="CP-1002-05 - Interfaz con medalla ADVANCED"></a><br>Captura de pantalla de la barra de usuario mostrando la insignia final de ADVANCED activa en la UI. |
+
+---
+
+## 3. ESC-1003: Restricción de Contribución por Aceptación de Licencias de Proyecto
+
+### 3.1. Ejecución de CP-1003-01
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-1003-01** | Validar que el sistema bloquee la carga de la interfaz del proyecto restrictivo si el usuario no está autenticado. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| El sistema bloquea la carga de la interfaz del proyecto, redirige de inmediato al usuario a la Landing Page pública (`CS-1 = V`) y solicita el login vía OSM. | La interfaz interrumpió el acceso directo a la URL protegida, redirigiendo de forma forzada a la Landing Page e invocando la alerta de inicio de sesión requerido. |
+
+| Evidencia |
+| :-- |
+| **Redirección Forzada por Falta de Sesión**<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-autenticacion-perfil/CP-1003-01-redireccion-login.png" width="800px" alt="CP-1003-01 - Redirección forzada a Landing Page"></a><br>Captura de la pantalla pública tras el intento de acceso directo sin un token de sesión activo.<br><br>**Pantalla de Autenticación Requerida**<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-autenticacion-perfil/CP-1003-01-login1.png" width="800px" alt="CP-1003-01 - Formulario de login requerido"></a><br>Detalle del modal o vista de inicio de sesión que se le presenta al usuario para recuperar el acceso. |
+
+
+
+---
