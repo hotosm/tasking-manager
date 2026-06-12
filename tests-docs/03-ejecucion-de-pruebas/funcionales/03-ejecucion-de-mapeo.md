@@ -14,8 +14,8 @@
 
 | Evidencia |
 | :-- |
-| Tarea bloqueada en la interfaz<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-01-tarea-bloqueada.png" width="800px" alt="CP-3001-01 - Tarea marcada como LOCKED_FOR_MAPPING"></a><br>Captura de la tarea bloqueada (candado) y que el usuario actual es el titular del bloqueo de la tarea debido a la opción `Reanudar Mapeo` y colo rojo del candado. |
-| Editor iD cargado correctamente<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-01-editor-id-cargado.png" width="800px" alt="CP-3001-01 - Iframe del editor iD desplegado"></a><br>Captura del mapa satelital renderizado dentro de los límites del Bounding Box (BBOX) de la tarea seleccionada. |
+| Tarea bloqueada en la interfaz<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-01-tarea-bloqueada.png" width="800px" alt="CP-3001-01 - Tarea marcada como LOCKED_FOR_MAPPING"></a><br>Captura de la tarea bloqueada (candado) y que el usuario actual es el titular del bloqueo de la tarea debido a la opción `Reanudar Mapeo` y colo rojo del candado. |
+| Editor iD cargado correctamente<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-01-editor-id-cargado.png" width="800px" alt="CP-3001-01 - Iframe del editor iD desplegado"></a><br>Captura del mapa satelital renderizado dentro de los límites del Bounding Box (BBOX) de la tarea seleccionada. |
 
 ---
 
@@ -31,7 +31,7 @@
 
 | Evidencia |
 | :-- |
-| Alerta de conexión fallida con JOSM<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-02-error-josm.png" width="800px" alt="CP-3001-02 - Modal de error JOSM is not running"></a><br>Notificación de la plataforma alertando al usuario que debe iniciar el software JOSM. |
+| Alerta de conexión fallida con JOSM<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-02-error-josm.png" width="800px" alt="CP-3001-02 - Modal de error JOSM is not running"></a><br>Notificación de la plataforma alertando al usuario que debe iniciar el software JOSM. |
 
 ---
 
@@ -47,7 +47,7 @@
 
 | Evidencia |
 | :-- |
-| Modal de Aceptación de Licencia<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-03-modal-licencia.png" width="800px" alt="CP-3001-03 - Modal de requerimiento de licencia"></a><br>Visualización del texto legal requerido. Pero no se evidencia bloqueo del boton Contribución |
+| Modal de Aceptación de Licencia<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-03-modal-licencia.png" width="800px" alt="CP-3001-03 - Modal de requerimiento de licencia"></a><br>Visualización del texto legal requerido. Pero no se evidencia bloqueo del boton Contribución |
 
 ---
 
@@ -63,7 +63,7 @@
 
 | Evidencia |
 | :-- |
-| Alerta de Tareas Concurrentes<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-04-limite-concurrencia.png" width="800px" alt="CP-3001-04 - Modal UserAlreadyHasTaskLocked"></a><br>Mensaje del frontend indicando que se debe finalizar la tarea actual antes de solicitar una nueva. |
+| Alerta de Tareas Concurrentes<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-04-limite-concurrencia.png" width="800px" alt="CP-3001-04 - Modal UserAlreadyHasTaskLocked"></a><br>Mensaje del frontend indicando que se debe finalizar la tarea actual antes de solicitar una nueva. |
 
 ---
 
@@ -79,7 +79,7 @@
 
 | Evidencia |
 | :-- |
-| Estado de botón según selección de tarea<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-05-boton-deshabilitado.png" width="800px" alt="CP-3001-05 - Botón de mapeo ausente en tarea Mapped"></a><br>Visualización de la barra lateral sin opción de mapeo para la tarea completada. |
+| Estado de botón según selección de tarea<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-05-boton-deshabilitado.png" width="800px" alt="CP-3001-05 - Botón de mapeo ausente en tarea Mapped"></a><br>Visualización de la barra lateral sin opción de mapeo para la tarea completada. |
 
 ---
 
@@ -95,7 +95,7 @@
 
 | Evidencia |
 | :-- |
-| Alerta de restricción por Nivel<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-06-error-nivel.png" width="800px" alt="CP-3001-06 - Mensaje UserPermissionError"></a><br>Notificación advirtiendo que solo usuarios de nivel Avanzado pueden contribuir. |
+| Alerta de restricción por Nivel<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-06-error-nivel.png" width="800px" alt="CP-3001-06 - Mensaje UserPermissionError"></a><br>Notificación advirtiendo que solo usuarios de nivel Avanzado pueden contribuir. |
 
 ---
 
@@ -111,4 +111,4 @@
 
 | Evidencia |
 | :-- |
-| Selección de Editor web por Defecto<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-01-ejecucion-mapeado/CP-3001-07-fallback-editor.png" width="800px" alt="CP-3001-07 - Inicialización de iD como fallback"></a><br>Selección del entorno web por defecto tras omitir explícitamente la selección de editor en la configuración. |
+| Selección de Editor web por Defecto<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-07-fallback-editor.png" width="800px" alt="CP-3001-07 - Inicialización de iD como fallback"></a><br>Selección del entorno web por defecto tras omitir explícitamente la selección de editor en la configuración. |

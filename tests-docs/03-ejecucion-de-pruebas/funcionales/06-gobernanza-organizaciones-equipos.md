@@ -58,12 +58,11 @@
 
 | Resultado esperado | Resultado obtenido |
 | :-- | :-- |
-| La interfaz de gestión no renderiza el botón "New". | Al acceder al dashboard de equipos con cuenta Mapper, el botón "New" no existe en el DOM. |
+| La interfaz de equipo no renderiza la opción de "Gestionar". | Al acceder al dashboard del equipo, el botón "Gestionar" no existe. |
 
 | Evidencia |
 | :-- |
 | Ausencia de botón de creación en UI<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-06-gobernanza-organizaciones-equipos/CP-6001-04-ui-sin-boton.png" width="800px" alt="CP-6001-04 - UI de equipos para usuario Mapper"></a><br>Dashboard de equipos visualizado por usuario base, sin controles administrativos. |
-| Respuesta 403 desde la API<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-06-gobernanza-organizaciones-equipos/CP-6001-04-api-403.png" width="800px" alt="CP-6001-04 - Postman mostrando error 403"></a><br>Captura de la respuesta del servidor bloqueando la creación no autorizada a nivel de backend. |
 
 ---
 
