@@ -234,3 +234,26 @@ Al solicitar una "Extensión del Bloqueo" (*Extend Session*), el sistema debe ve
 | **CP-3004-03** | Solicitud de Extensión.<br>**Estado:** `LOCKED_FOR_MAPPING`.<br>**Titular:** Coincide con solicitante. | Operación exitosa (HTTP 200). Retorna "Successfully extended task expiry". Historial registra `EXTENDED_FOR_MAPPING`. | MOD03-PE-004 (Clase Válida) |
 | **CP-3004-04** | Solicitud de Extensión.<br>**Estado:** `READY`. | Operación denegada (HTTP 403). Retorna el mensaje de error: `TaskStatusNotLocked`. | MOD03-PE-004 (Clase No Válida) |
 | **CP-3004-05** | Solicitud de Extensión.<br>**Estado:** `LOCKED_FOR_MAPPING`.<br>**Titular:** Usuario B (Diferente al solicitante). | Operación denegada (HTTP 403). Retorna el mensaje de error: `LockedByAnotherUser`. El bloqueo original no se altera. | MOD03-PE-004 (Clase No Válida) |
+
+## 4. Matriz de Trazabilidad del Módulo
+
+Esta matriz consolida la relación bidireccional entre los Requerimientos Funcionales (RF) documentados y los artefactos de diseño generados para el módulo **MOD-03: Ejecución de Mapeo (Tasking)**. 
+
+Garantiza la cobertura total de las reglas de negocio y facilita el análisis de impacto ante futuros cambios funcionales en el sistema.
+
+| Requerimiento Funcional (RF) | Especificación de Escenario (ESC) | Casos de Prueba (CP) Derivados | Técnicas de Diseño Aplicadas |
+| :--- | :--- | :--- | :--- |
+| **RF-3001**, RF-3002, RF-3003 | **ESC-3001:** Solicitud de Bloqueo e Inicio de Tarea de Mapeo | **CP-3001-01** | Tabla de Decisión (A), PE (Clase Válida Web) |
+| **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-02** | Tabla de Decisión (A), PE (Clase Válida Local) |
+| **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-03**, **CP-3001-04**, **CP-3001-05**, **CP-3001-06** | Tabla de Decisión (B, C, D, E) |
+| **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-07** | Tabla de Decisión (A), PE (Clase No Válida) |
+| **RF-3004** | **ESC-3002:** Liberación y Envío de Tarea de Mapeo (Submit) | **CP-3002-01**, **CP-3002-02**, **CP-3002-03** | Transición de Estados (Válida), PE (Clase Válida) |
+| **RF-3004** | ESC-3002 | **CP-3002-04**, **CP-3002-05** | Transición de Estados (Inválida) |
+| **RF-3004** | ESC-3002 | **CP-3002-06** | PE (Clase No Válida) |
+| **RF-3005** | **ESC-3003:** División de Tarea de Mapeo (Split Task) | **CP-3003-01** | AVL-001 (Válido), PE-003 (Válido) |
+| **RF-3005** | ESC-3003 | **CP-3003-02** | AVL-001 (Inválido), PE-003 (Válido) |
+| **RF-3005** | ESC-3003 | **CP-3003-03**, **CP-3003-04** | AVL-001 (Válido), PE-003 (No Válido) |
+| **RF-3006** | **ESC-3004:** Expiración y Extensión de Bloqueo de Tarea | **CP-3004-01** | AVL-002 (Válido) |
+| **RF-3006** | ESC-3004 | **CP-3004-02** | AVL-002 (Inválido) |
+| **RF-3006** | ESC-3004 | **CP-3004-03** | PE-004 (Clase Válida) |
+| **RF-3006** | ESC-3004 | **CP-3004-04**, **CP-3004-05** | PE-004 (Clase No Válida) |
