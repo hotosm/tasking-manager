@@ -170,3 +170,43 @@ Se cruzan las condiciones utilizando la simplificación por equivalencias (guion
 | **CP-1003-02** | 1. Iniciar sesión con una cuenta de Mapper (`ACT-02`).<br>2. Navegar e ingresar a un proyecto público estándar que **no** tiene ninguna licencia configurada. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto sin licencia.<br>*(Regla de Columna B)* | La interfaz no despliega alertas visuales, carga la cuadrícula del mapa de forma limpia y el botón "Mapear Tarea" se muestra directamente activo y habilitado (`CS-4 = V`). |
 | **CP-1003-03** | 1. Iniciar sesión con una cuenta de Mapper (`ACT-02`).<br>2. Navegar e ingresar a un proyecto configurado con licencias legales obligatorias.<br>3. Intentar seleccionar un cuadrante o interactuar con el mapa ignorando los textos. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto con licencia.<br>**Acción:** Sin aceptar términos.<br>*(Regla de Columna C)* | La interfaz congela las interacciones desplegando de forma obligatoria la ventana modal de términos legales (`CS-2 = V`). El botón principal "Mapear Tarea" permanece bloqueado en color gris (`CS-3 = V`). |
 | **CP-1003-04** | 1. Estando ante la ventana modal obligatoria de términos legales de un proyecto (Contexto CP-1003-03).<br>2. Hacer clic en el botón o casilla "Acepto los términos y licencias" de la pantalla. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto con licencia.<br>**Acción:** Clic en Aceptar.<br>*(Regla de Columna D)* | El componente modal legal se oculta automáticamente en la interfaz. El botón principal "Mapear Tarea" cambia de estado visual de gris a su color activo (azul/verde) quedando totalmente habilitado (`CS-4 = V`). |
+
+---
+
+### 3.4. Escenario: ESC-1004 - Modificación de Preferencias y Actualización de Perfil
+
+**A. Definición del Escenario**
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que la interfaz del perfil de usuario permita modificar las preferencias personales (idioma, correo, editor preferido), controlando visualmente los estados del formulario desde la edición hasta el guardado exitoso o el rechazo por datos inválidos. |
+| **RF Asociados** | RF-1004 |
+| **Precondiciones** | El usuario (ACT-02) debe tener una sesión activa (`SesionActiva`), haber ingresado a la sección "Ajustes de Perfil" y el formulario debe cargarse con sus datos actuales en modo lectura. |
+| **Técnicas aplicadas**| Transición de Estados |
+| **Resultado Esperado** | La interfaz gráfica debe guiar al usuario bloqueando o habilitando el botón de guardado según el estado del formulario, mostrando alertas instantáneas ante errores de formato y confirmando visualmente cuando los cambios se almacenen con éxito. |
+
+**B. Aplicación de Técnicas (Análisis)**
+Para este escenario, se modela el comportamiento del sistema mediante los componentes de la técnica de **Transición de Estados** extraídos del diagrama oficial del módulo:
+
+* **Estados del Sistema Identificados:**
+    * `PerfilConsultado`: Estado inicial donde el formulario se muestra en modo lectura con la información guardada. El botón "Guardar Cambios" permanece oculto o inhabilitado.
+    * `PerfilEnEdicion`: Estado en el cual el usuario altera al menos un input válido. El botón de guardado transiciona a un estado activo en la pantalla.
+    * `FormularioInvalido`: Estado de alerta visual activado al introducir un dato erróneo (ej. correo sin formato `@`). El botón de guardado se congela y se renderiza texto rojo de advertencia.
+    * `GuardandoCambios`: Estado transitorio de procesamiento donde la interfaz muestra un indicador de carga (Spinner) y congela temporalmente los campos.
+* **Transiciones / Eventos Evaluados:**
+    * `Usuario modifica campo`
+    * `Introduce dato invalido`
+    * `Corrige dato en input`
+    * `Clic en Guardar Cambios`
+    * `Confirmacion exitosa del backend`
+
+![Diagrama de Transición de Estados - ESC-1004](./img/transicion-estado-ESC-1004.png)
+
+---
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Pasos de Ejecución | Datos de Entrada (Clases aplicadas) | Resultado Esperado |
+| :--- | :--- | :--- | :--- |
+| **CP-1004-01** | 1. Ingresar a la sección "Ajustes de Perfil" (`PerfilConsultado`).<br>2. Cambiar el "Editor por defecto" de ID Editor a JOSM (`Usuario modifica campo`).<br>3. Hacer clic en el botón activo "Guardar Cambios" (`Clic en Guardar Cambios`).<br>4. Esperar el procesamiento asíncrono de la pantalla (`GuardandoCambios`). | **Editor seleccionado:** JOSM.<br>**Acción:** Enviar cambios de preferencias. | El sistema procesa la actualización (`Confirmacion exitosa del backend`), la interfaz despliega un mensaje Toast emergente de éxito y el formulario regresa al estado base de `PerfilConsultado`. |
+| **CP-1004-02** | 1. Ingresar a la sección "Ajustes de Perfil" (`PerfilConsultado`).<br>2. Borrar el correo electrónico actual y escribir el texto "usuario_mapeo" sin dominio (`Introduce dato invalido`). | **Correo ingresado:** usuario_mapeo<br>*(Sintaxis incorrecta)* | La interfaz cambia al estado `FormularioInvalido`: el botón "Guardar Cambios" se deshabilita automáticamente y aparece un mensaje de error en texto rojo indicando el fallo de formato. |
+| **CP-1004-03** | 1. Estando en la pantalla de perfil con el error visual de correo electrónico activo (`FormularioInvalido`).<br>2. Completar la dirección agregando "@gmail.com" al input (`Corrige dato en input`). | **Correo corregido:** usuario_mapeo@gmail.com | La aplicación detecta el cambio en tiempo real, borra la alerta roja de la pantalla y transiciona al estado `PerfilEnEdicion`, reactivando visualmente el botón "Guardar Cambios". |
