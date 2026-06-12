@@ -153,3 +153,43 @@ Se aplica esta técnica para asegurar que el sistema valide la propiedad del blo
 | **CP-3002-04** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Manipular solicitud intentando enviar estado `VALIDATED`. | Transición rechazada. Se mantiene el estado `LOCKED_FOR_MAPPING`. Mensaje de error: `InvalidUnlockState`. | Transición de Estados (Inválida) |
 | **CP-3002-05** | Tarea: `READY` (Sin bloqueo previo).<br>Usuario: `MAPPER` autenticado.<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Mensaje de error: `LockBeforeUnlocking`. | Transición de Estados (Inválida) |
 | **CP-3002-06** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Diferente al titular del bloqueo (`MAPPER` secundario).<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Se mantiene el bloqueo original. Mensaje de error: `TaskNotOwned`. | PE (Clase No Válida) |
+
+### 3.3. Escenario: [ESC-3003] - División de Tarea de Mapeo (Split Task)
+
+**A. Definición del Escenario**
+
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que el sistema permite a un usuario `MAPPER` fraccionar una tarea (actualmente bloqueada por él) en 4 sub-tareas más pequeñas, siempre y cuando la escala del área (zoom cartográfico) no supere el límite máximo permitido por la plataforma para evitar micro-tareas inmanejables. |
+| **RF Asociados** | RF-3005 |
+| **Precondiciones** | Proyecto en estado `PUBLISHED`. Usuario `MAPPER` (ACT-0002) autenticado en el sistema. Tarea seleccionada en estado `LOCKED_FOR_MAPPING`. |
+| **Técnicas aplicadas**| Análisis de Valores Límite (AVL), Partición de Equivalencia (PE). |
+| **Resultado Esperado** | Si se cumplen las reglas geográficas y de propiedad, el sistema divide la tarea original en 4 nuevas tareas, eliminando la original e incrementando el total de tareas del proyecto en 3. De lo contrario, se rechaza la acción con un mensaje de error específico. |
+
+**B. Aplicación de Técnicas (Análisis)**
+
+**B.1. Análisis de Valores Límite (AVL)**
+La capacidad de dividir una tarea está restringida matemáticamente por el nivel de zoom cartográfico (escala del mapa). Si una tarea ya es demasiado pequeña, dividirla generaría polígonos no funcionales. El límite máximo admitido para aplicar un *Split* es un zoom level igual a `17`. Un nivel de zoom `18` o superior se considera demasiado pequeño.
+
+| Cod. | Variable a Evaluar | Límite Superior Válido | Límite Superior Inválido | Observación |
+| :--- | :--- | :--- | :--- | :--- |
+| **MOD03-AVL-001** | Nivel de Zoom de la Tarea | `17` | `18` | Evalúa la frontera exacta donde el sistema bloquea la operación matemática de división cartográfica. |
+
+**B.2. Partición de Equivalencia (PE)**
+Al igual que en la liberación de tareas, la división es una operación destructiva (elimina el polígono original), por lo que requiere una estricta validación de estado y propiedad del bloqueo actual.
+
+| Cod. | Condición Analizada | Clase Válida | Clases No Válidas |
+| :--- | :--- | :--- | :--- |
+| **MOD03-PE-003** | Estado y Autoría de la Tarea | Tarea en estado `LOCKED_FOR_MAPPING` cuyo `lockHolder` (titular) coincide con el usuario que emite la petición. | 1. Tarea en cualquier otro estado (ej. `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero con un `lockHolder` diferente al solicitante. |
+
+*   *Comportamiento esperado (Clase Válida):* Ejecución exitosa de la función `splitTaskGrid`.
+*   *Comportamiento esperado (Clases No Válidas):* Rechazo de la solicitud indicando `LockToSplit` (para estado incorrecto) o `SplitOtherUserTask` (para titular distinto).
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Datos de entrada o escenario | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
+| :--- | :--- | :--- | :--- |
+| **CP-3003-01** | **Zoom de Tarea:** `17`<br>**Estado:** `LOCKED_FOR_MAPPING`<br>**Titular:** Solicitante actual | El sistema procesa la división. La tarea original desaparece. Se generan 4 tareas nuevas. El contador `total_tasks` aumenta en 3. | MOD03-AVL-001 (Válido)<br>MOD03-PE-003 (Válido) |
+| **CP-3003-02** | **Zoom de Tarea:** `18`<br>**Estado:** `LOCKED_FOR_MAPPING`<br>**Titular:** Solicitante actual | El sistema aborta la transacción espacial. Se emite el mensaje de error: `SmallToSplit`. La tarea original se mantiene intacta. | MOD03-AVL-001 (Inválido)<br>MOD03-PE-003 (Válido) |
+| **CP-3003-03** | **Zoom de Tarea:** `15`<br>**Estado:** `READY`<br>**Titular:** Ninguno | El sistema rechaza la petición por estado inválido, emitiendo el error: `LockToSplit`. | MOD03-AVL-001 (Válido)<br>MOD03-PE-003 (No Válido) |
+| **CP-3003-04** | **Zoom de Tarea:** `16`<br>**Estado:** `LOCKED_FOR_MAPPING`<br>**Titular:** Usuario B (Diferente al solicitante actual) | El sistema rechaza la petición por conflicto de propiedad, emitiendo el error: `SplitOtherUserTask`. | MOD03-AVL-001 (Válido)<br>MOD03-PE-003 (No Válido) |
