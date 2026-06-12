@@ -193,3 +193,44 @@ Al igual que en la liberación de tareas, la división es una operación destruc
 | **CP-3003-02** | **Zoom de Tarea:** `18`<br>**Estado:** `LOCKED_FOR_MAPPING`<br>**Titular:** Solicitante actual | El sistema aborta la transacción espacial. Se emite el mensaje de error: `SmallToSplit`. La tarea original se mantiene intacta. | MOD03-AVL-001 (Inválido)<br>MOD03-PE-003 (Válido) |
 | **CP-3003-03** | **Zoom de Tarea:** `15`<br>**Estado:** `READY`<br>**Titular:** Ninguno | El sistema rechaza la petición por estado inválido, emitiendo el error: `LockToSplit`. | MOD03-AVL-001 (Válido)<br>MOD03-PE-003 (No Válido) |
 | **CP-3003-04** | **Zoom de Tarea:** `16`<br>**Estado:** `LOCKED_FOR_MAPPING`<br>**Titular:** Usuario B (Diferente al solicitante actual) | El sistema rechaza la petición por conflicto de propiedad, emitiendo el error: `SplitOtherUserTask`. | MOD03-AVL-001 (Válido)<br>MOD03-PE-003 (No Válido) |
+
+### 3.4. Escenario: [ESC-3004] - Expiración y Extensión de Bloqueo de Tarea (Auto-unlock / Extend)
+
+**A. Definición del Escenario**
+
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que el sistema libera automáticamente una tarea bloqueada al expirar su tiempo límite de edición para prevenir el acaparamiento de tareas (operación del Sistema). Adicionalmente, validar que un `MAPPER` pueda solicitar una extensión explícita de su tiempo de bloqueo antes de que este caduque. |
+| **RF Asociados** | RF-3006 |
+| **Precondiciones** | Proyecto en estado `PUBLISHED`. Tarea en estado `LOCKED_FOR_MAPPING`. Usuario `MAPPER` (ACT-0002) autenticado (para extensiones). Cron de expiración de tareas (ACT-0006) activo. |
+| **Técnicas aplicadas**| Análisis de Valores Límite (AVL), Partición de Equivalencia (PE). |
+| **Resultado Esperado** | Si el tiempo transcurrido supera el umbral configurado, la tarea vuelve a `READY`. Si el usuario solicita una extensión bajo condiciones válidas, el temporizador se reinicia; de lo contrario, la extensión es denegada con el error correspondiente. |
+
+**B. Aplicación de Técnicas (Análisis)**
+
+**B.1. Análisis de Valores Límite (AVL)**
+La liberación de la tarea depende de un umbral temporal (`autoUnlockSeconds`, típicamente 2 horas / 7200 segundos). Se evalúa el límite de expiración, donde `L` es el límite de tiempo y `T` es el tiempo transcurrido desde que se bloqueó la tarea.
+
+| Cod. | Campo / Condición Evaluada | Límite Inferior (Válido) | Límite Exacto (No Válido) | Límite Superior (No Válido) | Observación |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **MOD03-AVL-002** | Tiempo transcurrido `T` vs `L` | `T = L - 1` segundo | `T = L` | `T = L + 1` segundo | Evalúa la frontera cronológica donde el sistema debe revocar forzosamente el bloqueo del usuario. |
+
+**B.2. Partición de Equivalencia (PE)**
+Al solicitar una "Extensión del Bloqueo" (*Extend Session*), el sistema debe verificar el estado topográfico actual y la autoría del bloqueo para garantizar la seguridad de la operación.
+
+| Cod. | Campo / Condición | Clase Válida | Clases No Válidas |
+| :--- | :--- | :--- | :--- |
+| **MOD03-PE-004** | Estado y Propiedad de la Tarea al extender | Tarea en estado `LOCKED_FOR_MAPPING` y el `lockHolder` (titular) coincide con el solicitante. | 1. Tarea no bloqueada (ej. `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero asignada a otro usuario. |
+
+*   *Comportamiento esperado (Clase Válida):* El sistema reinicia el contador de tiempo y registra la acción `EXTENDED_FOR_MAPPING` en el historial.
+*   *Comportamiento esperado (Clases No Válidas):* Rechazo de la solicitud indicando `TaskStatusNotLocked` (para estado incorrecto) o `LockedByAnotherUser` (para titular distinto).
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Datos de entrada o escenario | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
+| :--- | :--- | :--- | :--- |
+| **CP-3004-01** | Evaluación del sistema.<br>**Tiempo transcurrido:** `L - 1 segundo`. | La tarea conserva su estado `LOCKED_FOR_MAPPING`. No se revoca el acceso del usuario. | MOD03-AVL-002 (Válido) |
+| **CP-3004-02** | Evaluación del sistema.<br>**Tiempo transcurrido:** Igual a `L` o `L + 1 segundo`. | El sistema revoca el acceso. La tarea cambia a `READY`. El historial registra la acción `AUTO_UNLOCKED_FOR_MAPPING`. | MOD03-AVL-002 (No Válido) |
+| **CP-3004-03** | Solicitud de Extensión.<br>**Estado:** `LOCKED_FOR_MAPPING`.<br>**Titular:** Coincide con solicitante. | Operación exitosa (HTTP 200). Retorna "Successfully extended task expiry". Historial registra `EXTENDED_FOR_MAPPING`. | MOD03-PE-004 (Clase Válida) |
+| **CP-3004-04** | Solicitud de Extensión.<br>**Estado:** `READY`. | Operación denegada (HTTP 403). Retorna el mensaje de error: `TaskStatusNotLocked`. | MOD03-PE-004 (Clase No Válida) |
+| **CP-3004-05** | Solicitud de Extensión.<br>**Estado:** `LOCKED_FOR_MAPPING`.<br>**Titular:** Usuario B (Diferente al solicitante). | Operación denegada (HTTP 403). Retorna el mensaje de error: `LockedByAnotherUser`. El bloqueo original no se altera. | MOD03-PE-004 (Clase No Válida) |
