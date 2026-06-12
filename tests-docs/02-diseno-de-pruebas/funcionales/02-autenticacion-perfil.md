@@ -120,3 +120,53 @@ Se identifican los valores de prueba críticos situados en los extremos numéric
 | **CP-1002-03** | 1. Acceder al Tasking Manager con un perfil que posea el valor inmediatamente superior a la frontera Beginner. | **Total Changesets:** 251 <br>*(Límite Superior No Válido)* | El sistema calcula la transición y la interfaz del usuario cambia de forma automática la medalla a la categoría **INTERMEDIATE**. |
 | **CP-1002-04** | 1. Acceder al Tasking Manager con un perfil que se encuentre en el límite estricto de la clase intermedia. | **Total Changesets:** 1000 <br>*(Límite Superior Válido)* | La interfaz gráfica de usuario mantiene la consistencia visual mostrando la etiqueta fija de **INTERMEDIATE**. |
 | **CP-1002-05** | 1. Acceder al Tasking Manager con un perfil que rompa el límite intermedio por una sola edición. | **Total Changesets:** 1001 <br>*(Límite Superior No Válido)* | El sistema evalúa el cambio de rango de forma inmediata y la interfaz de usuario renderiza la etiqueta de máximo nivel: **ADVANCED**. |
+
+---
+
+### 3.3. Escenario: ESC-1003 - Restricción de Contribución por Aceptación de Licencias de Proyecto
+
+**A. Definición del Escenario**
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que la interfaz restrinja el acceso a las funciones de mapeo de un proyecto cuando este exija términos legales específicos, impidiendo la contribución hasta que el usuario confirme su aceptación. |
+| **RF Asociados** | RF-1003 (Dependiente de RF-1001) |
+| **Precondiciones** | El usuario (ACT-02) intenta interactuar con la vista de asignación de tareas cartográficas de un proyecto específico. |
+| **Técnicas aplicadas**| Tablas de Decisión |
+| **Resultado Esperado** | La interfaz de usuario debe bloquear dinámicamente los botones de interacción cartográfica y forzar la aparición de un componente modal/banner legal, el cual se liberará únicamente al registrar la confirmación del usuario. |
+
+**B. Aplicación de Técnicas (Análisis)**
+Para este escenario, se modela el comportamiento lógico de la interfaz mediante los componentes de la técnica de **Tablas de Decisión**, mapeando las variables de entrada y las respuestas visuales del sistema:
+
+* **Condiciones de Entrada (Controles de la UI):**
+    * `CE-1`: ¿El usuario cuenta con una sesión autenticada activa? (RF-1001)
+    * `CE-2`: ¿El proyecto seleccionado exige la firma/aceptación de una licencia?
+    * `CE-3`: ¿El usuario hace clic en "Aceptar términos" en la ventana modal/banner?
+* **Condiciones de Salida (Resultados en la UI):**
+    * `CS-1`: Redirigir de forma inmediata a la Landing Page pública y forzar el Login.
+    * `CS-2`: Desplegar ventana modal/banner obligatorio de términos legales en pantalla.
+    * `CS-3`: Mantener inhabilitado el botón de contribución ("Mapear Tarea") en gris.
+    * `CS-4`: Habilitar por completo el botón de contribución ("Mapear Tarea") en color activo.
+
+#### B.1. Matriz de Tabla de Decisión Racionalizada
+Se cruzan las condiciones utilizando la simplificación por equivalencias (guiones) para optimizar la cobertura de pruebas de la interfaz:
+
+| Tipo de Control | Variables de la Interfaz de Usuario | A | B | C | D |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Condiciones de Entrada** | `CE-1`: Sesión de usuario activa | **F** | **V** | **V** | **V** |
+| | `CE-2`: Proyecto exige licencia | **-** | **F** | **V** | **V** |
+| | `CE-3`: Usuario acepta términos en pantalla | **-** | **-** | **F** | **V** |
+| **Condiciones de Salida** | `CS-1`: Redirigir de forma forzada a Landing/Login | **V** | **F** | **F** | **F** |
+| | `CS-2`: Desplegar modal/banner legal | **F** | **F** | **V** | **F** |
+| | `CS-3`: Botón "Mapear Tarea" inhabilitado (Gris) | **F** | **F** | **V** | **F** |
+| | `CS-4`: Botón "Mapear Tarea" habilitado (Activo) | **F** | **V** | **F** | **V** |
+
+---
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Pasos de Ejecución | Datos de Entrada (Reglas Aplicadas) | Resultado Esperado |
+| :--- | :--- | :--- | :--- |
+| **CP-1003-01** | 1. Intentar ingresar directamente a la URL de contribución de un proyecto restrictivo sin autenticación previa. | **Estado Sesión:** No Autenticado.<br>*(Regla de Columna A)* | El sistema bloquea la carga de la interfaz del proyecto, redirige de inmediato al usuario a la Landing Page pública (`CS-1 = V`) y solicita el login vía OSM. |
+| **CP-1003-02** | 1. Iniciar sesión con una cuenta de Mapper (`ACT-02`).<br>2. Navegar e ingresar a un proyecto público estándar que **no** tiene ninguna licencia configurada. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto sin licencia.<br>*(Regla de Columna B)* | La interfaz no despliega alertas visuales, carga la cuadrícula del mapa de forma limpia y el botón "Mapear Tarea" se muestra directamente activo y habilitado (`CS-4 = V`). |
+| **CP-1003-03** | 1. Iniciar sesión con una cuenta de Mapper (`ACT-02`).<br>2. Navegar e ingresar a un proyecto configurado con licencias legales obligatorias.<br>3. Intentar seleccionar un cuadrante o interactuar con el mapa ignorando los textos. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto con licencia.<br>**Acción:** Sin aceptar términos.<br>*(Regla de Columna C)* | La interfaz congela las interacciones desplegando de forma obligatoria la ventana modal de términos legales (`CS-2 = V`). El botón principal "Mapear Tarea" permanece bloqueado en color gris (`CS-3 = V`). |
+| **CP-1003-04** | 1. Estando ante la ventana modal obligatoria de términos legales de un proyecto (Contexto CP-1003-03).<br>2. Hacer clic en el botón o casilla "Acepto los términos y licencias" de la pantalla. | **Estado Sesión:** Activa.<br>**Configuración:** Proyecto con licencia.<br>**Acción:** Clic en Aceptar.<br>*(Regla de Columna D)* | El componente modal legal se oculta automáticamente en la interfaz. El botón principal "Mapear Tarea" cambia de estado visual de gris a su color activo (azul/verde) quedando totalmente habilitado (`CS-4 = V`). |
