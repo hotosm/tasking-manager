@@ -7,6 +7,9 @@
 ## 1. Contexto del Módulo
 Este módulo es responsable de la persistencia visual, indexación y recuperación de los proyectos de mapeo en la plataforma. Permite a los usuarios buscar proyectos mediante un motor de texto predictivo, segmentar el universo cartográfico aplicando filtros avanzados (según el estado del proyecto, la dificultad técnica del mapper y las campañas globales asociadas), ordenar los resultados por relevancia o urgencia, y renderizar geográficamente los límites espaciales (Bounding Box - BBOX) sobre un mapa interactivo.
 
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](../funcionales/01-requerimientos-funcionales.md).*
+
+
 ---
 
 ## 2. Estrategia de Diseño de Pruebas
@@ -25,7 +28,7 @@ El alcance cubre las interacciones de los siguientes actores:
 
 ### 2.2. Técnicas de Caja Negra Utilizadas
 * **Tablas de Decisión:** Aplicada al motor de búsqueda con filtros avanzados (RF-2001). Permite validar de forma matemática cómo responde la pantalla cuando se combinan o contradicen los filtros de Estado, Dificultad y Campaña.
-* **Partición de Equivalencia (PE) y Análisis de Valores Límite (AVL):** Utilizadas para la barra de búsqueda por texto y las coordenadas del mapa (BBOX) (RF-2002). Limita las pruebas de caracteres en la barra de búsqueda y las fronteras geoespaciales numéricas del mapa.
+* **Partición de Equivalencia (PE)** y **Análisis de Valores Límite (AVL):** Utilizadas para la barra de búsqueda por texto y las coordenadas del mapa (BBOX) (RF-2002). Limita las pruebas de caracteres en la barra de búsqueda y las fronteras geoespaciales numéricas del mapa.
 * **Transición de Estados:** Aplicada a la vista del mapa interactivo (RF-2003). Modela cómo cambia la interfaz del mapa (Modo Lista, Vista de Cuadrícula, Zoom al BBOX y Carga Asíncrona de Capas) según los clics del usuario.
 
 ---
@@ -55,7 +58,7 @@ Para este escenario, se modela el comportamiento lógico de la pantalla utilizan
     * `CS-2`: Desplegar mensaje de alerta "No se encontraron proyectos que coincidan con los filtros".
     * `CS-3`: Mostrar el catálogo completo de proyectos (Estado por defecto / Sin filtros).
 
-#### B.1. Matriz de Tabla de Decisión Racionalizada
+#### B.1. Tablas de Decisión
 Se cruzan las condiciones de los selectores aplicando guiones (**-**) para representar estados indiferentes y optimizar las pruebas en la interfaz:
 
 | Tipo de Control | Variables de la Interfaz de Usuario | A | B | C | D |
@@ -78,7 +81,7 @@ Se cruzan las condiciones de los selectores aplicando guiones (**-**) para repre
 | **CP-2001-01** | 1. Ingresar a la sección "Explorar Proyectos".<br>2. Verificar el estado inicial de la pantalla sin interactuar con los desplegables. | **Filtros:** Ninguno activo.<br>*(Regla de Columna A)* | La interfaz carga por defecto el catálogo completo de proyectos disponibles en el sistema (`CS-3 = V`). |
 | **CP-2001-02** | 1. Hacer clic en el selector de Estado y marcar "Activo".<br>2. Mantener el resto de filtros vacíos. | **Estado:** Activo.<br>**Dificultad:** Sin filtro.<br>*(Regla de Columna B)* | La pantalla se actualiza asíncronamente mostrando únicamente las tarjetas de proyectos cuyo estado sea "Activo" (`CS-1 = V`). |
 | **CP-2001-03** | 1. Manteniendo el filtro "Activo", abrir el selector de Dificultad y marcar "Beginner". | **Estado:** Activo.<br>**Dificultad:** Beginner.<br>*(Regla de Columna C)* | La lista reduce sus elementos, mostrando solo los proyectos que son "Activos" y que simultáneamente aceptan mappers "Beginner" (`CS-1 = V`). |
-| **CP-2001-04** | 1. Mantener activos los filtros anteriores.<br>2. Abrir el selector de Campañas y marcar una campaña existente (ej. "Malaria"). | **Estado:** Activo.<br>**Dificultad:** Beginner.<br>**Campaña:** Malaria.<br>*(Regla de Columna D)* | La interfaz procesa la intersección final. Muestra en pantalla solo los proyectos que cumplan estrictamente con los tres criterios en simultáneo (`CS-1 = V`). |
+| **CP-2001-04** | 1. Mantener activos los filtros anteriores.<br>2. Abrir el selector de Campñas y marcar una campaña existente (ej. "Malaria"). | **Estado:** Activo.<br>**Dificultad:** Beginner.<br>**Campaña:** Malaria.<br>*(Regla de Columna D)* | La interfaz procesa la intersección final. Muestra en pantalla solo los proyectos que cumplan estrictamente con los tres criterios en simultáneo (`CS-1 = V`). |
 
 ---
 
@@ -95,7 +98,7 @@ Se cruzan las condiciones de los selectores aplicando guiones (**-**) para repre
 
 **B. Aplicación de Técnicas (Análisis)**
 
-#### B.1. Matriz de Partición de Equivalencia (PE)
+#### B.1. Partición de Equivalencia (PE)
 Se agrupa el universo de datos para la barra de búsqueda (longitud de caracteres del string) y las coordenadas geográficas de latitud válidas para el encuadre del BBOX:
 
 | Clase Válida | Clases No Válidas | Rango Evaluado |
@@ -106,7 +109,7 @@ Se agrupa el universo de datos para la barra de búsqueda (longitud de caractere
 | **PE-V02** (Latitud Válida BBOX) | - | De -90.00 a +90.00 |
 | - | **PE-NV03** (Latitud Fuera de Rango)| < -90.00 o > +90.00 |
 
-#### B.2. Matriz de Análisis de Valores Límite (AVL)
+#### B.2. Análisis de Valores Límite (AVL)
 Se identifican los valores de prueba críticos situados en las fronteras exactas de longitud de caracteres de búsqueda y bordes geográficos de latitud para el BBOX:
 
 | Límite Inferior Válido | Límite Inferior No Válido | Límite Superior Válido | Límite Superior No Válido | Rango de Clase Asociado |
