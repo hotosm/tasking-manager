@@ -7,7 +7,7 @@
 ## 1. Contexto del Módulo
 Este módulo es responsable de la persistencia visual, indexación y recuperación de los proyectos de mapeo en la plataforma. Permite a los usuarios buscar proyectos mediante un motor de texto predictivo, segmentar el universo cartográfico aplicando filtros avanzados (según el estado del proyecto, la dificultad técnica del mapper y las campañas globales asociadas), ordenar los resultados por relevancia o urgencia, y renderizar geográficamente los límites espaciales (Bounding Box - BBOX) sobre un mapa interactivo.
 
-*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](../funcionales/01-requerimientos-funcionales.md).*
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](/tests-docs/02-diseno-de-pruebas/funcionales/00-requerimientos-funcionales.md).*
 
 
 ---
@@ -158,7 +158,7 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
     * `Cierre de sesion del usuario`
     * `Redireccion automatica UI`
 
-![Diagrama de Transición de Estados - ESC-2003](./img/transicion-estado-ESC-2003.png)
+![Diagrama de Transición de Estados - ESC-2003](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-2003.png)
 
 ---
 

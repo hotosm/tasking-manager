@@ -6,7 +6,7 @@
 ## 1. Arquitectura de los Entornos de Pruebas
 Para garantizar el aislamiento y la repetibilidad de los resultados, el aseguramiento de calidad del Tasking Manager exige el uso de entornos encapsulados mediante contenedores, dada la complejidad de sus dependencias espaciales.
 
-![Recursos y entornos](./img/recursos-entornos.png) 
+![Recursos y entornos](/tests-docs/01-plan-de-pruebas/01-plan-general/img/recursos-entornos.png) 
 
 *(Propósito del diagrama: Aclarar la separación de responsabilidades operativas. Las pruebas unitarias ocurren entre Local y CI; las pruebas de Sistema ocurrirán en Staging).*
 

@@ -9,7 +9,7 @@ El proyecto adopta un enfoque de pruebas estructurado de **"Abajo hacia Arriba" 
 ### 1.1. Ciclo de Vida Organizacional de las Pruebas
 Todas las pruebas, independientemente de su nivel (Unitaria, Integración, Sistema), seguirán el siguiente flujo estándar estipulado por el equipo QA.
 
-![Flujo de trabajo con Wiki](./img/workflow-wiki.png) 
+![Flujo de trabajo con Wiki](/tests-docs/01-plan-de-pruebas/01-plan-general/img/workflow-wiki.png) 
 
 *(Propósito del diagrama: Establecer la regla inquebrantable de que ninguna prueba se codifica sin antes haber sido diseñada y aprobada en la Wiki de QA).*
 
@@ -24,7 +24,7 @@ El equipo opera en un esquema progresivo. La fase de planeación inicial se ejec
 | **Test Architect** | 1 | Define la estructura técnica del proceso de pruebas, la organización del repositorio y la estrategia de pruebas; además, brinda soporte en tareas relacionadas con CI/CD y GitHub Actions cuando sea requerido. |
 
 ## 3. Control Documental y Criterios de Revisión
-Para garantizar la integridad, consistencia y auditabilidad del Plan de Pruebas, se adopta un enfoque de Docs-as-Code (Documentación como Código). Toda la estructura de tests-docs reside en un repositorio Git, lo que permite control de versiones, revisión por pares y trazabilidad histórica.
+Para garantizar la integridad, consistencia y auditabilidad del Plan de Pruebas, se adopta un enfoque de Docs-as-Code (Documentación como Código). Toda la estructura de /tests-docs reside en un repositorio Git, lo que permite control de versiones, revisión por pares y trazabilidad histórica.
 
 ### 3.1. Flujo de Revisión por Pares (Peer Review)
 Dado que la documentación es compartida por todo el equipo, queda **estrictamente prohibida la edición directa (commit directo)** sobre la rama principal (en este caso `develop`) de la documentación.
@@ -66,7 +66,7 @@ La trazabilidad es el eje central del QA profesional. Asegura que ningún requis
 Se establece la siguiente cadena de trazabilidad bidireccional (registrada en `matriz-trazabilidad-unitaria.md`):
 1.  **Requisito de Negocio / Épica** (Origen en GitHub Projects).
 2.  **Módulo de Código** (Archivo fuente en `hotosm/tasking-manager`).
-3.  **Especificación de Diseño de Prueba** (Caso documentado en la Wiki `tests-docs`).
+3.  **Especificación de Diseño de Prueba** (Caso documentado en la Wiki `/tests-docs`).
 4.  **Test Script Automatizado** (Prueba automatizada en el repositorio).
 5.  **Evidencia de Ejecución** (Log o reporte de CI/CD).
 

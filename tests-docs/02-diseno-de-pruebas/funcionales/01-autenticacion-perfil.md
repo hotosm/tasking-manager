@@ -7,7 +7,7 @@
 ## 1. Contexto del Módulo
 Este módulo gestiona el ciclo de vida de la identidad, sesión y experiencia del usuario en la plataforma. Es responsable de controlar el acceso seguro mediante OAuth 2.0 con OpenStreetMap, calcular y actualizar el nivel técnico del mapper (BEGINNER, INTERMEDIATE, ADVANCED) según sus métricas, restringir contribuciones mediante la aceptación obligatoria de licencias, y permitir la personalización de ajustes del perfil desde la interfaz.
 
-*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](../funcionales/01-requerimientos-funcionales.md).*
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](/tests-docs/02-diseno-de-pruebas/funcionales/00-requerimientos-funcionales.md).*
 
 ---
 
@@ -63,7 +63,7 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
     * `Cancelacion o error`
     * `Cierre de sesion`
 
-![Diagrama de Transición de Estados - ESC-1001](./img/transicion-estado-ESC-1001.png) 
+![Diagrama de Transición de Estados - ESC-1001](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-1001.png) 
 
 ---
 
@@ -199,7 +199,7 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
     * `Clic en Guardar Cambios`
     * `Confirmacion exitosa del backend`
 
-![Diagrama de Transición de Estados - ESC-1004](./img/transicion-estado-ESC-1004.png)
+![Diagrama de Transición de Estados - ESC-1004](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-1004.png)
 
 ---
 

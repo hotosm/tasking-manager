@@ -7,7 +7,7 @@
 ## 1. Contexto del Módulo
 Este módulo gestiona el flujo de control de calidad o validación de las tareas. Su objetivo principal es asegurar que los mapeos realizados cumplan con los estándares, bloqueando tareas para revisión (una o múltiples), impidiendo la auto-validación y permitiendo evaluaciones (aprobar o rechazar), además de deshacer acciones previas.
 
-*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](../../01-requerimientos-funcionales.md).*
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](/tests-docs/02-diseno-de-pruebas/funcionales/00-requerimientos-funcionales.md).*
 
 ---
 

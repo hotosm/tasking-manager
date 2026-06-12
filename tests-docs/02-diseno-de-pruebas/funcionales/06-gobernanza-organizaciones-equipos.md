@@ -8,7 +8,7 @@
 
 Este módulo gestiona la estructura jerárquica de agrupaciones de usuarios y la delegación de permisos dentro de la plataforma. Su responsabilidad principal es la creación y administración de Organizaciones y Equipos, controlando sus políticas de visibilidad (`PUBLIC`, `PRIVATE`), métodos de ingreso (`ANY`, `BY_REQUEST`, `BY_INVITE`) y orquestando el ciclo de vida de las solicitudes de membresía para segmentar de forma segura el acceso a los proyectos.
 
-*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](./01-requerimientos-funcionales.md).*
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](/tests-docs/02-diseno-de-pruebas/funcionales/00-requerimientos-funcionales.md).*
 
 ---
 
@@ -102,7 +102,7 @@ La creación de equipos está gobernada por estrictas reglas de Control de Acces
 **B.1. Transición de Estados**
 La membresía de un usuario en un equipo sigue un ciclo de vida definido. Se modelan los estados del usuario con respecto a la membresía del equipo y las acciones que provocan las transiciones.
 
-![Diagrama de transiciones ESC-6002](./img/transicion-estado-ESC-6002.png) 
+![Diagrama de transiciones ESC-6002](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-6002.png) 
 
 **Tabla de Transición de Estados**
 

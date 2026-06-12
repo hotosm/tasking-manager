@@ -17,7 +17,7 @@ Desde la perspectiva del Aseguramiento de Calidad, el Sistema Bajo Prueba (Syste
 ### 3.1. Topología del Sistema
 El siguiente diagrama detalla las capas arquitectónicas que serán sometidas a los distintos niveles de prueba.
 
-![Arquitectura de análisis](./img/arquitectura-general.png) 
+![Arquitectura de análisis](/tests-docs/01-plan-de-pruebas/01-plan-general/img/arquitectura-general.png) 
 
 *(Nota: Este diagrama debe utilizarse para comprender el flujo de los datos al diseñar las pruebas de integración y sistema).*
 

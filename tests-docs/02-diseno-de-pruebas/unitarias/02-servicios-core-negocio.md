@@ -16,7 +16,7 @@ Las pruebas unitarias implementadas para el módulo de servicios operan bajo un 
 
 El siguiente diagrama ilustra cómo se estructura la ejecución de una prueba unitaria típica dentro de esta suite, garantizando que el servicio evaluado no genere mutaciones persistentes indeseadas ni dependa de latencias de red.
 
-![Estrategia de aislamiento](./img/estrategia-aislamiento.png) 
+![Estrategia de aislamiento](/tests-docs/02-diseno-de-pruebas/unitarias/img/estrategia-aislamiento.png) 
 
 *(Propósito del diagrama: Demostrar el modelo de aislamiento de dependencias. Se evidencia cómo las "Canned Factories" y los "Mocks" envuelven al Servicio Core para asegurar la determinidad de la prueba, mitigando el riesgo de falsos positivos en el pipeline de CI/CD).*
 

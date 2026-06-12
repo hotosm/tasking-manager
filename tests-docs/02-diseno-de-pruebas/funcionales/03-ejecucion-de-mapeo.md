@@ -8,7 +8,7 @@
 
 Este módulo gestiona el flujo de trabajo central de contribución geográfica de la plataforma. Es responsable de coordinar la selección, el bloqueo exclusivo, la interacción con herramientas de edición (tanto basadas en la web como locales) y la liberación o actualización de estado de las tareas dentro de un proyecto. Su propósito principal es garantizar la concurrencia segura de múltiples usuarios, previniendo colisiones de edición y asegurando la correcta evolución del progreso de mapeo del proyecto.
 
-*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](../funcionales/01-requerimientos-funcionales.md).*
+*Para consultar el detalle exhaustivo de los actores, restricciones y reglas de negocio, referirse al [Catálogo de Requerimientos Funcionales](/tests-docs/02-diseno-de-pruebas/funcionales/00-requerimientos-funcionales.md).*
 
 ---
 
@@ -121,7 +121,7 @@ Una vez superadas las validaciones de bloqueo, el sistema procesa el lanzamiento
 **B.1. Transición de Estados**
 Dado que el ciclo de vida de la tarea es estricto y secuencial, se modelan los estados del sistema y los eventos (acciones de la interfaz) que provocan las transiciones válidas e inválidas desde el estado de bloqueo de mapeo.
 
-![Diagrama de transición ESC-3002](./img/transicion-estado-ESC-3002.png) 
+![Diagrama de transición ESC-3002](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-3002.png) 
 
 **Tabla de Transición de Estados**
 

@@ -27,7 +27,7 @@ La arquitectura del entorno de pruebas, incluyendo la configuración de *pytest*
 
 *(Propósito del diagrama: Visualizar la jerarquía operativa y la dependencia entre los roles técnicos del equipo de QA durante la fase de pruebas unitarias).*
 
-![Flujo de trabajo en equipo](./img/flujo-trabajo-equipo.png) 
+![Flujo de trabajo en equipo](/tests-docs/01-plan-de-pruebas/02-plan-pruebas-unitarias/img/flujo-trabajo-equipo.png) 
 
 ## 4. Gestión del Cronograma y Operación mediante GitHub Projects
 Para garantizar el cumplimiento de los hitos documentales y de ejecución, se ha determinado que GitHub Projects posee la capacidad técnica necesaria para gobernar el cronograma QA, siempre y cuando abandone su estructura básica y evolucione hacia una herramienta de gestión de ciclo de vida de pruebas. 
@@ -39,7 +39,7 @@ El flujo de los estados en GitHub Projects reflejará el proceso metodológico e
 
 *(Propósito del diagrama: Estandarizar el flujo de estados de las tarjetas en GitHub Projects, asegurando que el avance del cronograma esté atado a hitos formales de validación documental).*
 
-![Flujo de trabajo en GitHub Projects](./img/flujo-en-github-projects.png) 
+![Flujo de trabajo en GitHub Projects](/tests-docs/01-plan-de-pruebas/02-plan-pruebas-unitarias/img/flujo-en-github-projects.png) 
 
 ## 5. Estrategia de Coordinación y Seguimiento
 La coordinación entre los analistas funcionales y la arquitectura técnica se gestionará mediante ciclos de sincronización semanales. Durante estas iteraciones, el objetivo principal será poblar la matriz de trazabilidad con los hallazgos estructurales. La comunicación y el seguimiento del cronograma dependerán enteramente de las fechas de vencimiento configuradas en los *Milestones* de GitHub.
