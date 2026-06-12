@@ -17,7 +17,7 @@ services:
       - tasking-manager.env
     restart: unless-stopped
     healthcheck:
-      test: pg_isready -U ${POSTGRES_USER:-tm} -d ${POSTGRES_DB:-test_db}
+      test: pg_isready -U tm 
       start_period: 35s
       interval: 10s
       timeout: 5s
