@@ -63,7 +63,6 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
     * `Cancelacion o error`
     * `Cierre de sesion`
 
-*Diagrama de Transición de Estados del Módulo:*
 ![Diagrama de Transición de Estados - ESC-1001](./img/transicion-estado-ESC-1001.png) 
 
 ---
@@ -75,3 +74,49 @@ Para este escenario, se modela el comportamiento del sistema mediante los compon
 | **CP-1001-01** | 1. Ingresar a la URL principal del Tasking Manager (`NoAutenticado`).<br>2. Hacer clic en el botón "Log In" (`Inicia autenticacion OAuth`).<br>3. En la interfaz externa de OSM (`RedirigidoOSM`), ingresar credenciales y autorizar (`Usuario en OSM`).<br>4. Esperar el procesamiento de la respuesta (`AutenticandoOSM`). | **Credenciales OSM:** Válidas.<br>**Acción en OSM:** Autorizar acceso. | El sistema completa la transición a `Autenticacion exitosa`, cargando la interfaz local en el estado `SesionActiva` con el Dashboard de mapeo disponible. |
 | **CP-1001-02** | 1. Ingresar a la URL principal del Tasking Manager (`NoAutenticado`).<br>2. Hacer clic en el botón "Log In" (`Inicia autenticacion OAuth`).<br>3. En la interfaz externa de OSM (`RedirigidoOSM`), hacer clic en el botón "Denegar" o "Cancelar". | **Credenciales OSM:** N/A.<br>**Acción en OSM:** Denegar o Cancelar. | Al pasar al estado `AutenticandoOSM`, el sistema detecta la denegación y ejecuta la transición `Cancelacion o error`, devolviendo de inmediato la interfaz del usuario al estado inicial de `NoAutenticado`. |
 | **CP-1001-03** | 1. Estando dentro de la plataforma con la sesión iniciada (`SesionActiva`).<br>2. Desplegar el menú de perfil en la esquina superior derecha.<br>3. Hacer clic en la opción "Log Out / Cerrar Sesión" (`Cierre de sesion`). | **Estado Inicial:** `SesionActiva`.<br>**Acción de Salida:** Clic en Logout. | La aplicación destruye la sesión de forma local y redirige la interfaz del usuario de regreso al estado inicial de `NoAutenticado` (Landing Page pública). |
+
+---
+
+### 3.2. Escenario: ESC-1002 - Clasificación Automatizada y Visualización del Nivel del Mapper
+
+**A. Definición del Escenario**
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que el sistema (ACT-06) calcule correctamente el nivel técnico de experiencia del usuario basándose en sus ediciones consumidas por API, y que la interfaz de usuario muestre la etiqueta correspondiente de manera exacta. |
+| **RF Asociados** | RF-1002 |
+| **Precondiciones** | El usuario (ACT-02) debe haber iniciado sesión de forma exitosa mediante OAuth (RF-1001) y encontrarse visualizando la sección de su perfil o el menú de métricas del sistema. |
+| **Técnicas aplicadas**| Partición de Equivalencia (PE) y Análisis de Valores Límite (AVL) |
+| **Resultado Esperado** | La interfaz gráfica debe actualizar de forma automática la medalla o etiqueta de nivel (`BEGINNER`, `INTERMEDIATE`, `ADVANCED`) en el segundo exacto en que las métricas del usuario toquen las fronteras numéricas establecidas. |
+
+**B. Aplicación de Técnicas (Análisis)**
+
+#### B.1. Matriz de Partición de Equivalencia (PE)
+Se agrupa el universo de datos del contador numérico de ediciones en base a las categorías lógicas del sistema:
+
+| Clase Válida | Clases No Válidas | Rango de Ediciones |
+| :--- | :--- | :---: |
+| **PE-V01** (Beginner) | - | de 0 a 250 |
+| **PE-V02** (Intermediate) | - | de 251 a 1000 |
+| **PE-V03** (Advanced) | - | mas 1001 |
+| - | **PE-NV01** (Valores Corruptos) | < 0 |
+
+#### B.2. Matriz de Análisis de Valores Límite (AVL)
+Se identifican los valores de prueba críticos situados en los extremos numéricos exactos de las particiones:
+
+| Límite Inferior Válido | Límite Inferior No Válido | Límite Superior Válido | Límite Superior No Válido | Rango de Clase Asociado |
+| :---: | :---: | :---: | :---: | :---: |
+| **0** | **-1** | **250** | **251** | Rango Beginner |
+| **251** | **250** | **1000** | **1001** | Rango Intermediate |
+| **1001** | **1000** | **no especificado** | - | Rango Advanced |
+
+---
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Pasos de Ejecución | Datos de Entrada (Clases aplicadas) | Resultado Esperado |
+| :--- | :--- | :--- | :--- |
+| **CP-1002-01** | 1. Acceder al Tasking Manager con un perfil que posea el valor base de la escala de mappers. | **Total Changesets:** 0 <br>*(Límite Inferior Válido)* | La interfaz gráfica de usuario carga el perfil mostrando explícitamente la etiqueta con el texto **BEGINNER**. |
+| **CP-1002-02** | 1. Acceder al Tasking Manager con un perfil que posea exactamente el tope de la clase principiante. | **Total Changesets:** 250 <br>*(Límite Superior Válido)* | La interfaz gráfica de usuario carga el perfil mostrando explícitamente la etiqueta con el texto **BEGINNER**. |
+| **CP-1002-03** | 1. Acceder al Tasking Manager con un perfil que posea el valor inmediatamente superior a la frontera Beginner. | **Total Changesets:** 251 <br>*(Límite Superior No Válido)* | El sistema calcula la transición y la interfaz del usuario cambia de forma automática la medalla a la categoría **INTERMEDIATE**. |
+| **CP-1002-04** | 1. Acceder al Tasking Manager con un perfil que se encuentre en el límite estricto de la clase intermedia. | **Total Changesets:** 1000 <br>*(Límite Superior Válido)* | La interfaz gráfica de usuario mantiene la consistencia visual mostrando la etiqueta fija de **INTERMEDIATE**. |
+| **CP-1002-05** | 1. Acceder al Tasking Manager con un perfil que rompa el límite intermedio por una sola edición. | **Total Changesets:** 1001 <br>*(Límite Superior No Válido)* | El sistema evalúa el cambio de rango de forma inmediata y la interfaz de usuario renderiza la etiqueta de máximo nivel: **ADVANCED**. |
