@@ -151,11 +151,7 @@ jobs:
             echo "No changes detected in wiki. Skipping push."
           else
             # Mensaje de commit con referencia al commit del repo principal
-            git commit -m "docs(wiki): sync from tests-docs @ ${{ github.sha }}
-
-Triggered by: ${{ github.actor }}
-Branch: ${{ github.ref_name }}
-Commit: ${{ github.sha }}"
+            git commit -m "docs(wiki): sync from tests-docs @ ${{ github.sha }} | by ${{ github.actor }} on ${{ github.ref_name }}"
 
             git push origin HEAD
             echo "Wiki updated successfully."
