@@ -1533,5 +1533,6 @@ async def get_active(request: Request, db: Database = Depends(get_db)):
             },
             status_code=400,
         )
-    projects_dto = await ProjectService.get_active_projects(interval, db)
+    sandbox = request.query_params.get("sandbox", "false").lower() == "true"
+    projects_dto = await ProjectService.get_active_projects(interval, db, sandbox)
     return projects_dto
