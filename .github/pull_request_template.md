@@ -1,41 +1,22 @@
-## What type of PR is this? (check all applicable)
+## 📌 ¿Qué tipo de PR es este?
+- [ ] ✅ Pruebas / Testing (Unitarias, Funcionales, etc.)
+- [ ] 📝 Documentación / Métricas
+- [ ] 🐛 Corrección de Bug / Refactor
+- [ ] 🤖 CI/CD (GitHub Actions)
+##  Issue Relacionado
+<!-- Usa la palabra Closes para que la tarjeta se mueva sola en el tablero -->
+Closes #   
 
-- [ ] 🍕 Feature
-- [ ] 🐛 Bug Fix
-- [ ] 📝 Documentation
-- [ ] 🧑‍💻 Refactor
-- [ ] ✅ Test
-- [ ] 🤖 Build or CI
-- [ ] ❓ Other (please specify)
+##  Descripción de los cambios
+<!-- Explica brevemente qué módulos testeaste o qué documento agregaste -->
 
-## Related Issue
 
-Example: Fixes #123
+##  Checklist del Hito 3 (Obligatorio)
+Antes de pedir revisión, asegúrate de cumplir con lo siguiente:
+- [ ] Mis pruebas se ejecutan correctamente en mi entorno local.
+- [ ] Agregué las métricas de cobertura (código y/o funcional) al final de mis archivos.
+- [ ] He verificado que la numeración de mis Casos de Prueba cuadre con los Requerimientos.
+- [ ] Estoy trabajando en una rama (branch) separada y no directamente en main/develop.
 
-## Describe this PR
-
-A brief description of how this solves the issue.
-
-## Screenshots
-
-Please provide screenshots of the change.
-
-## Alternative Approaches Considered
-
-Did you attempt any other approaches that are not documented in code?
-
-## Review Guide
-
-Notes for the reviewer. How to test this change?
-
-## Checklist before requesting a review
-
-- 📖 Read the Tasking Manager Contributing Guide: <https://github.com/hotosm/tasking-manager/blob/develop/docs/developers/contributing.md>
-- 📖 Read the HOT Code of Conduct: <https://docs.hotosm.org/code-of-conduct>
-- 👷‍♀️ Create small PRs. In most cases, this will be possible.
-- ✅ Provide tests for your changes.
-- 📝 Use descriptive commit messages.
-- 📗 Update any related documentation and include any relevant screenshots.
-- 🔠 Does this PR introduce or change any environment variables? If so, make sure to specify this change in the description.
-
-## [optional] What gif best describes this PR or how it makes you feel?
+##  Capturas de pantalla (Opcional pero recomendado)
+<!-- Si tus pruebas pasaron, pega aquí un pantallazo de la consola o del reporte de JaCoCo/PyCoverage -->
