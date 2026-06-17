@@ -28,24 +28,24 @@ Para garantizar una cobertura óptima y reducir la redundancia en los casos de p
 *   **Análisis de Valores Límite (Boundary Value Analysis):** Se aplicará específicamente para validar las reglas de negocio dependientes de variables numéricas extremas, como los límites de zoom topográfico al intentar dividir (Split) una tarea, y el umbral de tiempo límite (`autoUnlockSeconds`) para la liberación automática de una tarea bloqueada.
 *   **Tablas de Decisión (Decision Table Testing):** Se utilizará para modelar combinaciones de reglas de negocio complejas antes de permitir el bloqueo de una tarea. Combinará múltiples entradas binarias (por ejemplo, *¿Tiene el usuario otra tarea bloqueada?*, *¿Cumple con el nivel de mapeo?*, *¿El proyecto está publicado?*) para determinar la salida correcta esperada en la interfaz (habilitación del botón de mapeo o visualización de un error específico).
 *   **Transición de Estados (State Transition Testing):** Esta es la técnica principal del módulo, ya que el modelo funcional depende intrínsecamente del ciclo de vida de una tarea. Se utilizará para validar que los cambios de estado (por ejemplo, de `READY` a `LOCKED_FOR_MAPPING`, y posteriormente a `MAPPED` o `BADIMAGERY`) sigan estrictamente las transiciones permitidas por la interfaz, incluyendo las reversiones (Undo).
-
 ## 3. Especificaciones de Escenarios y Casos de Prueba
 
-Para asegurar una cobertura funcional completa del módulo **MOD-03: Ejecución de Mapeo (Tasking)** sin redundancia, se proponen **4 Especificaciones de Escenarios de Prueba (ESC)**. 
+Para asegurar una cobertura funcional completa del módulo **MOD-03: Ejecución de Mapeo (Tasking)** sin redundancia, se proponen **5 Especificaciones de Escenarios de Prueba (ESC)**. 
 
-El módulo 3 contiene flujos transaccionales altamente acoplados. Dividirlo en 4 escenarios permite aislar las lógicas de negocio utilizando la técnica más adecuada para cada una:
+El módulo 3 contiene flujos transaccionales altamente acoplados. Dividirlo en 5 escenarios permite aislar las lógicas de negocio utilizando la técnica de caja negra más adecuada para cada una:
 1. Permisos y precondiciones de entrada (Tabla de Decisión).
-2. Salida y cambio de estado de la tarea (Transición de Estados).
-3. Geometría y límites de la plataforma (Análisis de Valores Límite).
-4. Acciones automatizadas del sistema en segundo plano.
+2. Salida, restricciones preventivas en la UI y cambio de estado de la tarea (Transición de Estados).
+3. Geometría y límites matemáticos de la plataforma (Análisis de Valores Límite).
+4. Acciones automatizadas del sistema y control de tiempo de sesión (Análisis de Valores Límite).
+5. Interacción gráfica espacial y filtrado de auditoría visual (Partición de Equivalencia).
 
 | ID Escenario | Descripción Breve | RF Cubiertos | Alcance Funcional | Técnica Principal |
 | :--- | :--- | :--- | :--- | :--- |
 | **ESC-3001** | **Bloqueo e inicio de tarea** | RF-3001, RF-3002, RF-3003 | Verifica si el usuario (`MAPPER`) puede tomar una tarea basado en permisos, licencias, exclusividad y selecciona un editor. | Tabla de Decisión, Partición de Equivalencia |
-| **ESC-3002** | **Liberación y envío de tarea** | RF-3004 | Cubre la finalización del mapeo y las opciones de estado (Completado, Mala Imagen, Dejar lista). | Transición de Estados |
-| **ESC-3003** | **División de tarea (Split)** | RF-3005 | Evalúa la capacidad de fraccionar una grilla basándose en el nivel de zoom cartográfico. | Análisis de Valores Límite |
-| **ESC-3004** | **Expiración de bloqueo** | RF-3006 | Valida la liberación forzada por el Sistema cuando el usuario excede el tiempo límite asignado. | Análisis de Valores Límite |
-
+| **ESC-3002** | **Liberación y envío de tarea (Submit)** | RF-3004 | Cubre la finalización del mapeo y las restricciones preventivas en la interfaz para evitar transiciones de estado no permitidas. | Transición de Estados, Partición de Equivalencia |
+| **ESC-3003** | **División de tarea (Split)** | RF-3005 | Evalúa la capacidad de fraccionar una grilla de mapeo basándose en el límite del nivel de zoom cartográfico. | Análisis de Valores Límite, Partición de Equivalencia |
+| **ESC-3004** | **Expiración y extensión de bloqueo** | RF-3006 | Valida la liberación forzada por el Sistema al exceder el límite de tiempo y la solicitud de extensión manual de la sesión por el usuario. | Análisis de Valores Límite, Partición de Equivalencia |
+| **ESC-3005** | **Interacción Cartográfica y Trazabilidad** | RF-3002, RF-7001 | Valida la respuesta del editor integrado frente a la navegación (dentro y fuera del BBOX) y el filtrado del panel de historial. | Partición de Equivalencia |
 
 ### 3.1. Escenario: [ESC-3001] - Solicitud de Bloqueo e Inicio de Tarea de Mapeo
 
@@ -85,7 +85,7 @@ Una vez superadas las validaciones de bloqueo, el sistema procesa el lanzamiento
 
 | Cod. | Campo | Clase Válida | Clases No Válidas |
 | :--- | :--- | :--- | :--- |
-| MOD03-PE-001 | Tipo de Editor | Editores Web (ej. `iD`, `RAPID`), Editores Locales (ej. `JOSM`) | Cadena vacía, Editor no soportado (ej. `CustomApp`) |
+| MOD03-PE-001 | Tipo de Editor | Editores Web (por ejemplo, `iD`, `RAPID`), Editores Locales (por ejemplo, `JOSM`) | Cadena vacía, Editor no soportado (por ejemplo, `CustomApp`) |
 
 *   *Comportamiento esperado (Editores Web):* El sistema redirecciona o carga el iframe embebido con los parámetros BBOX de la tarea.
 *   *Comportamiento esperado (Editores Locales):* El sistema emite una petición `GET` a `127.0.0.1:8111`. Si no hay respuesta, se genera error de conexión local.
@@ -110,49 +110,45 @@ Una vez superadas las validaciones de bloqueo, el sistema procesa el lanzamiento
 
 | Atributo | Detalle |
 | :--- | :--- |
-| **Descripción** | Validar que el sistema procesa correctamente la finalización de una sesión de mapeo por parte de un usuario `MAPPER`, actualizando el estado de la tarea según el progreso reportado y liberando el bloqueo exclusivo para habilitar las siguientes fases del proyecto. |
+| **Descripción** | Validar que la interfaz gráfica permite a un usuario `MAPPER` finalizar su sesión de mapeo sobre una tarea que posee bloqueada, reportando el progreso mediante las opciones visibles en el panel de control y liberando el bloqueo exclusivo. Asimismo, validar que la interfaz restringe visualmente estas opciones cuando la tarea no cumple las condiciones para ser liberada. |
 | **RF Asociados** | RF-3004 |
-| **Precondiciones** | Proyecto en estado `PUBLISHED`. Tarea en estado `LOCKED_FOR_MAPPING` asignada al usuario `MAPPER` (ACT-0002) actualmente autenticado. |
-| **Técnicas aplicadas**| Transición de Estados (State Transition Testing), Partición de Equivalencia (EP). |
-| **Resultado Esperado** | La tarea actualiza su estado topográfico en la base de datos (`MAPPED`, `READY` o `BADIMAGERY`), registra el evento en el historial de la tarea y elimina la asociación de bloqueo temporal con el usuario. Las transiciones no permitidas o realizadas por usuarios sin propiedad del bloqueo son rechazadas. |
+| **Precondiciones** | Proyecto en estado `PUBLISHED`. Usuario `MAPPER` (ACT-0002) autenticado en el sistema. |
+| **Técnicas aplicadas**| Transición de Estados (State Transition Testing), Partición de Equivalencia (PE). |
+| **Resultado Esperado** | La interfaz muestra los controles de finalización ("Yes", "No") únicamente cuando el usuario posee el bloqueo de la tarea. Al confirmar, la tarea actualiza su color/estado topográfico en el mapa (`MAPPED` o `READY`). Para tareas ajenas o sin bloqueo, los controles de envío se ocultan. |
 
 **B. Aplicación de Técnicas (Análisis)**
 
 **B.1. Transición de Estados**
-Dado que el ciclo de vida de la tarea es estricto y secuencial, se modelan los estados del sistema y los eventos (acciones de la interfaz) que provocan las transiciones válidas e inválidas desde el estado de bloqueo de mapeo.
+Se modelan exclusivamente los estados visuales del mapa y los controles de la interfaz que provocan las transiciones disponibles para el usuario al momento de liberar la tarea.
 
 ![Diagrama de transición ESC-3002](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-3002.png) 
 
-**Tabla de Transición de Estados**
+**Tabla de Transición de Estados (Observable en UI)**
 
-| Estado Inicial | Acción (Evento en Interfaz) | Estado Final Esperado | Transición | Observación |
-| :--- | :--- | :--- | :---: | :--- |
-| `LOCKED_FOR_MAPPING` | Seleccionar "Yes" (Submit) | `MAPPED` | Válida | El mapeo finalizó correctamente. |
-| `LOCKED_FOR_MAPPING` | Seleccionar "No" / "Stop Mapping" | `READY` | Válida | Tarea liberada para otro Mapper. |
-| `LOCKED_FOR_MAPPING` | Seleccionar "Bad Imagery" | `BADIMAGERY` | Válida | Nubes o calidad insuficiente. |
-| `LOCKED_FOR_MAPPING` | Forzar estado `VALIDATED` | - | Inválida | Un Mapper no puede autovalidar. Arroja `InvalidUnlockState`. |
-| `READY` | Seleccionar "Yes" (Submit) | - | Inválida | No se puede hacer submit de una tarea no bloqueada. Arroja `LockBeforeUnlocking`. |
+| Estado Inicial UI | Acción en Interfaz | Estado Final Esperado (UI) | Transición |
+| :--- | :--- | :--- | :---: |
+| Tarea `LOCKED_FOR_MAPPING` (Titular) | Seleccionar "Yes" (Mapeo completo) y "Submit" | Tarea cambia a color de `MAPPED`. Panel vuelve a estado inactivo. | Válida |
+| Tarea `LOCKED_FOR_MAPPING` (Titular) | Seleccionar "No" (Mapeo incompleto) y "Submit" | Tarea cambia a color de `READY` (blanco/transparente). | Válida |
 
-**B.2. Partición de Equivalencia**
-Se aplica esta técnica para asegurar que el sistema valide la propiedad del bloqueo de la tarea, garantizando que un usuario malicioso o una sesión expirada no pueda alterar el estado de una tarea ajena.
+**B.2. Partición de Equivalencia (PE)**
+La interfaz de usuario debe reaccionar y adaptarse (mostrando u ocultando el panel de "Submit") basándose en el estado previo de la tarea seleccionada y en quién ostenta la propiedad del bloqueo.
 
-| Cod. | Campo | Clase Válida | Clases No Válidas |
+| Cod. | Variable Analizada en UI | Clase Válida (Muestra panel de Submit) | Clases No Válidas (Oculta panel de Submit) |
 | :--- | :--- | :--- | :--- |
-| MOD03-PE-002 | Titular del Bloqueo (`lockHolder`) | Usuario autenticado coincide con el titular del bloqueo de la tarea. | Usuario autenticado difiere del titular de la tarea.<br>Usuario no autenticado (Anónimo). |
+| **MOD03-PE-002** | Estado de la tarea y titularidad del bloqueo visual | Tarea seleccionada está `LOCKED_FOR_MAPPING` y el usuario actual es el titular. | 1. Tarea en estado `READY` (Libre).<br>2. Tarea en `LOCKED_FOR_MAPPING` por otro usuario (Aparece "Locked by [User]").<br>3. Tarea ya finalizada (`MAPPED`, `VALIDATED`). |
 
-*   *Comportamiento esperado (Clase Válida):* El sistema procesa la transición de estado.
-*   *Comportamiento esperado (Clases No Válidas):* Se rechaza la solicitud. Para diferencia de titulares se emite error `TaskNotOwned`. Para anónimos se emite error de autenticación.
+*   *Comportamiento esperado (Clase Válida):* El panel lateral renderiza la pregunta "¿Está la tarea completamente mapeada?" con las opciones de envío.
+*   *Comportamiento esperado (Clases No Válidas):* La interfaz actúa como barrera preventiva. No renderiza los radio buttons ni el botón de "Submit Task". En su lugar, muestra botones acordes al estado (por ejemplo, "Map a task" o solo información).
 
 **C. Casos de Prueba Derivados**
 
-| ID Caso | Datos de entrada o escenario | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
-| :--- | :--- | :--- | :--- |
-| **CP-3002-01** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "Yes" y enviar. | La tarea cambia de estado a `MAPPED`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-02** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "No" y enviar. | La tarea cambia de estado a `READY`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-03** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "The imagery is bad" y enviar. | La tarea cambia de estado a `BADIMAGERY`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-04** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Manipular solicitud intentando enviar estado `VALIDATED`. | Transición rechazada. Se mantiene el estado `LOCKED_FOR_MAPPING`. Mensaje de error: `InvalidUnlockState`. | Transición de Estados (Inválida) |
-| **CP-3002-05** | Tarea: `READY` (Sin bloqueo previo).<br>Usuario: `MAPPER` autenticado.<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Mensaje de error: `LockBeforeUnlocking`. | Transición de Estados (Inválida) |
-| **CP-3002-06** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Diferente al titular del bloqueo (`MAPPER` secundario).<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Se mantiene el bloqueo original. Mensaje de error: `TaskNotOwned`. | PE (Clase No Válida) |
+| ID Caso | Pasos de Ejecución | Datos de Entrada / Contexto | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
+| :--- | :--- | :--- | :--- | :--- |
+| **CP-3002-01** | 1. Seleccionar tarea bloqueada propia.<br>2. Marcar "Yes".<br>3. Clic en "Submit Task". | **Estado:** `LOCKED_FOR_MAPPING` (Propia) | El panel de mapeo se cierra. La tarea se pinta con el color correspondiente a `MAPPED`. El bloqueo visual desaparece. | Transición de Estados (Válida)<br>PE (Clase Válida) |
+| **CP-3002-02** | 1. Seleccionar tarea bloqueada propia.<br>2. Marcar "No".<br>3. Clic en "Submit Task". | **Estado:** `LOCKED_FOR_MAPPING` (Propia) | El panel de mapeo se cierra. La tarea se pinta con el color correspondiente a `READY`. Queda disponible en el mapa. | Transición de Estados (Válida)<br>PE (Clase Válida) |
+| **CP-3002-03** | 1. Hacer clic sobre una tarea libre en el mapa de exploración. | **Estado:** `READY` | El panel lateral muestra información de la tarea y el botón "Map Task". **No se muestran** las opciones de "Submit", previniendo un envío sin bloqueo. | PE (Clase No Válida) |
+| **CP-3002-04** | 1. Hacer clic sobre una tarea bloqueada por un tercero (candado rojo). | **Estado:** `LOCKED_FOR_MAPPING` (Ajena) | El panel lateral indica "Locked by [Usuario]". **No se muestran** las opciones de "Submit" ni de edición, protegiendo la autoría del mapeo. | PE (Clase No Válida) |
+| **CP-3002-05** | 1. Hacer clic sobre una tarea que ya ha sido mapeada por el usuario. | **Estado:** `MAPPED` | El panel lateral refleja que la tarea espera validación. **No se muestran** los controles de "Submit" de mapeo. | PE (Clase No Válida) |
 
 ### 3.3. Escenario: [ESC-3003] - División de Tarea de Mapeo (Split Task)
 
@@ -180,7 +176,7 @@ Al igual que en la liberación de tareas, la división es una operación destruc
 
 | Cod. | Condición Analizada | Clase Válida | Clases No Válidas |
 | :--- | :--- | :--- | :--- |
-| **MOD03-PE-003** | Estado y Autoría de la Tarea | Tarea en estado `LOCKED_FOR_MAPPING` cuyo `lockHolder` (titular) coincide con el usuario que emite la petición. | 1. Tarea en cualquier otro estado (ej. `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero con un `lockHolder` diferente al solicitante. |
+| **MOD03-PE-003** | Estado y Autoría de la Tarea | Tarea en estado `LOCKED_FOR_MAPPING` cuyo `lockHolder` (titular) coincide con el usuario que emite la petición. | 1. Tarea en cualquier otro estado (por ejemplo, `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero con un `lockHolder` diferente al solicitante. |
 
 *   *Comportamiento esperado (Clase Válida):* Ejecución exitosa de la función `splitTaskGrid`.
 *   *Comportamiento esperado (Clases No Válidas):* Rechazo de la solicitud indicando `LockToSplit` (para estado incorrecto) o `SplitOtherUserTask` (para titular distinto).
@@ -220,7 +216,7 @@ Al solicitar una "Extensión del Bloqueo" (*Extend Session*), el sistema debe ve
 
 | Cod. | Campo / Condición | Clase Válida | Clases No Válidas |
 | :--- | :--- | :--- | :--- |
-| **MOD03-PE-004** | Estado y Propiedad de la Tarea al extender | Tarea en estado `LOCKED_FOR_MAPPING` y el `lockHolder` (titular) coincide con el solicitante. | 1. Tarea no bloqueada (ej. `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero asignada a otro usuario. |
+| **MOD03-PE-004** | Estado y Propiedad de la Tarea al extender | Tarea en estado `LOCKED_FOR_MAPPING` y el `lockHolder` (titular) coincide con el solicitante. | 1. Tarea no bloqueada (por ejemplo, `READY`, `MAPPED`).<br>2. Tarea en `LOCKED_FOR_MAPPING` pero asignada a otro usuario. |
 
 *   *Comportamiento esperado (Clase Válida):* El sistema reinicia el contador de tiempo y registra la acción `EXTENDED_FOR_MAPPING` en el historial.
 *   *Comportamiento esperado (Clases No Válidas):* Rechazo de la solicitud indicando `TaskStatusNotLocked` (para estado incorrecto) o `LockedByAnotherUser` (para titular distinto).
@@ -235,11 +231,56 @@ Al solicitar una "Extensión del Bloqueo" (*Extend Session*), el sistema debe ve
 | **CP-3004-04** | Solicitud de Extensión.<br>**Estado:** `READY`. | Operación denegada (HTTP 403). Retorna el mensaje de error: `TaskStatusNotLocked`. | MOD03-PE-004 (Clase No Válida) |
 | **CP-3004-05** | Solicitud de Extensión.<br>**Estado:** `LOCKED_FOR_MAPPING`.<br>**Titular:** Usuario B (Diferente al solicitante). | Operación denegada (HTTP 403). Retorna el mensaje de error: `LockedByAnotherUser`. El bloqueo original no se altera. | MOD03-PE-004 (Clase No Válida) |
 
+### 3.5. Escenario: [ESC-3005] - Interacción Cartográfica y Visualización de Trazabilidad (Historial)
+
+**A. Definición del Escenario**
+
+| Atributo | Detalle |
+| :--- | :--- |
+| **Descripción** | Validar que el entorno de edición integrado (Editor iD) responde de manera dinámica a la selección de elementos geográficos en el mapa, mostrando sus atributos correspondientes. Simultáneamente, validar que el panel de control del Tasking Manager renderiza el historial de la tarea, permitiendo filtrar correctamente los eventos de trazabilidad (comentarios y transiciones de estado). |
+| **RF Asociados** | RF-3002 (Integración de Editor Web), RF-7001 (Comentarios por Tarea) |
+| **Precondiciones** | Proyecto en estado `PUBLISHED`. Usuario `MAPPER` (ACT-0002) autenticado en el sistema. Tarea seleccionada en estado `LOCKED_FOR_MAPPING` con el editor web (iD) completamente cargado en la interfaz. |
+| **Técnicas aplicadas**| Partición de Equivalencia (PE). |
+| **Resultado Esperado** | El sistema debe mostrar los detalles y etiquetas del polígono/línea seleccionada en el panel izquierdo (Editor iD). En el panel derecho (Tasking Manager), la pestaña "Historial" debe aplicar los filtros visuales correctamente, discriminando entre comentarios de usuarios y registros del sistema, sin recargar la página. |
+
+**B. Aplicación de Técnicas (Análisis)**
+
+Para este escenario se ha seleccionado la **Partición de Equivalencia (PE)**. Esta técnica es la más adecuada funcionalmente porque nos permite dividir los tipos de datos de entrada observables en la interfaz en grupos lógicos que el sistema debe procesar de manera distinta:
+1.  **Filtros de Trazabilidad:** El usuario tiene tres opciones excluyentes en la UI (radio buttons) que alteran la renderización del DOM en el panel derecho.
+2.  **Interacción Espacial:** La interacción del cursor sobre el mapa se divide en dos grandes "clases" funcionales: clics dentro de la zona permitida (polígono de la tarea) y clics fuera del límite establecido.
+
+**B.1. Partición de Equivalencia (Filtros del Historial)**
+Evalúa la reactividad del componente visual que lista la cronología de eventos de la tarea.
+
+| Cod. | Variable Analizada en UI | Clases Válidas (Filtros UI) |
+| :--- | :--- | :--- |
+| **MOD03-PE-005** | Filtro de vista "Historial" | 1. **Comentarios:** Oculta eventos del sistema, muestra solo mensajes de texto ingresados por usuarios.<br>2. **Actividades:** Oculta mensajes, muestra solo transiciones de estado automáticas y manuales (por ejemplo, "bloqueada para mapeo", "dividió una tarea").<br>3. **Todos:** Renderiza la unión cronológica de las dos clases anteriores. |
+
+**B.2. Partición de Equivalencia (Límites y Geometría en Editor Web)**
+Se ajusta la partición para evaluar la respuesta de la interfaz (renderizado de guías visuales) frente al área de trabajo, no como un bloqueo transaccional.
+
+| Cod. | Variable Analizada en UI | Clase Válida (Dentro del AOI) | Clase Válida (Fuera del AOI) |
+| :--- | :--- | :--- | :--- |
+| **MOD03-PE-006** | Área visual de interacción cartográfica (BBOX) | Navegación e interacción dentro del polígono delimitado (sin máscara de sombreado). | Navegación e interacción fuera del polígono delimitado para la tarea asignada. |
+
+*   *Comportamiento esperado (Dentro del AOI):* El usuario interactúa con los elementos con visibilidad normal.
+*   *Comportamiento esperado (Fuera del AOI):* La interfaz superpone un sombreado oscuro, el límite magenta y el texto *"Task for project [ID]. Do not edit outside of this area!"*. **El sistema permite la inserción del elemento cartográfico**, cumpliendo la premisa de "guiar visualmente, no bloquear".
+
+---
+
+**C. Casos de Prueba Derivados**
+
+| ID Caso | Pasos de Ejecución | Datos de Entrada / Contexto | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
+| :--- | :--- | :--- | :--- | :--- |
+| **CP-3005-01** | 1. En el panel derecho de Tasking Manager, hacer clic en la pestaña "Historial".<br>2. Seleccionar el radio button "Actividades". | **Filtro UI:** `Actividades` | La interfaz renderiza únicamente el rastro de auditoría del sistema (por ejemplo, "[Usuario] bloqueada para mapeo hace 42 minutos", "desbloqueada automáticamente..."). Los comentarios desaparecen de la vista. | PE-005 (Filtro Actividades) |
+| **CP-3005-02** | 1. En el panel derecho, seleccionar el radio button "Comentarios". | **Filtro UI:** `Comentarios` | La lista se actualiza dinámicamente ocultando los registros del sistema. Solo se visualizan avatares y mensajes de texto dejados por los mappers/validators previos. | PE-005 (Filtro Comentarios) |
+| **CP-3005-03** | 1. En el área del mapa central, hacer clic sobre un polígono existente (por ejemplo, zona residencial) situado dentro del cuadro delimitador de la tarea. | **Elemento:** Área dentro del BBOX | El panel izquierdo (iD) reacciona mostrando los metadatos del elemento (Tipo de elemento, Nombre, Etiquetas como `type=multipolygon`). | PE-006 (Clase Válida Espacial) |
+| **CP-3005-04** | 1. Desplazar la vista (Pan) hacia el exterior del borde magenta de la tarea.<br>2. Seleccionar la herramienta "Punto" o "Área".<br>3. Hacer clic para crear el elemento en la zona sombreada. | **Elemento:** Geometría nueva fuera del BBOX. | La UI mantiene visible el sombreado y la advertencia textual permanente. **El elemento se crea exitosamente en el mapa**, confirmando que el sistema proporciona una guía visual restrictiva pero no un bloqueo a nivel de herramienta. | PE-006 (Clase Válida Fuera del AOI) |
 ## 4. Matriz de Trazabilidad del Módulo
 
 Esta matriz consolida la relación bidireccional entre los Requerimientos Funcionales (RF) documentados y los artefactos de diseño generados para el módulo **MOD-03: Ejecución de Mapeo (Tasking)**. 
 
-Garantiza la cobertura total de las reglas de negocio y facilita el análisis de impacto ante futuros cambios funcionales en el sistema.
+Se han incorporado las actualizaciones derivadas de los rediseños funcionales, incluyendo la adaptación del Escenario 2 a un enfoque estrictamente basado en la interfaz (eliminando las pruebas a nivel de API) y la integración del nuevo Escenario 5, asegurando así una cobertura total y coherente de las reglas de negocio.
 
 | Requerimiento Funcional (RF) | Especificación de Escenario (ESC) | Casos de Prueba (CP) Derivados | Técnicas de Diseño Aplicadas |
 | :--- | :--- | :--- | :--- |
@@ -247,9 +288,8 @@ Garantiza la cobertura total de las reglas de negocio y facilita el análisis de
 | **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-02** | Tabla de Decisión (A), PE (Clase Válida Local) |
 | **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-03**, **CP-3001-04**, **CP-3001-05**, **CP-3001-06** | Tabla de Decisión (B, C, D, E) |
 | **RF-3001**, RF-3002, RF-3003 | ESC-3001 | **CP-3001-07** | Tabla de Decisión (A), PE (Clase No Válida) |
-| **RF-3004** | **ESC-3002:** Liberación y Envío de Tarea de Mapeo (Submit) | **CP-3002-01**, **CP-3002-02**, **CP-3002-03** | Transición de Estados (Válida), PE (Clase Válida) |
-| **RF-3004** | ESC-3002 | **CP-3002-04**, **CP-3002-05** | Transición de Estados (Inválida) |
-| **RF-3004** | ESC-3002 | **CP-3002-06** | PE (Clase No Válida) |
+| **RF-3004** | **ESC-3002:** Liberación y Envío de Tarea de Mapeo (Submit) | **CP-3002-01**, **CP-3002-02** | Transición de Estados (Válida), PE (Clase Válida) |
+| **RF-3004** | ESC-3002 | **CP-3002-03**, **CP-3002-04**, **CP-3002-05** | PE (Clase No Válida en UI) |
 | **RF-3005** | **ESC-3003:** División de Tarea de Mapeo (Split Task) | **CP-3003-01** | AVL-001 (Válido), PE-003 (Válido) |
 | **RF-3005** | ESC-3003 | **CP-3003-02** | AVL-001 (Inválido), PE-003 (Válido) |
 | **RF-3005** | ESC-3003 | **CP-3003-03**, **CP-3003-04** | AVL-001 (Válido), PE-003 (No Válido) |
@@ -257,3 +297,6 @@ Garantiza la cobertura total de las reglas de negocio y facilita el análisis de
 | **RF-3006** | ESC-3004 | **CP-3004-02** | AVL-002 (Inválido) |
 | **RF-3006** | ESC-3004 | **CP-3004-03** | PE-004 (Clase Válida) |
 | **RF-3006** | ESC-3004 | **CP-3004-04**, **CP-3004-05** | PE-004 (Clase No Válida) |
+| **RF-3002**, **RF-7001** | **ESC-3005:** Interacción Cartográfica y Visualización de Trazabilidad | **CP-3005-01**, **CP-3005-02** | PE-005 (Filtros UI) |
+| **RF-3002**, **RF-7001** | ESC-3005 | **CP-3005-03** | PE-006 (Clase Válida Dentro del AOI) |
+| **RF-3002**, **RF-7001** | ESC-3005 | **CP-3005-04** | PE-006 (Clase Válida Fuera del AOI) |
