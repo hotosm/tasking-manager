@@ -258,3 +258,84 @@
 | Evidencia |
 | :-- |
 | Opción de Split oculta en tarea ajena<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3003-04-no-split-other-user.png" width="800px" alt="CP-3003-04 - Ausencia de controles en tarea bloqueada por tercero"></a><br>Vista de protección de autoría, confirmando que la división cartográfica exige propiedad activa del bloqueo. |
+
+
+## 4. ESC-3004 Expiración y Extensión de Bloqueo de Tarea (Auto-unlock / Extend)
+
+### 4.1. Ejecución de CP-3004-01
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3004-01** | Validar que el sistema (Cron/Timer) respeta el bloqueo exclusivo de la tarea mientras el tiempo transcurrido sea inferior al límite máximo configurado (`autoUnlockSeconds`). | Automático | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al alcanzar un tiempo transcurrido igual a `T = L - 1 segundo` (donde L es el límite máximo), la tarea debe mantener su estado `LOCKED_FOR_MAPPING` y el usuario actual conserva la titularidad del bloqueo. | La tarea fue monitoreada hasta el segundo previo a la expiración. La API de estado confirmó que la tarea seguía perteneciendo al usuario (`lockHolder` intacto) y el estado se mantuvo en `LOCKED_FOR_MAPPING`. |
+
+| Evidencia |
+| :-- |
+| Tarea activa antes del límite temporal<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-01-bloqueo-activo.png" width="800px" alt="CP-3004-01 - Tarea en mapeo cercana a expirar"></a><br>Registro del temporizador interno (o log de la base de datos) demostrando que el bloqueo se respeta dentro del umbral válido. |
+
+---
+
+### 4.2. Ejecución de CP-3004-02
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3004-02** | Validar la liberación forzada de la tarea por el sistema cuando el tiempo de bloqueo iguala o supera el límite máximo configurado (`autoUnlockSeconds`). | Automático | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al llegar al tiempo `T = L` (o superarlo), el sistema revoca el acceso del usuario, cambia el estado a `READY` y añade al historial la acción `AUTO_UNLOCKED_FOR_MAPPING`. | El temporizador alcanzó el límite establecido (típicamente 120 minutos). El cron del backend ejecutó la revocación, dejando el campo `locked_by` en `NULL`. La tarea volvió a renderizarse disponible (`READY`) en el mapa. |
+
+| Evidencia |
+| :-- |
+| Liberación automática por expiración<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-02-auto-unlock.png" width="800px" alt="CP-3004-02 - Transición a READY por sistema"></a><br>Historial de la tarea reflejando la acción automatizada de liberación por exceso de tiempo de edición. |
+
+---
+
+### 4.3. Ejecución de CP-3004-03
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3004-03** | Validar que la interfaz permite al titular actual de una tarea (`LOCKED_FOR_MAPPING`) solicitar una extensión manual del tiempo de bloqueo antes de su expiración. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al hacer clic en el botón de extensión de tiempo (ej. "Extend Session" en el panel lateral o modal), el sistema procesa la petición (`HTTP 200`), reinicia el temporizador de expiración y notifica el éxito en la UI. | A falta de pocos minutos para expirar, se mostró un modal preventivo. Al hacer clic en "Extend Session", la API respondió favorablemente, el temporizador de la interfaz se reinició a 120 minutos y se registró `EXTENDED_FOR_MAPPING` en el historial. |
+
+| Evidencia |
+| :-- |
+| Reinicio de temporizador post-extensión<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-03-extend-success.png" width="800px" alt="CP-3004-03 - Notificación de sesión extendida"></a><br>Captura del temporizador restablecido en el panel de mapeo tras la interacción exitosa con la UI. |
+
+---
+
+### 4.4. Ejecución de CP-3004-04
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3004-04** | Validar la protección de la interfaz: el botón "Extend Session" no debe estar presente o ejecutable si la tarea seleccionada se encuentra en estado libre (`READY`). | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al inspeccionar una tarea libre (`READY`), la interfaz no debe exponer controles temporales ni botones para extender sesión, previniendo peticiones inválidas (Error: `TaskStatusNotLocked`). | La tarea libre se visualizó correctamente. El panel de la barra lateral se renderizó sin temporizadores ni controles de extensión, haciendo imposible detonar el flujo desde el frontend. |
+
+| Evidencia |
+| :-- |
+| Controles de extensión ocultos (Tarea Libre)<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-04-no-extend-ready.png" width="800px" alt="CP-3004-04 - UI sin timer en tarea Ready"></a><br>Demostración de que la funcionalidad de extensión es dependiente del estado actual de bloqueo en la interfaz. |
+
+---
+
+### 4.5. Ejecución de CP-3004-05
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3004-05** | Validar la protección de la interfaz: el botón "Extend Session" no debe estar presente o ejecutable si se selecciona una tarea bloqueada por un tercero. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al inspeccionar una tarea ajena (`LOCKED_FOR_MAPPING`), el panel muestra "Locked by [Usuario]". No se visualiza temporizador interactivo ni botones para extender la sesión (Error: `LockedByAnotherUser`). | Al seleccionar una tarea en uso por otro Mapper, el panel omitió la inclusión de controles de extensión de tiempo, garantizando la imposibilidad de que un usuario modifique el temporizador de una sesión ajena. |
+
+| Evidencia |
+| :-- |
+| Controles de extensión ocultos (Tarea Ajena)<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-05-no-extend-other.png" width="800px" alt="CP-3004-05 - Tarea de tercero sin controles de tiempo"></a><br>Panel lateral resguardando la seguridad de las sesiones concurrentes, denegando el acceso a controles de extensión a los no titulares. |
