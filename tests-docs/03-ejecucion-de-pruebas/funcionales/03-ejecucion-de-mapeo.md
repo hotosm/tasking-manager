@@ -194,3 +194,67 @@
 | :-- |
 | Ocultamiento de controles post-mapeo<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-05-mapped-task.png" width="800px" alt="CP-3002-05 - Ausencia de controles Submit en tarea Mapped"></a><br>Visualización del estado de una tarea lista para validar, evidenciando el respeto de las transiciones de estado en la interfaz. |
 
+
+## 3. ESC-3003 División de Tarea de Mapeo (Split Task)
+
+### 3.1. Ejecución de CP-3003-01
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3003-01** | Validar que el sistema permite a un usuario dividir (Split) una tarea bloqueada bajo su titularidad cuando el nivel de zoom cartográfico es válido (Límite Superior Válido = 17). | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| El sistema ejecuta la división exitosamente. El polígono de la tarea original desaparece del mapa y es reemplazado por 4 nuevas sub-tareas. El contador general de tareas del proyecto se incrementa en 3. | Al presionar el botón "Split task" en una tarea de nivel de zoom 17, el sistema procesó la solicitud sin errores. El mapa se refrescó mostrando la grilla subdividida en 4 sectores más pequeños dentro del espacio original. |
+
+| Evidencia |
+| :-- |
+| División de tarea completada (Zoom 17)<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3003-01-split-success.png" width="800px" alt="CP-3003-01 - Grilla de tarea dividida en 4"></a><br>Visualización del mapa donde se aprecia el fraccionamiento de la tarea original en sub-tareas manejables. Al lado derecho se observa las 4 tareas recientes disponibles para mapear |
+
+---
+
+### 3.2. Ejecución de CP-3003-02
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3003-02** | Validar que el sistema restringe matemáticamente la división de una tarea si el nivel de zoom cartográfico excede el máximo soportado (Límite Superior Inválido = 18). | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| La interfaz muestra una notificación indicando que la tarea es demasiado pequeña para dividirse (`SmallToSplit`). El polígono original se mantiene intacto y no se alteran los contadores del proyecto. | Tras intentar dividir una sub-tarea que ya se encontraba en el nivel de zoom 18, la UI arrojó la alerta de error esperada ("Task is too small to split"). La geometría en el mapa no sufrió alteraciones. |
+
+| Evidencia |
+| :-- |
+| Alerta de restricción por zoom máximo<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3003-02-split-error-zoom.png" width="800px" alt="CP-3003-02 - Toast error de tarea muy pequeña"></a><br>Captura de pantalla de la notificación del sistema advirtiendo la imposibilidad técnica de subdividir a esa escala. |
+
+---
+
+### 3.3. Ejecución de CP-3003-03
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3003-03** | Validar que la interfaz de usuario oculta o deshabilita la opción de "Split Task" si el usuario selecciona una tarea libre en el mapa (Estado `READY`), previniendo operaciones sobre geometrías no bloqueadas. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| El panel lateral, al renderizar los detalles de una tarea `READY`, no debe exponer el botón o enlace "Split task", forzando al usuario a iniciar la sesión de mapeo (Lock) primero. | Se seleccionó una tarea libre (blanca/transparente). El panel de control se actualizó mostrando la descripción y el botón "Map Task", pero omitió el botón de división, confirmando el correcto control de estado en la UI. |
+
+| Evidencia |
+| :-- |
+| Opción de Split oculta en tarea libre<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3003-03-no-split-ready.png" width="800px" alt="CP-3003-03 - Panel sin botón de split en estado Ready"></a><br>Panel lateral evidenciando la adaptación de los controles funcionales según el estado previo de la tarea. |
+
+---
+
+### 3.4. Ejecución de CP-3003-04
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3003-04** | Validar que el sistema protege la geometría de tareas bloqueadas por terceros, ocultando la opción "Split Task" cuando un usuario inspecciona una tarea con titularidad ajena. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al seleccionar una tarea con el indicador visual de bloqueo (candado), la interfaz indica "Locked by [User]" y retira por completo el botón "Split task" del DOM. | Se inspeccionó una tarea actualmente en mapeo por otro voluntario. El panel lateral renderizó la advertencia de titularidad ("Locked for mapping by...") y no mostró ningún control interactivo que permitiera alterar o dividir la geometría. |
+
+| Evidencia |
+| :-- |
+| Opción de Split oculta en tarea ajena<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3003-04-no-split-other-user.png" width="800px" alt="CP-3003-04 - Ausencia de controles en tarea bloqueada por tercero"></a><br>Vista de protección de autoría, confirmando que la división cartográfica exige propiedad activa del bloqueo. |
