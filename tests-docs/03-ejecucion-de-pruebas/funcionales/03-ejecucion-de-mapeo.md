@@ -112,3 +112,85 @@
 | Evidencia |
 | :-- |
 | Selección de Editor web por Defecto<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3001-07-fallback-editor.png" width="800px" alt="CP-3001-07 - Inicialización de iD como fallback"></a><br>Selección del entorno web por defecto tras omitir explícitamente la selección de editor en la configuración. |
+
+## 2. ESC-3002 Liberación y Envío de Tarea de Mapeo (Submit)
+
+### 2.1. Ejecución de CP-3002-01
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3002-01** | Validar que el titular del bloqueo de una tarea (`LOCKED_FOR_MAPPING`) puede finalizar el mapeo seleccionando la opción "Yes" (Mapeo completo). | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| El sistema cambia el estado topográfico de la tarea a `MAPPED`, elimina la asociación temporal (`lockHolder`) con el usuario y añade la acción al historial de la tarea. | La solicitud se procesó correctamente (`HTTP 200`). La interfaz actualizó el color de la tarea en el mapa, y en la pestaña "History" se reflejó el evento `STATE_CHANGE: MAPPED` bajo el nombre del usuario. |
+
+| Evidencia |
+| :-- |
+| Confirmación de estado Mapped<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-01-tarea-mapped.png" width="800px" alt="CP-3002-01 - Interfaz mostrando estado Mapped y botón Submit"></a><br>Captura del panel lateral durante la selección de la opción "Yes" para finalizar la tarea. |
+| Actualización del historial de la tarea<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-01-historial.png" width="800px" alt="CP-3002-01 - Registro de la acción en TaskHistory"></a><br>Vista del historial comprobando la transición de estado registrada en la base de datos. |
+
+---
+
+### 2.2. Ejecución de CP-3002-02
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3002-02** | Validar que el titular de la tarea puede liberar (abortar o pausar) el mapeo seleccionando la opción "No" (Mapeo incompleto). | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| La tarea revierte su estado a `READY`, permitiendo que quede disponible nuevamente en el *pool* del proyecto para ser tomada por otro usuario. Se remueve el bloqueo. | Tras seleccionar "No", la interfaz retornó el color de la tarea a su estado original (transparente/blanco). La API de consulta de tareas la listó nuevamente con estado `READY` sin asignación de titular. |
+
+| Evidencia |
+| :-- |
+| Liberación de tarea a estado Ready<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-02-tarea-ready.png" width="800px" alt="CP-3002-02 - Selección de la opción No"></a><br>Luego de seleccionar NO, la tarea queda disponible para ser mapeada por cualquier colaborador |
+
+---
+
+### 2.3. Ejecución de CP-3002-03
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3002-03** | Validar la prevención de transiciones inválidas: el panel de liberación ("Submit") no debe estar visible si el usuario selecciona una tarea libre (`READY`) en el mapa. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al seleccionar una tarea en estado `READY`, la UI expone el botón de inicio ("Map a task"), ocultando completamente el bloque de opciones (Yes/No) y el botón "Submit", evitando envíos ilegales. | Se seleccionó una tarea libre en el explorador. En la parte inferior se muestra solo el botón para iniciar mapeo. No se renderizaron controles de finalización (Submit). |
+
+| Evidencia |
+| :-- |
+| Controles de submit ocultos (Tarea Ready)<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-03-no-submit-ready.png" width="800px" alt="CP-3002-03 - Interfaz sin opciones de Submit en READY"></a><br>No se expone opciones de transición de finalización, solo el boton para iniciar el mapeo |
+
+---
+
+### 2.4. Ejecución de CP-3002-04
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3002-04** | Validar la protección de autoría visual: la interfaz debe ocultar el panel de liberación ("Submit") y controles de edición al seleccionar una tarea bloqueada por un tercero. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al seleccionar una tarea con indicador de bloqueo (candado), el panel muestra "Locked by [Nombre]". No se muestran botones de edición ni el panel de preguntas de "Submit". | Se hizo clic sobre una tarea bloqueada por otro usuario. El panel renderizó la alerta "Locked for mapping by [Usuario]" y eliminó todo control de acción (botones), garantizando que no se pueda interferir con el trabajo ajeno desde la UI. |
+
+| Evidencia |
+| :-- |
+| Bloqueo visual por pertenencia ajena<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-04-locked-by-other.png" width="800px" alt="CP-3002-04 - Tarea ajena bloqueada en UI"></a><br>Panel lateral notificando la titularidad del bloqueo y suprimiendo controles de mapeo o envío. |
+
+---
+
+### 2.5. Ejecución de CP-3002-05
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3002-05** | Validar que el panel de liberación ("Submit") permanece oculto al inspeccionar una tarea que ya ha sido finalizada (`MAPPED`) por el usuario u otros. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| El panel lateral muestra el estado actual de la tarea (Mapeada, en espera de validación). Los controles de "Submit" de la etapa de mapeo no se renderizan, respetando la secuencia del ciclo de vida. | Al seleccionar una tarea en color azul (`MAPPED`), la UI mostró el historial y los botones correspondientes a validación (si los permisos lo permiten), confirmando que las opciones de "Submit" de mapeo desaparecieron del DOM. |
+
+| Evidencia |
+| :-- |
+| Ocultamiento de controles post-mapeo<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3002-05-mapped-task.png" width="800px" alt="CP-3002-05 - Ausencia de controles Submit en tarea Mapped"></a><br>Visualización del estado de una tarea lista para validar, evidenciando el respeto de las transiciones de estado en la interfaz. |
+

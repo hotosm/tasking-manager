@@ -110,49 +110,45 @@ Una vez superadas las validaciones de bloqueo, el sistema procesa el lanzamiento
 
 | Atributo | Detalle |
 | :--- | :--- |
-| **Descripción** | Validar que el sistema procesa correctamente la finalización de una sesión de mapeo por parte de un usuario `MAPPER`, actualizando el estado de la tarea según el progreso reportado y liberando el bloqueo exclusivo para habilitar las siguientes fases del proyecto. |
+| **Descripción** | Validar que la interfaz gráfica permite a un usuario `MAPPER` finalizar su sesión de mapeo sobre una tarea que posee bloqueada, reportando el progreso mediante las opciones visibles en el panel de control y liberando el bloqueo exclusivo. Asimismo, validar que la interfaz restringe visualmente estas opciones cuando la tarea no cumple las condiciones para ser liberada. |
 | **RF Asociados** | RF-3004 |
-| **Precondiciones** | Proyecto en estado `PUBLISHED`. Tarea en estado `LOCKED_FOR_MAPPING` asignada al usuario `MAPPER` (ACT-0002) actualmente autenticado. |
-| **Técnicas aplicadas**| Transición de Estados (State Transition Testing), Partición de Equivalencia (EP). |
-| **Resultado Esperado** | La tarea actualiza su estado topográfico en la base de datos (`MAPPED`, `READY` o `BADIMAGERY`), registra el evento en el historial de la tarea y elimina la asociación de bloqueo temporal con el usuario. Las transiciones no permitidas o realizadas por usuarios sin propiedad del bloqueo son rechazadas. |
+| **Precondiciones** | Proyecto en estado `PUBLISHED`. Usuario `MAPPER` (ACT-0002) autenticado en el sistema. |
+| **Técnicas aplicadas**| Transición de Estados (State Transition Testing), Partición de Equivalencia (PE). |
+| **Resultado Esperado** | La interfaz muestra los controles de finalización ("Yes", "No") únicamente cuando el usuario posee el bloqueo de la tarea. Al confirmar, la tarea actualiza su color/estado topográfico en el mapa (`MAPPED` o `READY`). Para tareas ajenas o sin bloqueo, los controles de envío se ocultan. |
 
 **B. Aplicación de Técnicas (Análisis)**
 
 **B.1. Transición de Estados**
-Dado que el ciclo de vida de la tarea es estricto y secuencial, se modelan los estados del sistema y los eventos (acciones de la interfaz) que provocan las transiciones válidas e inválidas desde el estado de bloqueo de mapeo.
+Se modelan exclusivamente los estados visuales del mapa y los controles de la interfaz que provocan las transiciones disponibles para el usuario al momento de liberar la tarea.
 
 ![Diagrama de transición ESC-3002](/tests-docs/02-diseno-de-pruebas/funcionales/img/transicion-estado-ESC-3002.png) 
 
-**Tabla de Transición de Estados**
+**Tabla de Transición de Estados (Observable en UI)**
 
-| Estado Inicial | Acción (Evento en Interfaz) | Estado Final Esperado | Transición | Observación |
-| :--- | :--- | :--- | :---: | :--- |
-| `LOCKED_FOR_MAPPING` | Seleccionar "Yes" (Submit) | `MAPPED` | Válida | El mapeo finalizó correctamente. |
-| `LOCKED_FOR_MAPPING` | Seleccionar "No" / "Stop Mapping" | `READY` | Válida | Tarea liberada para otro Mapper. |
-| `LOCKED_FOR_MAPPING` | Seleccionar "Bad Imagery" | `BADIMAGERY` | Válida | Nubes o calidad insuficiente. |
-| `LOCKED_FOR_MAPPING` | Forzar estado `VALIDATED` | - | Inválida | Un Mapper no puede autovalidar. Arroja `InvalidUnlockState`. |
-| `READY` | Seleccionar "Yes" (Submit) | - | Inválida | No se puede hacer submit de una tarea no bloqueada. Arroja `LockBeforeUnlocking`. |
+| Estado Inicial UI | Acción en Interfaz | Estado Final Esperado (UI) | Transición |
+| :--- | :--- | :--- | :---: |
+| Tarea `LOCKED_FOR_MAPPING` (Titular) | Seleccionar "Yes" (Mapeo completo) y "Submit" | Tarea cambia a color de `MAPPED`. Panel vuelve a estado inactivo. | Válida |
+| Tarea `LOCKED_FOR_MAPPING` (Titular) | Seleccionar "No" (Mapeo incompleto) y "Submit" | Tarea cambia a color de `READY` (blanco/transparente). | Válida |
 
-**B.2. Partición de Equivalencia**
-Se aplica esta técnica para asegurar que el sistema valide la propiedad del bloqueo de la tarea, garantizando que un usuario malicioso o una sesión expirada no pueda alterar el estado de una tarea ajena.
+**B.2. Partición de Equivalencia (PE)**
+La interfaz de usuario debe reaccionar y adaptarse (mostrando u ocultando el panel de "Submit") basándose en el estado previo de la tarea seleccionada y en quién ostenta la propiedad del bloqueo.
 
-| Cod. | Campo | Clase Válida | Clases No Válidas |
+| Cod. | Variable Analizada en UI | Clase Válida (Muestra panel de Submit) | Clases No Válidas (Oculta panel de Submit) |
 | :--- | :--- | :--- | :--- |
-| MOD03-PE-002 | Titular del Bloqueo (`lockHolder`) | Usuario autenticado coincide con el titular del bloqueo de la tarea. | Usuario autenticado difiere del titular de la tarea.<br>Usuario no autenticado (Anónimo). |
+| **MOD03-PE-002** | Estado de la tarea y titularidad del bloqueo visual | Tarea seleccionada está `LOCKED_FOR_MAPPING` y el usuario actual es el titular. | 1. Tarea en estado `READY` (Libre).<br>2. Tarea en `LOCKED_FOR_MAPPING` por otro usuario (Aparece "Locked by [User]").<br>3. Tarea ya finalizada (`MAPPED`, `VALIDATED`). |
 
-*   *Comportamiento esperado (Clase Válida):* El sistema procesa la transición de estado.
-*   *Comportamiento esperado (Clases No Válidas):* Se rechaza la solicitud. Para diferencia de titulares se emite error `TaskNotOwned`. Para anónimos se emite error de autenticación.
+*   *Comportamiento esperado (Clase Válida):* El panel lateral renderiza la pregunta "¿Está la tarea completamente mapeada?" con las opciones de envío.
+*   *Comportamiento esperado (Clases No Válidas):* La interfaz actúa como barrera preventiva. No renderiza los radio buttons ni el botón de "Submit Task". En su lugar, muestra botones acordes al estado (ej. "Map a task" o solo información).
 
 **C. Casos de Prueba Derivados**
 
-| ID Caso | Datos de entrada o escenario | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
-| :--- | :--- | :--- | :--- |
-| **CP-3002-01** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "Yes" y enviar. | La tarea cambia de estado a `MAPPED`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-02** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "No" y enviar. | La tarea cambia de estado a `READY`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-03** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Seleccionar "The imagery is bad" y enviar. | La tarea cambia de estado a `BADIMAGERY`. Se remueve el bloqueo. | Transición de Estados (Válida)<br>PE (Clase Válida) |
-| **CP-3002-04** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Titular del bloqueo.<br>Acción: Manipular solicitud intentando enviar estado `VALIDATED`. | Transición rechazada. Se mantiene el estado `LOCKED_FOR_MAPPING`. Mensaje de error: `InvalidUnlockState`. | Transición de Estados (Inválida) |
-| **CP-3002-05** | Tarea: `READY` (Sin bloqueo previo).<br>Usuario: `MAPPER` autenticado.<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Mensaje de error: `LockBeforeUnlocking`. | Transición de Estados (Inválida) |
-| **CP-3002-06** | Tarea: `LOCKED_FOR_MAPPING`.<br>Usuario: Diferente al titular del bloqueo (`MAPPER` secundario).<br>Acción: Enviar estado `MAPPED`. | Transición rechazada. Se mantiene el bloqueo original. Mensaje de error: `TaskNotOwned`. | PE (Clase No Válida) |
+| ID Caso | Pasos de Ejecución | Datos de Entrada / Contexto | Resultado Esperado | Técnicas / Etiquetas Aplicadas |
+| :--- | :--- | :--- | :--- | :--- |
+| **CP-3002-01** | 1. Seleccionar tarea bloqueada propia.<br>2. Marcar "Yes".<br>3. Clic en "Submit Task". | **Estado:** `LOCKED_FOR_MAPPING` (Propia) | El panel de mapeo se cierra. La tarea se pinta con el color correspondiente a `MAPPED`. El bloqueo visual desaparece. | Transición de Estados (Válida)<br>PE (Clase Válida) |
+| **CP-3002-02** | 1. Seleccionar tarea bloqueada propia.<br>2. Marcar "No".<br>3. Clic en "Submit Task". | **Estado:** `LOCKED_FOR_MAPPING` (Propia) | El panel de mapeo se cierra. La tarea se pinta con el color correspondiente a `READY`. Queda disponible en el mapa. | Transición de Estados (Válida)<br>PE (Clase Válida) |
+| **CP-3002-03** | 1. Hacer clic sobre una tarea libre en el mapa de exploración. | **Estado:** `READY` | El panel lateral muestra información de la tarea y el botón "Map Task". **No se muestran** las opciones de "Submit", previniendo un envío sin bloqueo. | PE (Clase No Válida) |
+| **CP-3002-04** | 1. Hacer clic sobre una tarea bloqueada por un tercero (candado rojo). | **Estado:** `LOCKED_FOR_MAPPING` (Ajena) | El panel lateral indica "Locked by [Usuario]". **No se muestran** las opciones de "Submit" ni de edición, protegiendo la autoría del mapeo. | PE (Clase No Válida) |
+| **CP-3002-05** | 1. Hacer clic sobre una tarea que ya ha sido mapeada por el usuario. | **Estado:** `MAPPED` | El panel lateral refleja que la tarea espera validación. **No se muestran** los controles de "Submit" de mapeo. | PE (Clase No Válida) |
 
 ### 3.3. Escenario: [ESC-3003] - División de Tarea de Mapeo (Split Task)
 
