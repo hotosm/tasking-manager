@@ -339,3 +339,68 @@
 | Evidencia |
 | :-- |
 | Controles de extensión ocultos (Tarea Ajena)<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3004-05-no-extend-other.png" width="800px" alt="CP-3004-05 - Tarea de tercero sin controles de tiempo"></a><br>Panel lateral resguardando la seguridad de las sesiones concurrentes, denegando el acceso a controles de extensión a los no titulares. |
+
+
+## 5. ESC-3005 Interacción Cartográfica y Visualización de Trazabilidad (Historial)
+
+### 5.1. Ejecución de CP-3005-01
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3005-01** | Validar que el filtro "Actividades" en el panel de historial oculta los comentarios de texto y renderiza exclusivamente los eventos de auditoría y transiciones de estado del sistema. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al seleccionar el radio button "Actividades", la lista (DOM) se actualiza dinámicamente. Solo se muestran registros como "bloqueada para mapeo", "marcada como lista" o "dividió una tarea". Todos los mensajes ingresados manualmente por usuarios desaparecen de la vista. | Tras activar el filtro en la UI, la pestaña "Historial" ocultó instantáneamente los comentarios. El registro visual mostró una línea de tiempo clara con las acciones transaccionales realizadas sobre la tarea por diversos usuarios y por el sistema. |
+
+| Evidencia |
+| :-- |
+| Filtro de Actividades Aplicado<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3005-01-filtro-actividades.png" width="800px" alt="CP-3005-01 - Renderizado del historial mostrando solo transiciones de estado"></a><br>Visualización del panel derecho de la plataforma con el radio button "Actividades" seleccionado y el *feed* de eventos correspondiente. |
+
+---
+
+### 5.2. Ejecución de CP-3005-02
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3005-02** | Validar que el filtro "Comentarios" aisla la vista de la pestaña Historial para mostrar únicamente los mensajes textuales aportados por los voluntarios, excluyendo logs de sistema. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al seleccionar el radio button "Comentarios", los registros automáticos de transición de estados desaparecen. El panel muestra exclusivamente los avatares, nombres de usuario y el texto de los comentarios dejados en el flujo de finalización de tarea. | La selección del radio button "Comentarios" actualizó la vista aislando correctamente las notas de los mapeadores previos. Los mensajes de estado ("LOCKED", "MAPPED") fueron suprimidos de la interfaz gráfica exitosamente. |
+
+| Evidencia |
+| :-- |
+| Filtro de Comentarios Aplicado<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3005-02-filtro-comentarios.png" width="800px" alt="CP-3005-02 - Renderizado del historial mostrando solo texto de usuarios"></a><br>Panel de historial confirmando la discriminación funcional de datos en la interfaz. |
+
+---
+
+### 5.3. Ejecución de CP-3005-03
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3005-03** | Validar la reactividad de la interfaz (Editor iD) al seleccionar una geometría válida que se encuentra ubicada dentro de los límites delineados para la tarea actual. | Manual | Exitoso | Ninguno |
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al hacer clic sobre un área o vía existente (dentro del borde magenta), el panel lateral izquierdo debe cambiar de contexto para exponer los metadatos del elemento, como su Tipo (por ejemplo, Área residencial), Nombre, y Etiquetas (Tags de OSM como `landuse=residential`). | Se hizo clic en un polígono residencial habilitado dentro del Bounding Box. El panel izquierdo reaccionó sin latencia mostrando la jerarquía de etiquetas, confirmando que la integración gráfica entre iD y TM funciona bidireccionalmente. |
+
+| Evidencia |
+| :-- |
+| Selección de Geometría Válida<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3005-03-seleccion-elemento.png" width="800px" alt="CP-3005-03 - Panel izquierdo detallando etiquetas del elemento"></a><br>Captura evidenciando la lectura de metadatos (`type=multipolygon`) al seleccionar un elemento en el lienzo principal. |
+
+---
+### 5.4. Ejecución de CP-3005-04
+
+| ID | Descripción | Tipo | Estado | Defectos |
+| :-- | :-- | :-- | :-- | :-- |
+| **CP-3005-04** | Validar que el sistema inyecta correctamente las guías visuales restrictivas (sombreado y texto de advertencia) fuera del BBOX de la tarea, permitiendo funcionalmente la edición para delegar el conflicto al flujo de Validación. | Manual | Exitoso | Ninguno |
+
+
+| Resultado esperado | Resultado obtenido |
+| :-- | :-- |
+| Al desplazar el mapa fuera de la zona activa, debe mantenerse visible la máscara oscura y el mensaje "Task for project [ID]. Do not edit outside of this area!". Al intentar añadir un nodo, el editor debe permitir su creación, evidenciando el comportamiento de advertencia visual (no bloqueante). | Al realizar *pan* hacia el exterior de la tarea, el frontend renderizó correctamente la capa de oscurecimiento y el texto de alerta. Se seleccionó la herramienta "Punto" y se hizo clic en el área ensombrecida; el nodo fue agregado exitosamente a la capa cartográfica de OSM, validando el comportamiento esperado de la plataforma. |
+
+| Evidencia |
+| :-- |
+| Renderizado de máscara y advertencia visual<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-03-ejecucion-mapeado/CP-3005-04-guia-visual-permitida.png" width="800px" alt="CP-3005-04 - Creación de nodo en zona ensombrecida con advertencia"></a><br>Lienzo del editor mostrando un nodo recién creado en el exterior de los límites de la tarea, en coexistencia con el sombreado preventivo inyectado por el Tasking Manager. |
