@@ -34,11 +34,17 @@ export default function ContributorsStats({ contributors }) {
     })();
   }, []);
 
-  let userLevelsReference = levels.map((level) => {
+  const fallbackColors = ['#50C1CB', '#FAA71E', '#53688B', '#F34D47', '#9B59B6', '#2ECC71'];
+
+  let userLevelsReference = levels.map((level, index) => {
     return {
       label: level.name,
-      field: (stats) => stats.usersByLevel[level.name],
-      backgroundColor: level.color,
+      field: (stats) => stats.usersByLevel[level.name.split(' ')[0].toUpperCase()],
+      backgroundColor: level.color
+        ? level.color.startsWith('#')
+          ? level.color
+          : `#${level.color}`
+        : fallbackColors[index % fallbackColors.length],
       borderColor: CHART_COLOURS.white,
     };
   });
