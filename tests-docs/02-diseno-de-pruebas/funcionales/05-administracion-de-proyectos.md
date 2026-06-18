@@ -207,6 +207,9 @@ La transición evaluada es válida porque el proyecto cuenta con los datos oblig
 | ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
 | :--- | :--- | :--- | :--- |
 | **CP-MOD5-007** | Cambiar el estado del proyecto de Borrador a Publicado y guardar. | Proyecto con configuración completa. | El sistema actualiza el estado a Publicado y muestra confirmación. |
+| **CP-MOD5-021** | Intentar cambiar el estado del proyecto a Publicado sin completar todos los campos obligatorios requeridos. | Proyecto en estado Borrador con descripción, instrucciones o metadatos obligatorios incompletos. | El sistema impide la publicación del proyecto y muestra mensajes de validación indicando la información faltante. |
+| **CP-MOD5-022** | Cambiar el estado de un proyecto publicado a Borrador y guardar los cambios. | Proyecto previamente publicado con configuración completa. | El sistema permite cambiar el estado a Borrador, guarda el cambio y mantiene el nuevo estado después de actualizar la información. |
+
 
 ---
 

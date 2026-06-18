@@ -464,6 +464,87 @@ Se observa que el usuario seleccionó el estado **Publicado** como nuevo estado 
 </p>
 
 Se evidencia que el sistema guardó correctamente el cambio de estado y confirmó la actualización del proyecto. Esto demuestra que la transición **Borrador → Publicado** fue realizada correctamente desde la interfaz.
+### 5.3.2. Intento de publicar proyecto con campos obligatorios incompletos
+
+**CP-MOD5-021**
+
+| ID              | Descripción                                                                                          | Tipo   | Estado  | Defectos                    |
+| :-------------- | :--------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-021** | Verificar que el sistema impida publicar un proyecto cuando existen campos obligatorios incompletos. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                  | Resultado obtenido                                                                                                                         |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe impedir la publicación del proyecto si faltan campos obligatorios, mostrando mensajes de validación sobre la información requerida. | El sistema no permitió publicar el proyecto y mostró un error indicando que faltaba información obligatoria para completar la publicación. |
+
+#### Evidencia CP-MOD5-021 — Proyecto en borrador con información incompleta
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-021-01-proyecto-borrador-incompleto.png" alt="CP-MOD5-021 - Proyecto en borrador con información incompleta" width="350">
+</p>
+
+Se observa el proyecto en estado de edición/borrador con información obligatoria incompleta antes de intentar su publicación.
+
+#### Evidencia CP-MOD5-021 — Intento de publicación del proyecto incompleto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-021-02-intento-publicacion-incompleta.png" alt="CP-MOD5-021 - Intento de publicación incompleta" width="350">
+</p>
+
+Se evidencia el intento de cambiar el estado del proyecto a publicado sin contar con toda la información obligatoria requerida.
+
+#### Evidencia CP-MOD5-021 — Validación por información incompleta
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-021-03-validacion-publicacion-incompleta.png" alt="CP-MOD5-021 - Validación por información incompleta" width="450">
+</p>
+
+Se evidencia que el sistema mostró un mensaje de validación indicando que faltaba información obligatoria, impidiendo la publicación del proyecto.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema valida la información obligatoria antes de permitir la publicación de un proyecto. Al detectar campos incompletos, bloqueó el cambio de estado y evitó que el proyecto sea publicado sin cumplir las condiciones requeridas.
+
+### 5.3.3. Cambio de estado de proyecto publicado a borrador
+
+**CP-MOD5-022**
+
+| ID              | Descripción                                                                                                          | Tipo   | Estado  | Defectos                    |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-022** | Verificar que el sistema permita cambiar el estado de un proyecto publicado a borrador desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                         | Resultado obtenido                                                                                                           |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir cambiar el estado del proyecto de Publicado a Borrador, guardar el cambio y mantener el nuevo estado después de la actualización. | El sistema permitió cambiar el estado del proyecto de Publicado a Borrador y guardó correctamente la modificación realizada. |
+
+#### Evidencia CP-MOD5-022 — Proyecto en estado publicado
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-022-01-proyecto-estado-publicado.png" alt="CP-MOD5-022 - Proyecto en estado publicado" width="350">
+</p>
+
+Se observa que el proyecto se encontraba inicialmente en estado **Publicado** antes de realizar la modificación.
+
+#### Evidencia CP-MOD5-022 — Cambio de estado a borrador
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-022-02-cambio-estado-borrador.png" alt="CP-MOD5-022 - Cambio de estado a borrador" width="350">
+</p>
+
+Se evidencia que el usuario seleccionó el estado **Borrador** desde la pantalla de edición del proyecto.
+
+#### Evidencia CP-MOD5-022 — Estado borrador guardado correctamente
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-022-03-estado-borrador-guardado.png" alt="CP-MOD5-022 - Estado borrador guardado correctamente" width="450">
+</p>
+
+Se evidencia que el sistema guardó correctamente el cambio de estado, manteniendo el proyecto como **Borrador** después de la actualización.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite revertir el estado de un proyecto publicado a borrador. El cambio fue procesado correctamente y no se presentaron errores visibles durante el guardado.
+
+
 
 ### 5.8 Configuración de privacidad y permisos del proyecto
 
