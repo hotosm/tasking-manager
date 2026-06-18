@@ -135,6 +135,10 @@ El flujo funcional esperado es:
 | **CP-MOD5-002** | Continuar con la generación de la grilla. | AOI previamente aceptado. | El sistema genera la grilla dentro del AOI y permite avanzar. |
 | **CP-MOD5-003** | Recortar la cuadrícula de tareas. | Grilla generada previamente. | El sistema procesa el recorte y permite avanzar al Paso 4. |
 | **CP-MOD5-004** | Completar datos mínimos y crear el proyecto. | Nombre y organización válidos. | El sistema crea el proyecto y redirige a la pantalla de edición. |
+| **CP-MOD5-014** | Cargar un GeoJSON inválido en el Paso 1 de creación del proyecto. | GeoJSON con estructura incompleta, geometría inválida o coordenadas vacías. | El sistema rechaza el AOI inválido, no permite avanzar al Paso 2 y muestra una validación o comportamiento de error controlado. |
+| **CP-MOD5-015** | Intentar cargar un archivo GeoJSON vacío en el Paso 1 de creación del proyecto. | Archivo `.geojson` sin contenido o con contenido vacío. | El sistema rechaza el archivo vacío, no permite definir el AOI y evita avanzar al Paso 2 del flujo de creación. |
+| **CP-MOD5-016** | Cargar un AOI que excede las restricciones permitidas por el sistema. | GeoJSON válido en formato, pero con área demasiado grande o fuera de los límites aceptados. | El sistema rechaza el AOI o muestra una advertencia indicando que el área no cumple las restricciones permitidas. |
+
 
 ---
 

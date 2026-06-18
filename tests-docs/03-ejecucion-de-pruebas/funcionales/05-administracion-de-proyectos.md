@@ -109,6 +109,103 @@ Se observa que el usuario completó los datos requeridos para continuar con la c
 
 Se evidencia que el sistema creó correctamente el proyecto y redirigió a la pantalla de edición, donde se muestra el proyecto recién creado con el nombre **Proyecto Arequipa**.
 
+### 5.14. Validación de GeoJSON inválido en la creación de AOI
+
+**CP-MOD5-014**
+
+| ID              | Descripción                                                                                                          | Tipo   | Estado  | Defectos                    |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-014** | Verificar que el sistema rechace un archivo GeoJSON inválido durante la definición del Área de Interés del proyecto. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                                  | Resultado obtenido                                                                                                                                         |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe rechazar el GeoJSON inválido, impedir su carga como AOI válido y evitar que el usuario avance al siguiente paso del flujo de creación del proyecto. | El sistema no permitió cargar el GeoJSON inválido y mostró un error de validación, evitando que la geometría incorrecta sea aceptada como Área de Interés. |
+
+#### Evidencia CP-MOD5-014 — GeoJSON inválido utilizado
+
+<p align="center">
+  <img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-0005-administracion-proyectos/CP-MOD5-014-01-geojson-invalido-codigo.png" alt="CP-MOD5-014 - GeoJSON inválido utilizado" width="350">
+</p>
+
+Se observa el contenido del archivo GeoJSON utilizado como dato de prueba. El archivo presenta una geometría inválida, por lo que no cumple con las condiciones necesarias para ser aceptado como Área de Interés del proyecto.
+
+#### Evidencia CP-MOD5-014 — Error al cargar GeoJSON inválido
+
+<p align="center">
+  <img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-0005-administracion-proyectos/CP-MOD5-014-02-error-geojson-invalido.png" alt="CP-MOD5-014 - Error al cargar GeoJSON inválido" width="550">
+</p>
+
+Se evidencia que el sistema rechaza el archivo GeoJSON inválido y muestra un error de validación, impidiendo que el usuario continúe con una geometría incorrecta.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema valida la entrada geográfica antes de aceptarla como Área de Interés. Al detectar que el GeoJSON no cumple con el formato o estructura esperada, bloquea la carga del archivo y evita avanzar en el flujo de creación del proyecto.
+
+### 5.15. Validación de archivo GeoJSON vacío
+
+**CP-MOD5-015**
+
+| ID              | Descripción                                                                                                       | Tipo   | Estado  | Defectos                    |
+| :-------------- | :---------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-015** | Verificar que el sistema rechace un archivo GeoJSON vacío durante la definición del Área de Interés del proyecto. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                          | Resultado obtenido                                                                                                                             |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe rechazar el archivo GeoJSON vacío, impedir su carga como AOI válido y evitar que el usuario avance al siguiente paso del flujo de creación. | El sistema no aceptó el archivo GeoJSON vacío y mostró un error de validación, evitando que se defina un Área de Interés sin geometría válida. |
+
+#### Evidencia CP-MOD5-015 — Archivo GeoJSON vacío utilizado
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-015-01-archivo-geojson-vacio.png" alt="CP-MOD5-015 - Archivo GeoJSON vacío utilizado" width="650">
+</p>
+
+Se observa el archivo GeoJSON utilizado como dato de prueba, el cual no contiene información geográfica ni geometría válida para definir el Área de Interés.
+
+#### Evidencia CP-MOD5-015 — Error al cargar archivo GeoJSON vacío
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-015-02-error-archivo-geojson-vacio.png" alt="CP-MOD5-015 - Error al cargar archivo GeoJSON vacío" width="400">
+</p>
+
+Se evidencia que el sistema rechaza el archivo GeoJSON vacío y muestra un error de validación, impidiendo continuar con el flujo de creación del proyecto.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema valida el contenido del archivo antes de aceptarlo como Área de Interés. Al detectar que el archivo se encuentra vacío y no contiene geometría válida, bloquea la carga y evita avanzar al siguiente paso.
+
+### 5.16. Validación de AOI fuera del área permitida
+
+**CP-MOD5-016**
+
+| ID              | Descripción                                                                                                                             | Tipo   | Estado  | Defectos                    |
+| :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-016** | Verificar que el sistema rechace o bloquee un Área de Interés que excede las restricciones permitidas durante la creación del proyecto. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                            | Resultado obtenido                                                                                                                                                                    |
+| :-------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| El sistema debe rechazar el AOI o impedir el avance cuando el área cargada excede las restricciones permitidas para la creación del proyecto. | El sistema cargó la validación correspondiente y no permitió avanzar con el AOI ingresado, evitando continuar el flujo de creación con un área fuera de las restricciones permitidas. |
+
+#### Evidencia CP-MOD5-016 — GeoJSON con AOI fuera del área permitida
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-016-01-aoi-grande-geojson.png" alt="CP-MOD5-016 - GeoJSON con AOI fuera del área permitida" width="250">
+</p>
+
+Se observa el contenido del archivo GeoJSON utilizado como dato de prueba. Aunque el archivo tiene una estructura válida, representa un Área de Interés demasiado grande para las restricciones esperadas del sistema.
+
+#### Evidencia CP-MOD5-016 — Validación de AOI fuera del área permitida
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-016-02-validacion-aoi-grande.png" alt="CP-MOD5-016 - Validación de AOI fuera del área permitida" width="550">
+</p>
+
+Se evidencia que el sistema no permitió avanzar con el AOI cargado, mostrando una validación o bloqueo asociado al tamaño o restricciones del Área de Interés.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema controla las restricciones del Área de Interés antes de permitir continuar con la generación de tareas. Al identificar que el AOI excede las condiciones permitidas, bloquea el avance y evita que se genere una grilla basada en un área no válida.
+
+
 ### 5.5 Validación de campos obligatorios al guardar proyecto
 
 **CP-MOD5-005**
