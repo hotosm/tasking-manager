@@ -697,6 +697,86 @@ Se observa que el usuario seleccionó como nuevo propietario a otro administrado
 </p>
 
 Se evidencia que el sistema ejecutó correctamente la transferencia de propiedad del proyecto. Esto confirma que la funcionalidad permite cambiar el propietario del proyecto hacia otro usuario con permisos suficientes dentro de la organización.
+### 5.4.4. Configuración de dificultad del proyecto
+
+**CP-MOD5-023**
+
+| ID              | Descripción                                                                                                     | Tipo   | Estado  | Defectos                    |
+| :-------------- | :-------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-023** | Verificar que el sistema permita modificar la dificultad de un proyecto existente desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                              | Resultado obtenido                                                                                   |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir seleccionar una dificultad válida para el proyecto, guardar el cambio y mantener la dificultad actualizada después de la modificación. | El sistema permitió modificar la dificultad del proyecto y guardó correctamente el cambio realizado. |
+
+#### Evidencia CP-MOD5-023 — Dificultad inicial del proyecto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-023-01-dificultad-inicial.png" alt="CP-MOD5-023 - Dificultad inicial del proyecto" width="450">
+</p>
+
+Se observa la dificultad inicial configurada en el proyecto antes de realizar la modificación.
+
+#### Evidencia CP-MOD5-023 — Dificultad modificada
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-023-02-dificultad-modificada.png" alt="CP-MOD5-023 - Dificultad modificada" width="450">
+</p>
+
+Se evidencia que el usuario seleccionó una nueva dificultad válida desde la pantalla de edición del proyecto.
+
+#### Evidencia CP-MOD5-023 — Dificultad guardada correctamente
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-023-03-dificultad-guardada.png" alt="CP-MOD5-023 - Dificultad guardada correctamente" width="250">
+</p>
+
+Se evidencia que el sistema guardó correctamente el cambio de dificultad del proyecto, sin mostrar errores visibles.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite modificar la dificultad del proyecto y guardar el cambio correctamente. La operación se completó sin errores visibles en la interfaz.
+
+### 5.4.5. Configuración de prioridad del proyecto
+
+**CP-MOD5-024**
+
+| ID              | Descripción                                                                                                    | Tipo   | Estado  | Defectos                    |
+| :-------------- | :------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-024** | Verificar que el sistema permita modificar la prioridad de un proyecto existente desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                            | Resultado obtenido                                                                                  |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir seleccionar una prioridad válida para el proyecto, guardar el cambio y mantener la prioridad actualizada después de la modificación. | El sistema permitió modificar la prioridad del proyecto y guardó correctamente el cambio realizado. |
+
+#### Evidencia CP-MOD5-024 — Prioridad inicial del proyecto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-024-01-prioridad-inicial.png" alt="CP-MOD5-024 - Prioridad inicial del proyecto" width="550">
+</p>
+
+Se observa la prioridad inicial configurada en el proyecto antes de realizar la modificación.
+
+#### Evidencia CP-MOD5-024 — Prioridad modificada
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-024-02-prioridad-modificada.png" alt="CP-MOD5-024 - Prioridad modificada" width="550">
+</p>
+
+Se evidencia que el usuario seleccionó una nueva prioridad válida desde la pantalla de edición del proyecto.
+
+#### Evidencia CP-MOD5-024 — Prioridad guardada correctamente
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-024-03-prioridad-guardada.png" alt="CP-MOD5-024 - Prioridad guardada correctamente" width="650">
+</p>
+
+Se evidencia que el sistema guardó correctamente el cambio de prioridad del proyecto, sin mostrar errores visibles.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite modificar la prioridad del proyecto y guardar el cambio correctamente. La operación se completó sin errores visibles en la interfaz.
+
 
 ### 5.12 Eliminación controlada de proyecto
 

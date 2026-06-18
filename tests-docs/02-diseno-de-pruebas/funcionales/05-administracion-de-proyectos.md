@@ -255,6 +255,9 @@ La transición evaluada es válida porque el proyecto cuenta con los datos oblig
 | **CP-MOD5-008** | Cambiar niveles mínimos de mapeo y validación. | Nivel mínimo configurado como INTERMEDIATE. | El sistema guarda los permisos correctamente. |
 | **CP-MOD5-009** | Activar la opción de proyecto privado y guardar. | Proyecto existente con configuración editable. | El sistema guarda la privacidad del proyecto. |
 | **CP-MOD5-011** | Seleccionar un nuevo propietario válido y transferir propiedad. | Usuario administrador de Tasking Manager perteneciente a la organización. | El sistema transfiere correctamente la propiedad del proyecto. |
+| **CP-MOD5-023** | Configurar la dificultad del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con un nivel de dificultad válido seleccionado por el Project Manager. | El sistema guarda la dificultad del proyecto y la muestra correctamente en la configuración del proyecto. |
+| **CP-MOD5-024** | Configurar la prioridad del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con una prioridad válida seleccionada por el Project Manager. | El sistema guarda la prioridad asignada al proyecto y la mantiene visible después de actualizar la configuración. |
+
 
 ---
 
