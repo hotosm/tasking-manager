@@ -306,5 +306,7 @@ El flujo de clonación esperado es:
 | **CP-MOD5-010** | Seleccionar clonar proyecto y completar el flujo del nuevo proyecto. | Proyecto original existente. | El sistema crea un proyecto clonado independiente. |
 | **CP-MOD5-012** | Eliminar un proyecto desde la sección de acciones. | Proyecto clonado o administrable. | El sistema elimina el proyecto y redirige a gestión de proyectos. |
 | **CP-MOD5-013** | Seleccionar una fuente de imágenes válida y guardar. | Fuente Bing seleccionada. | El sistema guarda correctamente la fuente de imágenes. |
+| **CP-MOD5-020** | Iniciar la acción de eliminación de un proyecto y cancelar la operación antes de confirmarla. | Proyecto existente con opción de eliminación disponible para el Project Manager. | El sistema cancela la operación, no elimina el proyecto y mantiene la información del proyecto disponible sin cambios. |
+
 
 ---

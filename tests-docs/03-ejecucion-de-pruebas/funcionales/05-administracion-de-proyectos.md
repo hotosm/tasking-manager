@@ -841,3 +841,42 @@ Se observa la sección **Imágenes** del proyecto, donde el sistema presenta dis
 </p>
 
 Se evidencia que el usuario seleccionó la fuente de imágenes **Bing** y que el sistema guardó correctamente la configuración, confirmando que la fuente de mapeo fue actualizada sin defectos.
+### 5.5.4. Cancelación de eliminación de proyecto
+
+**CP-MOD5-020**
+
+| ID              | Descripción                                                                                              | Tipo   | Estado  | Defectos                    |
+| :-------------- | :------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-020** | Verificar que el sistema permita cancelar la eliminación de un proyecto antes de confirmar la operación. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                    | Resultado obtenido                                                                                                                                             |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe mostrar una confirmación antes de eliminar el proyecto, permitir cancelar la operación y mantener el proyecto disponible sin cambios. | El sistema permitió cancelar la eliminación del proyecto correctamente. Después de cancelar, el proyecto no fue eliminado y continuó disponible en el sistema. |
+
+#### Evidencia CP-MOD5-020 — Opción de eliminar proyecto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-020-01-opcion-eliminar-proyecto.png" alt="CP-MOD5-020 - Opción de eliminar proyecto" width="450">
+</p>
+
+Se observa la opción disponible para iniciar la eliminación del proyecto desde la interfaz de administración.
+
+#### Evidencia CP-MOD5-020 — Confirmación de eliminación
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-020-02-confirmacion-eliminacion.png" alt="CP-MOD5-020 - Confirmación de eliminación" width="450">
+</p>
+
+Se evidencia que el sistema muestra una ventana o mensaje de confirmación antes de ejecutar la eliminación del proyecto.
+
+#### Evidencia CP-MOD5-020 — Cancelación de eliminación
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-020-03-cancelacion-eliminacion.png" alt="CP-MOD5-020 - Cancelación de eliminación" width="30  0">
+</p>
+
+Se evidencia que la operación de eliminación fue cancelada y que el proyecto continuó disponible en el sistema.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema solicita confirmación antes de eliminar un proyecto. Al cancelar la operación, el proyecto no fue eliminado y se mantuvo disponible, evitando una eliminación accidental.
