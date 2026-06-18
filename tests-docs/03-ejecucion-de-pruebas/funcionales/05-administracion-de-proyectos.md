@@ -276,6 +276,158 @@ Se observa que el usuario completó las secciones obligatorias del proyecto: des
 </p>
 
 Se evidencia que el sistema aceptó la información ingresada y mostró el mensaje **“Proyecto actualizado correctamente.”**, confirmando que el proyecto fue guardado sin defectos.
+### 5.17. Modificación del nombre del proyecto
+
+**CP-MOD5-017**
+
+| ID              | Descripción                                                                                                 | Tipo   | Estado  | Defectos                    |
+| :-------------- | :---------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-017** | Verificar que el sistema permita modificar el nombre de un proyecto existente desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                | Resultado obtenido                                                                                                             |
+| :------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir modificar el nombre del proyecto, guardar el cambio y mostrar el nuevo nombre correctamente después de la actualización. | El sistema permitió modificar el nombre del proyecto, guardar los cambios y mostrar correctamente el nuevo nombre actualizado. |
+
+#### Evidencia CP-MOD5-017 — Nombre inicial del proyecto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-017-01-nombre-proyecto-inicial.png" alt="CP-MOD5-017 - Nombre inicial del proyecto" width="300">
+</p>
+
+Se observa el nombre inicial del proyecto antes de realizar la modificación desde la pantalla de edición.
+
+#### Evidencia CP-MOD5-017 — Nombre del proyecto modificado
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-017-02-nombre-proyecto-modificado.png" alt="CP-MOD5-017 - Nombre del proyecto modificado" width="600">
+</p>
+
+Se evidencia que el usuario ingresó un nuevo nombre válido para el proyecto antes de guardar los cambios.
+
+#### Evidencia CP-MOD5-017 — Nombre actualizado guardado correctamente
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-017-03-nombre-proyecto-guardado.png" alt="CP-MOD5-017 - Nombre actualizado guardado correctamente" width="300">
+</p>
+
+Se evidencia que el sistema guardó correctamente el nuevo nombre del proyecto y lo muestra actualizado en la interfaz.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite editar el nombre de un proyecto existente y conservar el cambio después de guardar. No se observaron errores ni pérdida de información durante la actualización.
+
+### 5.2.4. Modificación de la descripción corta del proyecto
+
+**CP-MOD5-018**
+
+| ID              | Descripción                                                                                                            | Tipo   | Estado  | Defectos                    |
+| :-------------- | :--------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-018** | Verificar que el sistema permita modificar la descripción corta de un proyecto existente desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                            | Resultado obtenido                                                                                                                                  |
+| :-------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir modificar la descripción corta del proyecto, guardar el cambio y mostrar una confirmación de actualización correcta. | El sistema permitió modificar la descripción corta del proyecto y mostró una notificación indicando que los cambios fueron guardados correctamente. |
+
+#### Evidencia CP-MOD5-018 — Descripción corta inicial
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-018-01-descripcion-corta-inicial.png" alt="CP-MOD5-018 - Descripción corta inicial" width="500">
+</p>
+
+Se observa la descripción corta del proyecto antes de realizar la modificación.
+
+#### Evidencia CP-MOD5-018 — Descripción corta modificada
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-018-02-descripcion-corta-modificada.png" alt="CP-MOD5-018 - Descripción corta modificada" width="500">
+</p>
+
+Se evidencia que el usuario ingresó una nueva descripción corta válida en la pantalla de edición del proyecto.
+
+#### Evidencia CP-MOD5-018 — Confirmación de guardado correcto
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-018-03-descripcion-corta-guardada.png" alt="CP-MOD5-018 - Confirmación de guardado correcto" width="500">
+</p>
+
+Se evidencia que el sistema mostró una notificación de guardado correcto, confirmando que la modificación de la descripción corta fue procesada exitosamente.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite editar la descripción corta del proyecto y guardar el cambio sin errores visibles. La notificación de confirmación permite verificar que la actualización fue aceptada por el sistema.
+
+### 5.2.5. Modificación de instrucciones detalladas del proyecto
+
+**CP-MOD5-019**
+
+| ID              | Descripción                                                                                                                    | Tipo   | Estado  | Defectos                    |
+| :-------------- | :----------------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-019** | Verificar que el sistema permita modificar las instrucciones detalladas de un proyecto existente desde la pantalla de edición. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                                   | Resultado obtenido                                                                                                                                                            |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir modificar las instrucciones detalladas del proyecto, guardar los cambios y mantener el contenido actualizado en la sección correspondiente. | El sistema permitió modificar las instrucciones detalladas del proyecto y guardó correctamente los cambios, mostrando el contenido actualizado en la sección correspondiente. |
+
+#### Evidencia CP-MOD5-019 — Instrucciones detalladas iniciales
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-019-01-instrucciones-detalladas-inicial.png" alt="CP-MOD5-019 - Instrucciones detalladas iniciales" width="450">
+</p>
+
+Se observa el contenido inicial de las instrucciones detalladas del proyecto antes de realizar la modificación.
+
+#### Evidencia CP-MOD5-019 — Instrucciones detalladas modificadas
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-019-02-instrucciones-detalladas-modificadas.png" alt="CP-MOD5-019 - Instrucciones detalladas modificadas" width="450">
+</p>
+
+Se evidencia que el usuario ingresó nuevas instrucciones detalladas válidas desde la pantalla de edición del proyecto.
+
+#### Evidencia CP-MOD5-019 — Instrucciones detalladas guardadas correctamente
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-019-03-instrucciones-detalladas-guardadas.png" alt="CP-MOD5-019 - Instrucciones detalladas guardadas correctamente" width="650">
+</p>
+
+Se evidencia que el sistema mostró o mantuvo las instrucciones detalladas actualizadas, confirmando que la modificación fue procesada correctamente.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite editar las instrucciones detalladas del proyecto y conservar los cambios después del guardado. No se observaron errores visibles ni pérdida de información durante la actualización.
+
+### 5.2.6. Validación de guardado sin cambios en la configuración del proyecto
+
+**CP-MOD5-025**
+
+| ID              | Descripción                                                                                                                            | Tipo   | Estado  | Defectos                    |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :----- | :------ | :-------------------------- |
+| **CP-MOD5-025** | Verificar que el sistema permita guardar la configuración de un proyecto sin realizar modificaciones visibles en los campos editables. | Manual | Exitoso | No se encontraron defectos. |
+
+| Resultado esperado                                                                                                                                     | Resultado obtenido                                                                                                                             |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| El sistema debe permitir guardar la configuración sin realizar cambios, mantener la información existente y no presentar errores durante la operación. | El sistema permitió guardar la configuración del proyecto sin realizar modificaciones visibles y mostró una confirmación de guardado correcto. |
+
+#### Evidencia CP-MOD5-025 — Configuración sin modificación
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-025-01-configuracion-sin-modificacion.png" alt="CP-MOD5-025 - Configuración sin modificación" width="650">
+</p>
+
+Se observa la pantalla de configuración del proyecto sin modificaciones visibles realizadas por el usuario antes de ejecutar la acción de guardado.
+
+#### Evidencia CP-MOD5-025 — Confirmación de guardado sin cambios
+
+<p align="center">
+  <img src="./img/MOD-0005-administracion-proyectos/CP-MOD5-025-02-confirmacion-guardado-sin-cambios.png" alt="CP-MOD5-025 - Confirmación de guardado sin cambios" width="650">
+</p>
+
+Se evidencia que el sistema mostró una confirmación de guardado correcto aun cuando no se realizaron cambios visibles en la configuración del proyecto.
+
+#### Observación de ejecución
+
+Durante la ejecución se comprobó que el sistema permite guardar la configuración del proyecto sin modificar campos. La información existente se mantuvo estable y no se presentaron errores visibles durante la operación.
+
 
 ### 5.7 Publicación del proyecto desde estado Borrador
 

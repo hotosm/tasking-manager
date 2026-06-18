@@ -170,6 +170,12 @@ El flujo funcional esperado es:
 | :--- | :--- | :--- | :--- |
 | **CP-MOD5-005** | Intentar guardar el proyecto sin completar campos obligatorios. | Descripción, instrucciones o tipo de mapeo incompletos. | El sistema bloquea el guardado y muestra mensaje de validación. |
 | **CP-MOD5-006** | Completar los campos obligatorios y guardar. | Descripción, instrucciones y metadatos completos. | El sistema guarda correctamente y muestra confirmación. |
+| **CP-MOD5-017** | Modificar el nombre del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con un nuevo nombre válido ingresado por el Project Manager. | El sistema guarda el nuevo nombre del proyecto y lo muestra correctamente después de actualizar la información. |
+| **CP-MOD5-018** | Modificar la descripción corta del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con una nueva descripción corta válida ingresada por el Project Manager. | El sistema guarda la nueva descripción corta y la mantiene visible después de actualizar la información del proyecto. |
+| **CP-MOD5-019** | Modificar las instrucciones detalladas del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con nuevas instrucciones detalladas válidas para los mapeadores. | El sistema guarda las instrucciones detalladas y las mantiene disponibles en la sección correspondiente del proyecto. |
+| **CP-MOD5-025** | Guardar la configuración del proyecto sin realizar cambios visibles en los campos editables. | Proyecto existente con configuración previamente guardada y sin modificaciones realizadas por el usuario. | El sistema procesa la acción sin errores, mantiene la información existente y muestra una confirmación o comportamiento estable de guardado. |
+
+
 
 ---
 
