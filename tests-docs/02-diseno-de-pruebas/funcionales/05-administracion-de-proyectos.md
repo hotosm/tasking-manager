@@ -129,12 +129,17 @@ El flujo funcional esperado es:
 
 ### C. Casos de Prueba Derivados
 
-| ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
-| :--- | :--- | :--- | :--- |
-| **CP-MOD5-001** | Cargar un archivo GeoJSON válido en el Paso 1. | GeoJSON válido con polígono de prueba. | El sistema acepta el AOI y permite avanzar al Paso 2. |
-| **CP-MOD5-002** | Continuar con la generación de la grilla. | AOI previamente aceptado. | El sistema genera la grilla dentro del AOI y permite avanzar. |
-| **CP-MOD5-003** | Recortar la cuadrícula de tareas. | Grilla generada previamente. | El sistema procesa el recorte y permite avanzar al Paso 4. |
-| **CP-MOD5-004** | Completar datos mínimos y crear el proyecto. | Nombre y organización válidos. | El sistema crea el proyecto y redirige a la pantalla de edición. |
+| ID Caso         | Pasos de ejecución resumidos                                                    | Datos de entrada / contexto                                                                 | Resultado esperado                                                                                                              |
+| :-------------- | :------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------ |
+| **CP-MOD5-001** | Cargar un archivo GeoJSON válido en el Paso 1.                                  | GeoJSON válido con polígono de prueba.                                                      | El sistema acepta el AOI y permite avanzar al Paso 2.                                                                           |
+| **CP-MOD5-002** | Continuar con la generación de la grilla.                                       | AOI previamente aceptado.                                                                   | El sistema genera la grilla dentro del AOI y permite avanzar.                                                                   |
+| **CP-MOD5-003** | Recortar la cuadrícula de tareas.                                               | Grilla generada previamente.                                                                | El sistema procesa el recorte y permite avanzar al Paso 4.                                                                      |
+| **CP-MOD5-004** | Completar datos mínimos y crear el proyecto.                                    | Nombre y organización válidos.                                                              | El sistema crea el proyecto y redirige a la pantalla de edición.                                                                |
+| **CP-MOD5-005** | Cargar un GeoJSON inválido en el Paso 1 de creación del proyecto.               | GeoJSON con estructura incompleta, geometría inválida o coordenadas vacías.                 | El sistema rechaza el AOI inválido, no permite avanzar al Paso 2 y muestra una validación o comportamiento de error controlado. |
+| **CP-MOD5-006** | Intentar cargar un archivo GeoJSON vacío en el Paso 1 de creación del proyecto. | Archivo `.geojson` sin contenido o con contenido vacío.                                     | El sistema rechaza el archivo vacío, no permite definir el AOI y evita avanzar al Paso 2 del flujo de creación.                 |
+| **CP-MOD5-007** | Cargar un AOI que excede las restricciones permitidas por el sistema.           | GeoJSON válido en formato, pero con área demasiado grande o fuera de los límites aceptados. | El sistema rechaza el AOI o muestra una advertencia indicando que el área no cumple las restricciones permitidas.               |
+
+
 
 ---
 
@@ -162,10 +167,16 @@ El flujo funcional esperado es:
 
 ### C. Casos de Prueba Derivados
 
-| ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
-| :--- | :--- | :--- | :--- |
-| **CP-MOD5-005** | Intentar guardar el proyecto sin completar campos obligatorios. | Descripción, instrucciones o tipo de mapeo incompletos. | El sistema bloquea el guardado y muestra mensaje de validación. |
-| **CP-MOD5-006** | Completar los campos obligatorios y guardar. | Descripción, instrucciones y metadatos completos. | El sistema guarda correctamente y muestra confirmación. |
+| ID Caso         | Pasos de ejecución resumidos                                                                            | Datos de entrada / contexto                                                                               | Resultado esperado                                                                                                                           |
+| :-------------- | :------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CP-MOD5-008** | Intentar guardar el proyecto sin completar campos obligatorios.                                         | Descripción, instrucciones o tipo de mapeo incompletos.                                                   | El sistema bloquea el guardado y muestra mensaje de validación.                                                                              |
+| **CP-MOD5-009** | Completar los campos obligatorios y guardar.                                                            | Descripción, instrucciones y metadatos completos.                                                         | El sistema guarda correctamente y muestra confirmación.                                                                                      |
+| **CP-MOD5-010** | Modificar el nombre del proyecto desde la pantalla de edición y guardar los cambios.                    | Proyecto existente con un nuevo nombre válido ingresado por el Project Manager.                           | El sistema guarda el nuevo nombre del proyecto y lo muestra correctamente después de actualizar la información.                              |
+| **CP-MOD5-011** | Modificar la descripción corta del proyecto desde la pantalla de edición y guardar los cambios.         | Proyecto existente con una nueva descripción corta válida ingresada por el Project Manager.               | El sistema guarda la nueva descripción corta y la mantiene visible después de actualizar la información del proyecto.                        |
+| **CP-MOD5-012** | Modificar las instrucciones detalladas del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con nuevas instrucciones detalladas válidas para los mapeadores.                       | El sistema guarda las instrucciones detalladas y las mantiene disponibles en la sección correspondiente del proyecto.                        |
+| **CP-MOD5-013** | Guardar la configuración del proyecto sin realizar cambios visibles en los campos editables.            | Proyecto existente con configuración previamente guardada y sin modificaciones realizadas por el usuario. | El sistema procesa la acción sin errores, mantiene la información existente y muestra una confirmación o comportamiento estable de guardado. |
+
+
 
 ---
 
@@ -194,9 +205,13 @@ La transición evaluada es válida porque el proyecto cuenta con los datos oblig
 
 ### C. Casos de Prueba Derivados
 
-| ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
-| :--- | :--- | :--- | :--- |
-| **CP-MOD5-007** | Cambiar el estado del proyecto de Borrador a Publicado y guardar. | Proyecto con configuración completa. | El sistema actualiza el estado a Publicado y muestra confirmación. |
+| ID Caso         | Pasos de ejecución resumidos                                                                                | Datos de entrada / contexto                                                                      | Resultado esperado                                                                                                                 |
+| :-------------- | :---------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **CP-MOD5-014** | Cambiar el estado del proyecto de Borrador a Publicado y guardar.                                           | Proyecto con configuración completa.                                                             | El sistema actualiza el estado a Publicado y muestra confirmación.                                                                 |
+| **CP-MOD5-015** | Intentar cambiar el estado del proyecto a Publicado sin completar todos los campos obligatorios requeridos. | Proyecto en estado Borrador con descripción, instrucciones o metadatos obligatorios incompletos. | El sistema impide la publicación del proyecto y muestra mensajes de validación indicando la información faltante.                  |
+| **CP-MOD5-016** | Cambiar el estado de un proyecto publicado a Borrador y guardar los cambios.                                | Proyecto previamente publicado con configuración completa.                                       | El sistema permite cambiar el estado a Borrador, guarda el cambio y mantiene el nuevo estado después de actualizar la información. |
+
+
 
 ---
 
@@ -237,11 +252,15 @@ La transición evaluada es válida porque el proyecto cuenta con los datos oblig
 
 ### C. Casos de Prueba Derivados
 
-| ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
-| :--- | :--- | :--- | :--- |
-| **CP-MOD5-008** | Cambiar niveles mínimos de mapeo y validación. | Nivel mínimo configurado como INTERMEDIATE. | El sistema guarda los permisos correctamente. |
-| **CP-MOD5-009** | Activar la opción de proyecto privado y guardar. | Proyecto existente con configuración editable. | El sistema guarda la privacidad del proyecto. |
-| **CP-MOD5-011** | Seleccionar un nuevo propietario válido y transferir propiedad. | Usuario administrador de Tasking Manager perteneciente a la organización. | El sistema transfiere correctamente la propiedad del proyecto. |
+| ID Caso         | Pasos de ejecución resumidos                                                              | Datos de entrada / contexto                                                               | Resultado esperado                                                                                                |
+| :-------------- | :---------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| **CP-MOD5-017** | Cambiar niveles mínimos de mapeo y validación.                                            | Nivel mínimo configurado como INTERMEDIATE.                                               | El sistema guarda los permisos correctamente.                                                                     |
+| **CP-MOD5-018** | Activar la opción de proyecto privado y guardar.                                          | Proyecto existente con configuración editable.                                            | El sistema guarda la privacidad del proyecto.                                                                     |
+| **CP-MOD5-019** | Seleccionar un nuevo propietario válido y transferir propiedad.                           | Usuario administrador de Tasking Manager perteneciente a la organización.                 | El sistema transfiere correctamente la propiedad del proyecto.                                                    |
+| **CP-MOD5-020** | Configurar la dificultad del proyecto desde la pantalla de edición y guardar los cambios. | Proyecto existente con un nivel de dificultad válido seleccionado por el Project Manager. | El sistema guarda la dificultad del proyecto y la muestra correctamente en la configuración del proyecto.         |
+| **CP-MOD5-021** | Configurar la prioridad del proyecto desde la pantalla de edición y guardar los cambios.  | Proyecto existente con una prioridad válida seleccionada por el Project Manager.          | El sistema guarda la prioridad asignada al proyecto y la mantiene visible después de actualizar la configuración. |
+
+
 
 ---
 
@@ -285,10 +304,13 @@ El flujo de clonación esperado es:
 
 ### C. Casos de Prueba Derivados
 
-| ID Caso | Pasos de ejecución resumidos | Datos de entrada / contexto | Resultado esperado |
-| :--- | :--- | :--- | :--- |
-| **CP-MOD5-010** | Seleccionar clonar proyecto y completar el flujo del nuevo proyecto. | Proyecto original existente. | El sistema crea un proyecto clonado independiente. |
-| **CP-MOD5-012** | Eliminar un proyecto desde la sección de acciones. | Proyecto clonado o administrable. | El sistema elimina el proyecto y redirige a gestión de proyectos. |
-| **CP-MOD5-013** | Seleccionar una fuente de imágenes válida y guardar. | Fuente Bing seleccionada. | El sistema guarda correctamente la fuente de imágenes. |
+| ID Caso         | Pasos de ejecución resumidos                                                                  | Datos de entrada / contexto                                                      | Resultado esperado                                                                                                     |
+| :-------------- | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **CP-MOD5-022** | Seleccionar clonar proyecto y completar el flujo del nuevo proyecto.                          | Proyecto original existente.                                                     | El sistema crea un proyecto clonado independiente.                                                                     |
+| **CP-MOD5-023** | Eliminar un proyecto desde la sección de acciones.                                            | Proyecto clonado o administrable.                                                | El sistema elimina el proyecto y redirige a gestión de proyectos.                                                      |
+| **CP-MOD5-024** | Seleccionar una fuente de imágenes válida y guardar.                                          | Fuente Bing seleccionada.                                                        | El sistema guarda correctamente la fuente de imágenes.                                                                 |
+| **CP-MOD5-025** | Iniciar la acción de eliminación de un proyecto y cancelar la operación antes de confirmarla. | Proyecto existente con opción de eliminación disponible para el Project Manager. | El sistema cancela la operación, no elimina el proyecto y mantiene la información del proyecto disponible sin cambios. |
+
+
 
 ---
