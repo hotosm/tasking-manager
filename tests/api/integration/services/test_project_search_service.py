@@ -5,7 +5,7 @@ from backend.services.users.user_service import UserService
 from backend.models.postgis.project import ProjectInfo, Project
 from backend.models.dtos.project_dto import ProjectSearchBBoxDTO
 from backend.models.postgis.user import User
-from tests.backend.helpers.test_helpers import get_canned_json
+from tests.api.helpers.test_helpers import get_canned_json
 from unittest.mock import patch, MagicMock, AsyncMock
 from shapely.geometry import Polygon, box
 import shapely.wkt
