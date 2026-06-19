@@ -9,11 +9,11 @@ requires-python = ">=3.9,<=3.11"
 dependencies = [
     # Direct dependencies (at least one import requires it)
     "APScheduler==3.10.1",
-    "alembic==1.11.1",
+    "alembic==1.14.1",
     "asyncpg==0.29.0",
     "bleach==6.0.0",
     "cachetools==5.3.1",
-    "fastapi==0.108.0",
+    "fastapi==0.115.14",
     "GeoAlchemy2==0.14.3",
     "geojson==3.1.0",
     "itsdangerous==2.1.2",
@@ -22,8 +22,8 @@ dependencies = [
     "numpy==1.26.4",
     "oauthlib==3.2.2",
     "pandas==2.2.2",
-    "pydantic==2.5.3",
-    "pydantic-settings==2.1.0",
+    "pydantic==2.9.2",
+    "pydantic-settings==2.8.1",
     "pyinstrument==4.6.2",
     "python-dateutil==2.8.2",
     "python-dotenv==1.0.0",
@@ -33,9 +33,9 @@ dependencies = [
     "scikit-learn==1.4.2",
     "sentry-sdk[fastapi]==1.26.0",
     "shapely==2.0.1",
-    "SQLAlchemy==2.0.19",
+    "SQLAlchemy==2.0.51",
     "typing-extensions==4.8.0",
-    "uvicorn==0.19.0",
+    "uvicorn==0.34.3",
     "Werkzeug==2.3.6",
     # Indirect, but required dependencies (often required for efficient deployments)
     "gevent==23.9.0",
@@ -51,7 +51,6 @@ dependencies = [
     "fastapi-mail==1.4.1",
     "aiocache>=0.12.3",
     "httpx>=0.28.1",
-    "pytest>=8.3.5",
 ]
 [dependency-groups]
 dev = [
