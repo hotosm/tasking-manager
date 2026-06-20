@@ -362,15 +362,15 @@
 
 | ID | Descripción | Tipo | Estado | Defectos |
 | :-- | :-- | :-- | :-- | :-- |
-| **CP-4003-03** | Intentar aplicar "Undo" sobre una tarea cuya evaluación final fue realizada por otro usuario validador. | Manual | Fallido | El sistema expone de forma incorrecta el botón "Solicitar revalidación" (Undo), permitiendo revertir acciones ejecutadas por otros usuarios. |
+| **CP-4003-03** | Intentar aplicar "Undo" (Solicitar revalidación) sobre una tarea cuya evaluación final fue realizada por otro usuario validador. | Manual | Exitoso | N/A |
 
 | Resultado esperado | Resultado obtenido |
 | :-- | :-- |
-| La opción o botón "Undo" no está disponible (oculta/deshabilitada) o responde error de restricción, ya que la acción no pertenece al usuario actual. | El sistema no validó la autoría del último cambio de estado; a pesar de pertenecer a otro usuario, el control para revertir la acción se renderizó y quedó completamente habilitado en la interfaz. |
+| El sistema debe permitir que cualquier usuario con función o rol de Validator pueda solicitar la revalidación (Undo) de cualquier tarea terminada, independientemente de si fue validada originalmente por un tercero. | El sistema validó el perfil de Validator del usuario en sesión y habilitó correctamente el botón "Solicitar revalidación" en una tarea completada por otro revisor, permitiendo revertir el estado sin restricciones. |
 
 | Evidencia |
 | :-- |
-| Presencia indebida del control de reversión en tarea ajena<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-04-validacion/cp-4003-03-01.jpg" width="800px" alt="CP-4003-03 - Exposición de Undo en actividad ajena"></a><br>Vista del modal de la Tarea #2 donde se muestra activo el botón "Solicitar revalidación" en la parte superior derecha, ignorando que el historial de actividades registra la última validación bajo un usuario distinto. |
+| Control de reversión habilitado para tareas de terceros<br><a href="#--------"><img src="/tests-docs/03-ejecucion-de-pruebas/funcionales/img/MOD-04-validacion/cp-4003-03-01.jpg" width="800px" alt="CP-4003-03 - Exposición de Undo en actividad ajena"></a><br>Vista del modal de la Tarea #2 donde se muestra activo y disponible el botón "Solicitar revalidación" en la parte superior derecha, confirmando el acceso correcto del Validator a elementos evaluados por otros usuarios. |
 
 ---
 
