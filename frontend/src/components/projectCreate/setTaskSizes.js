@@ -36,7 +36,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         tasksNumber: featureCollection(newTaskGrid).features.length,
       });
     },
-    [updateMetadata, metadata, mapObj.map],
+    [updateMetadata, metadata],
   );
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       drawInstance.setMode('select');
       setSplitMode(null);
     });
-  }, [mapObj.draw, mapObj.map, splitMode, metadata, updateMetadata]);
+  }, [mapObj.draw, splitMode, metadata, updateMetadata]);
 
   const resetGrid = () => {
     updateMetadata({ ...metadata, taskGrid: metadata.tempTaskGrid });
