@@ -1,0 +1,205 @@
+version: 2
+updates:
+
+# Python / pip
+# Reads pyproject.toml (source of truth) and uv.lock.
+# NOTE: requirements.txt also exists at "/" and will be scanned alongside
+# pyproject.toml. It is a legacy file — consider removing it to avoid
+# duplicate PRs for packages that diverge between the two files.
+- package-ecosystem: pip
+  directory: "/"
+  target-branch: develop
+  schedule:
+    interval: weekly
+    day: monday
+    time: "09:00"
+    timezone: "UTC"
+  open-pull-requests-limit: 5
+  versioning-strategy: increase
+  allow:
+  - dependency-type: direct
+  labels:
+  - "dependencies"
+  - "scope: backend"
+  commit-message:
+    prefix: "chore(deps)"
+  groups:
+    fastapi-stack:
+      patterns:
+      - "fastapi*"
+      - "uvicorn*"
+      - "pydantic*"
+      - "starlette*"
+      update-types:
+      - minor
+      - patch
+    database-stack:
+      patterns:
+      - "SQLAlchemy*"
+      - "alembic*"
+      - "databases*"
+      - "asyncpg*"
+      - "GeoAlchemy2*"
+      update-types:
+      - minor
+      - patch
+    geo-stack:
+      patterns:
+      - "shapely*"
+      - "geojson*"
+      - "pyproj*"
+      update-types:
+      - minor
+      - patch
+    sentry-python:
+      patterns:
+      - "sentry-sdk*"
+      update-types:
+      - minor
+      - patch
+    python-non-major:
+      update-types:
+      - minor
+      - patch
+
+# Frontend npm/yarn
+# Reads frontend/package.json + yarn.lock.
+# allow: direct scopes updates to the 91 packages in package.json only, ignoring transitive packages in yarn.lock.
+- package-ecosystem: npm
+  directory: "/frontend"
+  target-branch: develop
+  schedule:
+    interval: weekly
+    day: monday
+    time: "09:00"
+    timezone: "UTC"
+  open-pull-requests-limit: 5
+  allow:
+  - dependency-type: direct
+  labels:
+  - "dependencies"
+  - "scope: frontend"
+  commit-message:
+    prefix: "chore(deps)"
+  groups:
+    react-core:
+      patterns:
+      - "react"
+      - "react-dom"
+      - "react-router-dom"
+      - "react-scripts"
+      - "@types/react"
+      - "@types/react-dom"
+      update-types:
+      - minor
+      - patch
+    tanstack:
+      patterns:
+      - "@tanstack/*"
+      update-types:
+      - minor
+      - patch
+    turf:
+      patterns:
+      - "@turf/*"
+      update-types:
+      - minor
+      - patch
+    maplibre:
+      patterns:
+      - "maplibre-gl"
+      - "@maplibre/*"
+      - "@watergis/*"
+      - "terra-draw"
+      update-types:
+      - minor
+      - patch
+    sentry-js:
+      patterns:
+      - "@sentry/*"
+      update-types:
+      - minor
+      - patch
+    testing:
+      patterns:
+      - "@testing-library/*"
+      - "msw"
+      - "jest*"
+      - "react-test-renderer"
+      update-types:
+      - minor
+      - patch
+    workbox:
+      patterns:
+      - "workbox-*"
+      update-types:
+      - minor
+      - patch
+    redux-state:
+      patterns:
+      - "redux"
+      - "react-redux"
+      - "redux-*"
+      update-types:
+      - minor
+      - patch
+    npm-non-major:
+      update-types:
+      - minor
+      - patch
+
+# Docker base images (Dockerfiles)
+- package-ecosystem: docker
+  directory: "/scripts/docker"
+  target-branch: develop
+  schedule:
+    interval: weekly
+    day: monday
+    time: "09:00"
+    timezone: "UTC"
+  open-pull-requests-limit: 3
+  labels:
+  - "dependencies"
+  - "scope: infrastructure"
+  commit-message:
+    prefix: "chore(deps)"
+
+# Docker compose images (postgis, traefik, etc.)
+- package-ecosystem: docker
+  directory: "/"
+  target-branch: develop
+  schedule:
+    interval: weekly
+    day: monday
+    time: "09:00"
+    timezone: "UTC"
+  open-pull-requests-limit: 3
+  labels:
+  - "dependencies"
+  - "scope: infrastructure"
+  commit-message:
+    prefix: "chore(deps)"
+# GitHub Actions
+# DISABLED: Action upgrades are intentionally not automated. Each action
+# (actions/checkout, actions/setup-python, etc.) can rename inputs or change
+# behaviour across major versions, breaking workflows in ways CI cannot catch
+# (the workflow under test IS the broken thing). With 10+ workflows this also
+# creates too much PR noise. Re-enable and review changelog manually when
+# the team has capacity to audit each action upgrade individually.
+#
+# To re-enable: uncomment the block below.
+#
+# - package-ecosystem: github-actions
+#   directory: "/"
+#   target-branch: develop
+#   schedule:
+#     interval: weekly
+#     day: monday
+#     time: "09:00"
+#     timezone: "UTC"
+#   open-pull-requests-limit: 5
+#   labels:
+#     - "dependencies"
+#     - "scope: infrastructure"
+#   commit-message:
+#     prefix: "chore(deps)"
