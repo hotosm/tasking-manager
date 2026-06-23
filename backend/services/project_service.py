@@ -786,7 +786,7 @@ class ProjectService:
                 )
 
     @staticmethod
-    async def get_active_projects(interval: int, db: Database):
+    async def get_active_projects(interval: int, db: Database, sandbox: bool = False):
         # Calculate the action_date and make it naive
         action_date = (datetime.now(timezone.utc) - timedelta(hours=interval)).replace(
             tzinfo=None
@@ -814,11 +814,16 @@ class ProjectService:
             ST_AsGeoJSON(geometry) AS geometry
         FROM projects
         WHERE status = :status
+        AND sandbox = :sandbox
         AND id = ANY(:project_ids)
         """
         project_result = await db.fetch_all(
             query_projects,
-            {"status": ProjectStatus.PUBLISHED.value, "project_ids": project_ids},
+            {
+                "status": ProjectStatus.PUBLISHED.value,
+                "project_ids": project_ids,
+                "sandbox": sandbox,
+            },
         )
 
         # Building GeoJSON FeatureCollection
