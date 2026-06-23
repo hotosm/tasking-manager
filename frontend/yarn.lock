@@ -2112,9 +2112,9 @@
     tinyqueue "^3.0.0"
 
 "@maplibre/mlt@^1.1.8":
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/@maplibre/mlt/-/mlt-1.1.11.tgz#e7a1acc73cab8197de6e1a3411d2aa3bcb2f8b56"
-  integrity sha512-dKvjKdITw9d0y3ndGkSqLUEpWCizMtdq8NB06cHohH/JZ2sJoM7dClR9wzJLUWykjbw9RXDFmhjjNBnNW27mzw==
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/@maplibre/mlt/-/mlt-1.1.12.tgz#32c5e41eeb765a107125ec92a8533cb27cddf253"
+  integrity sha512-ZeK5w2TTeHOajcLaEQs1KZXw2V9wIKo1PmThlxlsHoXsQsYlBqLJzPOd6tJHRtGTChUY3DPPmjXRArYVvAbmZw==
   dependencies:
     "@mapbox/point-geometry" "^1.1.0"
 

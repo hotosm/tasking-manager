@@ -74,8 +74,7 @@ const NavButtons = (props) => {
 
         break;
       case 2: // Set Task grid.
-        const taskGrid = props.mapObj.map.getSource('grid')._data;
-        props.updateMetadata({ ...props.metadata, taskGrid: taskGrid, tempTaskGrid: taskGrid });
+        props.updateMetadata({ ...props.metadata, tempTaskGrid: props.metadata.taskGrid });
         break;
       case 3: // Trim Project.
         break;

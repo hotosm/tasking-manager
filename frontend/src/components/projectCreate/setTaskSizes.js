@@ -21,7 +21,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
   const splitHandler = useCallback(
     (event) => {
-      const taskGrid = mapObj.map.getSource('grid')._data;
+      const taskGrid = metadata.taskGrid;
 
       if (metadata.tempTaskGrid === null) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
@@ -82,7 +82,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
       if (newFeature.length > 0) {
         const geom = newFeature[0].geometry;
-        const taskGrid = mapObj.map.getSource('grid')._data;
+        const taskGrid = metadata.taskGrid;
         if (metadata.tempTaskGrid === null) {
           updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
         }
