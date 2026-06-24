@@ -1,4 +1,4 @@
-# Plan de Pruebas de Integración
+[# Plan de Pruebas de Integración
 
 **Proyecto:** HOT OSM Tasking Manager  
 **Equipo:** Escarabajo Rinoceronte  
@@ -181,3 +181,4 @@ La fase de integración se considera **aprobada** cuando:
 - No existen defectos críticos abiertos en autenticación, bloqueo de tareas, persistencia de estados e historial.
 - Los resultados de CI/CD muestran checks en verde para los workflows de integración.
 - Las evidencias de ejecución quedan registradas mediante logs, respuestas JSON, capturas o reportes de CI.
+](https://github.com/escarabajo-rinoceronte/gestor-tareas-pruebas/blob/develop/tests-docs/03-ejecucion-de-pruebas/unitarias/02-ejecucion-pruebas-unitarias-backend.md)
