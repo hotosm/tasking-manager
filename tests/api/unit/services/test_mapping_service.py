@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
+from datetime import datetime
 from backend.models.dtos.mapping_dto import StopMappingTaskDTO
 from backend.services.users.user_service import UserService
 from backend.services.mapping_service import (
@@ -8,7 +9,12 @@ from backend.services.mapping_service import (
     UserLicenseError,
 )
 from backend.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
-from backend.models.dtos.mapping_dto import LockTaskDTO, MappedTaskDTO
+from backend.models.dtos.mapping_dto import (
+    LockTaskDTO, 
+    MappedTaskDTO, 
+    StopMappingTaskDTO,
+    ExtendLockTimeDTO
+)
 from backend.services.project_service import ProjectService, MappingNotAllowed
 from backend.exceptions import NotFound
 from tests.api.helpers.test_helpers import (
@@ -37,7 +43,6 @@ class TestMappingService:
         self.task_stub.lock_holder = test_user
 
         self.lock_task_dto = LockTaskDTO(user_id=123456, task_id=1, project_id=1)
-
         self.mapped_task_dto = MappedTaskDTO(
             user_id=123456, task_id=1, project_id=1, status=TaskStatus.MAPPED.name
         )
@@ -309,18 +314,23 @@ class TestMappingService:
     async def test_stop_mapping_task_releases_lock_and_reverts_status(self):
         """Valida que detener el mapeo libere el candado y mantenga el estado previo."""
         project, user, project_id = await create_canned_project(self.db)
-        # Bloquear tarea 2 (que está READY)
         await self.db.execute(
             "UPDATE tasks SET task_status = 1, locked_by = :uid WHERE id = 2 AND project_id = :pid",
             {"uid": user.id, "pid": project_id}
         )
-        dto = StopMappingTaskDTO(projectId=project_id, taskId=2, userId=user.id, comment="Stopped")
+        # Usar snake_case y pasar todos los campos requeridos por Pydantic
+        dto = StopMappingTaskDTO(
+            project_id=project_id, 
+            task_id=2, 
+            user_id=user.id, 
+            comment="Stopped"
+        )
         
         await MappingService.stop_mapping_task(dto, self.db)
         
         task = await Task.get(2, project_id, self.db)
         assert task["locked_by"] is None
-        assert task["task_status"] == 0 # Vuelve a READY
+        assert task["task_status"] == 0 
 
     async def test_generate_gpx_returns_valid_xml_bytes(self):
         """Valida la generación de datos GPX para las tareas del proyecto."""
@@ -359,25 +369,24 @@ class TestMappingService:
     async def test_extend_task_lock_time_updates_history(self):
         """Valida que se pueda extender el tiempo de expiración de una tarea bloqueada."""
         project, user, project_id = await create_canned_project(self.db)
-        # Bloquear tarea 1 manualmente para validación
         await self.db.execute(
             "UPDATE tasks SET task_status = 3, locked_by = :uid WHERE id = 1 AND project_id = :pid",
             {"uid": user.id, "pid": project_id}
         )
-        # Insertar historial de bloqueo inicial
+        # SQL INSERT corregido (coincidencia de columnas y expresiones)
         await self.db.execute(
-            "INSERT INTO task_history (project_id, task_id, user_id, action, action_date) VALUES (:pid, 1, :uid, 'LOCKED_FOR_VALIDATION')",
-            {"pid": project_id, "uid": user.id}
+            """INSERT INTO task_history (project_id, task_id, user_id, action, action_date) 
+               VALUES (:pid, 1, :uid, 'LOCKED_FOR_VALIDATION', :date)""",
+            {"pid": project_id, "uid": user.id, "date": datetime.utcnow()}
         )
         
-        from backend.models.dtos.mapping_dto import ExtendLockTimeDTO
-        dto = ExtendLockTimeDTO(projectId=project_id, taskIds=[1], userId=user.id)
+        # Usar snake_case para el DTO
+        dto = ExtendLockTimeDTO(project_id=project_id, task_ids=[1], user_id=user.id)
         
         await MappingService.extend_task_lock_time(dto, self.db)
         
-        # Verificar que existe la acción EXTENDED_FOR_VALIDATION en el historial
         history_exists = await self.db.fetch_val(
-            "SELECT COUNT(*) FROM task_history WHERE action = 'EXTENDED_FOR_VALIDATION' AND task_id = 1",
+            "SELECT COUNT(*) FROM task_history WHERE action = 'EXTENDED_FOR_VALIDATION' AND task_id = 1 AND project_id = :pid",
             {"pid": project_id}
         )
         assert history_exists == 1

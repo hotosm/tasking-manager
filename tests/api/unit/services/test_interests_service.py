@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime
 from fastapi import HTTPException
 from backend.services.interests_service import InterestService, NotFound
 from backend.models.dtos.interests_dto import InterestDTO
@@ -72,8 +73,8 @@ class TestInterestService:
         )
         # Insertar historial de mapeo para el usuario en ese proyecto
         await self.db.execute(
-            "INSERT INTO task_history (project_id, task_id, user_id, action) VALUES (:pid, 1, :uid, 'STATE_CHANGE')",
-            {"pid": project_id, "uid": self.test_user.id}
+            "INSERT INTO task_history (project_id, task_id, user_id, action, action_date) VALUES (:pid, 1, :uid, 'STATE_CHANGE', :date)",
+            {"pid": project_id, "uid": self.test_user.id, "date": datetime.utcnow()}
         )
         
         res = await InterestService.compute_contributions_rate(self.test_user.id, self.db)
