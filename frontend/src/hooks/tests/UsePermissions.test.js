@@ -14,8 +14,8 @@ const setUser = ({ role = 'MAPPER', username = 'testuser', organisations = [], p
     store.dispatch({ type: 'SET_TOKEN', token: 'tok' });
     store.dispatch({ type: 'SET_USER_DETAILS', userDetails: { id: 1, username, role } });
     if (organisations.length) store.dispatch({ type: 'SET_ORGANISATIONS', organisations });
-    if (pmTeams.length) store.dispatch({ type: 'SET_PM_TEAMS', pmTeams });
-    if (tmTeams.length) store.dispatch({ type: 'SET_TM_TEAMS', tmTeams });
+    if (pmTeams.length) store.dispatch({ type: 'SET_PM_TEAMS', teams: pmTeams });
+    if (tmTeams.length) store.dispatch({ type: 'SET_TM_TEAMS', teams: tmTeams });
   });
 };
 

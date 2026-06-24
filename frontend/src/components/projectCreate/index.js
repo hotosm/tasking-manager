@@ -122,7 +122,7 @@ const ProjectCreate = () => {
   const deleteHandler = () => {
     const drawInstance = mapObj.draw.getTerraDrawInstance();
     drawInstance.clear();
-    if (mapObj.map.getSource('aoi')) {
+    if (mapObj.map && mapObj.map.getSource('aoi')) {
       mapObj.map.getSource('aoi').setData(featureCollection([]));
     }
     updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false, tasksNumber: 0 });
@@ -158,7 +158,9 @@ const ProjectCreate = () => {
 
       // Note: We are manually overriding Terra Draw's default layer paint properties
       // because the “select” mode style config may not apply as expected.
-      setPolygonStyle(mapObj.map);
+      if (mapObj.map) {
+        setPolygonStyle(mapObj.map);
+      }
     });
   };
   // eslint-disable-next-line
@@ -233,20 +235,20 @@ const ProjectCreate = () => {
       if (!cloneProjectData.name) {
         if (!metadata.projectName.trim()) {
           setErr({ error: true, message: intl.formatMessage(messages.noProjectName) });
-          throw new Error('Missing project name.');
+          return;
         }
         if (!/^[a-zA-Z]/.test(metadata.projectName)) {
           setErr({ error: true, message: intl.formatMessage(messages.projectNameValidationError) });
-          throw new Error('Project name validation error.');
+          return;
         }
       }
       if (!metadata.geom) {
         setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
-        throw new Error('Missing geom.');
+        return;
       }
       if (!metadata.organisation && !cloneProjectData.organisation) {
         setErr({ error: true, message: intl.formatMessage(messages.noOrganization) });
-        throw new Error('Missing organization information.');
+        return;
       }
 
       store.dispatch(createProject(metadata));
