@@ -46,6 +46,7 @@
 #### 3.1 Unitarias
 
 *   [[01 ejecucion pruebas unitarias frontend]]
+*   [[02 ejecucion pruebas unitarias backend]]
 
 #### 3.2 Funcionales (MOD priorizados)
 
