@@ -1,4 +1,19 @@
 ### MOD-0005: Administración de Proyectos
+
+## Resumen de Ejecución (Métricas)
+
+| Métrica | Valor |
+|---|---|
+| **Casos preexistentes** | 0 |
+| **Nuevos casos creados** | 25 |
+| **Total de casos diseñados** | 25 |
+| **Casos ejecutados con evidencia** | 25 (100%) |
+| **Casos exitosos (PASS)** | 25 (100%) |
+| **Casos fallidos (FAIL)** | 0 (0%) |
+| **Defectos reportados** | 0 |
+
+---
+
 ### 5.1.1. Creación de Área de Interés mediante GeoJSON válido
 
 **CP-MOD5-001**

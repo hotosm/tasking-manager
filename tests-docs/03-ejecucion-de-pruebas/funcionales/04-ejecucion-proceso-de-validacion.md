@@ -1,5 +1,19 @@
 # Proceso de Validación: Ejecución de casos de pruebas del MOD-04
 
+## Resumen de Ejecución (Métricas)
+
+| Métrica | Valor |
+|---|---|
+| **Casos preexistentes** | 0 |
+| **Nuevos casos creados** | 25 |
+| **Total de casos diseñados** | 25 |
+| **Casos ejecutados con evidencia** | 25 (100%) |
+| **Casos exitosos (PASS)** | 24 (96%) |
+| **Casos fallidos (FAIL)** | 1 (4%) |
+| **Defectos reportados** | 1 (Issue pendiente) |
+
+---
+
 ## 1. ESC-4001 Bloqueo y Prevención de Auto-validación
 
 ### 1.1. Ejecución de CP-4001-01
