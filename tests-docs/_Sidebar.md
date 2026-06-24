@@ -1,4 +1,4 @@
-## 📋 1. Planificación y Gestión
+## 1. Planificación y Gestión
 
 **Plan General de Pruebas**
 *   [[01 introduccion y alcance]]
@@ -6,11 +6,11 @@
 *   [[03 recursos y entornos]]
 *   [[04 gestion de riesgos]]
 
-**🔧 Entorno de Pruebas**
+**Entorno de Pruebas**
 *   [[entorno pruebas linux]]
 *   [[entorno pruebas software]]
 
-**👥 Roles del Sistema**
+**Roles del Sistema**
 *   [[especificacion roles sistema]]
 
 **Planes específicos**
@@ -20,7 +20,7 @@
 
 ---
 
-## 🧪 2. Diseño de Pruebas
+## 2. Diseño de Pruebas
 
 #### 2.1 Funcionales (Caja Negra)
 
@@ -41,7 +41,7 @@
 
 ---
 
-## ✅ 3. Ejecución de Pruebas
+## 3. Ejecución de Pruebas
 
 #### 3.1 Unitarias
 

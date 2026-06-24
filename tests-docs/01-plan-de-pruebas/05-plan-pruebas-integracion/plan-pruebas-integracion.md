@@ -58,7 +58,45 @@ Nivel 4 (top):  Flujos E2E completos (autenticar → mapear → validar)
 
 ---
 
-## 3. Criterios de Entrada
+## 3. Diagrama de integración funcional
+
+El diagrama muestra las dos líneas de integración y el punto donde convergen para las pruebas completas.
+
+```mermaid
+flowchart TD
+    A["Componentes técnicos"]
+    B["Base de datos"]
+    C["Backend/API"]
+    D["Servicios externos"]
+
+    E["Flujo funcional"]
+    F["Autenticación"]
+    G["Proyectos"]
+    H["Tareas y mapas"]
+    I["Mapeo y validación"]
+
+    J["Integración completa"]
+    K["Pruebas End-to-End"]
+    L["Corrección y revalidación"]
+
+    A --> B
+    B --> C
+    C --> D
+
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+
+    D --> J
+    I --> J
+    J --> K
+    K --> L
+```
+
+---
+
+## 4. Criterios de Entrada
 
 Antes de iniciar las pruebas de integración, se deben cumplir:
 
@@ -70,7 +108,7 @@ Antes de iniciar las pruebas de integración, se deben cumplir:
 
 ---
 
-## 4. Matriz de Interfaces
+## 5. Matriz de Interfaces
 
 | ID | Módulo Origen | Módulo Destino | Operación | Endpoint / Contrato | Dato enviado | Respuesta esperada |
 |---|---|---|---|---|---|---|
@@ -85,23 +123,23 @@ Antes de iniciar las pruebas de integración, se deben cumplir:
 
 ---
 
-## 5. Casos de Prueba de Integración
+## 6. Casos de Prueba de Integración
 
-| ID | Punto de integración | Precondición | Acción | Resultado esperado | Tiempo estimado |
+| ID | Punto de integración | Precondición | Acción | Resultado esperado | Tiempo est. |
 |---|---|---|---|---|---|
-| INT-01 | Frontend → API → BD | Usuario autenticado con nivel BEGINNER | `GET /api/v2/projects/` con filtro `mappingTypes=ROADS` | Lista proyectos filtrados; solo aparecen los accesibles para el nivel | 15 min |
-| INT-02 | Frontend → API → BD | Usuario MANAGER de una organización | Crear proyecto vía formulario frontend | Proyecto guardado en BD con status DRAFT; response HTTP 201 con project_id | 20 min |
-| INT-03 | Frontend → API → BD | Proyecto publicado con tareas en READY | `POST lock-for-mapping/{taskId}` | Tarea cambia a LOCKED_FOR_MAPPING en BD; frontend muestra candado | 15 min |
-| INT-04 | Frontend → API → BD | Tarea en LOCKED_FOR_MAPPING por usuario actual | `POST unlock-after-mapping` con `status: MAPPED` | Tarea pasa a MAPPED en BD; historial registra el evento con timestamp | 15 min |
-| INT-05 | Frontend → API → BD | Tarea MAPPED; usuario con nivel VALIDATOR | `POST lock-for-validation/{taskId}` | Tarea cambia a LOCKED_FOR_VALIDATION; solo el validador puede operar | 15 min |
-| INT-06 | Frontend → API → BD | Tarea en validación | `POST unlock-after-validation` con `status: INVALIDATED` | Tarea regresa a READY; comentario de invalidación se preserva en historial | 20 min |
-| INT-07 | API → Notificaciones → BD | Tarea marcada como VALIDATED | Sistema genera notificación automática al mapper | Registro en tabla notifications con user_id correcto y mensaje esperado | 10 min |
-| INT-08 | API → OSM OAuth2 | Token OAuth2 expirado | Intento de acción autenticada | API responde HTTP 401; frontend redirige a login | 10 min |
-| INT-E2E-01 | Todos los componentes | Usuario nuevo sin proyectos | Flujo completo: login → explorar → bloquear → mapear → validar | Cada transición de estado persiste correctamente; permisos se aplican en cada paso | 45 min |
+| INT-01 | Frontend → API → BD | Usuario autenticado nivel BEGINNER | `GET /api/v2/projects/` con filtro `mappingTypes=ROADS` | Lista proyectos filtrados según nivel | 15 min |
+| INT-02 | Frontend → API → BD | Usuario MANAGER de organización | Crear proyecto vía formulario | Proyecto en BD con status DRAFT; HTTP 201 | 20 min |
+| INT-03 | Frontend → API → BD | Proyecto publicado, tareas READY | `POST lock-for-mapping/{taskId}` | Tarea LOCKED_FOR_MAPPING en BD; candado en UI | 15 min |
+| INT-04 | Frontend → API → BD | Tarea LOCKED por usuario actual | `POST unlock-after-mapping` status MAPPED | Tarea MAPPED en BD; historial registra evento | 15 min |
+| INT-05 | Frontend → API → BD | Tarea MAPPED; usuario VALIDATOR | `POST lock-for-validation/{taskId}` | Tarea LOCKED_FOR_VALIDATION; solo validador opera | 15 min |
+| INT-06 | Frontend → API → BD | Tarea en validación | `POST unlock-after-validation` status INVALIDATED | Tarea regresa a READY; comentario se preserva | 20 min |
+| INT-07 | API → Notificaciones → BD | Tarea marcada VALIDATED | Notificación automática al mapper | Registro en tabla notifications correcto | 10 min |
+| INT-08 | API → OSM OAuth2 | Token OAuth2 expirado | Acción autenticada | HTTP 401; frontend redirige a login | 10 min |
+| INT-E2E-01 | Todos los componentes | Usuario nuevo | Flujo: login → explorar → bloquear → mapear → validar | Cada transición persiste; permisos se aplican | 45 min |
 
 ---
 
-## 6. Entorno y Recursos
+## 7. Entorno y Recursos
 
 | Recurso | Configuración |
 |---|---|
@@ -117,38 +155,38 @@ Antes de iniciar las pruebas de integración, se deben cumplir:
 
 ---
 
-## 7. Cronograma
+## 8. Cronograma
 
-| Fase | Fechas | Actividad | Tiempo estimado total |
+| Fase | Fechas | Actividad | Tiempo estimado |
 |---|---|---|---|
-| 1 — Infraestructura | 12–15 Jun 2026 | Levantar Docker Compose; aplicar migraciones Alembic; validar conectividad BD | 6 h |
-| 2 — API y Servicios | 16–18 Jun 2026 | Probar endpoints con Postman/pytest; validar contratos INT-IF-02a/b | 8 h |
-| 3 — Frontend↔API | 19–21 Jun 2026 | INT-01 a INT-04; validar flujo autenticar → bloquear → mapear | 6 h |
+| 1 — Infraestructura | 12–15 Jun 2026 | Docker Compose; Alembic; validar conectividad BD | 6 h |
+| 2 — API y Servicios | 16–18 Jun 2026 | Endpoints con Postman/pytest; validar contratos INT-IF-02 | 8 h |
+| 3 — Frontend↔API | 19–21 Jun 2026 | INT-01 a INT-04; flujo autenticar → bloquear → mapear | 6 h |
 | 4 — Servicios externos | 22–24 Jun 2026 | INT-08 (OAuth2 expirado); simular fallos con monkeypatch | 4 h |
 | 5 — E2E | 25–27 Jun 2026 | INT-E2E-01; flujo completo de extremo a extremo | 6 h |
-| 6 — Corrección e informe | 28–30 Jun 2026 | Corregir defectos encontrados; reejecución; redactar informe final | 8 h |
+| 6 — Corrección e informe | 28–30 Jun 2026 | Corregir defectos; reejecución; redactar informe final | 8 h |
 
 **Tiempo total estimado:** ~38 horas de trabajo efectivo.
 
 ---
 
-## 8. Registro de Riesgos de Integración
+## 9. Registro de Riesgos de Integración
 
 | ID | Riesgo | Probabilidad | Impacto | Mitigación |
 |---|---|---|---|---|
-| R-INT-01 | Incompatibilidad de contrato entre frontend y API (campos renombrados o tipos incorrectos) | Alta | Alto | Revisar especificación OpenAPI antes de integrar; usar contratos definidos en la Matriz de Interfaces |
-| R-INT-02 | Servicio OAuth2 de OSM no disponible durante pruebas | Media | Alto | Usar WireMock para simular respuestas OAuth2 en entorno CI |
-| R-INT-03 | Migraciones Alembic con conflictos en rama develop | Media | Alto | Ejecutar `alembic upgrade head` en BD aislada antes de cada sesión de pruebas |
-| R-INT-04 | Diferencias de comportamiento entre entorno local y CI | Media | Medio | Definir variables de entorno idénticas en `.env.test` y en los secrets de GitHub Actions |
-| R-INT-05 | Datos residuales entre casos de prueba generan falsos positivos | Alta | Medio | Ejecutar rollback de BD o seed de datos antes de cada caso INT |
+| R-INT-01 | Incompatibilidad de contrato frontend↔API (campos renombrados o tipos incorrectos) | Alta | Alto | Revisar especificación OpenAPI antes de integrar |
+| R-INT-02 | Servicio OAuth2 de OSM no disponible durante pruebas | Media | Alto | Usar WireMock para simular respuestas OAuth2 en CI |
+| R-INT-03 | Migraciones Alembic con conflictos en rama develop | Media | Alto | Ejecutar `alembic upgrade head` en BD aislada antes de cada sesión |
+| R-INT-04 | Diferencias de comportamiento entre entorno local y CI | Media | Medio | Definir variables de entorno idénticas en `.env.test` y en GitHub Actions |
+| R-INT-05 | Datos residuales entre casos de prueba | Alta | Medio | Ejecutar rollback/seed de BD antes de cada caso INT |
 
 ---
 
-## 9. Criterios de Salida
+## 10. Criterios de Salida
 
 La fase de integración se considera **aprobada** cuando:
 
 - Se ejecuta el **100%** de los casos de prueba (INT-01 a INT-E2E-01).
 - Al menos el **90%** de los casos obtienen resultado satisfactorio.
-- **No existen defectos críticos abiertos** en los flujos: autenticación, bloqueo de tareas y persistencia de estados.
+- **No existen defectos críticos abiertos** en: autenticación, bloqueo de tareas y persistencia de estados.
 - Los resultados de CI/CD muestran checks en verde para los workflows de integración.

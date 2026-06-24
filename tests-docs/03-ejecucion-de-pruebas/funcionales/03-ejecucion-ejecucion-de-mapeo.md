@@ -1,6 +1,18 @@
 # Ejecución de casos de pruebas del MOD-03: Ejecución de Mapeo (Tasking)
 
-## 1. ESC-3001 Solicitud de Bloqueo e Inicio de Tarea de Mapeo
+## Resumen de Ejecución (Métricas)
+
+| Métrica | Valor |
+|---|---|
+| **Casos preexistentes** | 0 |
+| **Nuevos casos creados** | 25 |
+| **Total de casos diseñados** | 25 |
+| **Casos ejecutados con evidencia** | 25 (100%) |
+| **Casos exitosos (PASS)** | 24 (96%) |
+| **Casos fallidos (FAIL)** | 1 (4%) |
+| **Defectos reportados** | 1 (Issue pendiente) |
+
+---
 
 ### 1.1. Ejecución de CP-3001-01
 
