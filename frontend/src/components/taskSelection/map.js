@@ -415,6 +415,7 @@ export const TasksMap = ({
 
     const someResultsReady = mapResults && mapResults.features && mapResults.features.length > 0;
 
+    console.log("MAP VALUE EXACTLY:", map);
     const mapReadyTasksReady =
       map !== null &&
       map.isStyleLoaded() &&

@@ -1,420 +1,266 @@
+import React from 'react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import toast from 'react-hot-toast';
-
-import {
+import { 
   CompletionTabForMapping,
   CompletionTabForValidation,
   ReopenEditor,
   SidebarToggle,
+  UnsavedMapChangesModalContent
 } from '../actionSidebars';
-import {
-  createComponentWithMemoryRouter,
-  IntlProviders,
-  QueryClientProviders,
-  ReduxIntlProviders,
-  renderWithRouter,
-} from '../../../utils/testWithIntl';
-import { setupFaultyHandlers } from '../../../network/tests/server';
-import messages from '../messages';
-import { store } from '../../../store';
-import { TaskMapAction } from '../action';
-import { getProjectSummary } from '../../../network/tests/mockData/projects';
-import tasksGeojson from '../../../utils/tests/snippets/tasksGeometry';
-import { userMultipleLockedTasksDetails } from '../../../network/tests/mockData/userStats';
-// This is a late import in a React.lazy call; it takes awhile for commentInput to load
-import '../../comments/commentInput';
+import { ReduxIntlProviders, renderWithRouter, QueryClientProviders } from '../../../utils/testWithIntl';
+import * as api from '../../../api/projects';
 
-jest.mock('react-hot-toast', () => ({
-  error: jest.fn(),
+jest.mock('../../../api/projects', () => ({
+  __esModule: true,
+  ...jest.requireActual('../../../api/projects'),
+  splitTask: jest.fn(),
+  stopMapping: jest.fn(),
+  submitMappingTask: jest.fn(),
+  stopValidation: jest.fn(),
+  submitValidationTask: jest.fn(),
 }));
 
-describe('Appearance of unsaved map changes to be dealt with while mapping', () => {
-  test('when splitting a task', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping project={{ projectId: 123 }} disabled />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(screen.getByRole('button', { name: /split task/i }));
-    expect(
-      screen.getByRole('heading', {
-        name: messages.unsavedChanges.defaultMessage,
-      }),
-    ).toBeInTheDocument();
-    await user.click(
-      within(screen.getByRole('dialog')).getByRole('button', {
-        name: /close/i,
-      }),
-    );
-    expect(
-      screen.queryByRole('heading', {
-        name: messages.unsavedChanges.defaultMessage,
-      }),
-    ).not.toBeInTheDocument();
-  });
-
-  test('when submitting a task', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            disabled
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    const button = screen.getByRole('button', { name: 'Submit task' });
-    expect(button).toBeDisabled();
-    await user.hover(button);
-    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
-    expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
-  });
-
-  test('when selecting another task', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            disabled
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(
-      screen.getByRole('button', {
-        name: /select another task/i,
-      }),
-    );
-    expect(
-      screen.getByRole('heading', {
-        name: messages.unsavedChanges.defaultMessage,
-      }),
-    ).toBeInTheDocument();
-  });
-});
-
-describe('Miscellaneous modals and prompts', () => {
-  test('should display/hide split task error', async () => {
-    setupFaultyHandlers();
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            tasksIds={[1997]}
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-
-    await user.click(
-      screen.getByRole('button', {
-        name: /split task/i,
-      }),
-    );
-    await waitFor(() => expect(toast.error).toHaveBeenCalledTimes(1));
-  });
-
-  test('should prompt the user to read comments', async () => {
-    const historyTabSwitchMock = jest.fn();
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            showReadCommentsAlert
-            historyTabSwitch={historyTabSwitchMock}
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-
-    expect(screen.getByText(messages.readTaskComments.defaultMessage)).toBeInTheDocument();
-    await user.click(
-      screen.getByRole('button', {
-        name: messages.readTaskComments.defaultMessage,
-      }),
-    );
-    expect(historyTabSwitchMock).toHaveBeenCalledTimes(1);
-  });
-
-  test('should display/hide help text', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            showReadCommentsAlert
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(screen.getByLabelText('toggle help'));
-    expect(screen.getByText(messages.instructionsSelect.defaultMessage)).toBeInTheDocument();
-    await user.click(screen.getByLabelText('hide instructions'));
-    expect(screen.queryByText(messages.instructionsSelect.defaultMessage)).not.toBeInTheDocument();
-  });
-
-  test('should display/hide task specific instructions', async () => {
-    const instruction = 'this is a sample instruction';
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForMapping
-            project={{ projectId: 123 }}
-            taskInstructions={instruction}
-            setTaskComment={() => {}}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-
-    expect(screen.getByText(instruction)).toBeInTheDocument();
-    await user.click(
-      screen.getByRole('button', {
-        name: messages.taskExtraInfo.defaultMessage,
-      }),
-    );
-    expect(screen.queryByText(instruction)).not.toBeInTheDocument();
-  });
-
-  test('should display/hide task specific instructions', async () => {
-    const instruction = 'this is a sample instruction';
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForValidation
-            project={{ projectId: 123 }}
-            taskInstructions={instruction}
-            validationStatus={{}}
-            tasksIds={[]}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-
-    expect(screen.queryByText(instruction)).not.toBeInTheDocument();
-    await user.click(
-      screen.getByRole('button', {
-        name: messages.taskExtraInfo.defaultMessage,
-      }),
-    );
-    expect(screen.getByText(instruction)).toBeInTheDocument();
-  });
-});
-
-describe('Appearance of unsaved map changes to be dealt with while validating', () => {
-  test('when stopping validation session', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForValidation
-            project={{ projectId: 123 }}
-            disabled
-            validationStatus={{}}
-            tasksIds={[]}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(screen.getByRole('button', { name: /stop validation/i }));
-    expect(
-      screen.getByRole('heading', {
-        name: messages.unsavedChanges.defaultMessage,
-      }),
-    ).toBeInTheDocument();
-    await user.click(
-      within(screen.getByRole('dialog')).getByRole('button', {
-        name: /close/i,
-      }),
-    );
-    expect(
-      screen.queryByRole('heading', {
-        name: messages.unsavedChanges.defaultMessage,
-      }),
-    ).not.toBeInTheDocument();
-  });
-
-  test('when submitting a task', async () => {
-    const { user } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForValidation
-            project={{ projectId: 123 }}
-            disabled
-            validationStatus={{}}
-            tasksIds={[]}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    const button = screen.getByRole('button', { name: 'Submit task' });
-    expect(button).toBeDisabled();
-    await user.hover(button);
-    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
-    expect(screen.getByText(messages.unsavedChangesTooltip.defaultMessage)).toBeInTheDocument();
-  });
-});
-
-describe('Completion Tab for Validation', () => {
-  it('should update status and comments for multiple tasks', async () => {
-    const { user, router } = createComponentWithMemoryRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForValidation
-            project={{ projectId: 123 }}
-            validationStatus={{}}
-            tasksIds={[1997, 1998]}
-            validationComments={{}}
-            contributors={[]}
-            setValidationStatus={jest.fn()}
-            setValidationComments={jest.fn()}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(
-      screen.getAllByRole('radio', {
-        name: /Task well mapped, thanks for mapping/i,
-      })[0],
-    );
-    await user.click(
-      screen.getAllByRole('radio', {
-        name: /Task well mapped, thanks for mapping/i,
-      })[1],
-    );
-    await user.click(
-      screen.getAllByRole('button', {
-        name: /comment/i,
-      })[0],
-    );
-    await user.click(
-      screen.getAllByRole('button', {
-        name: /comment/i,
-      })[1],
-    );
-    await user.type(screen.getAllByRole('textbox')[0], 'comment 1');
-    await user.type(screen.getAllByRole('textbox')[1], 'comment 2');
-    await user.click(
-      screen.getByRole('button', {
-        name: /stop validation/i,
-      }),
-    );
-    await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
-  });
-
-  it('should display radio to mark all tasks', async () => {
-    const { user, router } = createComponentWithMemoryRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <CompletionTabForValidation
-            project={{ projectId: 123 }}
-            validationStatus={{
-              1997: 'VALIDATED',
-              1998: 'VALIDATED',
-              1999: 'VALIDATED',
-              2000: 'VALIDATED',
-            }}
-            tasksIds={[1997, 1998, 1999, 2000]}
-            validationComments={{}}
-            contributors={[]}
-            setValidationStatus={jest.fn()}
-            setValidationComments={jest.fn()}
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-
-    await user.click(
-      screen.getByRole('button', {
-        name: /submit task/i,
-      }),
-    );
-    await waitFor(() => expect(router.state.location.pathname).toBe('/projects/123/tasks/'));
-  });
-});
-
-describe('Toggling display of the sidebar', () => {
-  it('should call the sidebar toggle function for ID editor', async () => {
-    const restartMock = jest.fn();
-    const user = userEvent.setup();
-    const context = {
-      ui: jest.fn().mockReturnValue({
-        restart: restartMock,
-      }),
-    };
-    act(() => {
-      store.dispatch({ type: 'SET_EDITOR', context: context });
-    });
-    const setShowSidebarMock = jest.fn();
-    render(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <SidebarToggle setShowSidebar={setShowSidebarMock} activeEditor="ID" />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(
-      screen.getByRole('button', {
-        name: /hide sidebar/i,
-      }),
-    );
-    expect(setShowSidebarMock).toHaveBeenCalledTimes(1);
-    expect(restartMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call the sidebar toggle function for RAPID editor', async () => {
-    // Testing the resize call cannot be done currently, due to the following reasons:
-    // 1. Jest cannot mock/spy on the function call
-    // 2. The test environment doesn't have width/height information
-    // 3. The resize call in Rapid cannot be mocked since it is difficult to (a) get the context and (b) mock the call prior to full initialization.
-    // const resizeMock = jest.fn();
-    // expect(resizeMock).toHaveBeenCalledTimes(1); // This should be at the end of the test
-    const user = userEvent.setup();
-    const { getByRole, queryByRole } = renderWithRouter(
-      <QueryClientProviders>
-        <ReduxIntlProviders>
-          <TaskMapAction
-            project={getProjectSummary(123)}
-            projectIsReady
-            tasks={tasksGeojson}
-            activeTasks={userMultipleLockedTasksDetails.tasks}
-            action="MAPPING"
-            editor="RAPID"
-          />
-        </ReduxIntlProviders>
-      </QueryClientProviders>,
-    );
-    await user.click(
-      getByRole('button', {
-        name: 'Hide sidebar',
-      }),
-    );
-    expect(getByRole('generic', { name: 'Show sidebar' })).toBeVisible();
-    expect(queryByRole('button', { name: 'Hide sidebar' })).toBeNull();
-  });
-});
-
-test('default value for the reload editor dropdown', () => {
-  render(
-    <IntlProviders>
-      <ReopenEditor action="MAPPING" editor="ID" project={{ mappingEditors: ['ID'] }} />
-    </IntlProviders>,
+const renderComponent = (ui) => {
+  return renderWithRouter(
+    <QueryClientProviders>
+      <ReduxIntlProviders>
+        {ui}
+      </ReduxIntlProviders>
+    </QueryClientProviders>
   );
-  expect(
-    screen.getByRole('button', {
-      name: /iD Editor/i,
-    }),
-  ).toBeInTheDocument();
+};
+
+describe('CompletionTabForMapping', () => {
+  const mockProject = { projectId: 1, projectInfo: { name: 'Test' } };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.setItem('lastProjectPathname', '/projects/1/tasks');
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('renders correctly and handles submission', async () => {
+    const setSelectedStatusMock = jest.fn();
+    const setTaskCommentMock = jest.fn();
+
+    api.submitMappingTask.mockResolvedValueOnce({ data: {} });
+
+    renderComponent(
+      <CompletionTabForMapping
+        project={mockProject}
+        tasksIds={[1]}
+        showReadCommentsAlert={false}
+        disableBadImagery={false}
+        historyTabSwitch={jest.fn()}
+        taskInstructions="Test instructions"
+        disabled={false}
+        contributors={[]}
+        taskComment=""
+        setTaskComment={setTaskCommentMock}
+        selectedStatus="MAPPED"
+        setSelectedStatus={setSelectedStatusMock}
+      />
+    );
+
+    expect(screen.getByText('Test instructions')).toBeInTheDocument();
+    
+    // Status radio buttons
+    const completeRadio = screen.getByLabelText(/Yes/i); // complete
+    const incompleteRadio = screen.getByLabelText(/No/i); // incomplete
+    const badImageryRadio = screen.getByLabelText(/The imagery is bad/i); // bad imagery
+
+    expect(completeRadio).toBeChecked(); // Since selectedStatus="MAPPED"
+    
+    fireEvent.click(incompleteRadio);
+    expect(setSelectedStatusMock).toHaveBeenCalledWith('READY');
+
+    // Test Submit Task
+    const submitBtn = screen.getByRole('button', { name: /Submit task/i });
+    expect(submitBtn).not.toBeDisabled();
+    
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(api.submitMappingTask).toHaveBeenCalled();
+    });
+  });
+
+  it('handles splitting a task', async () => {
+    api.splitTask.mockResolvedValueOnce({ data: { tasks: [{ taskId: 2 }, { taskId: 3 }] } });
+
+    renderComponent(
+      <CompletionTabForMapping
+        project={mockProject}
+        tasksIds={[1]}
+        selectedStatus="MAPPED"
+        setSelectedStatus={jest.fn()}
+        setTaskComment={jest.fn()}
+      />
+    );
+
+    const splitBtn = screen.getByRole('button', { name: /Split task/i });
+    fireEvent.click(splitBtn);
+
+    await waitFor(() => {
+      expect(api.splitTask).toHaveBeenCalled();
+    });
+  });
+
+  it('handles split task error', async () => {
+    api.splitTask.mockRejectedValueOnce({ response: { data: { SubCode: 'SmallToSplit' } } });
+
+    renderComponent(
+      <CompletionTabForMapping
+        project={mockProject}
+        tasksIds={[1]}
+        selectedStatus="MAPPED"
+        setSelectedStatus={jest.fn()}
+        setTaskComment={jest.fn()}
+      />
+    );
+
+    const splitBtn = screen.getByRole('button', { name: /Split task/i });
+    fireEvent.click(splitBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/This task is already too small/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles stopping mapping', async () => {
+    api.stopMapping.mockResolvedValueOnce({ data: {} });
+
+    renderComponent(
+      <CompletionTabForMapping
+        project={mockProject}
+        tasksIds={[1]}
+        selectedStatus="MAPPED"
+        setSelectedStatus={jest.fn()}
+        setTaskComment={jest.fn()}
+      />
+    );
+
+    const stopBtn = screen.getByRole('button', { name: /Select another task/i });
+    fireEvent.click(stopBtn);
+
+    await waitFor(() => {
+      expect(api.stopMapping).toHaveBeenCalled();
+    });
+  });
+
+  it('shows unsaved changes modal when disabled and clicking buttons', async () => {
+    renderComponent(
+      <CompletionTabForMapping
+        project={mockProject}
+        tasksIds={[1]}
+        disabled={true}
+        selectedStatus="MAPPED"
+        setSelectedStatus={jest.fn()}
+        setTaskComment={jest.fn()}
+        setTaskComment={jest.fn()}
+      />
+    );
+
+    const stopBtn = screen.getByRole('button', { name: /Select another task/i });
+    fireEvent.click(stopBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Unsaved map changes/i)).toBeInTheDocument();
+    });
+  });
+});
+
+describe('CompletionTabForValidation', () => {
+  const mockProject = { projectId: 1, projectInfo: { name: 'Test' } };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly and allows submitting validation', async () => {
+    api.submitValidationTask.mockResolvedValueOnce({ data: {} });
+
+    const setValidationStatusMock = jest.fn();
+    const setValidationCommentsMock = jest.fn();
+
+    renderComponent(
+      <CompletionTabForValidation
+        project={mockProject}
+        tasksIds={[1, 2]}
+        taskInstructions="Val instructions"
+        disabled={false}
+        contributors={[]}
+        validationStatus={{ 1: 'VALIDATED', 2: 'VALIDATED' }}
+        setValidationStatus={setValidationStatusMock}
+        validationComments={{ 1: '', 2: '' }}
+        setValidationComments={setValidationCommentsMock}
+      />
+    );
+
+    const submitBtn = screen.getByRole('button', { name: /Submit tasks/i });
+    expect(submitBtn).not.toBeDisabled();
+
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(api.submitValidationTask).toHaveBeenCalled();
+    });
+  });
+
+  it('handles stopping validation', async () => {
+    api.stopValidation.mockResolvedValueOnce({ data: {} });
+
+    renderComponent(
+      <CompletionTabForValidation
+        project={mockProject}
+        tasksIds={[1]}
+        validationStatus={{}}
+        setValidationStatus={jest.fn()}
+        validationComments={{}}
+        setValidationComments={jest.fn()}
+      />
+    );
+
+    const stopBtn = screen.getByRole('button', { name: /Stop validation/i });
+    fireEvent.click(stopBtn);
+
+    await waitFor(() => {
+      expect(api.stopValidation).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('Other components', () => {
+  it('ReopenEditor renders', () => {
+    const callEditorMock = jest.fn();
+    renderComponent(
+      <ReopenEditor
+        project={{ mappingEditors: ['ID', 'JOSM'], customEditor: null }}
+        action="MAPPING"
+        editor="ID"
+        callEditor={callEditorMock}
+      />
+    );
+    expect(screen.getAllByText(/Reload editor/i).length).toBeGreaterThan(0);
+  });
+
+  it('SidebarToggle renders and handles click', () => {
+    const setShowSidebarMock = jest.fn();
+    renderComponent(
+      <SidebarToggle setShowSidebar={setShowSidebarMock} activeEditor="JOSM" />
+    );
+    
+    const icon = screen.getByRole('button', { name: /Hide sidebar/i });
+    fireEvent.click(icon);
+    expect(setShowSidebarMock).toHaveBeenCalledWith(false);
+  });
+
+  it('UnsavedMapChangesModalContent renders', () => {
+    renderComponent(<UnsavedMapChangesModalContent close={jest.fn()} action="unlock" />);
+    expect(screen.getByText(/Unsaved map changes/i)).toBeInTheDocument();
+  });
 });

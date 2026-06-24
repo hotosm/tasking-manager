@@ -10,7 +10,16 @@ import {
   formatCustomUrl,
   getImageryInfo,
   formatExtraParams,
+  openEditor,
+  sendJosmCommands,
 } from '../openEditor';
+import * as tasksGeometry from '../tasksGeometry';
+
+jest.mock('../tasksGeometry', () => ({
+  __esModule: true,
+  getCentroidAndZoomFromSelectedTasks: jest.fn(() => ({ center: [1, 2], zoom: 10 })),
+  getSelectedTasksBBox: jest.fn(() => [0, 0, 1, 1]),
+}));
 
 describe('test if getIdUrl', () => {
   it('returns the correct url with locale=pt-BR', () => {
@@ -238,3 +247,78 @@ describe('formatExtraParams', () => {
     ).toBe('&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2');
   });
 });
+
+describe('openEditor main function', () => {
+  beforeEach(() => {
+    global.window.safari = false;
+    global.fetch = jest.fn(() => Promise.resolve({ status: 200 }));
+    tasksGeometry.getCentroidAndZoomFromSelectedTasks.mockReturnValue({ center: [1, 2], zoom: 10 });
+    tasksGeometry.getSelectedTasksBBox.mockReturnValue([0, 0, 1, 1]);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('openEditor handles ID', () => {
+    const res = openEditor('ID', { projectId: 1 }, [1], [1], [100, 100], null);
+    expect(res).toContain('?editor=ID');
+  });
+
+  it('openEditor handles POTLATCH_2', () => {
+    const mockWindow = { location: { href: '' } };
+    const res = openEditor('POTLATCH_2', { projectId: 1 }, [1], [1], [100, 100], mockWindow);
+    expect(mockWindow.location.href).toContain('editor=potlatch2');
+    expect(res).toBe('?editor=POTLATCH_2');
+  });
+
+  it('openEditor handles FIELD_PAPERS', () => {
+    const mockWindow = { location: { href: '' } };
+    const res = openEditor('FIELD_PAPERS', { projectId: 1 }, [1], [1], [100, 100], mockWindow);
+    expect(mockWindow.location.href).toContain('fieldpapers.org');
+    expect(res).toBe('?editor=FIELD_PAPERS');
+  });
+
+  it('openEditor handles CUSTOM', () => {
+    const mockWindow = { location: { href: '' } };
+    const res = openEditor('CUSTOM', { projectId: 1, customEditor: { url: 'http://custom' } }, [1], [1], [100, 100], mockWindow);
+    expect(mockWindow.location.href).toContain('http://custom');
+    expect(res).toBe('?editor=CUSTOM');
+  });
+
+  it('openEditor handles JOSM', () => {
+    const res = openEditor('JOSM', { projectId: 1 }, [1], [1], [100, 100], null);
+    expect(res).toBe('?editor=JOSM');
+    expect(global.fetch).toHaveBeenCalled();
+  });
+});
+
+describe('sendJosmCommands', () => {
+  beforeEach(() => {
+    global.window.safari = false;
+    global.fetch = jest.fn(() => Promise.resolve({ status: 200 }));
+    tasksGeometry.getSelectedTasksBBox.mockReturnValue([0, 0, 1, 1]);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('sends commands to JOSM', async () => {
+    const project = { projectId: 1, imagery: 'tms:http://url', changesetComment: 'test' };
+    await sendJosmCommands(project, [1, 2], [1], [100, 100], [0, 0, 1, 1]);
+    expect(global.fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('handles Safari window fallback for JOSM', async () => {
+    global.window.safari = true;
+    const mockWindow = { close: jest.fn(), closed: false };
+    global.window.open = jest.fn(() => mockWindow);
+    
+    const project = { projectId: 1 };
+    await sendJosmCommands(project, [1], [1], [100, 100], [0, 0, 1, 1]);
+    
+    expect(global.window.open).toHaveBeenCalled();
+  });
+});
+

@@ -12,21 +12,21 @@ import {
 import { server } from '../../network/tests/server';
 import { API_URL } from '../../config';
 
+// Mock safe_storage
+import * as safeStorage from '../../utils/safe_storage';
+
+import * as genericJSONRequest from '../../network/genericJSONRequest';
+
 // Mock AnimatedLoadingIcon (SVG)
 jest.mock('../../components/button', () => ({
   ...jest.requireActual('../../components/button'),
   AnimatedLoadingIcon: () => <span data-testid="loading-icon" />,
 }));
-
-// Mock safe_storage
-import * as safeStorage from '../../utils/safe_storage';
 jest.mock('../../utils/safe_storage', () => ({
   getItem: jest.fn(),
   removeItem: jest.fn(),
   setItem: jest.fn(),
 }));
-
-import * as genericJSONRequest from '../../network/genericJSONRequest';
 
 jest.mock('../../network/genericJSONRequest', () => ({
   fetchLocalJSONAPI: jest.fn(),
