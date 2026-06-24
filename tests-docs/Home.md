@@ -56,3 +56,4 @@ El sistema HOT OSM Tasking Manager define roles de usuario jerárquicos que cond
 - **Windows / Software:** [[entorno pruebas software]]
 
  
+ 

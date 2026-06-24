@@ -106,10 +106,10 @@ jobs:
         run: |
           find wiki-repo/ -maxdepth 1 -name "*.md" | while read mdfile; do
             # Reemplazar rutas (absolutas o relativas) extrayendo solo el nombre del archivo al final
-            sed -i -E 's|src="[^"]*(tests-docs|img)/[^"]*/([^"/]+)"|src="uploads/\2"|g' "$mdfile"
+            sed -i -E 's@src="[^"]*(tests-docs|img)/[^"]*/([^"/]+)"@src="uploads/\2"@g' "$mdfile"
             
             # También cubrir rutas en markdown puro: ![alt](ruta)
-            sed -i -E 's|\([^)]*(tests-docs|img)/[^)]*/([^)/]+)\)|(uploads/\2)|g' "$mdfile"
+            sed -i -E 's@\([^)]*(tests-docs|img)/[^)]*/([^)/]+)\)@(uploads/\2)@g' "$mdfile"
             
             echo "Processed image paths in: $mdfile"
           done
