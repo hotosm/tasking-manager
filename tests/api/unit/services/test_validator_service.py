@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from backend.models.dtos.validator_dto import ValidatedTask
 from backend.services.users.user_service import UserService
+from backend.services.project_admin_service import ProjectAdminService
 from backend.services.validator_service import (
     LockForValidationDTO,
     NotFound,
@@ -217,3 +218,70 @@ class TestValidatorService:
 
         # Assert
         assert user_can_validate_task
+
+    async def test_get_mapped_tasks_by_user_returns_correct_aggregation(self):
+        """Valida la agrupación de tareas mapeadas por usuario en un proyecto."""
+        from tests.api.helpers.test_helpers import create_canned_project
+        proj, user, project_id = await create_canned_project(self.db)
+        
+        # En create_canned_project la tarea 1 está MAPPED (2) por el usuario de prueba
+        result = await ValidatorService.get_mapped_tasks_by_user(project_id, self.db)
+        
+        assert len(result.mapped_tasks) > 0
+        assert result.mapped_tasks[0].username == user.username
+        assert 1 in result.mapped_tasks[0].tasks_mapped
+
+    async def test_invalidate_all_tasks_updates_states_and_counters(self):
+        """Valida la invalidación masiva de todas las tareas validadas del proyecto."""
+        from tests.api.helpers.test_helpers import create_canned_project
+        proj, user, project_id = await create_canned_project(self.db)
+        
+        # En el canned project la tarea 4 está VALIDATED.
+        await ValidatorService.invalidate_all_tasks(project_id, user.id, self.db)
+        
+        # Verificar estado de la tarea 4 (debe ser INVALIDATED = 5)
+        task = await Task.get(4, project_id, self.db)
+        assert task["task_status"] == 5
+        # Verificar contador del proyecto
+        count = await self.db.fetch_val("SELECT tasks_validated FROM projects WHERE id = :id", {"id": project_id})
+        assert count == 0
+
+    async def test_validate_all_tasks_updates_states_and_counters(self):
+        """Valida la validación masiva de todas las tareas mapeadas del proyecto."""
+        from tests.api.helpers.test_helpers import create_canned_project
+        proj, user, project_id = await create_canned_project(self.db)
+        
+        # En el canned project la tarea 1 está MAPPED.
+        await ValidatorService.validate_all_tasks(project_id, user.id, self.db)
+        
+        # Verificar estado de la tarea 1 (debe ser VALIDATED = 4)
+        task = await Task.get(1, project_id, self.db)
+        assert task["task_status"] == 4
+        # Verificar que el contador de mapeadas bajó a 0
+        count = await self.db.fetch_val("SELECT tasks_mapped FROM projects WHERE id = :id", {"id": project_id})
+        assert count == 0
+
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    async def test_revert_user_tasks_checks_permissions(self, mock_permitted):
+        """Valida que la reversión de tareas verifique permisos de administrador/autor."""
+        from backend.models.dtos.validator_dto import RevertUserTasksDTO
+        mock_permitted.return_value = False
+        
+        dto = RevertUserTasksDTO(projectId=1, userId=123, actionBy=456, action="VALIDATED")
+        
+        with pytest.raises(ValidatorServiceError, match="UserActionNotPermitted"):
+            await ValidatorService.revert_user_tasks(dto, self.db)
+
+    async def test_get_task_mapping_issues_filters_zero_counts(self):
+        """Valida que solo se mapeen problemas de mapeo con conteos mayores a cero."""
+        from backend.models.dtos.validator_dto import ValidationMappingIssue
+        issues_dto = [
+            ValidationMappingIssue(mappingIssueCategoryId=1, issue="Problem", count=5),
+            ValidationMappingIssue(mappingIssueCategoryId=2, issue="None", count=0)
+        ]
+        task_data = {"issues": issues_dto}
+        
+        result = await ValidatorService.get_task_mapping_issues(task_data)
+        
+        assert len(result) == 1
+        assert result[0].count == 5
