@@ -1,103 +1,154 @@
 # Plan de Pruebas de Integración
 
 **Proyecto:** HOT OSM Tasking Manager  
-**Fase:** Sprint 2 - Integración  
-**Tipo de estrategia:** Integración incremental híbrida  
+**Equipo:** Escarabajo Rinoceronte  
+**Fase:** Sprint 2 — Hito 2  
+**Versión:** 2.0  
+**Fecha:** Junio 2026  
 
-## 1. Objetivo y alcance
+---
 
-Validar el flujo de información entre los ámbitos funcionales seleccionados: autenticación y perfil, exploración de proyectos, ejecución de mapeo, validación, administración de proyectos, gobernanza de organizaciones y equipos, y comunicación y notificaciones.
+## 1. Objetivo y Alcance
 
-Quedan fuera de alcance Django, Tauri y los servicios RENIEC/SUNAT, debido a que no forman parte de la arquitectura revisada.
+### 1.1 Objetivo
 
-## 2. Estrategia de integración
+Validar la comunicación e interoperabilidad entre los componentes del sistema HOT OSM Tasking Manager, verificando que los contratos de interfaz (endpoints, DTOs, formatos de request/response) se cumplan correctamente cuando los módulos operan de forma conjunta.
 
-Se aplicará una estrategia **incremental híbrida**, porque la integración avanzará en dos líneas paralelas antes de unir el sistema completo:
+### 1.2 Alcance
 
-- **Línea técnica:** base de datos, Backend/API y servicios externos. Permite comprobar primero la persistencia, los contratos HTTP y las dependencias externas.
-- **Línea funcional:** autenticación, proyectos, tareas y mapas, mapeo y validación. Permite verificar que cada flujo utilice correctamente los componentes ya integrados.
+**Incluido en este plan:**
 
-Ambas líneas se unirán en las pruebas End-to-End. Este enfoque es adecuado para el repositorio porque sus operaciones funcionales dependen de FastAPI y PostgreSQL/PostGIS, mientras que algunos flujos también requieren servicios externos. La ejecución por incrementos facilita identificar si un defecto pertenece a la infraestructura, a la API o al flujo funcional.
+| Punto de integración | Componente origen | Componente destino | Protocolo |
+|---|---|---|---|
+| INT-IF-01 | Frontend (React/Axios) | Backend API (FastAPI) | HTTP REST / JSON |
+| INT-IF-02 | Backend API (FastAPI) | Base de datos (PostgreSQL/PostGIS) | SQL / ORM (SQLAlchemy) |
+| INT-IF-03 | Backend API (FastAPI) | Servicio OpenStreetMap (OAuth2) | HTTPS / OAuth2 |
+| INT-IF-04 | Backend API (FastAPI) | Sistema de notificaciones interno | Eventos internos / BD |
 
-## 3. Diagrama de integración funcional
+**Excluido de este plan:**
+- Lógica interna de cada módulo por separado (cubierta en pruebas unitarias).
+- Servicios RENIEC/SUNAT, Django legacy y Tauri (fuera de arquitectura activa).
+- Despliegue en producción.
 
-El diagrama muestra las dos líneas de integración y el punto donde convergen para las pruebas completas.
+---
 
-```mermaid
-flowchart TD
-    A["Componentes técnicos"]
-    B["Base de datos"]
-    C["Backend/API"]
-    D["Servicios externos"]
+## 2. Estrategia de Integración
 
-    E["Flujo funcional"]
-    F["Autenticación"]
-    G["Proyectos"]
-    H["Tareas y mapas"]
-    I["Mapeo y validación"]
+Se aplica una estrategia **Bottom-Up con franja Sandwich**, con el siguiente orden:
 
-    J["Integración completa"]
-    K["Pruebas End-to-End"]
-    L["Corrección y revalidación"]
-
-    A --> B
-    B --> C
-    C --> D
-
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-
-    D --> J
-    I --> J
-    J --> K
-    K --> L
+```
+Nivel 1 (base): PostgreSQL/PostGIS + Alembic (persistencia)
+      ↓
+Nivel 2:        Backend FastAPI + Servicios de negocio (API REST)
+      ↓
+Nivel 3:        Frontend React + Axios (consumo de API)
+      ↓
+Nivel 4 (top):  Flujos E2E completos (autenticar → mapear → validar)
 ```
 
-## 4. Entorno y recursos
+**Justificación:** Se integra desde la capa más estable (BD) hacia arriba. En cada nivel, los componentes del nivel inferior ya fueron validados, lo que permite aislar defectos en el nivel que se está integrando.
+
+**Stubs y Drivers:**
+
+| Etapa | Qué se simula | Herramienta |
+|---|---|---|
+| Nivel 2 (sin frontend listo) | Peticiones HTTP al API | Postman / pytest + httpx |
+| Nivel 3 (con API externa no disponible) | Respuesta OAuth2 de OSM | WireMock / pytest monkeypatch |
+| Nivel 4 | N/A — todos los componentes reales | Docker Compose completo |
+
+---
+
+## 3. Criterios de Entrada
+
+Antes de iniciar las pruebas de integración, se deben cumplir:
+
+- [ ] Las pruebas unitarias del backend superan el **85% de cobertura** en los módulos de autenticación, proyectos y tareas.
+- [ ] Las pruebas unitarias del frontend superan el **85% de cobertura**.
+- [ ] El entorno Docker Compose levanta correctamente con `docker compose up` sin errores.
+- [ ] Las migraciones Alembic se aplican hasta `head` sin conflictos.
+- [ ] Los endpoints documentados en el README del backend responden en el entorno local.
+
+---
+
+## 4. Matriz de Interfaces
+
+| ID | Módulo Origen | Módulo Destino | Operación | Endpoint / Contrato | Dato enviado | Respuesta esperada |
+|---|---|---|---|---|---|---|
+| INT-IF-01a | Frontend | API | Login con OSM | `POST /api/v2/auth/callback/` | `{ code, state }` | `{ token, user }` — HTTP 200 |
+| INT-IF-01b | Frontend | API | Listar proyectos | `GET /api/v2/projects/` | Query params (filtros) | Array de proyectos — HTTP 200 |
+| INT-IF-01c | Frontend | API | Bloquear tarea | `POST /api/v2/projects/{id}/tasks/actions/lock-for-mapping/{taskId}/` | Token JWT | `{ taskId, status: LOCKED }` — HTTP 200 |
+| INT-IF-01d | Frontend | API | Marcar tarea mapeada | `POST /api/v2/projects/{id}/tasks/actions/unlock-after-mapping/{taskId}/` | `{ status: MAPPED, comment }` | HTTP 200 |
+| INT-IF-02a | API | BD | Persistir estado de tarea | SQL UPDATE tasks | Estado + user_id | Confirmación de transacción |
+| INT-IF-02b | API | BD | Consultar historial | SQL SELECT task_history | task_id | Lista de eventos |
+| INT-IF-03a | API | OSM OAuth2 | Validar token de usuario | `GET https://www.openstreetmap.org/api/0.6/user/details` | Bearer token | Datos del usuario OSM |
+| INT-IF-04a | API | Notificaciones | Crear notificación al validar | Evento interno | user_id + message | Registro en tabla notifications |
+
+---
+
+## 5. Casos de Prueba de Integración
+
+| ID | Punto de integración | Precondición | Acción | Resultado esperado | Tiempo estimado |
+|---|---|---|---|---|---|
+| INT-01 | Frontend → API → BD | Usuario autenticado con nivel BEGINNER | `GET /api/v2/projects/` con filtro `mappingTypes=ROADS` | Lista proyectos filtrados; solo aparecen los accesibles para el nivel | 15 min |
+| INT-02 | Frontend → API → BD | Usuario MANAGER de una organización | Crear proyecto vía formulario frontend | Proyecto guardado en BD con status DRAFT; response HTTP 201 con project_id | 20 min |
+| INT-03 | Frontend → API → BD | Proyecto publicado con tareas en READY | `POST lock-for-mapping/{taskId}` | Tarea cambia a LOCKED_FOR_MAPPING en BD; frontend muestra candado | 15 min |
+| INT-04 | Frontend → API → BD | Tarea en LOCKED_FOR_MAPPING por usuario actual | `POST unlock-after-mapping` con `status: MAPPED` | Tarea pasa a MAPPED en BD; historial registra el evento con timestamp | 15 min |
+| INT-05 | Frontend → API → BD | Tarea MAPPED; usuario con nivel VALIDATOR | `POST lock-for-validation/{taskId}` | Tarea cambia a LOCKED_FOR_VALIDATION; solo el validador puede operar | 15 min |
+| INT-06 | Frontend → API → BD | Tarea en validación | `POST unlock-after-validation` con `status: INVALIDATED` | Tarea regresa a READY; comentario de invalidación se preserva en historial | 20 min |
+| INT-07 | API → Notificaciones → BD | Tarea marcada como VALIDATED | Sistema genera notificación automática al mapper | Registro en tabla notifications con user_id correcto y mensaje esperado | 10 min |
+| INT-08 | API → OSM OAuth2 | Token OAuth2 expirado | Intento de acción autenticada | API responde HTTP 401; frontend redirige a login | 10 min |
+| INT-E2E-01 | Todos los componentes | Usuario nuevo sin proyectos | Flujo completo: login → explorar → bloquear → mapear → validar | Cada transición de estado persiste correctamente; permisos se aplican en cada paso | 45 min |
+
+---
+
+## 6. Entorno y Recursos
 
 | Recurso | Configuración |
 |---|---|
-| Orquestación | Docker Compose y red `tm-net` |
-| Backend | FastAPI, Python y pytest |
-| Frontend | React, Axios y pruebas del proyecto |
-| Base de datos | PostgreSQL/PostGIS exclusiva de pruebas |
-| Migraciones | Alembic hasta la revisión `head` |
-| Entrada HTTP | Traefik; frontend en `/` y API en `/api/` |
-| Automatización | GitHub Actions para pruebas unitarias e integración |
-| Evidencias | Logs, respuestas JSON, capturas UI y resultados CI |
+| Orquestación | Docker Compose (`docker-compose.yml`) + red `tm-net` |
+| Backend | FastAPI, Python 3.x, pytest + httpx |
+| Frontend | React, Axios, Vitest |
+| Base de datos | PostgreSQL/PostGIS — instancia exclusiva de pruebas |
+| Migraciones | Alembic hasta revisión `head` |
+| Entrada HTTP | Traefik: frontend en `/` y API en `/api/` |
+| Simulación servicios externos | WireMock o pytest `monkeypatch` para OAuth2 OSM |
+| Automatización CI | GitHub Actions (`.github/workflows/`) |
+| Evidencias | Logs Docker, responses JSON, capturas de pantalla, resultados CI |
 
-## 5. Casos prioritarios
+---
 
-| ID | Ámbitos integrados | Resultado esperado |
-|---|---|---|
-| INT-01 | Autenticación y exploración | El usuario autenticado visualiza proyectos según su nivel y permisos. |
-| INT-02 | Gobernanza y administración | Los miembros autorizados administran proyectos de su organización o equipo. |
-| INT-03 | Administración + exploración | Un proyecto publicado aparece con sus datos y filtros correctos. |
-| INT-04 | Exploración y mapeo | La tarea seleccionada se bloquea y se asigna al usuario correspondiente. |
-| INT-05 | Mapeo y validación | Una tarea mapeada pasa a revisión y solo admite transiciones válidas. |
-| INT-06 | Validación y mapeo | Una tarea invalidada vuelve al flujo de corrección conservando comentarios. |
-| INT-07 | Proyectos/tareas y comunicación | Los cambios relevantes generan la notificación o actividad esperada. |
-| INT-E2E-01 | Todos los ámbitos | Autenticar, explorar, mapear, validar y notificar mantiene permisos, datos y estados consistentes. |
+## 7. Cronograma
 
-## 6. Cronograma
+| Fase | Fechas | Actividad | Tiempo estimado total |
+|---|---|---|---|
+| 1 — Infraestructura | 12–15 Jun 2026 | Levantar Docker Compose; aplicar migraciones Alembic; validar conectividad BD | 6 h |
+| 2 — API y Servicios | 16–18 Jun 2026 | Probar endpoints con Postman/pytest; validar contratos INT-IF-02a/b | 8 h |
+| 3 — Frontend↔API | 19–21 Jun 2026 | INT-01 a INT-04; validar flujo autenticar → bloquear → mapear | 6 h |
+| 4 — Servicios externos | 22–24 Jun 2026 | INT-08 (OAuth2 expirado); simular fallos con monkeypatch | 4 h |
+| 5 — E2E | 25–27 Jun 2026 | INT-E2E-01; flujo completo de extremo a extremo | 6 h |
+| 6 — Corrección e informe | 28–30 Jun 2026 | Corregir defectos encontrados; reejecución; redactar informe final | 8 h |
 
-| Fase | Fechas | Actividad |
-|---|---|---|
-| 1 | 12-15/06/2026 | PostGIS, Alembic y persistencia |
-| 2 | 16-18/06/2026 | Servicios de negocio y API |
-| 3 | 19-21/06/2026 | React, Axios, autenticación y API |
-| 4 | 22-24/06/2026 | Servicios externos y tolerancia a fallos |
-| 5 | 25-27/06/2026 | Flujos E2E críticos |
-| 6 | 28-30/06/2026 | Corrección, reejecución e informe |
+**Tiempo total estimado:** ~38 horas de trabajo efectivo.
 
-## 7. Lineamientos y criterios de salida
+---
 
-- Ejecutar las pruebas sobre una base aislada; nunca sobre producción.
-- Usar mocks para servicios externos en CI y pruebas reales controladas en staging.
-- Registrar defectos en GitHub Issues con pasos, payload, respuesta, severidad y evidencia.
-- Integrar cambios mediante Pull Request y exigir aprobación de los checks.
-- Restablecer los datos de prueba para evitar dependencia entre casos.
+## 8. Registro de Riesgos de Integración
 
-La fase será aprobada cuando se ejecute el 100 % de los casos prioritarios, se alcance al menos un 95 % de resultados satisfactorios y no existan defectos críticos abiertos en autenticación, creación de proyectos, bloqueo de tareas o persistencia.
+| ID | Riesgo | Probabilidad | Impacto | Mitigación |
+|---|---|---|---|---|
+| R-INT-01 | Incompatibilidad de contrato entre frontend y API (campos renombrados o tipos incorrectos) | Alta | Alto | Revisar especificación OpenAPI antes de integrar; usar contratos definidos en la Matriz de Interfaces |
+| R-INT-02 | Servicio OAuth2 de OSM no disponible durante pruebas | Media | Alto | Usar WireMock para simular respuestas OAuth2 en entorno CI |
+| R-INT-03 | Migraciones Alembic con conflictos en rama develop | Media | Alto | Ejecutar `alembic upgrade head` en BD aislada antes de cada sesión de pruebas |
+| R-INT-04 | Diferencias de comportamiento entre entorno local y CI | Media | Medio | Definir variables de entorno idénticas en `.env.test` y en los secrets de GitHub Actions |
+| R-INT-05 | Datos residuales entre casos de prueba generan falsos positivos | Alta | Medio | Ejecutar rollback de BD o seed de datos antes de cada caso INT |
+
+---
+
+## 9. Criterios de Salida
+
+La fase de integración se considera **aprobada** cuando:
+
+- Se ejecuta el **100%** de los casos de prueba (INT-01 a INT-E2E-01).
+- Al menos el **90%** de los casos obtienen resultado satisfactorio.
+- **No existen defectos críticos abiertos** en los flujos: autenticación, bloqueo de tareas y persistencia de estados.
+- Los resultados de CI/CD muestran checks en verde para los workflows de integración.
