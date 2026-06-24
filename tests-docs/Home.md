@@ -54,3 +54,4 @@ El sistema HOT OSM Tasking Manager define roles de usuario jerárquicos que cond
 
 - **Linux (Docker):** [[entorno pruebas linux]]  
 - **Windows / Software:** [[entorno pruebas software]]
+
