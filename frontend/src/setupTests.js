@@ -5,16 +5,33 @@ import { server } from './network/tests/server.js';
 
 // Used from https://github.com/mapbox/mapbox-gl-js/issues/3436#issuecomment-485535598
 jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
-  GeolocateControl: jest.fn(),
-  Map: jest.fn(() => ({
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
-    remove: jest.fn(),
-  })),
-  NavigationControl: jest.fn(),
+  GeolocateControl: class {},
+  Map: class {
+    addControl() { return this; }
+    addSource() {}
+    getSource() { return { setData: jest.fn() }; }
+    on() { return this; }
+    off() {}
+    remove() {}
+  },
+  NavigationControl: class {},
+  AttributionControl: class {},
+  supported: jest.fn(),
+  getRTLTextPluginStatus: jest.fn(),
+}));
+
+jest.mock('maplibre-gl', () => ({
+  GeolocateControl: class {},
+  Map: class {
+    addControl() { return this; }
+    addSource() {}
+    getSource() { return { setData: jest.fn() }; }
+    on() { return this; }
+    off() {}
+    remove() {}
+  },
+  NavigationControl: class {},
+  AttributionControl: class {},
   supported: jest.fn(),
   getRTLTextPluginStatus: jest.fn(),
 }));

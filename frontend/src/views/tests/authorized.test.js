@@ -19,29 +19,38 @@ jest.mock('../../components/button', () => ({
 }));
 
 // Mock safe_storage
+import * as safeStorage from '../../utils/safe_storage';
 jest.mock('../../utils/safe_storage', () => ({
-  getItem: jest.fn((key) => {
-    if (key === 'osm_oauth_state') return 'test_state';
-    if (key === 'osm_oauth_redirect_to') return '/contributions';
-    return null;
-  }),
+  getItem: jest.fn(),
   removeItem: jest.fn(),
   setItem: jest.fn(),
 }));
 
-// Mock fetchLocalJSONAPI
+import * as genericJSONRequest from '../../network/genericJSONRequest';
+
 jest.mock('../../network/genericJSONRequest', () => ({
-  fetchLocalJSONAPI: jest.fn(() =>
-    Promise.resolve({
-      username: 'testuser',
-      session: { access_token: 'token123' },
-      session_token: 'session_xyz',
-      picture: 'https://example.com/avatar.png',
-    }),
-  ),
+  fetchLocalJSONAPI: jest.fn(),
 }));
 
 describe('Authorized view', () => {
+  beforeEach(() => {
+    safeStorage.getItem.mockImplementation((key) => {
+      if (key === 'osm_oauth_state') return 'test_state';
+      if (key === 'osm_oauth_redirect_to') return '/contributions';
+      return null;
+    });
+
+    genericJSONRequest.fetchLocalJSONAPI.mockImplementation(() =>
+      Promise.resolve({
+        username: 'testuser',
+        session: { access_token: 'token123' },
+        session_token: 'session_xyz',
+        picture: 'https://example.com/avatar.png',
+        id: 1,
+      })
+    );
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
     // Reset store
@@ -56,7 +65,7 @@ describe('Authorized view', () => {
         <ReduxIntlProviders>
           <Authorized />
         </ReduxIntlProviders>,
-        { route: '/authorized', entryRoute: '/authorized?username=testuser&session_token=abc&osm_oauth_token=tok&redirect_to=/welcome' },
+        { route: '/authorized', entryRoute: '/authorized?code=123&state=test_state' },
       );
       expect(screen.getByTestId('loading-icon')).toBeInTheDocument();
     });
@@ -66,7 +75,7 @@ describe('Authorized view', () => {
         <ReduxIntlProviders>
           <Authorized />
         </ReduxIntlProviders>,
-        { route: '/authorized', entryRoute: '/authorized?username=testuser&session_token=abc&osm_oauth_token=tok&redirect_to=/welcome' },
+        { route: '/authorized', entryRoute: '/authorized?code=123&state=test_state' },
       );
       expect(screen.getByRole('heading', { name: /redirecting/i })).toBeInTheDocument();
     });
@@ -91,6 +100,7 @@ describe('Authorized view', () => {
     });
 
     it('redirige a /welcome cuando redirect_to es /', async () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch');
       createComponentWithMemoryRouter(
         <ReduxIntlProviders>
           <Authorized />
@@ -101,12 +111,12 @@ describe('Authorized view', () => {
         },
       );
       await waitFor(() => {
-        // Navigate is called, component renders loading state
-        expect(screen.getByRole('heading', { name: /redirecting/i })).toBeInTheDocument();
+        expect(dispatchSpy).toHaveBeenCalled();
       });
     });
 
     it('redirige a la URL proporcionada cuando redirect_to tiene valor', async () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch');
       createComponentWithMemoryRouter(
         <ReduxIntlProviders>
           <Authorized />
@@ -118,7 +128,7 @@ describe('Authorized view', () => {
         },
       );
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /redirecting/i })).toBeInTheDocument();
+        expect(dispatchSpy).toHaveBeenCalled();
       });
     });
   });
@@ -131,7 +141,7 @@ describe('Authorized view', () => {
         </ReduxIntlProviders>,
         {
           route: '/authorized',
-          entryRoute: '/authorized?username=u&session_token=s&osm_oauth_token=o',
+          entryRoute: '/authorized?code=123&state=test_state',
         },
       );
       await waitFor(() => {
