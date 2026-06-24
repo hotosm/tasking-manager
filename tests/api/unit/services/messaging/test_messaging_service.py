@@ -106,3 +106,84 @@ class TestMessagingService:
         # Assert
         message_type = list(map(int, list(MESSAGE_TYPES.split(","))))
         mock_mark_all_messages_read.assert_called_with(1, self.db, message_type)
+
+    async def test_send_welcome_message_persists_system_message(self):
+        """Valida que el mensaje de bienvenida se guarde en la tabla de mensajes."""
+        from tests.api.helpers.test_helpers import create_canned_user
+        user = await create_canned_user(self.db)
+        
+        await MessageService.send_welcome_message(user, self.db)
+        
+        count = await self.db.fetch_val(
+            "SELECT COUNT(*) FROM messages WHERE to_user_id = :uid AND message_type = 1",
+            {"uid": user.id}
+        )
+        assert count == 1
+
+    async def test_has_user_new_messages_returns_correct_counts(self):
+        """Valida la detección de mensajes no leídos para un usuario."""
+        from tests.api.helpers.test_helpers import create_canned_user
+        user = await create_canned_user(self.db, id=555, username="count_test")
+        # Insertar notificación manual
+        await self.db.execute(
+            "INSERT INTO notifications (user_id, unread_count, date) VALUES (:uid, 5, CURRENT_TIMESTAMP)",
+            {"uid": user.id}
+        )
+        # Insertar mensaje no leído manual
+        await self.db.execute(
+            "INSERT INTO messages (message, subject, to_user_id, read, date) VALUES ('m', 's', :uid, false, CURRENT_TIMESTAMP)",
+            {"uid": user.id}
+        )
+        
+        result = await MessageService.has_user_new_messages(user.id, self.db)
+        assert result["newMessages"] is True
+        assert result["unread"] >= 1
+
+    async def test_resend_email_validation_raises_error_if_no_email(self):
+        """Valida que falle el reenvío de verificación si el usuario no tiene email configurado."""
+        from tests.api.helpers.test_helpers import create_canned_user
+        user = await create_canned_user(self.db, id=444, username="no_email")
+        # Forzar email null
+        await self.db.execute("UPDATE users SET email_address = NULL WHERE id = 444")
+        
+        with pytest.raises(ValueError, match="EmailNotSet"):
+            await MessageService.resend_email_validation(user.id, self.db)
+
+    async def test_parse_message_for_username_extracts_correct_handles(self):
+        """Valida el regex que identifica menciones en comentarios o chat."""
+        comment = "Hi @test_user and [another_user]"
+        # Simular que no hay menciones masivas (mappers, managers) para simplificar
+        with patch.object(MessageService, "_parse_message_for_bulk_mentions", return_value=[]):
+            usernames = await MessageService._parse_message_for_username(comment, 1, 1, self.db)
+            
+            assert "test_user" in usernames
+            assert "another_user" in usernames
+            assert len(usernames) == 2
+
+    async def test_send_message_after_validation_ignores_self_validation(self):
+        """Valida que no se envíe notificación si el validador es el mismo mapeador."""
+        # Mismo ID para ambos roles
+        await MessageService.send_message_after_validation(4, 100, 100, 1, 1, self.db)
+        
+        count = await self.db.fetch_val("SELECT COUNT(*) FROM messages WHERE to_user_id = 100")
+        assert count == 0
+
+    @patch("backend.services.messaging.message_service.SMTPService.send_email_alert", new_callable=AsyncMock)
+    async def test_push_messages_checks_user_preferences(self, mock_email):
+        """Valida que se respeten las preferencias de notificación del usuario."""
+        from tests.api.helpers.test_helpers import create_canned_user
+        from backend.models.postgis.message import Message
+        
+        user = await create_canned_user(self.db, id=111, username="pref_test")
+        # Desactivar notificaciones de menciones
+        await self.db.execute("UPDATE users SET mentions_notifications = False WHERE id = 111")
+        
+        msg = Message()
+        msg.message_type = 3 # MENTION_NOTIFICATION
+        msg.to_user_id = user.id
+        
+        # Act
+        await MessageService._push_messages([{"message": msg, "user": user, "project_name": "P1"}], self.db)
+        
+        # Assert: No se debió llamar al servicio de email
+        assert mock_email.called is False
