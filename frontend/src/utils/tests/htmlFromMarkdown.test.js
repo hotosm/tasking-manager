@@ -2,6 +2,7 @@ import { htmlFromMarkdown, formatUserNamesToLink } from '../htmlFromMarkdown';
 
 test('htmlFromMarkdown returns correct content', () => {
   const imgHtml = htmlFromMarkdown('![test](https://a.co/img.jpg)').__html;
+  expect(imgHtml).toContain('<p>');
   expect(imgHtml).toContain('<img');
   expect(imgHtml).toContain('src="https://a.co/img.jpg"');
   expect(imgHtml).toContain('alt="test"');

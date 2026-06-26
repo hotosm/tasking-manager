@@ -132,10 +132,14 @@
     "source-map-explorer": "^2.5.3"
   },
   "resolutions": {
-    "dom-accessibility-api": "0.5.14"
+    "dom-accessibility-api": "0.5.14",
+    "@xmldom/xmldom": "^0.8.13",
+    "cookie": "^0.7.0"
   },
   "overrides": {
-    "dom-accessibility-api": "0.5.14"
+    "dom-accessibility-api": "0.5.14",
+    "@xmldom/xmldom": "^0.8.13",
+    "cookie": "^0.7.0"
   },
   "jest": {
     "coverageReporters": [

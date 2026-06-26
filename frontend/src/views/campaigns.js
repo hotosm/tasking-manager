@@ -165,7 +165,7 @@ export function EditCampaign({ id: campaignId }) {
         />
         <CampaignError error={nameError} />
         <div className="h1"></div>
-        <MessageContributors campaignId={campaign.id} />
+        {!loading && campaign.id && <MessageContributors campaignId={campaign.id} />}
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects
