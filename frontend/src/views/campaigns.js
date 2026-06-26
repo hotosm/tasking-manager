@@ -151,7 +151,9 @@ export function EditCampaign({ id: campaignId }) {
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
           <FormattedMessage {...messages.manageCampaign} />
         </h3>
-        <DeleteModal id={campaign.id} name={campaign.name} type="campaigns" />
+        {!loading && campaign.id && (
+          <DeleteModal id={campaign.id} name={campaign.name} type="campaigns" />
+        )}
       </div>
       <div className="w-40-l w-100 mt4 fl">
         <CampaignForm
@@ -163,7 +165,7 @@ export function EditCampaign({ id: campaignId }) {
         />
         <CampaignError error={nameError} />
         <div className="h1"></div>
-        <MessageContributors campaignId={campaign.id} />
+        {!loading && campaign.id && <MessageContributors campaignId={campaign.id} />}
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects

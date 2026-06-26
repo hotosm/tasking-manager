@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { featureCollection } from '@turf/helpers';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -74,8 +75,7 @@ const NavButtons = (props) => {
 
         break;
       case 2: // Set Task grid.
-        const taskGrid = props.mapObj.map.getSource('grid')._data;
-        props.updateMetadata({ ...props.metadata, taskGrid: taskGrid, tempTaskGrid: taskGrid });
+        props.updateMetadata({ ...props.metadata, tempTaskGrid: props.metadata.taskGrid });
         break;
       case 3: // Trim Project.
         break;
@@ -123,6 +123,30 @@ const NavButtons = (props) => {
       )}
     </div>
   );
+};
+
+NavButtons.propTypes = {
+  index: PropTypes.number,
+  metadata: PropTypes.shape({
+    area: PropTypes.number,
+    arbitraryTasks: PropTypes.bool,
+    taskGrid: PropTypes.object,
+    tempTaskGrid: PropTypes.object,
+    geom: PropTypes.object,
+    tasksNumber: PropTypes.number,
+  }),
+  updateMetadata: PropTypes.func,
+  mapObj: PropTypes.shape({
+    map: PropTypes.object,
+    draw: PropTypes.object,
+  }),
+  setStep: PropTypes.func,
+  setErr: PropTypes.func,
+  maxArea: PropTypes.number,
+  handleCreate: PropTypes.func,
+  cloneProjectData: PropTypes.shape({
+    name: PropTypes.string,
+  }),
 };
 
 export default NavButtons;

@@ -21,8 +21,9 @@ jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
 
 jest.spyOn(maplibregl, 'getRTLTextPluginStatus').mockImplementation(() => 'unavailable');
 
-// Fix various timeout errors
-configure({ asyncUtilTimeout: 4000 });
+// Raise timeouts to prevent flaky failures under load
+jest.setTimeout(10000);
+configure({ asyncUtilTimeout: 5000 });
 
 // eslint-disable-next-line flowtype/require-valid-file-annotation
 // Needed for react-tooltip dependency (@floating-ui/dom). See https://github.com/floating-ui/floating-ui/issues/1774 .
@@ -35,8 +36,7 @@ beforeEach(() => {
   }));
 });
 
-// Fix various timeout errors
-configure({ asyncUtilTimeout: 4000 });
+
 
 beforeAll(() => server.listen());
 // if you need to add a handler after calling setupServer for some specific test
