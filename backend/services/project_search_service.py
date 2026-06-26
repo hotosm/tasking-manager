@@ -127,6 +127,7 @@ class ProjectSearchService:
             WHERE p.geometry IS NOT NULL
             """
 
+        count_base = "SELECT COUNT(*) FROM projects p WHERE p.geometry IS NOT NULL"
         filters = []
         params = {}
         if user is None:
@@ -173,9 +174,11 @@ class ProjectSearchService:
                     filters.append("p.private = :private")
                     params["private"] = False
         if filters:
-            query += " AND (" + " AND ".join(filters) + ")"
+            auth_clause = " AND (" + " AND ".join(filters) + ")"
+            query += auth_clause
+            count_base += auth_clause
 
-        return query, params
+        return query, count_base, params
 
     @staticmethod
     async def create_result_dto(
@@ -438,7 +441,7 @@ class ProjectSearchService:
     async def _filter_projects(
         search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
     ):
-        base_query, params = await ProjectSearchService.create_search_query(
+        base_query, count_base, params = await ProjectSearchService.create_search_query(
             db, user, as_csv
         )
         # Initialize filter list and parameters dictionary
@@ -460,8 +463,8 @@ class ProjectSearchService:
 
                 subquery_filters.append(
                     """
-                    text_searchable @@ to_tsquery('english', :tsquery_search)
-                    OR name ILIKE :text_search
+                    (text_searchable @@ to_tsquery('english', :tsquery_search)
+                    OR name ILIKE :text_search)
                     """
                 )
                 params["tsquery_search"] = tsquery_search
@@ -756,11 +759,9 @@ class ProjectSearchService:
             if order_by not in ("id", "p.id"):
                 order_by_clause += ", p.id DESC"
 
-        if filters:
-            sql_query = base_query + " AND " + " AND ".join(filters)
-        else:
-            sql_query = base_query
-        sql_query += order_by_clause
+        filter_clause = " AND " + " AND ".join(filters) if filters else ""
+        sql_query = base_query + filter_clause + order_by_clause
+        count_query = count_base + filter_clause
 
         page = search_dto.page
         per_page = 14
@@ -776,7 +777,6 @@ class ProjectSearchService:
             total_count = len(all_results)
             paginated_results = all_results[offset : offset + per_page]
         else:
-            count_query = f"SELECT COUNT(*) FROM ({sql_query}) as counted"
             total_count = await db.fetch_val(count_query, values=params)
             paginated_query = f"{sql_query} LIMIT {per_page} OFFSET {offset}"
             paginated_results = await db.fetch_all(paginated_query, values=params)

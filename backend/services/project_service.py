@@ -653,7 +653,7 @@ class ProjectService:
         """Fetch featured projects and return results."""
 
         # Create the search query
-        query, params = await ProjectSearchService.create_search_query(db)
+        query, _, params = await ProjectSearchService.create_search_query(db)
 
         # Append filtering for featured projects
         query += " AND p.featured = TRUE"
