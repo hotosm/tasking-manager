@@ -18,6 +18,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
 )
+from backend.models.dtos.campaign_dto import ListCampaignDTO
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.mapping_level import MappingLevel
 from backend.models.postgis.statuses import (
@@ -25,6 +26,7 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
     ProjectPriority,
     ProjectStatus,
+    TaskStatus,
     TeamRoles,
     UserRole,
 )
@@ -127,7 +129,26 @@ class ProjectSearchService:
             WHERE p.geometry IS NOT NULL
             """
 
-        count_base = "SELECT COUNT(*) FROM projects p WHERE p.geometry IS NOT NULL"
+        count_base = """
+            SELECT COUNT(*) FROM projects p
+            LEFT JOIN organisations o ON o.id = p.organisation_id
+            LEFT JOIN users u ON u.id = p.author_id
+            WHERE p.geometry IS NOT NULL
+        """
+        # Lightweight query for map results: only the columns the map needs
+        # (id, priority, centroid). Reduced coordinate precision (5 dp, ~1 m) keeps
+        # the payload small. The org/user joins mirror the main query so org
+        # filters resolve; the planner eliminates them when they are unused.
+        map_base = """
+            SELECT
+                p.id AS id,
+                p.priority,
+                ST_AsGeoJSON(p.centroid, 5) AS centroid
+            FROM projects p
+            LEFT JOIN organisations o ON o.id = p.organisation_id
+            LEFT JOIN users u ON u.id = p.author_id
+            WHERE p.geometry IS NOT NULL
+        """
         filters = []
         params = {}
         if user is None:
@@ -177,8 +198,9 @@ class ProjectSearchService:
             auth_clause = " AND (" + " AND ".join(filters) + ")"
             query += auth_clause
             count_base += auth_clause
+            map_base += auth_clause
 
-        return query, count_base, params
+        return query, count_base, map_base, params
 
     @staticmethod
     async def create_result_dto(
@@ -222,6 +244,156 @@ class ProjectSearchService:
         list_dto.organisation_logo = project.organisation_logo
         list_dto.campaigns = await Project.get_project_campaigns(project.id, db)
         return list_dto
+
+    @staticmethod
+    async def _build_list_result_dtos(
+        projects, preferred_locale: str, db: Database
+    ) -> List[ListSearchResultDTO]:
+        """Build list-view DTOs for a page of projects using batched queries.
+
+        Replaces the previous per-project N+1 (localised info, active mappers,
+        campaigns and total contributors were each fetched one project at a
+        time) with a single query per concern across the whole page.
+        """
+        if not projects:
+            return []
+
+        project_ids = [p.id for p in projects]
+
+        # 1) Localised name / short description. Mirrors
+        # ProjectInfo.get_dto_for_locale: use the requested locale when present,
+        # otherwise the project's default locale, with per-field fallback to the
+        # default locale for partial translations. Fetch the requested locale and
+        # every project's default locale, then resolve per project in Python.
+        locales = {p.default_locale for p in projects}
+        if preferred_locale:
+            locales.add(preferred_locale)
+        info_rows = await db.fetch_all(
+            """
+            SELECT project_id, locale, name, short_description
+            FROM project_info
+            WHERE project_id = ANY(:ids) AND locale = ANY(:locales)
+            """,
+            {"ids": project_ids, "locales": list(locales)},
+        )
+        info_by_pid = {}
+        for row in info_rows:
+            info_by_pid.setdefault(row["project_id"], {})[row["locale"]] = row
+
+        # 2) Active mappers (locked tasks as a proxy) per project.
+        mapper_rows = await db.fetch_all(
+            """
+            SELECT project_id, COUNT(DISTINCT locked_by) AS active_mappers
+            FROM tasks
+            WHERE project_id = ANY(:ids)
+            AND task_status IN (:locked_for_mapping, :locked_for_validation)
+            GROUP BY project_id
+            """,
+            {
+                "ids": project_ids,
+                "locked_for_mapping": TaskStatus.LOCKED_FOR_MAPPING.value,
+                "locked_for_validation": TaskStatus.LOCKED_FOR_VALIDATION.value,
+            },
+        )
+        mappers_by_pid = {r["project_id"]: r["active_mappers"] for r in mapper_rows}
+
+        # 3) Campaigns per project.
+        campaign_rows = await db.fetch_all(
+            """
+            SELECT cp.project_id, c.id, c.name
+            FROM campaign_projects cp
+            JOIN campaigns c ON c.id = cp.campaign_id
+            WHERE cp.project_id = ANY(:ids)
+            """,
+            {"ids": project_ids},
+        )
+        campaigns_by_pid = {}
+        for row in campaign_rows:
+            campaigns_by_pid.setdefault(row["project_id"], []).append(
+                ListCampaignDTO(id=row["id"], name=row["name"])
+            )
+
+        # 4) Total contributors per project.
+        contrib_rows = await db.fetch_all(
+            """
+            SELECT p.id AS id, COUNT(DISTINCT th.user_id) AS total
+            FROM projects p
+            LEFT JOIN task_history th
+                ON th.project_id = p.id AND th.action != 'COMMENT'
+            WHERE p.id = ANY(:ids)
+            GROUP BY p.id
+            """,
+            {"ids": project_ids},
+        )
+        contrib_by_pid = {r["id"]: r["total"] for r in contrib_rows}
+
+        results = []
+        for project in projects:
+            locale_map = info_by_pid.get(project.id, {})
+            default_locale = project.default_locale
+            requested_row = (
+                locale_map.get(preferred_locale) if preferred_locale else None
+            )
+            default_row = locale_map.get(default_locale)
+
+            if requested_row is None:
+                # No info for the requested locale: use the default locale's info.
+                resolved_locale = default_locale
+                name = default_row["name"] if default_row else ""
+                short_description = (
+                    default_row["short_description"] if default_row else ""
+                )
+            elif preferred_locale == default_locale:
+                resolved_locale = requested_row["locale"]
+                name = requested_row["name"]
+                short_description = requested_row["short_description"]
+            else:
+                # Partial translation: prefer the requested locale, fall back to
+                # the default locale on a per-field basis when a field is empty.
+                resolved_locale = requested_row["locale"]
+                name = requested_row["name"] or (
+                    default_row["name"] if default_row else None
+                )
+                short_description = requested_row["short_description"] or (
+                    default_row["short_description"] if default_row else None
+                )
+
+            list_dto = ListSearchResultDTO()
+            list_dto.project_id = project.id
+            list_dto.locale = resolved_locale
+            list_dto.name = name
+            list_dto.short_description = short_description
+            list_dto.priority = ProjectPriority(project.priority).name
+            list_dto.difficulty = ProjectDifficulty(project.difficulty).name
+            list_dto.last_updated = project.last_updated
+            list_dto.due_date = project.due_date
+            list_dto.percent_mapped = Project.calculate_tasks_percent(
+                "mapped",
+                project.tasks_mapped,
+                project.tasks_validated,
+                project.total_tasks,
+                project.tasks_bad_imagery,
+            )
+            list_dto.percent_validated = Project.calculate_tasks_percent(
+                "validated",
+                project.tasks_mapped,
+                project.tasks_validated,
+                project.total_tasks,
+                project.tasks_bad_imagery,
+            )
+            list_dto.status = ProjectStatus(project.status).name
+            list_dto.active_mappers = mappers_by_pid.get(project.id, 0)
+            list_dto.total_contributors = contrib_by_pid.get(project.id, 0)
+            list_dto.country = project.country
+            list_dto.sandbox = project.sandbox
+            list_dto.database = project.database
+            list_dto.author = project.author_name or project.author_username
+            list_dto.organisation_name = project.organisation_name
+            list_dto.organisation_logo = project.organisation_logo
+            list_dto.campaigns = campaigns_by_pid.get(project.id, [])
+            results.append(list_dto)
+
+        return results
 
     @staticmethod
     async def get_total_contributions(
@@ -408,16 +580,9 @@ class ProjectSearchService:
             raise NotFound(sub_code="PROJECTS_NOT_FOUND")
 
         dto = ProjectSearchResultsDTO()
-        dto.results = [
-            await ProjectSearchService.create_result_dto(
-                p,
-                search_dto.preferred_locale,
-                await Project.get_project_total_contributions(p.id, db),
-                db,
-            )
-            for p in paginated_results
-        ]
-
+        dto.results = await ProjectSearchService._build_list_result_dtos(
+            paginated_results, search_dto.preferred_locale, db
+        )
         dto.pagination = pagination_dto
         if search_dto.omit_map_results:
             return dto
@@ -441,9 +606,12 @@ class ProjectSearchService:
     async def _filter_projects(
         search_dto: ProjectSearchDTO, user, db: Database, as_csv: bool = False
     ):
-        base_query, count_base, params = await ProjectSearchService.create_search_query(
-            db, user, as_csv
-        )
+        (
+            base_query,
+            count_base,
+            map_base,
+            params,
+        ) = await ProjectSearchService.create_search_query(db, user, as_csv)
         # Initialize filter list and parameters dictionary
         filters = []
         if search_dto.preferred_locale or search_dto.text_search:
@@ -762,24 +930,30 @@ class ProjectSearchService:
         filter_clause = " AND " + " AND ".join(filters) if filters else ""
         sql_query = base_query + filter_clause + order_by_clause
         count_query = count_base + filter_clause
+        map_query = map_base + filter_clause
 
         page = search_dto.page
         per_page = 14
         offset = (page - 1) * per_page
+
+        # CSV export needs every column for every matching row (no pagination).
+        if as_csv:
+            return await db.fetch_all(sql_query, values=params)
+
         all_results = []
-
-        if as_csv or not search_dto.omit_map_results:
-            all_results = await db.fetch_all(sql_query, values=params)
-
-            if as_csv:
-                return all_results
-
+        if not search_dto.omit_map_results:
+            # Map results: fetch only id/priority/centroid for every matching
+            # project via the lightweight query. Its length is the total count,
+            # so no separate COUNT query is needed on this path.
+            all_results = await db.fetch_all(map_query, values=params)
             total_count = len(all_results)
-            paginated_results = all_results[offset : offset + per_page]
         else:
             total_count = await db.fetch_val(count_query, values=params)
-            paginated_query = f"{sql_query} LIMIT {per_page} OFFSET {offset}"
-            paginated_results = await db.fetch_all(paginated_query, values=params)
+
+        # The detailed list is always paginated in the database (LIMIT/OFFSET) so
+        # only the current page of the heavy SELECT is materialised.
+        paginated_query = f"{sql_query} LIMIT {per_page} OFFSET {offset}"
+        paginated_results = await db.fetch_all(paginated_query, values=params)
 
         pagination_dto = Pagination.from_total_count(page, per_page, total_count)
         return all_results, paginated_results, pagination_dto

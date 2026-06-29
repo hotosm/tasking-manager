@@ -201,7 +201,7 @@ class ProjectRecommendationService:
         user = await UserService.get_user_by_id(user_id, db) if user_id else None
 
         # Create the search query with filters applied based on user role
-        search_query, _, params = await ProjectSearchService.create_search_query(
+        search_query, _, _, params = await ProjectSearchService.create_search_query(
             db, user
         )
 

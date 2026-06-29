@@ -260,9 +260,12 @@ class StatsService:
             return ProjectSearchResultsDTO(results=[])
 
         # Use the existing `create_search_query` function to fetch detailed project data
-        project_query, _, query_params = await ProjectSearchService.create_search_query(
-            db
-        )
+        (
+            project_query,
+            _,
+            _,
+            query_params,
+        ) = await ProjectSearchService.create_search_query(db)
         project_query += " AND p.id = ANY(:project_ids)"
         query_params["project_ids"] = project_ids
 
