@@ -70,6 +70,14 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
         {['DRAFT', 'ARCHIVED'].includes(project.status) && (
           <ProjectStatusBox status={project.status} className="pv2 ph3 mb3 v-mid dib mr3" />
         )}
+        {project.sandbox && (
+          <div
+            className="tc br1 f8 fw6 ttu pv2 ph3 mb3 v-mid dib mr3"
+            style={{ backgroundColor: '#a8e6cf', color: '#116530' }}
+          >
+            <FormattedMessage {...messages.sandbox} />
+          </div>
+        )}
       </div>
       <TagLine
         campaigns={project.campaigns}

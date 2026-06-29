@@ -356,4 +356,8 @@ export default defineMessages({
     id: 'project.permissions.levelOrAbove',
     defaultMessage: 'level or above',
   },
+  sandbox: {
+    id: 'project.detail.sandbox',
+    defaultMessage: 'Sandbox Mode',
+  },
 });
