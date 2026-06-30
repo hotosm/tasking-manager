@@ -265,7 +265,11 @@ export default function SandboxEditor({
 
   useEffect(() => {
     return () => {
+      // Reset auth status for this sandbox on unmount
       dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
+      // Reset context on unmount so the OSM iD editor always gets a fresh context
+      // from its own window.iD (@openstreetmap/id), preventing cross-editor context bleed.
+      dispatch({ type: 'SET_EDITOR', context: null });
     };
   }, [dispatch, sandboxId]);
 
