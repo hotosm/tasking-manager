@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
@@ -14,52 +14,55 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   const session = useSelector((state) => state.auth.session);
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
-  const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== 'undefined';
-  const customSource =
-    iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
   useEffect(() => {
-    if (!customImageryIsSet && imagery && customSource) {
+    // wait till iDContext loads background
+    if (!iDContext?.background()) return;
+
+    if (imagery) {
       if (imagery.startsWith('http')) {
-        iDContext.background().baseLayerSource(customSource.template(imagery));
-        setCustomImageryIsSet(true);
-        // this line is needed to update the value on the custom background dialog
-        window.iD.prefs('background-custom-template', imagery);
+        const customSource = iDContext.background().findSource('custom');
+        if (customSource) {
+          iDContext.background().baseLayerSource(customSource.template(imagery));
+          // this line is needed to update the value on the custom background dialog
+          window.iD.prefs('background-custom-template', imagery);
+        }
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
           iDContext.background().baseLayerSource(imagerySource);
         }
       }
-    }
-
-    // wait till iDContext loads background
-    if (!iDContext?.background()) return;
-
-    // this fixes the custom imagery persisting from previous load
-    // when no imagery is selected in project setting
-    if (!imagery) {
+    } else {
+      // this fixes the custom imagery persisting from previous load
+      // when no imagery is selected in project setting
       // set Bing as default
       const imagerySource = iDContext.background().findSource('Bing');
-      if (!imagerySource) return;
-      iDContext.background().baseLayerSource(imagerySource);
+      if (imagerySource) {
+        iDContext.background().baseLayerSource(imagerySource);
+      }
     }
 
     // this sets imagery offset from extraIdParams if present
     if (extraIdParams) {
       const params = new URLSearchParams(extraIdParams);
       const offsetStr = params.get('offset'); // "10,-10"
-      if (!offsetStr) return;
-      const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
-      const offset = window.iD.geoMetersToOffset(offsetInMeters);
-      iDContext.background().offset(offset);
+      if (offsetStr) {
+        const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
+        const offset = window.iD.geoMetersToOffset(offsetInMeters);
+        iDContext.background().offset(offset);
+      } else {
+        // reset offset if params not present
+        // this is needed to fix the offset persisting from previous project issue
+        iDContext.background().offset([0, 0]);
+      }
     } else {
       // reset offset if params not present
       // this is needed to fix the offset persisting from previous project issue
       iDContext.background().offset([0, 0]);
     }
-  }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
+  }, [imagery, iDContext, extraIdParams]);
 
   useEffect(() => {
     if (windowInit) {
