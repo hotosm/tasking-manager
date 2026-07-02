@@ -71,6 +71,14 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
     }
   }, [windowInit, iDContext, dispatch]);
 
+  // Reset context on unmount so the sandbox editor always gets a fresh context
+  // from its own window.iD (sandbox-id), preventing cross-editor context bleed.
+  useEffect(() => {
+    return () => {
+      dispatch({ type: 'SET_EDITOR', context: null });
+    };
+  }, [dispatch]);
+
   useEffect(() => {
     if (iDContext && comment) {
       iDContext.defaultChangesetComment(comment);
