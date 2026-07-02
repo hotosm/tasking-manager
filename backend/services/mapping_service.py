@@ -123,9 +123,19 @@ class MappingService:
                     raise MappingServiceError(
                         "UserAlreadyHasTaskLocked- User already has task locked"
                     )
+                elif error_reason == MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL:
+                    raise MappingServiceError(
+                        "UserNotCorrectMappingLevel- Mapping not allowed because: "
+                        "User's experience level is below the project's required level"
+                    )
+                elif error_reason == MappingNotAllowed.USER_NOT_TEAM_MEMBER:
+                    raise MappingServiceError(
+                        "UserNotTeamMember- Mapping not allowed because: "
+                        "User is not a member of a mapping team for this project"
+                    )
                 else:
                     raise MappingServiceError(
-                        f"{error_reason}- Mapping not allowed because: {error_reason}"
+                        f"MappingNotAllowed- Mapping not allowed because: {error_reason}"
                     )
 
         await Task.lock_task_for_mapping(
