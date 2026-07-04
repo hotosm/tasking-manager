@@ -17,6 +17,7 @@
 *   [[plan pruebas unitarias]]
 *   [[plan pruebas funcionales]]
 *   [[plan pruebas integracion]]
+*   [[plan pruebas sistema]]
 
 ---
 
@@ -39,6 +40,10 @@
 *   [[02 servicios core negocio]]
 *   [[03 modelos dominio dto postgis]]
 
+#### 2.3 Sistema (E2E)
+
+*   [[diseno pruebas sistema]]
+
 ---
 
 ## 3. Ejecución de Pruebas
@@ -57,3 +62,7 @@
 *   [[05 ejecucion administracion de proyectos]] ⭐
 *   [[06 ejecucion gobernanza organizaciones equipos]]
 *   [[07 ejecucion comunicacion notificaciones]]
+
+#### 3.3 Sistema (E2E)
+
+*   [[ejecucion pruebas sistema]]
