@@ -143,3 +143,18 @@ Se utilizará un enfoque de **Casos de Uso / Escenarios de Negocio**. No se prob
 * **Resultados Esperados:**
   * El sistema registra la validación exitosa.
   * El estado visual de la tarea cambia a verde (Validada).
+
+### ID: E2E-003 | Flujo Completo de Administración (Crear Proyecto)
+* **Escenario:** Un usuario Administrador crea un nuevo proyecto de mapeo desde cero.
+* **Precondiciones:** El usuario debe tener rol `ADMIN`.
+* **Pasos de Ejecución:**
+  1. Iniciar sesión con cuenta de Administrador.
+  2. Navegar al panel de control (`/manage`).
+  3. Hacer clic en el botón "Create New Project".
+  4. Dibujar un polígono en el mapa (Área de Interés - AOI) usando las herramientas de dibujo.
+  5. Hacer clic en "Next" para definir el tamaño de las tareas.
+  6. Llenar los metadatos obligatorios (Nombre del proyecto, descripción corta).
+  7. Hacer clic en "Save".
+* **Resultados Esperados:**
+  * El sistema redirige a la página de edición del proyecto.
+  * El proyecto queda guardado en la base de datos en estado "Draft" (Borrador).
