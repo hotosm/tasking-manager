@@ -5,7 +5,7 @@ description = "The tool to team up for mapping in OpenStreetMap"
 authors = [{ name = "HOT Sysadmin", email = "sysadmin@hotosm.org" }]
 readme = "README.md"
 license = { text = "BSD-2-Clause" }
-requires-python = ">=3.9,<=3.11"
+requires-python = ">=3.10,<=3.11"
 dependencies = [
     # Direct dependencies (at least one import requires it)
     "APScheduler==3.10.1",
@@ -52,6 +52,7 @@ dependencies = [
     "aiocache>=0.12.3",
     "httpx>=0.28.1",
     "pytest>=8.3.5",
+    "pg-nearest-city>=2.0.0",
 ]
 [dependency-groups]
 dev = [
