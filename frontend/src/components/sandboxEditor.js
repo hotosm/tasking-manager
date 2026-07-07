@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -15,6 +15,19 @@ import {
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
 import { useOsmFeaturesQuery } from '../api/projects';
+import {
+  registerIdEditorStylesheet,
+  activateIdEditorStylesheet,
+} from '../utils/idEditorStylesheets';
+
+// @osm-sandbox/sandbox-id has no real ESM/CJS exports — it only assigns
+// itself to window.iD as a side effect on import. Capture it here, right
+// after the imports above force that assignment, so this module keeps its
+// own private reference instead of the shared global, which
+// @openstreetmap/id (imported by editor.js) later overwrites.
+const sandboxID = window.iD;
+
+registerIdEditorStylesheet('sandbox');
 
 export default function SandboxEditor({
   setDisable,
@@ -49,6 +62,14 @@ export default function SandboxEditor({
 
   useSandboxOAuthCallback(sandboxId);
 
+  // Only one of the OSM iD editor / Sandbox editor is ever mounted at a
+  // time, but both of their stylesheets stay loaded for the whole page
+  // session once visited. Disable the other one's so its rules can't leak
+  // into this editor via their shared ".ideditor" root class.
+  useLayoutEffect(() => {
+    activateIdEditorStylesheet('sandbox');
+  }, []);
+
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
@@ -58,7 +79,7 @@ export default function SandboxEditor({
         iDContext.background().baseLayerSource(customSource.template(imagery));
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
-        window.iD.prefs('background-custom-template', imagery);
+        sandboxID.prefs('background-custom-template', imagery);
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
@@ -72,7 +93,7 @@ export default function SandboxEditor({
     if (iDContext === null) {
       // we need to keep iD context on redux store because iD works better if
       // the context is not restarted while running in the same browser session
-      dispatch({ type: 'SET_EDITOR', context: window.iD.coreContext() });
+      dispatch({ type: 'SET_EDITOR', context: sandboxID.coreContext() });
     }
   }, [iDContext, dispatch]);
 
@@ -113,12 +134,12 @@ export default function SandboxEditor({
         // set up presets
         try {
           if (presets && presets.length) {
-            window.iD.presetManager.addablePresetIDs(presets);
+            sandboxID.presetManager.addablePresetIDs(presets);
           } else {
-            window.iD.presetManager.addablePresetIDs(null);
+            sandboxID.presetManager.addablePresetIDs(null);
           }
         } catch (e) {
-          window.iD.presetManager.addablePresetIDs(null);
+          sandboxID.presetManager.addablePresetIDs(null);
         }
 
         // set up the context
@@ -268,7 +289,7 @@ export default function SandboxEditor({
       // Reset auth status for this sandbox on unmount
       dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
       // Reset context on unmount so the OSM iD editor always gets a fresh context
-      // from its own window.iD (@openstreetmap/id), preventing cross-editor context bleed.
+      // from its own iD module (@openstreetmap/id), preventing cross-editor context bleed.
       dispatch({ type: 'SET_EDITOR', context: null });
     };
   }, [dispatch, sandboxId]);
