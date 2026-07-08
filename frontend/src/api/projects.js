@@ -238,6 +238,23 @@ export const useAllPartnersQuery = (token, userId) => {
   });
 };
 
+export const useOsmFeaturesQuery = (projectId, taskId, enabled = true) => {
+  const token = useSelector((state) => state.auth.token);
+
+  const fetchOsmFeatures = ({ signal }) => {
+    return api(token).get(`projects/${projectId}/tasks/${taskId}/osm-features/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['osm-features', projectId, taskId],
+    queryFn: fetchOsmFeatures,
+    select: (data) => data.data,
+    enabled: !!(enabled && projectId && taskId),
+  });
+};
+
 const backendToQueryConversion = {
   difficulty: 'difficulty',
   campaign: 'campaign',

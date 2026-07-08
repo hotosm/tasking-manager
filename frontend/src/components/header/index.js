@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
-
 import messages from './messages';
 import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
 import logo from '../../assets/img/main-logo.svg';

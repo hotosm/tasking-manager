@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useIntl } from 'react-intl';
+import { gpx } from '@tmcw/togeojson';
 import * as iD from '@osm-sandbox/sandbox-id';
 import '@osm-sandbox/sandbox-id/dist/iD.css';
 
+import messages from './messages';
 import {
   getSandboxAuthToken,
   setSandboxAuthError,
@@ -11,6 +14,20 @@ import {
 } from '../store/actions/auth';
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
+import { useOsmFeaturesQuery } from '../api/projects';
+import {
+  registerIdEditorStylesheet,
+  activateIdEditorStylesheet,
+} from '../utils/idEditorStylesheets';
+
+// @osm-sandbox/sandbox-id has no real ESM/CJS exports — it only assigns
+// itself to window.iD as a side effect on import. Capture it here, right
+// after the imports above force that assignment, so this module keeps its
+// own private reference instead of the shared global, which
+// @openstreetmap/id (imported by editor.js) later overwrites.
+const sandboxID = window.iD;
+
+registerIdEditorStylesheet('sandbox');
 
 export default function SandboxEditor({
   setDisable,
@@ -19,9 +36,14 @@ export default function SandboxEditor({
   imagery,
   sandboxId,
   gpxUrl,
+  projectId,
+  taskId,
+  showOsmFeatures,
+  osmLayerOpacity,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const intl = useIntl();
   const session = useSelector((state) => state.auth.session);
   const sandboxTokens = useSelector((state) => state.auth.sandboxTokens);
   const sandboxAuthError = useSelector((state) => state.auth.sandboxAuthError);
@@ -30,8 +52,23 @@ export default function SandboxEditor({
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [gpxGeojson, setGpxGeojson] = useState(null);
+
+  const { data: osmFeatures } = useOsmFeaturesQuery(
+    projectId,
+    taskId,
+    !!sandboxId && showOsmFeatures,
+  );
 
   useSandboxOAuthCallback(sandboxId);
+
+  // Only one of the OSM iD editor / Sandbox editor is ever mounted at a
+  // time, but both of their stylesheets stay loaded for the whole page
+  // session once visited. Disable the other one's so its rules can't leak
+  // into this editor via their shared ".ideditor" root class.
+  useLayoutEffect(() => {
+    activateIdEditorStylesheet('sandbox');
+  }, []);
 
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
@@ -42,7 +79,7 @@ export default function SandboxEditor({
         iDContext.background().baseLayerSource(customSource.template(imagery));
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
-        window.iD.prefs('background-custom-template', imagery);
+        sandboxID.prefs('background-custom-template', imagery);
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
@@ -56,7 +93,7 @@ export default function SandboxEditor({
     if (iDContext === null) {
       // we need to keep iD context on redux store because iD works better if
       // the context is not restarted while running in the same browser session
-      dispatch({ type: 'SET_EDITOR', context: window.iD.coreContext() });
+      dispatch({ type: 'SET_EDITOR', context: sandboxID.coreContext() });
     }
   }, [iDContext, dispatch]);
 
@@ -97,12 +134,12 @@ export default function SandboxEditor({
         // set up presets
         try {
           if (presets && presets.length) {
-            window.iD.presetManager.addablePresetIDs(presets);
+            sandboxID.presetManager.addablePresetIDs(presets);
           } else {
-            window.iD.presetManager.addablePresetIDs(null);
+            sandboxID.presetManager.addablePresetIDs(null);
           }
         } catch (e) {
-          window.iD.presetManager.addablePresetIDs(null);
+          sandboxID.presetManager.addablePresetIDs(null);
         }
 
         // set up the context
@@ -120,10 +157,6 @@ export default function SandboxEditor({
           iDContext.ui().restart();
         } else {
           iDContext.init();
-        }
-
-        if (gpxUrl) {
-          iDContext.layers().layer('data').url(gpxUrl, '.gpx');
         }
 
         iDContext.connection().switch({
@@ -164,8 +197,100 @@ export default function SandboxEditor({
   ]);
 
   useEffect(() => {
+    if (gpxUrl) {
+      fetch(gpxUrl)
+        .then((response) => response.text())
+        .then((data) => {
+          let gpxData = new DOMParser().parseFromString(data, 'text/xml');
+          let trkNode = gpxData.getElementsByTagName('trk')[0];
+          if (trkNode) {
+            let nameNode = trkNode.childNodes[0];
+            let id = nameNode.textContent.match(/\d+/g);
+            nameNode.textContent = intl.formatMessage(messages.gpxNameAttribute, {
+              projectId: id ? id[0] : projectId,
+            });
+          }
+          setGpxGeojson(gpx(gpxData));
+        })
+        .catch((error) => {
+          console.error('Error loading GPX data');
+        });
+    }
+  }, [gpxUrl, intl, projectId]);
+
+  useEffect(() => {
+    if (isInitialized && iDContext && (osmFeatures || gpxGeojson)) {
+      // Assign stable IDs to ensure iD can maintain hover/select states
+      const features = [
+        ...(gpxGeojson?.features || []).map((f, i) => ({
+          ...f,
+          id: f.id || `gpx-${i}`,
+          __layerID__: 'gpx-features',
+        })),
+        ...(showOsmFeatures && osmFeatures?.features ? osmFeatures.features : []).map((f, i) => ({
+          ...f,
+          id:
+            f.id ||
+            (f.properties?.osm_id ? `osm-${f.properties.osm_id}` : `osm-${i}`),
+          __layerID__: 'osm-features',
+        })),
+      ];
+
+      if (features.length > 0 || (gpxGeojson && !showOsmFeatures)) {
+        iDContext.layers().layer('data').geojson({
+          type: 'FeatureCollection',
+          features: features,
+        });
+      }
+    }
+  }, [isInitialized, iDContext, osmFeatures, gpxGeojson, showOsmFeatures]);
+
+  useEffect(() => {
+    if (!isInitialized || !iDContext) return;
+    const container = document.getElementById('id-container');
+    if (container) {
+      const dataLayer = container.querySelector('.layer-data');
+      if (dataLayer) {
+        dataLayer.style.opacity = '';
+      }
+    }
+
+    let styleEl = document.getElementById('osm-layer-opacity-style');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'osm-layer-opacity-style';
+      document.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      #id-container .layer-data .osm-features {
+        opacity: ${osmLayerOpacity ?? 1} !important;
+      }
+      #id-container .layer-data .gpx-features {
+        opacity: 1 !important;
+      }
+      #id-container .layer-data text.osm-features,
+      #id-container .layer-data .osm-features text {
+        display: none;
+      }
+
+    `;
+
     return () => {
+      const el = document.getElementById('osm-layer-opacity-style');
+      if (el) {
+        el.remove();
+      }
+    };
+  }, [isInitialized, iDContext, osmLayerOpacity]);
+
+  useEffect(() => {
+    return () => {
+      // Reset auth status for this sandbox on unmount
       dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
+      // Reset context on unmount so the OSM iD editor always gets a fresh context
+      // from its own iD module (@openstreetmap/id), preventing cross-editor context bleed.
+      dispatch({ type: 'SET_EDITOR', context: null });
     };
   }, [dispatch, sandboxId]);
 
@@ -201,5 +326,9 @@ export default function SandboxEditor({
     );
   }
 
-  return <div className="w-100 vh-minus-69-ns" id="id-container"></div>;
+  return (
+    <div className="w-100 vh-minus-69-ns relative">
+      <div className="w-100 h-100" id="id-container"></div>
+    </div>
+  );
 }

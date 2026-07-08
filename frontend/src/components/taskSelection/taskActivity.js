@@ -25,6 +25,7 @@ import { useTaskDetail } from '../../api/projects';
 import { Alert } from '../alert';
 import { MessageStatus } from '../comments/status';
 import { postTaskComment } from '../../api/questionsAndComments';
+import * as safeStorage from '../../utils/safe_storage';
 
 import './styles.scss';
 
@@ -36,7 +37,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
   const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const [comment, setComment] = useState('');
-  const SESSION_KEY = `task-comment-${taskId}`;
+  const SESSION_KEY = `tm-comment-history-${projectId}-${taskId}`;
 
   const saveComment = () => {
     if (comment) {
@@ -49,7 +50,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
     onSuccess: (res) => {
       setCommentPayload(res.data);
       setComment('');
-      sessionStorage.removeItem(SESSION_KEY);
+      safeStorage.removeItem(SESSION_KEY);
     },
   });
 
