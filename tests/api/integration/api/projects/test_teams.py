@@ -8,7 +8,9 @@ from tests.api.helpers.test_helpers import (
     assign_team_to_project,
     create_canned_project,
     create_canned_team,
+    create_canned_user,
     generate_encoded_token,
+    return_canned_user,
 )
 
 
@@ -35,8 +37,17 @@ class TestProjectTeamsAPI:
             True,
             self.db,
         )
-
+        
         self.author_token = generate_encoded_token(self.test_author.id)
+        
+        # Usuario normal para probar errores de permisos.
+        self.test_user = await return_canned_user(
+            self.db,
+            username="project_team_regular_user",
+            id=33333333,
+        )
+        self.test_user = await create_canned_user(self.db, self.test_user)
+        self.user_token = generate_encoded_token(self.test_user.id)
 
     async def test_assign_team_to_project_returns_201(self, client: AsyncClient):
         # El autor del proyecto y manager del equipo puede asignarlo.
@@ -128,3 +139,59 @@ class TestProjectTeamsAPI:
         )
 
         assert teams_dto.teams == []
+
+    async def test_get_project_teams_returns_403_if_not_logged_in(
+        self, client: AsyncClient
+    ):
+        # Sin token no se puede consultar los equipos del proyecto.
+        response = await client.get(
+            f"/api/v2/projects/{self.test_project_id}/teams/"
+        )
+
+        assert response.status_code == 403
+
+    async def test_assign_team_to_project_returns_403_if_not_logged_in(
+        self, client: AsyncClient
+    ):
+        # Sin autenticación no se debe permitir asignar equipos.
+        response = await client.post(
+            f"/api/v2/projects/{self.test_project_id}/teams/{self.test_team_id}/",
+            json={"role": "MAPPER"},
+        )
+
+        assert response.status_code == 403
+
+    async def test_assign_team_to_project_returns_403_if_user_is_not_project_manager(
+        self, client: AsyncClient
+    ):
+        # El usuario normal no tiene permisos sobre el proyecto.
+        response = await client.post(
+            f"/api/v2/projects/{self.test_project_id}/teams/{self.test_team_id}/",
+            json={"role": "MAPPER"},
+            headers={"Authorization": f"Token {self.user_token}"},
+        )
+
+        assert response.status_code == 403
+        assert response.json()["SubCode"] == "UserPermissionError"
+
+    async def test_delete_project_team_returns_404_if_team_is_not_linked(
+        self, client: AsyncClient
+    ):
+        # No se puede quitar un equipo que nunca fue asociado al proyecto.
+        response = await client.delete(
+            f"/api/v2/projects/{self.test_team_id}/projects/{self.test_project_id}/",
+            headers={"Authorization": f"Token {self.author_token}"},
+        )
+
+        assert response.status_code == 404
+
+    async def test_delete_project_team_returns_404_if_project_does_not_exist(
+        self, client: AsyncClient
+    ):
+        # Valida el error cuando se intenta modificar un proyecto inexistente.
+        response = await client.delete(
+            f"/api/v2/projects/{self.test_team_id}/projects/999999/",
+            headers={"Authorization": f"Token {self.author_token}"},
+        )
+
+        assert response.status_code == 404
