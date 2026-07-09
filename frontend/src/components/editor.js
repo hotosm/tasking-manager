@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
@@ -7,10 +7,6 @@ import '@openstreetmap/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
-import {
-  registerIdEditorStylesheet,
-  activateIdEditorStylesheet,
-} from '../utils/idEditorStylesheets';
 
 // @openstreetmap/id has no real ESM/CJS exports — it only assigns itself to
 // window.iD as a side effect on import. Capture it here, right after the
@@ -18,8 +14,6 @@ import {
 // reference instead of the shared global, which @osm-sandbox/sandbox-id
 // (imported by sandboxEditor.js) later overwrites.
 const officialID = window.iD;
-
-registerIdEditorStylesheet('official');
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
@@ -31,14 +25,6 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   const windowInit = typeof window !== 'undefined';
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
-
-  // Only one of the OSM iD editor / Sandbox editor is ever mounted at a
-  // time, but both of their stylesheets stay loaded for the whole page
-  // session once visited. Disable the other one's so its rules can't leak
-  // into this editor via their shared ".ideditor" root class.
-  useLayoutEffect(() => {
-    activateIdEditorStylesheet('official');
-  }, []);
 
   useEffect(() => {
     if (!customImageryIsSet && imagery && customSource) {
@@ -82,23 +68,21 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
     }
   }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
+  // We need to keep the iD context on the redux store because iD works
+  // better if the context isn't restarted while running in the same browser
+  // session (reopening the same task shouldn't need a page reload to see
+  // recently-saved edits). But the Sandbox editor and this editor can't
+  // safely share a context — they're built by different iD forks, so a
+  // context from the other editor is missing methods (e.g. Sandbox's
+  // `.license()`) this editor never calls, and vice versa. Tag each context
+  // with who built it, and only replace it when the type actually changes.
   useEffect(() => {
-    if (windowInit) {
-      if (iDContext === null) {
-        // we need to keep iD context on redux store because iD works better if
-        // the context is not restarted while running in the same browser session
-        dispatch({ type: 'SET_EDITOR', context: officialID.coreContext() });
-      }
+    if (windowInit && (iDContext === null || iDContext.__idEditorType !== 'official')) {
+      const context = officialID.coreContext();
+      context.__idEditorType = 'official';
+      dispatch({ type: 'SET_EDITOR', context });
     }
   }, [windowInit, iDContext, dispatch]);
-
-  // Reset context on unmount so the sandbox editor always gets a fresh context
-  // from its own iD module (sandbox-id), preventing cross-editor context bleed.
-  useEffect(() => {
-    return () => {
-      dispatch({ type: 'SET_EDITOR', context: null });
-    };
-  }, [dispatch]);
 
   useEffect(() => {
     if (iDContext && comment) {
@@ -107,7 +91,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   }, [comment, iDContext]);
 
   useEffect(() => {
-    if (session && locale && iD && iDContext) {
+    if (session && locale && iD && iDContext && iDContext.__idEditorType === 'official') {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets.length) {
@@ -126,11 +110,12 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
       // init the ui or restart if it was loaded previously
-      if (iDContext.ui() !== undefined) {
+      const isFreshContext = iDContext.ui() === undefined;
+      if (isFreshContext) {
+        iDContext.init();
+      } else {
         iDContext.reset();
         iDContext.ui().restart();
-      } else {
-        iDContext.init();
       }
       if (gpxUrl) {
         fetch(gpxUrl)
@@ -157,6 +142,24 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         access_token: session.osm_oauth_token,
       };
       osm.switch(auth);
+
+      if (isFreshContext) {
+        // The OSM connection's tile/entity cache lives at module scope in
+        // @openstreetmap/id, shared by every context built from this
+        // package for the whole browser session — it isn't cleared just
+        // because we built a brand new context object (e.g. after
+        // switching away to the Sandbox editor and back). Only reset()
+        // clears it, so call it here too or this fresh context can still
+        // serve stale, pre-edit data for a task we already visited before.
+        // init() already kicked off a tile fetch for the URL hash's
+        // location (this task's own area), so reset() just aborted that
+        // in-flight request — force a redraw of the current view (now that
+        // auth is switched to the right one above) so it actually gets
+        // re-requested instead of staying blank.
+        iDContext.reset();
+        const map = iDContext.map();
+        map.centerZoom(map.center(), map.zoom());
+      }
 
       const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;
