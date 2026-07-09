@@ -44,6 +44,19 @@ def unwrap_inner_status_code(body, default_status_code):
         return body[0]["status_code"]
     return default_status_code
 
+def get_error_sub_code(body):
+    """Extract sub code from different error response shapes used by the test app."""
+    if "SubCode" in body:
+        return body["SubCode"]
+
+    if "sub_code" in body:
+        return body["sub_code"]
+
+    if "error" in body and isinstance(body["error"], dict):
+        return body["error"].get("sub_code") or body["error"].get("SubCode")
+
+    return None
+
 
 @pytest.mark.anyio
 class TestProjectPartnershipsAPI:
@@ -203,3 +216,50 @@ class TestProjectPartnershipsAPI:
             self.test_project_id, self.db
         )
         assert len(deleted) == 0
+
+    async def test_get_partnership_by_id_returns_404_if_not_found(
+        self, client: AsyncClient
+        ):
+        # Debe responder 404 cuando el partnership no existe.
+        response = await client.get("/api/v2/projects/partnerships/999999/")
+
+        assert response.status_code == 404
+        assert get_error_sub_code(response.json()) == "PARTNERSHIP_NOT_FOUND"
+
+    async def test_create_partnership_returns_403_if_not_logged_in(
+        self, client: AsyncClient
+    ):
+        # Sin autenticación no se debe permitir crear la relación.
+        payload = {
+            "projectId": self.test_project_id,
+            "partnerId": self.partner_id,
+            "startedOn": self.started_on,
+            "endedOn": self.ended_on,
+        }
+
+        response = await client.post(
+            "/api/v2/projects/partnerships/",
+            json=payload,
+        )
+
+        assert response.status_code == 403
+
+    async def test_create_partnership_returns_401_if_user_is_not_project_manager(
+        self, client: AsyncClient
+    ):
+        # Un usuario normal no debe modificar partnerships del proyecto.
+        payload = {
+            "projectId": self.test_project_id,
+            "partnerId": self.partner_id,
+            "startedOn": self.started_on,
+            "endedOn": self.ended_on,
+        }
+
+        response = await client.post(
+            "/api/v2/projects/partnerships/",
+            json=payload,
+            headers={"Authorization": f"Token {self.user_token}"},
+        )
+
+        assert response.status_code == 401
+        assert get_error_sub_code(response.json()) == "UserPermissionError"
