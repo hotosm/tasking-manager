@@ -7,13 +7,9 @@ import '@openstreetmap/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
+import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
 
-// @openstreetmap/id has no real ESM/CJS exports — it only assigns itself to
-// window.iD as a side effect on import. Capture it here, right after the
-// import above forces that assignment, so this module keeps its own private
-// reference instead of the shared global, which @osm-sandbox/sandbox-id
-// (imported by sandboxEditor.js) later overwrites.
-const officialID = window.iD;
+const officialID = captureIdEditorPackage();
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
@@ -68,18 +64,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
     }
   }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
-  // We need to keep the iD context on the redux store because iD works
-  // better if the context isn't restarted while running in the same browser
-  // session (reopening the same task shouldn't need a page reload to see
-  // recently-saved edits). But the Sandbox editor and this editor can't
-  // safely share a context — they're built by different iD forks, so a
-  // context from the other editor is missing methods (e.g. Sandbox's
-  // `.license()`) this editor never calls, and vice versa. Tag each context
-  // with who built it, and only replace it when the type actually changes.
   useEffect(() => {
-    if (windowInit && (iDContext === null || iDContext.__idEditorType !== 'official')) {
-      const context = officialID.coreContext();
-      context.__idEditorType = 'official';
+    if (!windowInit) return;
+    const context = resolveIdEditorContext(iDContext, 'official', () => officialID.coreContext());
+    if (context && context !== iDContext) {
       dispatch({ type: 'SET_EDITOR', context });
     }
   }, [windowInit, iDContext, dispatch]);
@@ -109,13 +97,15 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         .locale(locale)
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
-      // init the ui or restart if it was loaded previously
-      const isFreshContext = iDContext.ui() === undefined;
-      if (isFreshContext) {
-        iDContext.init();
-      } else {
+      // init the ui or restart if it was loaded previously. Either path ends
+      // with osm.switch() below, which resets the (module-scoped, session-wide)
+      // tile cache and triggers a fresh load from the current view — so a
+      // reused/fresh context never serves stale, pre-edit data.
+      if (iDContext.ui() !== undefined) {
         iDContext.reset();
         iDContext.ui().restart();
+      } else {
+        iDContext.init();
       }
       if (gpxUrl) {
         fetch(gpxUrl)
@@ -142,24 +132,6 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         access_token: session.osm_oauth_token,
       };
       osm.switch(auth);
-
-      if (isFreshContext) {
-        // The OSM connection's tile/entity cache lives at module scope in
-        // @openstreetmap/id, shared by every context built from this
-        // package for the whole browser session — it isn't cleared just
-        // because we built a brand new context object (e.g. after
-        // switching away to the Sandbox editor and back). Only reset()
-        // clears it, so call it here too or this fresh context can still
-        // serve stale, pre-edit data for a task we already visited before.
-        // init() already kicked off a tile fetch for the URL hash's
-        // location (this task's own area), so reset() just aborted that
-        // in-flight request — force a redraw of the current view (now that
-        // auth is switched to the right one above) so it actually gets
-        // re-requested instead of staying blank.
-        iDContext.reset();
-        const map = iDContext.map();
-        map.centerZoom(map.center(), map.zoom());
-      }
 
       const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;

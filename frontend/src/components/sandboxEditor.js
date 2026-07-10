@@ -15,13 +15,9 @@ import {
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
 import { useOsmFeaturesQuery } from '../api/projects';
+import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
 
-// @osm-sandbox/sandbox-id has no real ESM/CJS exports — it only assigns
-// itself to window.iD as a side effect on import. Capture it here, right
-// after the imports above force that assignment, so this module keeps its
-// own private reference instead of the shared global, which
-// @openstreetmap/id (imported by editor.js) later overwrites.
-const sandboxID = window.iD;
+const sandboxID = captureIdEditorPackage();
 
 export default function SandboxEditor({
   setDisable,
@@ -75,19 +71,9 @@ export default function SandboxEditor({
     }
   }, [customImageryIsSet, imagery, iDContext, customSource]);
 
-  // We need to keep the iD context on the redux store because iD works
-  // better if the context isn't restarted while running in the same browser
-  // session (reopening the same task shouldn't need a page reload to see
-  // recently-saved edits). But this editor and the OSM iD editor can't
-  // safely share a context — they're built by different iD forks, so a
-  // context from the other editor is missing methods (e.g. this editor's
-  // own `.license()`) the other editor never calls, and vice versa. Tag each
-  // context with who built it, and only replace it when the type actually
-  // changes.
   useEffect(() => {
-    if (iDContext === null || iDContext.__idEditorType !== 'sandbox') {
-      const context = sandboxID.coreContext();
-      context.__idEditorType = 'sandbox';
+    const context = resolveIdEditorContext(iDContext, 'sandbox', () => sandboxID.coreContext());
+    if (context && context !== iDContext) {
       dispatch({ type: 'SET_EDITOR', context });
     }
   }, [iDContext, dispatch]);
@@ -159,37 +145,21 @@ export default function SandboxEditor({
         // this editor doesn't pick up a dark theme it was never styled for.
         iDContext.container().classed('theme-light', true);
 
-        // init the ui or restart if it was loaded previously
-        const isFreshContext = iDContext.ui() === undefined;
-        if (isFreshContext) {
-          iDContext.init();
-        } else {
+        // init the ui or restart if it was loaded previously. Either path ends
+        // with connection().switch() below, which resets the (module-scoped,
+        // session-wide) tile cache and triggers a fresh load from the current
+        // view — so a reused/fresh context never serves stale, pre-edit data.
+        if (iDContext.ui() !== undefined) {
           iDContext.reset();
           iDContext.ui().restart();
+        } else {
+          iDContext.init();
         }
 
         iDContext.connection().switch({
           url: tokenData.sandbox_api_url,
           access_token: tokenData.access_token,
         });
-
-        if (isFreshContext) {
-          // The sandbox connection's tile/entity cache lives at module scope
-          // in @osm-sandbox/sandbox-id, shared by every context built from
-          // this package for the whole browser session — it isn't cleared
-          // just because we built a brand new context object (e.g. after
-          // switching away to the OSM iD editor and back). Only reset()
-          // clears it, so call it here too or this fresh context can still
-          // serve stale, pre-edit data for a task we already visited before.
-          // init() already kicked off a tile fetch for the URL hash's
-          // location (this task's own area), so reset() just aborted that
-          // in-flight request — force a redraw of the current view (now
-          // that the connection is switched to the right one above) so it
-          // actually gets re-requested instead of staying blank.
-          iDContext.reset();
-          const map = iDContext.map();
-          map.centerZoom(map.center(), map.zoom());
-        }
 
         const thereAreChanges = (changes) =>
           changes.modified.length || changes.created.length || changes.deleted.length;
