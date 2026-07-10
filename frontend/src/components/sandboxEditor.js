@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -15,19 +15,9 @@ import {
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
 import { useOsmFeaturesQuery } from '../api/projects';
-import {
-  registerIdEditorStylesheet,
-  activateIdEditorStylesheet,
-} from '../utils/idEditorStylesheets';
+import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
 
-// @osm-sandbox/sandbox-id has no real ESM/CJS exports — it only assigns
-// itself to window.iD as a side effect on import. Capture it here, right
-// after the imports above force that assignment, so this module keeps its
-// own private reference instead of the shared global, which
-// @openstreetmap/id (imported by editor.js) later overwrites.
-const sandboxID = window.iD;
-
-registerIdEditorStylesheet('sandbox');
+const sandboxID = captureIdEditorPackage();
 
 export default function SandboxEditor({
   setDisable,
@@ -62,14 +52,6 @@ export default function SandboxEditor({
 
   useSandboxOAuthCallback(sandboxId);
 
-  // Only one of the OSM iD editor / Sandbox editor is ever mounted at a
-  // time, but both of their stylesheets stay loaded for the whole page
-  // session once visited. Disable the other one's so its rules can't leak
-  // into this editor via their shared ".ideditor" root class.
-  useLayoutEffect(() => {
-    activateIdEditorStylesheet('sandbox');
-  }, []);
-
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
@@ -90,10 +72,9 @@ export default function SandboxEditor({
   }, [customImageryIsSet, imagery, iDContext, customSource]);
 
   useEffect(() => {
-    if (iDContext === null) {
-      // we need to keep iD context on redux store because iD works better if
-      // the context is not restarted while running in the same browser session
-      dispatch({ type: 'SET_EDITOR', context: sandboxID.coreContext() });
+    const context = resolveIdEditorContext(iDContext, 'sandbox', () => sandboxID.coreContext());
+    if (context && context !== iDContext) {
+      dispatch({ type: 'SET_EDITOR', context });
     }
   }, [iDContext, dispatch]);
 
@@ -106,7 +87,14 @@ export default function SandboxEditor({
   // Initialize sandbox editor
   useEffect(() => {
     const initializeSandbox = async () => {
-      if (!session || !locale || !iD || !iDContext || isInitialized) {
+      if (
+        !session ||
+        !locale ||
+        !iD ||
+        !iDContext ||
+        iDContext.__idEditorType !== 'sandbox' ||
+        isInitialized
+      ) {
         return;
       }
       const authStatus = sandboxAuthStatus?.[sandboxId];
@@ -151,7 +139,16 @@ export default function SandboxEditor({
           .setsDocumentTitle(false)
           .containerNode(document.getElementById('id-container'));
 
-        // init the ui or restart if it was loaded previously
+        // @osm-sandbox/sandbox-id has no dark theme of its own, but it shares the
+        // "ideditor" root class with @openstreetmap/id, which does have one keyed
+        // off the OS/browser's prefers-color-scheme. Force light explicitly so
+        // this editor doesn't pick up a dark theme it was never styled for.
+        iDContext.container().classed('theme-light', true);
+
+        // init the ui or restart if it was loaded previously. Either path ends
+        // with connection().switch() below, which resets the (module-scoped,
+        // session-wide) tile cache and triggers a fresh load from the current
+        // view — so a reused/fresh context never serves stale, pre-edit data.
         if (iDContext.ui() !== undefined) {
           iDContext.reset();
           iDContext.ui().restart();
@@ -288,9 +285,6 @@ export default function SandboxEditor({
     return () => {
       // Reset auth status for this sandbox on unmount
       dispatch(setSandboxAuthStatus(sandboxId, 'idle'));
-      // Reset context on unmount so the OSM iD editor always gets a fresh context
-      // from its own iD module (@openstreetmap/id), preventing cross-editor context bleed.
-      dispatch({ type: 'SET_EDITOR', context: null });
     };
   }, [dispatch, sandboxId]);
 
