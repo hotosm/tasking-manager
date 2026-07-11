@@ -20,17 +20,20 @@ export async function handleErrors(response, defaultMessage = 'Something went wr
   }
 
   let text;
+  let apiError;
   await response
     .clone()
     .json()
     .then((res) => {
       text = res.SubCode || res.error?.sub_code || response.statusText;
-    });
+      apiError = res.Error;
+    })
+    .catch(() => {});
 
-    console.log(text, 'text******');
-
-
-  throw Error(text || defaultMessage);
+  const err = new Error(text || defaultMessage);
+  err.subCode = text;
+  err.apiError = apiError;
+  throw err;
 }
 
 export function cancelableFetchJSON(url: string) {

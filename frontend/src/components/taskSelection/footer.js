@@ -50,13 +50,17 @@ const TaskSelectionFooter = ({
     navigate(`/projects/${project.projectId}/${endpoint}/${urlParams}`);
   };
 
-  const lockFailed = (windowObjectReference, message) => {
+  const lockFailed = (windowObjectReference, error) => {
     // JOSM and iD don't open a new window
     if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
-    setLockError(message);
+    setLockError(
+      typeof error === 'object' && error !== null
+        ? error
+        : { subCode: error, detail: null },
+    );
     setIsPending(false);
   };
 
@@ -107,7 +111,9 @@ const TaskSelectionFooter = ({
           .then((res) => {
             lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
           })
-          .catch((e) => lockFailed(windowObjectReference, e.message));
+          .catch((e) =>
+            lockFailed(windowObjectReference, { subCode: e.subCode || e.message, detail: e.apiError }),
+          );
       }
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(taskAction)) {
@@ -120,7 +126,9 @@ const TaskSelectionFooter = ({
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
         })
-        .catch((e) => lockFailed(windowObjectReference, e.message));
+        .catch((e) =>
+          lockFailed(windowObjectReference, { subCode: e.subCode || e.message, detail: e.apiError }),
+        );
     }
     if (['resumeMapping', 'resumeValidation'].includes(taskAction)) {
       const urlParams = openEditor(
