@@ -19,6 +19,9 @@ export function useContributorStats(contributions) {
         validators: contributions.filter((i) => i.validated > 0).length,
         mappers: contributions.filter((i) => i.mapped > 0).length,
         usersByLevel: contributions.reduce((prev, curr) => {
+          if (!curr.mappingLevel) {
+            return prev;
+          }
           const level = curr.mappingLevel.split(' ')[0].toUpperCase();
           if (!Object.hasOwnProperty.call(prev, level)) {
             prev[level] = 0;

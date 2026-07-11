@@ -6,10 +6,12 @@ export const formatChartData = (reference, stats) => {
       return f.field(stats) || 0;
     }
 
-    return stats[f.field];
+    return stats[f.field] || 0;
   });
   const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-  data.datasets[0].data = data.datasets[0].data.map((v) => Math.round((v / total) * 100));
+  if (total > 0) {
+    data.datasets[0].data = data.datasets[0].data.map((v) => Math.round((v / total) * 100));
+  }
   data.datasets[0].backgroundColor = reference.map((f) => f.backgroundColor);
   data.datasets[0].borderColor = reference.map((f) => f.borderColor);
   data.labels = reference.map((f) => f.label);
