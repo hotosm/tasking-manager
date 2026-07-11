@@ -5,7 +5,6 @@ export default defineMessages({
   badgeInfo: { id: 'management.titles.badge_information', defaultMessage: 'Badge information' },
   badges: { id: 'management.badges', defaultMessage: 'Badges' },
   building: { id: 'management.badges.building', defaultMessage: 'buildings added' },
-  cancel: { id: 'management.button.cancel', defaultMessage: 'Cancel' },
   changeset: { id: 'management.badges.changeset', defaultMessage: 'Number of changesets' },
   changesets: { id: 'management.badges.changesets', defaultMessage: 'Changesets' },
   description: { id: 'management.fields.description', defaultMessage: 'Description' },

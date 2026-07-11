@@ -3,7 +3,6 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   add: { id: 'management.levels.add', defaultMessage: 'Add' },
   approvals_required: { id: 'management.levels.approvals_required', defaultMessage: 'Approvals required' },
-  cancel: { id: 'management.button.cancel', defaultMessage: 'Cancel' },
   color: { id: 'management.levels.color', defaultMessage: 'Color' },
   levelInfoTitle: { id: 'management.titles.level_information', defaultMessage: 'Level information' },
   levels: { id: 'management.levels', defaultMessage: 'Levels' },

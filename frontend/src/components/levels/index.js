@@ -6,6 +6,7 @@ import Select from 'react-select';
 import { useState } from 'react';
 
 import messages from './messages';
+import sharedMessages from '../teamsAndOrgs/messages';
 import { Button } from '../button';
 import { Management } from '../teamsAndOrgs/management';
 import { nCardPlaceholders } from './nCardPlaceholder';
@@ -230,7 +231,7 @@ export const LevelForm = ({ level, badges, updateLevel }) => {
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
                   <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
-                    <FormattedMessage {...messages.cancel} />
+                    <FormattedMessage {...sharedMessages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
