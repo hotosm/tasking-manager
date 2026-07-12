@@ -2,48 +2,35 @@
  * Maps API lock SubCodes to taskSelection message keys.
  * Legacy SubCodes (e.g. UserNotAllowed) use the `${code}Error` pattern in messages.js.
  */
-export const LOCK_SUBCODE_MESSAGES = {
-  'MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL': {
-    title: 'permissionErrorTitle',
-    description: 'permissionError_userLevelToMap',
-  },
-  'MappingNotAllowed.USER_NOT_TEAM_MEMBER': {
-    title: 'permissionErrorTitle',
-    description: 'permissionError_userIsNotMappingTeamMember',
-  },
-  'MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST': {
-    title: 'UserNotAllowedError',
-    description: 'UserNotAllowedErrorDescription',
-  },
-  'MappingNotAllowed.PROJECT_NOT_PUBLISHED': {
-    title: 'ProjectNotPublishedError',
-    description: 'ProjectNotPublishedErrorDescription',
-  },
-  'MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED': {
-    title: 'lockError',
-    description: 'lockErrorDescription',
-  },
-  'MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE': {
-    title: 'lockErrorLicense',
-    description: 'lockErrorLicenseDescription',
-  },
-  'ValidatingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL': {
-    title: 'permissionErrorTitle',
-    description: 'permissionError_userLevelToValidate',
-  },
-  'ValidatingNotAllowed.USER_NOT_TEAM_MEMBER': {
-    title: 'permissionErrorTitle',
-    description: 'permissionError_userIsNotValidationTeamMember',
-  },
-  'ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST': {
-    title: 'UserNotAllowedError',
-    description: 'UserNotAllowedErrorDescription',
-  },
-  'ValidatingNotAllowed.PROJECT_NOT_PUBLISHED': {
-    title: 'ProjectNotPublishedError',
-    description: 'ProjectNotPublishedErrorDescription',
-  },
-};
+
+function lockMessages(entries) {
+  return entries.reduce((acc, [suffix, title, mapDescription, validateDescription = mapDescription]) => {
+    acc[`MappingNotAllowed.${suffix}`] = { title, description: mapDescription };
+    if (validateDescription !== null) {
+      acc[`ValidatingNotAllowed.${suffix}`] = { title, description: validateDescription };
+    }
+    return acc;
+  }, {});
+}
+
+export const LOCK_SUBCODE_MESSAGES = lockMessages([
+  [
+    'USER_NOT_CORRECT_MAPPING_LEVEL',
+    'permissionErrorTitle',
+    'permissionError_userLevelToMap',
+    'permissionError_userLevelToValidate',
+  ],
+  [
+    'USER_NOT_TEAM_MEMBER',
+    'permissionErrorTitle',
+    'permissionError_userIsNotMappingTeamMember',
+    'permissionError_userIsNotValidationTeamMember',
+  ],
+  ['USER_NOT_ON_ALLOWED_LIST', 'UserNotAllowedError', 'UserNotAllowedErrorDescription'],
+  ['PROJECT_NOT_PUBLISHED', 'ProjectNotPublishedError', 'ProjectNotPublishedErrorDescription'],
+  ['USER_ALREADY_HAS_TASK_LOCKED', 'lockError', 'lockErrorDescription', null],
+  ['USER_NOT_ACCEPTED_LICENSE', 'lockErrorLicense', 'lockErrorLicenseDescription', null],
+]);
 
 export function normalizeLockError(error) {
   if (error && typeof error === 'object' && error.subCode) {
