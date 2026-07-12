@@ -1,0 +1,40 @@
+Tasking Manager — Download OSM Data FAQ
+========================================
+
+How do I download project data?
+--------------------------------
+Most projects include a **Download OSM Data** section on the project detail page.
+Choose a mapping category (roads, buildings, waterways, land use) and a format
+(GeoJSON, SHP, or KML). Files download directly from HOT's export storage — you
+do not need to open a GitHub issue or wait on a manual request for these
+standard per-project exports.
+
+How often is data updated?
+---------------------------
+Project extracts are regenerated on a daily schedule (around 12:00 UTC). The
+project page shows a "Last Generated" timestamp when a file is available.
+
+What if a download is unavailable?
+----------------------------------
+The ZIP may not exist yet for that feature type, or the extract may be inactive.
+You can wait for the next refresh, or export the mapped area from OpenStreetMap
+using the HOT Export Tool (https://export.hotosm.org/) or other OSM tooling
+without going through Tasking Manager.
+
+When should I contact the HOT data team?
+----------------------------------------
+Open a GitHub issue in hotosm/tasking-manager when you need something beyond the
+self-service project downloads — for example bulk multi-project exports, custom
+formats or filters not offered on the project page, or partner agreements that
+need special handling. See issue #6229 and discussion #6228 for context.
+
+What license applies?
+---------------------
+Downloads follow the license configured on the project (typically ODbL for
+OpenStreetMap-derived data). Respect any additional project-specific terms.
+
+Related tracking
+----------------
+- Info icon on Download OSM Data: https://github.com/hotosm/tasking-manager/issues/6227
+- FAQ document setup: https://github.com/hotosm/tasking-manager/issues/6229
+- Community discussion: https://github.com/hotosm/tasking-manager/discussions/6228
