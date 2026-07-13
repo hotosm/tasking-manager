@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
@@ -7,19 +7,9 @@ import '@openstreetmap/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
-import {
-  registerIdEditorStylesheet,
-  activateIdEditorStylesheet,
-} from '../utils/idEditorStylesheets';
+import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
 
-// @openstreetmap/id has no real ESM/CJS exports — it only assigns itself to
-// window.iD as a side effect on import. Capture it here, right after the
-// import above forces that assignment, so this module keeps its own private
-// reference instead of the shared global, which @osm-sandbox/sandbox-id
-// (imported by sandboxEditor.js) later overwrites.
-const officialID = window.iD;
-
-registerIdEditorStylesheet('official');
+const officialID = captureIdEditorPackage();
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
@@ -31,14 +21,6 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   const windowInit = typeof window !== 'undefined';
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
-
-  // Only one of the OSM iD editor / Sandbox editor is ever mounted at a
-  // time, but both of their stylesheets stay loaded for the whole page
-  // session once visited. Disable the other one's so its rules can't leak
-  // into this editor via their shared ".ideditor" root class.
-  useLayoutEffect(() => {
-    activateIdEditorStylesheet('official');
-  }, []);
 
   useEffect(() => {
     if (!customImageryIsSet && imagery && customSource) {
@@ -83,22 +65,12 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
   useEffect(() => {
-    if (windowInit) {
-      if (iDContext === null) {
-        // we need to keep iD context on redux store because iD works better if
-        // the context is not restarted while running in the same browser session
-        dispatch({ type: 'SET_EDITOR', context: officialID.coreContext() });
-      }
+    if (!windowInit) return;
+    const context = resolveIdEditorContext(iDContext, 'official', () => officialID.coreContext());
+    if (context && context !== iDContext) {
+      dispatch({ type: 'SET_EDITOR', context });
     }
   }, [windowInit, iDContext, dispatch]);
-
-  // Reset context on unmount so the sandbox editor always gets a fresh context
-  // from its own iD module (sandbox-id), preventing cross-editor context bleed.
-  useEffect(() => {
-    return () => {
-      dispatch({ type: 'SET_EDITOR', context: null });
-    };
-  }, [dispatch]);
 
   useEffect(() => {
     if (iDContext && comment) {
@@ -107,7 +79,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   }, [comment, iDContext]);
 
   useEffect(() => {
-    if (session && locale && iD && iDContext) {
+    if (session && locale && iD && iDContext && iDContext.__idEditorType === 'official') {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets.length) {
@@ -125,7 +97,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         .locale(locale)
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
-      // init the ui or restart if it was loaded previously
+      // init the ui or restart if it was loaded previously. Either path ends
+      // with osm.switch() below, which resets the (module-scoped, session-wide)
+      // tile cache and triggers a fresh load from the current view — so a
+      // reused/fresh context never serves stale, pre-edit data.
       if (iDContext.ui() !== undefined) {
         iDContext.reset();
         iDContext.ui().restart();
