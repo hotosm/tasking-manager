@@ -11,6 +11,9 @@ frontend/package-lock.json
 frontend/.env
 frontend/.eslintcache
 frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright/.cache/
 # Sentry Auth Token
 frontend/.sentryclirc
 
