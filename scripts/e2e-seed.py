@@ -126,6 +126,10 @@ async def clean_existing_project(db, project_name):
     for row in rows:
         project_id = row["id"]
         await db.execute(
+            "DELETE FROM messages WHERE project_id = :project_id",
+            {"project_id": project_id},
+        )
+        await db.execute(
             "DELETE FROM task_history WHERE project_id = :project_id",
             {"project_id": project_id},
         )

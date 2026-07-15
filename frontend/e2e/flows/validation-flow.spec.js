@@ -1,6 +1,12 @@
 const { test, expect } = require('@playwright/test');
+const { performance } = require('perf_hooks');
 const { loginAsValidator } = require('../fixtures/auth');
 const { mockCommonAPI } = require('../fixtures/api-routes');
+const { seed, isRealBackend } = require('../fixtures/e2e-seed');
+
+const projectId = isRealBackend ? seed.project.id : 123;
+const projectName = isRealBackend ? seed.project.name : 'La Paz Buildings';
+const validationTaskId = isRealBackend ? 1 : 11;
 
 test.describe('Flujo de Validación (funcional / usabilidad)', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,55 +19,85 @@ test.describe('Flujo de Validación (funcional / usabilidad)', () => {
       removeOverlay();
       setInterval(removeOverlay, 500);
     });
-    await mockCommonAPI(page, {
-      userLockedTasksDetails: {
-        tasks: [
-          {
-            taskId: 11,
-            projectId: 123,
-            taskStatus: 'LOCKED_FOR_VALIDATION',
-            lockHolder: 'test_validator',
-            taskHistory: [
-              {
-                historyId: 1,
-                taskId: null,
-                action: 'LOCKED_FOR_VALIDATION',
-                actionText: null,
-                actionDate: new Date().toISOString(),
-                actionBy: 'test_validator',
-                pictureUrl: null,
-                issues: null,
-              },
-            ],
-            taskAnnotation: [],
-            perTaskInstructions: '',
-            autoUnlockSeconds: 7200,
-            lastUpdated: new Date().toISOString(),
-            numberOfComments: null,
-          },
-        ],
-      },
-    });
-    await loginAsValidator(page);
-    // Esperar a que el login se refleje en la UI antes de navegar a rutas protegidas.
-    await expect(page.getByText(/NRCS_Duduwa Mapping/i)).toBeVisible();
+
+    if (!isRealBackend) {
+      await mockCommonAPI(page, {
+        userLockedTasksDetails: {
+          tasks: [
+            {
+              taskId: 11,
+              projectId: 123,
+              taskStatus: 'LOCKED_FOR_VALIDATION',
+              lockHolder: 'test_validator',
+              taskHistory: [
+                {
+                  historyId: 1,
+                  taskId: null,
+                  action: 'LOCKED_FOR_VALIDATION',
+                  actionText: null,
+                  actionDate: new Date().toISOString(),
+                  actionBy: 'test_validator',
+                  pictureUrl: null,
+                  issues: null,
+                },
+              ],
+              taskAnnotation: [],
+              perTaskInstructions: '',
+              autoUnlockSeconds: 7200,
+              lastUpdated: new Date().toISOString(),
+              numberOfComments: null,
+            },
+          ],
+        },
+      });
+    }
   });
 
-  test('login como validador -> abrir tarea mapeada -> cargar botones validar/rechazar', async ({ page }) => {
-    // Ir directamente a la página de validación con editor iD
-    await page.goto('/projects/123/validate?editor=ID');
+  test('login como validador -> seleccionar tarea mapeada -> validar tarea', async ({ page }) => {
+    const timings = {};
 
-    // Esperar a que el sidebar cargue y muestre el título del proyecto
-    await expect(page.getByRole('heading', { name: /La Paz Buildings/i })).toBeVisible();
+    // 1. Login
+    const loginStart = performance.now();
+    await loginAsValidator(page);
+    await expect(page.getByText(projectName)).toBeVisible();
+    timings.loginToExplore = performance.now() - loginStart;
 
-    // Cambiar a la pestaña Completion
-    await page.getByRole('button', { name: 'Completion', exact: true }).click();
+    // 2. Ir a la selección de tareas y buscar la tarea MAPPED (#1)
+    const taskSelectionStart = performance.now();
+    await page.goto(`/projects/${projectId}/tasks?search=${validationTaskId}`);
+    await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/tasks`));
 
-    // Verificar radios de validar/rechazar para la tarea 11
-    await expect(page.locator('input[id="#11-VALIDATED"]')).toBeVisible();
-    await expect(page.locator('input[id="#11-INVALIDATED"]')).toBeVisible();
+    // 3. Clic en "Validate selected task" (o "Resume validation" si ya está bloqueada)
+    const validateButton = page.getByRole('button', { name: /Validate selected task|Resume validation/i }).first();
+    await expect(validateButton).toBeVisible();
+    await validateButton.click();
 
-    // Verificar botón Submit task
-    await expect(page.getByRole('button', { name: /Submit task/i })).toBeVisible();
+    // 4. Verificar navegación a la vista de validación y abrir la pestaña Completion
+    await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/validate`));
+    await expect(page.getByRole('heading', { name: new RegExp(projectName, 'i') })).toBeVisible();
+    const completionTab = page.getByRole('button', { name: /Completion/i }).first();
+    await expect(completionTab).toBeVisible();
+    await completionTab.click();
+    timings.taskSelectionToValidation = performance.now() - taskSelectionStart;
+
+    // 5. Seleccionar VALIDATED y enviar la tarea
+    const validationStart = performance.now();
+    await page.locator(`label[for="#${validationTaskId}-VALIDATED"]`).click();
+
+    const submitButton = page.getByRole('button', { name: /Submit task/i });
+    await expect(submitButton).toBeVisible();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.click();
+
+    // 6. Verificar redirección tras envío exitoso
+    await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/tasks`));
+    timings.validationToSubmit = performance.now() - validationStart;
+
+    // 7. Aserciones de desempeño
+    expect(timings.loginToExplore).toBeLessThan(10000);
+    expect(timings.taskSelectionToValidation).toBeLessThan(90000);
+    expect(timings.validationToSubmit).toBeLessThan(30000);
+
+    console.log('Timings (ms):', timings);
   });
 });

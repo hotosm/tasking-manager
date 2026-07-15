@@ -92,7 +92,7 @@ Proyecto de prueba: `E2E Mapping Project` (ID asignado por la base de datos).
 | Fase | Flujo | Estado |
 | :--- | :--- | :--- |
 | 1 | Mapeo | Completado |
-| 2 | Validación | Pendiente |
+| 2 | Validación | Completado |
 | 3 | Administración / Crear proyecto | Pendiente |
 
 ## 5. Entregables
