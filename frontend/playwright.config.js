@@ -5,6 +5,7 @@ const isRealBackend = process.env.E2E_BACKEND === 'real';
 
 module.exports = defineConfig({
   testDir: './e2e',
+  globalSetup: require.resolve('./e2e/global-setup.js'),
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
