@@ -2,6 +2,11 @@ const { test, expect } = require('@playwright/test');
 const { performance } = require('perf_hooks');
 const { loginAsMapper } = require('../fixtures/auth');
 const { mockCommonAPI } = require('../fixtures/api-routes');
+const { seed, isRealBackend } = require('../fixtures/e2e-seed');
+
+const projectId = isRealBackend ? seed.project.id : 7935;
+const projectName = isRealBackend ? seed.project.name : 'NRCS_Duduwa Mapping';
+const readyTaskId = isRealBackend ? 2 : 1;
 
 test.describe('Flujo de Mapeo (desempeño)', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,35 +19,38 @@ test.describe('Flujo de Mapeo (desempeño)', () => {
       removeOverlay();
       setInterval(removeOverlay, 500);
     });
-    await mockCommonAPI(page, {
-      userLockedTasksDetails: {
-        tasks: [
-          {
-            taskId: 1,
-            projectId: 7935,
-            taskStatus: 'LOCKED_FOR_MAPPING',
-            lockHolder: 'test_mapper',
-            taskHistory: [
-              {
-                historyId: 1,
-                taskId: null,
-                action: 'LOCKED_FOR_MAPPING',
-                actionText: null,
-                actionDate: new Date().toISOString(),
-                actionBy: 'test_mapper',
-                pictureUrl: null,
-                issues: null,
-              },
-            ],
-            taskAnnotation: [],
-            perTaskInstructions: '',
-            autoUnlockSeconds: 7200,
-            lastUpdated: new Date().toISOString(),
-            numberOfComments: null,
-          },
-        ],
-      },
-    });
+
+    if (!isRealBackend) {
+      await mockCommonAPI(page, {
+        userLockedTasksDetails: {
+          tasks: [
+            {
+              taskId: 1,
+              projectId: 7935,
+              taskStatus: 'LOCKED_FOR_MAPPING',
+              lockHolder: 'test_mapper',
+              taskHistory: [
+                {
+                  historyId: 1,
+                  taskId: null,
+                  action: 'LOCKED_FOR_MAPPING',
+                  actionText: null,
+                  actionDate: new Date().toISOString(),
+                  actionBy: 'test_mapper',
+                  pictureUrl: null,
+                  issues: null,
+                },
+              ],
+              taskAnnotation: [],
+              perTaskInstructions: '',
+              autoUnlockSeconds: 7200,
+              lastUpdated: new Date().toISOString(),
+              numberOfComments: null,
+            },
+          ],
+        },
+      });
+    }
   });
 
   test('login -> buscar proyecto -> seleccionar tarea -> abrir editor de mapeo', async ({ page }) => {
@@ -51,22 +59,21 @@ test.describe('Flujo de Mapeo (desempeño)', () => {
     // 1. Login
     const loginStart = performance.now();
     await loginAsMapper(page);
-    await expect(page.getByText('NRCS_Duduwa Mapping')).toBeVisible();
+    await expect(page.getByText(projectName)).toBeVisible();
     timings.loginToExplore = performance.now() - loginStart;
 
     // 2. Buscar proyecto y hacer clic
     const exploreStart = performance.now();
-    const projectCard = page.locator('.project-card').filter({ hasText: 'NRCS_Duduwa Mapping' }).first();
+    const projectCard = page.locator('.project-card').filter({ hasText: projectName }).first();
     await expect(projectCard).toBeVisible();
     await projectCard.click();
     await expect(page).toHaveURL(/\/projects\/\d+$/);
-    await expect(page.getByRole('heading', { name: /Sample Project/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: new RegExp(projectName, 'i') })).toBeVisible();
     timings.exploreToProjectDetail = performance.now() - exploreStart;
 
-    // 3. Ir a selección de tareas buscando la tarea #1
+    // 3. Ir a selección de tareas buscando la tarea lista
     const detailStart = performance.now();
-    const projectId = 7935;
-    await page.goto(`/projects/${projectId}/tasks?search=1`);
+    await page.goto(`/projects/${projectId}/tasks?search=${readyTaskId}`);
     await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/tasks`));
     timings.projectDetailToTaskSelection = performance.now() - detailStart;
 

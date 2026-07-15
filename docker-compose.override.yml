@@ -1,0 +1,18 @@
+name: tasking-manager-main
+
+services:
+  tm-db:
+    # Expose PostGIS on host port 5434 to avoid conflicts with local postgres.
+    ports:
+      - 5434:5432
+
+  tm-backend:
+    # Expose FastAPI backend directly on host port 5000.
+    # The base image already runs uvicorn on port 5000 (debug/prod CMD).
+    ports:
+      - 5000:5000
+    # Mount scripts/ and frontend/ so the E2E seed script can run inside the
+    # container and write its token manifest back to the host workspace.
+    volumes:
+      - ./scripts:/usr/src/app/scripts
+      - ./frontend:/usr/src/app/frontend

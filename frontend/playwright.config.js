@@ -1,6 +1,8 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
+const isRealBackend = process.env.E2E_BACKEND === 'real';
+
 module.exports = defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -27,5 +29,11 @@ module.exports = defineConfig({
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: true,
     timeout: 300_000,
+    env: {
+      E2E_BACKEND: process.env.E2E_BACKEND || '',
+      TM_APP_API_URL: isRealBackend
+        ? 'http://127.0.0.1:5000/api'
+        : 'http://127.0.0.1:3000/api',
+    },
   },
 });

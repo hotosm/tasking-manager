@@ -1,20 +1,39 @@
 const { userQueryDetails } = require('../../src/network/tests/mockData/userList');
+const { seed, isRealBackend } = require('./e2e-seed');
 
-const TEST_USER = {
-  username: 'test_mapper',
-  sessionToken: 'validSessionToken',
-  osmToken: 'validOsmToken',
-};
+const TEST_USER = isRealBackend
+  ? {
+      username: seed.mapper.username,
+      sessionToken: seed.mapper.token,
+      osmToken: 'fake',
+    }
+  : {
+      username: 'test_mapper',
+      sessionToken: 'validSessionToken',
+      osmToken: 'validOsmToken',
+    };
 
-const ADMIN_USER = {
-  ...TEST_USER,
-  username: 'test_admin',
-};
+const ADMIN_USER = isRealBackend
+  ? {
+      username: seed.admin.username,
+      sessionToken: seed.admin.token,
+      osmToken: 'fake',
+    }
+  : {
+      ...TEST_USER,
+      username: 'test_admin',
+    };
 
-const VALIDATOR_USER = {
-  ...TEST_USER,
-  username: 'test_validator',
-};
+const VALIDATOR_USER = isRealBackend
+  ? {
+      username: seed.validator.username,
+      sessionToken: seed.validator.token,
+      osmToken: 'fake',
+    }
+  : {
+      ...TEST_USER,
+      username: 'test_validator',
+    };
 
 async function loginViaCallback(page, user = TEST_USER, redirectTo = '/explore') {
   const params = new URLSearchParams({
