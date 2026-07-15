@@ -93,7 +93,7 @@ Proyecto de prueba: `E2E Mapping Project` (ID asignado por la base de datos).
 | :--- | :--- | :--- |
 | 1 | Mapeo | Completado |
 | 2 | Validación | Completado |
-| 3 | Administración / Crear proyecto | Pendiente |
+| 3 | Administración / Crear proyecto | Completado |
 
 ## 5. Entregables
 
