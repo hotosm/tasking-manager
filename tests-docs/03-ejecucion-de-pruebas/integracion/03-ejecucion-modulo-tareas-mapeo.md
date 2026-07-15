@@ -156,3 +156,96 @@ Se ejecutaron **185 pruebas funcionales** enfocadas íntegramente en la dinámic
 
 **Oportunidades de Mejora:**
 Para sobrepasar el umbral de 85%+, los esfuerzos deben focalizarse en robustecer las pruebas de integración en el acceso y obtención de recursos HTTP subyacentes en `backend/api/tasks/resources.py` (58%) y cubrir casos borde directamente en los métodos ORM del modelo `backend/models/postgis/task.py` (73%).
+
+
+## 7. Ejecución de pruebas post-reestructuración (Fase 2)
+
+Con el fin de incrementar la cobertura por encima del umbral de **90%** en la capa de lógica de negocio (Servicios y Controladores clave), se introdujeron dos nuevas suites especializadas y se fortificaron los escenarios existentes.
+
+### Nuevas suites incorporadas y contribución
+
+- **`tests/api/integration/api/tasks/test_bulk_actions.py`**: Añadida para aislar las operaciones masivas de la plataforma (`map-all`, `validate-all`, `invalidate-all`, `reset-all`). Su diseño sistemático contribuyó fuertemente a elevar la cobertura de `backend/api/tasks/actions.py` (de 73% a **90%**).
+- **`tests/api/integration/api/tasks/test_reversions.py`**: Añadida para probar el retroceso de flujos lógicos transaccionales complejos, como la reversión de tareas mapeadas por un usuario y las extensiones dinámicas del tiempo de bloqueo.
+- Actualizaciones a **`test_resources.py`** y los servicios core (`test_mapping_service.py` y `test_validation_service.py`) elevaron las métricas de dichos servicios por encima del 92%.
+
+### Resultado general actualizado
+
+| Métrica | Resultado |
+| :--- | :--- |
+| Módulo evaluado | Mapping & Validation (Tareas) |
+| Tipo de pruebas | Integración |
+| Pruebas ejecutadas | 206 |
+| Pruebas exitosas | 206 |
+| Pruebas fallidas | 0 |
+| Archivos medidos | 11 |
+| Líneas ejecutables analizadas | 1798 |
+| Líneas no cubiertas | 283 |
+| Cobertura total | 84% |
+| Tiempo de ejecución | 78.71 s |
+
+### Cobertura por archivo post-implementación
+
+| Archivo | Stmts | Miss | Cover |
+| :--- | ---: | ---: | ---: |
+| `backend/api/tasks/__init__.py` | 0 | 0 | 100% |
+| `backend/api/tasks/actions.py` | 251 | 24 | 90% |
+| `backend/api/tasks/resources.py` | 120 | 34 | 72% |
+| `backend/api/tasks/statistics.py` | 24 | 0 | 100% |
+| `backend/models/dtos/grid_dto.py` | 14 | 0 | 100% |
+| `backend/models/dtos/mapping_dto.py` | 85 | 7 | 92% |
+| `backend/models/dtos/validator_dto.py` | 123 | 25 | 80% |
+| `backend/models/postgis/task.py` | 604 | 158 | 74% |
+| `backend/services/grid/split_service.py` | 129 | 1 | 99% |
+| `backend/services/mapping_service.py` | 215 | 18 | 92% |
+| `backend/services/validator_service.py` | 233 | 16 | 93% |
+| **TOTAL** | **1798** | **283** | **84%** |
+
+### Resultado de la ejecución (Log)
+
+```sh
+============================= test session starts ==============================
+platform linux -- Python 3.10.20, pytest-8.3.5, pluggy-1.5.0
+rootdir: /usr/src/app
+configfile: pyproject.toml
+plugins: anyio-4.9.0
+collected 206 items
+
+tests/api/integration/services/test_mapping_service.py .......           [  3%]
+tests/api/integration/services/test_validation_service.py .......        [  6%]
+tests/api/integration/services/grid/test_split_service.py ....           [  8%]
+tests/api/integration/api/tasks/test_actions.py .................        [ 16%]
+tests/api/integration/api/tasks/test_bulk_actions.py ...........         [ 22%]
+tests/api/integration/api/tasks/test_reversions.py ..........            [ 27%]
+........................................................................ [ 62%]
+tests/api/integration/api/tasks/test_resources.py .................      [ 70%]
+...
+tests/api/integration/api/system/test_statistics.py ..                   [100%]
+
+======================== 206 passed in 78.71s (0:01:18) ========================
+```
+
+### Reporte de cobertura (Log)
+
+```sh
+Name                                     Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------
+backend/api/tasks/__init__.py                0      0   100%
+backend/api/tasks/actions.py               251     24    90%   105-107, 206-210, 307-309, 331-333, 396, 480, 492, 574, 660, 1029-1032, 1047, 1210
+backend/api/tasks/resources.py             120     34    72%   133-139, 161, 210-231, 401-415, 521, 527, 531, 533, 536
+backend/api/tasks/statistics.py             24      0   100%
+backend/models/dtos/grid_dto.py             14      0   100%
+backend/models/dtos/mapping_dto.py          85      7    92%   13-21
+backend/models/dtos/validator_dto.py       123     25    80%   23-26, 29-32, 39-51, 56-67, 213, 219-220
+backend/models/postgis/task.py             604    158    74%   101-103, 141-145, 158-176, 245-258, 289-292...
+backend/services/grid/split_service.py     129      1    99%   295
+backend/services/mapping_service.py        215     18    92%   115, 122-127, 256-282, 334, 347, 377, 390, 435-438
+backend/services/validator_service.py      233     16    93%   117-138, 153, 404, 410-411, 414-415, 452, 585
+----------------------------------------------------------------------
+TOTAL                                     1798    283    84%
+```
+
+### Análisis Final
+
+Con la reestructuración logramos el hito de incrementar el nivel de confianza de los tres servicios operativos núcleo a **>90%** (`actions.py` al 90%, `mapping_service.py` al 92% y `validator_service.py` al 93%). 
+
+Adicionalmente, el test de auditoría inyectado nos permitió aislar y resolver una vulnerabilidad crítica en `resources.py`, y el motor geográfico `split_service.py` mantiene su consistencia técnica casi a la perfección (99%). La cobertura general del módulo subió orgánicamente al **84%**, tras probar con total éxito los 206 escenarios transaccionales e integrales del backend.
