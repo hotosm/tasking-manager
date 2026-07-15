@@ -42,7 +42,7 @@ Definir la estrategia, alcance, recursos y cronograma para la ejecución de prue
 ### 2.2. Criterios de entrada
 
 - Backend y base de datos desplegados y saludables con `docker-compose.e2e.yml`.
-- Script `scripts/e2e-seed.py` ejecutado sin errores.
+- Script `scripts/e2e-seed.py` ejecutado sin errores (automáticamente vía `globalSetup` cuando `E2E_BACKEND=real`).
 - Archivo `frontend/e2e/.e2e-seed.json` generado y accesible.
 - Entorno `E2E_BACKEND=real` configurado.
 
@@ -123,6 +123,7 @@ Done in 75.01s.
 
 - Código de pruebas en `frontend/e2e/flows/`.
 - Script de seed en `scripts/e2e-seed.py`.
+- `globalSetup` de Playwright en `frontend/e2e/global-setup.js`.
 - Archivo de override Docker `docker-compose.e2e.yml`.
 - Documentación en `tests-docs/01-plan-de-pruebas/05-plan-pruebas-e2e-backend-real/`.
 - Diseño de pruebas en `tests-docs/02-diseno-de-pruebas/e2e-backend-real/`.

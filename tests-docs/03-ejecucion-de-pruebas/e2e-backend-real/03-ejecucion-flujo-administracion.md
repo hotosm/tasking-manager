@@ -61,7 +61,11 @@ docker compose --env-file tasking-manager.env \
   up -d tm-db tm-migration tm-backend
 ```
 
-### 4.2. Sembrar datos de prueba
+### 4.2. Sembrar datos de prueba (automático)
+
+Cuando se ejecuta la suite con `E2E_BACKEND=real`, Playwright corre `frontend/e2e/global-setup.js` antes de los tests, el cual ejecuta `scripts/e2e-seed.py` dentro del contenedor `tm-backend`.
+
+Si prefieres correr el seed manualmente:
 
 ```bash
 docker compose --env-file tasking-manager.env \
