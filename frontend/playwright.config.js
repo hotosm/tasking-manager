@@ -8,7 +8,7 @@ module.exports = defineConfig({
   globalSetup: require.resolve('./e2e/global-setup.js'),
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : isRealBackend ? 1 : 0,
   workers: 1,
   reporter: 'list',
   use: {

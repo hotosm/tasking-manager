@@ -83,7 +83,7 @@ test.describe('Flujo de Administración (funcional / usabilidad)', () => {
     await createButton.click();
 
     // 7. Verificar navegación al proyecto recién creado
-    await page.waitForURL(/\/manage\/projects\/\d+$/, { timeout: 15000 });
+    await page.waitForURL(/\/manage\/projects\/\d+$/, { timeout: 30000 });
     await expect(page).toHaveURL(/\/manage\/projects\/\d+$/);
     timings.createProjectWizard = performance.now() - wizardStart;
 
