@@ -95,7 +95,31 @@ Proyecto de prueba: `E2E Mapping Project` (ID asignado por la base de datos).
 | 2 | Validación | Completado |
 | 3 | Administración / Crear proyecto | Completado |
 
-## 5. Entregables
+## 5. Ejecución de la Suite Completa
+
+La suite completa de los tres flujos E2E contra el backend real se ejecutó exitosamente el 2026-07-15 con el comando:
+
+```bash
+cd frontend
+E2E_BACKEND=real yarn test:e2e
+```
+
+Resultado:
+
+```text
+Running 3 tests using 1 worker
+
+  ✓  1 [chromium] › e2e\flows\admin-create-project-flow.spec.js:31:3 › Flujo de Administración (funcional / usabilidad) › login como admin -> panel manage -> crear proyecto -> importar AOI -> guardar borrador (13.5s)
+  ✓  2 [chromium] › e2e\flows\mapping-flow.spec.js:56:3 › Flujo de Mapeo (desempeño) › login -> buscar proyecto -> seleccionar tarea -> abrir editor de mapeo (11.5s)
+  ✓  3 [chromium] › e2e\flows\validation-flow.spec.js:56:3 › Flujo de Validación (funcional / usabilidad) -> login como validador -> seleccionar tarea mapeada -> validar tarea (23.7s)
+
+  3 passed (1.2m)
+Done in 75.01s.
+```
+
+> Nota: antes de cada ejecución completa se debe volver a correr `scripts/e2e-seed.py` para restablecer el estado controlado de la base de datos.
+
+## 6. Entregables
 
 - Código de pruebas en `frontend/e2e/flows/`.
 - Script de seed en `scripts/e2e-seed.py`.
@@ -104,7 +128,7 @@ Proyecto de prueba: `E2E Mapping Project` (ID asignado por la base de datos).
 - Diseño de pruebas en `tests-docs/02-diseno-de-pruebas/e2e-backend-real/`.
 - Reportes de ejecución en `tests-docs/03-ejecucion-de-pruebas/e2e-backend-real/`.
 
-## 6. Roles y Responsabilidades
+## 7. Roles y Responsabilidades
 
 | Rol | Responsable | Responsabilidad |
 | :--- | :--- | :--- |

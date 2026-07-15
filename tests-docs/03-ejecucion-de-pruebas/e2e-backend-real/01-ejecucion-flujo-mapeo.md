@@ -47,7 +47,7 @@
 | Usuario | `e2e_mapper` |
 | ID de usuario | `9999001` |
 | Proyecto | `E2E Mapping Project` |
-| ID de proyecto | `7` |
+| ID de proyecto | `36` (variable según seed) |
 | Tarea mapeada | `#2` (READY) |
 
 > El ID del proyecto puede variar entre ejecuciones porque el seed limpia y recrea el proyecto.
@@ -103,26 +103,23 @@ E2E_BACKEND=real yarn test:e2e --grep "Flujo de Mapeo"
 
 | Métrica | Valor obtenido | Umbral | Estado |
 | :--- | :--- | :--- | :--- |
-| `loginToExplore` | 5 375.65 ms | < 10 000 ms | ✅ Aprobado |
-| `exploreToProjectDetail` | 454.32 ms | < 10 000 ms | ✅ Aprobado |
-| `projectDetailToTaskSelection` | 510.95 ms | < 10 000 ms | ✅ Aprobado |
-| `taskSelectionToEditor` | 2 844.22 ms | < 90 000 ms | ✅ Aprobado |
+| `loginToExplore` | 3 497.27 ms | < 10 000 ms | ✅ Aprobado |
+| `exploreToProjectDetail` | 375.18 ms | < 10 000 ms | ✅ Aprobado |
+| `projectDetailToTaskSelection` | 516.04 ms | < 10 000 ms | ✅ Aprobado |
+| `taskSelectionToEditor` | 6 752.44 ms | < 90 000 ms | ✅ Aprobado |
 
 ## 7. Salida de la Ejecución
 
+La siguiente salida corresponde a la ejecución conjunta de la suite completa (`E2E_BACKEND=real yarn test:e2e`):
+
 ```text
-Running 1 test using 1 worker
-
 Timings (ms): {
-  loginToExplore: 5375.6466,
-  exploreToProjectDetail: 454.321899999999,
-  projectDetailToTaskSelection: 510.9470999999994,
-  taskSelectionToEditor: 2844.2158
+  loginToExplore: 3497.268400000001,
+  exploreToProjectDetail: 375.1759999999995,
+  projectDetailToTaskSelection: 516.0429999999978,
+  taskSelectionToEditor: 6752.4382000000005
 }
-  ✓  1 [chromium] › e2e\flows\mapping-flow.spec.js:56:3 › Flujo de Mapeo (desempeño) › login -> buscar proyecto -> seleccionar tarea -> abrir editor de mapeo (10.2s)
-
-  1 passed (33.9s)
-Done in 34.85s.
+  ✓  2 [chromium] › e2e\flows\mapping-flow.spec.js:56:3 › Flujo de Mapeo (desempeño) › login -> buscar proyecto -> seleccionar tarea -> abrir editor de mapeo (11.5s)
 ```
 
 ## 8. Evidencias
@@ -143,5 +140,5 @@ El caso de prueba CP-E2E-MAP-001 se ejecutó exitosamente contra el backend real
 
 ## 11. Próximos Pasos
 
-- Ejecutar y documentar el flujo de validación (CP-E2E-VAL-001).
-- Ejecutar y documentar el flujo de administrador / crear proyecto (CP-E2E-ADM-001).
+- Mantener el seed idempotente para que las ejecuciones repetidas de la suite completa partan del mismo estado.
+- Evaluar la estabilidad de la suite en modo CI con retries y captura de evidencias.

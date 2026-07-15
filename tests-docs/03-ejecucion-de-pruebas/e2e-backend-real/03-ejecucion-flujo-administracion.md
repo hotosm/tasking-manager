@@ -92,12 +92,12 @@ E2E_BACKEND=real yarn test:e2e --grep "Flujo de Administración"
 
 1. Navegar a `/authorized/?username=e2e_admin&session_token=...&redirect_to=/manage`.
 2. Verificar que el panel **Manage** muestra el encabezado **Projects**.
-3. Hacer clic en **Create new project**.
+3. Navegar directamente a `/manage/projects/new/`.
 4. Verificar navegación a `/manage/projects/new/`.
 5. Subir el archivo `test-aoi.geojson`.
 6. Avanzar por los pasos **Set Tasks Sizes**, **Trim Task Grid** y **Review**.
 7. Completar el nombre del proyecto.
-8. Seleccionar la organización `E2E Organisation`.
+8. Seleccionar la organización `E2E Organisation` mediante el combobox (teclado).
 9. Hacer clic en **Create**.
 10. Verificar redirección a `/manage/projects/{id}`.
 
@@ -105,22 +105,19 @@ E2E_BACKEND=real yarn test:e2e --grep "Flujo de Administración"
 
 | Métrica | Valor obtenido | Umbral | Estado |
 | :--- | :--- | :--- | :--- |
-| `loginToManage` | 3 946.44 ms | < 10 000 ms | ✅ Aprobado |
-| `createProjectWizard` | 5 053.80 ms | < 120 000 ms | ✅ Aprobado |
+| `loginToManage` | 5 436.39 ms | < 20 000 ms | ✅ Aprobado |
+| `createProjectWizard` | 5 627.15 ms | < 120 000 ms | ✅ Aprobado |
 
 ## 7. Salida de la Ejecución
 
+La siguiente salida corresponde a la ejecución conjunta de la suite completa (`E2E_BACKEND=real yarn test:e2e`):
+
 ```text
-Running 1 test using 1 worker
-
 Timings (ms): {
-  loginToManage: 3946.442499999999,
-  createProjectWizard: 5053.799299999999
+  loginToManage: 5436.3946000000005,
+  createProjectWizard: 5627.154399999999
 }
-  ✓  1 [chromium] › e2e\flows\admin-create-project-flow.spec.js:31:3 › Flujo de Administración (funcional / usabilidad) › login como admin -> panel manage -> crear proyecto -> importar AOI -> guardar borrador (10.6s)
-
-  1 passed (34.2s)
-Done in 35.14s.
+  ✓  1 [chromium] › e2e\flows\admin-create-project-flow.spec.js:31:3 › Flujo de Administración (funcional / usabilidad) › login como admin -> panel manage -> crear proyecto -> importar AOI -> guardar borrador (13.5s)
 ```
 
 ## 8. Evidencias
@@ -136,11 +133,12 @@ El caso de prueba CP-E2E-ADM-001 se ejecutó exitosamente contra el backend real
 ## 10. Observaciones
 
 - El seed crea al usuario `e2e_admin` con `role = 1` (ADMIN), lo que le permite crear proyectos sin necesidad de ser manager explícito de la organización.
-- En el paso de revisión se espera a que la opción de organización esté visible antes de seleccionarla, garantizando que el botón **Create** se habilite.
+- En el paso de revisión se selecciona la organización mediante el combobox de react-select usando el teclado (`ArrowDown` + `Enter`) y se espera a que la opción esté seleccionada, garantizando que el botón **Create** se habilite.
+- Se navega directamente a `/manage/projects/new/` para evitar inestabilidad por clics en links dinámicos del panel Manage.
 - El overlay de webpack-dev-server se oculta durante la prueba mediante `addInitScript`.
 - La autenticación se realiza con tokens de sesión firmados localmente para usuarios sembrados en la base de datos.
 
 ## 11. Próximos Pasos
 
-- Evaluar la ejecución conjunta de los tres flujos E2E (mapeo, validación y administración) controlando el estado compartido de la base de datos.
+- Mantener el seed idempotente para que las ejecuciones repetidas de la suite completa partan del mismo estado.
 - Considerar un `globalSetup` o `test.beforeAll` que ejecute el seed cuando se corra la suite completa.

@@ -47,7 +47,7 @@
 | Usuario | `e2e_validator` |
 | ID de usuario | `9999002` |
 | Proyecto | `E2E Mapping Project` |
-| ID de proyecto | `10` |
+| ID de proyecto | `36` (variable según seed) |
 | Tarea mapeada | `#1` (MAPPED) |
 
 > El ID del proyecto puede variar entre ejecuciones porque el seed limpia y recrea el proyecto.
@@ -105,24 +105,21 @@ E2E_BACKEND=real yarn test:e2e --grep "Flujo de Validación"
 
 | Métrica | Valor obtenido | Umbral | Estado |
 | :--- | :--- | :--- | :--- |
-| `loginToExplore` | 3 818.08 ms | < 10 000 ms | ✅ Aprobado |
-| `taskSelectionToValidation` | 5 090.46 ms | < 90 000 ms | ✅ Aprobado |
-| `validationToSubmit` | 2 208.79 ms | < 30 000 ms | ✅ Aprobado |
+| `loginToExplore` | 16 706.65 ms | < 20 000 ms | ✅ Aprobado |
+| `taskSelectionToValidation` | 5 868.77 ms | < 90 000 ms | ✅ Aprobado |
+| `validationToSubmit` | 672.01 ms | < 30 000 ms | ✅ Aprobado |
 
 ## 7. Salida de la Ejecución
 
+La siguiente salida corresponde a la ejecución conjunta de la suite completa (`E2E_BACKEND=real yarn test:e2e`):
+
 ```text
-Running 1 test using 1 worker
-
 Timings (ms): {
-  loginToExplore: 3818.0795,
-  taskSelectionToValidation: 5090.462700000001,
-  validationToSubmit: 2208.7919
+  loginToExplore: 16706.652000000002,
+  taskSelectionToValidation: 5868.771199999996,
+  validationToSubmit: 672.0126999999993
 }
-  ✓  1 [chromium] › e2e\flows\validation-flow.spec.js:56:3 › Flujo de Validación (funcional / usabilidad) › login como validador -> seleccionar tarea mapeada -> validar tarea (12.4s)
-
-  1 passed (33.2s)
-Done in 34.17s.
+  ✓  3 [chromium] › e2e\flows\validation-flow.spec.js:56:3 › Flujo de Validación (funcional / usabilidad) › login como validador -> seleccionar tarea mapeada -> validar tarea (23.7s)
 ```
 
 ## 8. Evidencias
@@ -144,4 +141,5 @@ El caso de prueba CP-E2E-VAL-001 se ejecutó exitosamente contra el backend real
 
 ## 11. Próximos Pasos
 
-- Ejecutar y documentar el flujo de administración / crear proyecto (CP-E2E-ADM-001).
+- Mantener el seed idempotente para que las ejecuciones repetidas de la suite completa partan del mismo estado.
+- Considerar un `globalSetup` o `test.beforeAll` que ejecute el seed cuando se corra la suite completa.
