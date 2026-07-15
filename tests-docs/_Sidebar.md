@@ -17,6 +17,7 @@
 *   [[plan pruebas unitarias]]
 *   [[plan pruebas funcionales]]
 *   [[plan pruebas integracion]]
+*   [[plan pruebas sistema]]
 
 ---
 
@@ -39,6 +40,17 @@
 *   [[02 servicios core negocio]]
 *   [[03 modelos dominio dto postgis]]
 
+#### 2.3 Integración (Backend)
+
+*   [[00 arquitectura modular]]
+*   [[03 modulo tareas mapeo]]
+*   [[diseno integracion modulo usuarios]]
+*   [[diseno integracion modulo proyectos]]
+
+#### 2.4 Sistema (E2E)
+
+*   [[diseno pruebas sistema]]
+
 ---
 
 ## 3. Ejecución de Pruebas
@@ -57,3 +69,13 @@
 *   [[05 ejecucion administracion de proyectos]] ⭐
 *   [[06 ejecucion gobernanza organizaciones equipos]]
 *   [[07 ejecucion comunicacion notificaciones]]
+
+#### 3.3 Integración (Backend)
+
+*   [[ejecucion integracion modulo tareas mapeo]]
+*   [[ejecucion integracion modulo usuarios]]
+*   [[ejecucion integracion modulo proyectos]]
+
+#### 3.4 Sistema (E2E)
+
+*   [[ejecucion pruebas sistema]]
