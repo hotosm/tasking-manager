@@ -2,11 +2,14 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
-import * as iD from '@hotosm/id';
-import '@hotosm/id/dist/iD.css';
+import * as iD from '@openstreetmap/id';
+import '@openstreetmap/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
+import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
+
+const officialID = captureIdEditorPackage();
 
 export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, extraIdParams }) {
   const dispatch = useDispatch();
@@ -25,7 +28,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         iDContext.background().baseLayerSource(customSource.template(imagery));
         setCustomImageryIsSet(true);
         // this line is needed to update the value on the custom background dialog
-        window.iD.prefs('background-custom-template', imagery);
+        officialID.prefs('background-custom-template', imagery);
       } else {
         const imagerySource = iDContext.background().findSource(imagery);
         if (imagerySource) {
@@ -52,7 +55,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
       const offsetStr = params.get('offset'); // "10,-10"
       if (!offsetStr) return;
       const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
-      const offset = window.iD.geoMetersToOffset(offsetInMeters);
+      const offset = officialID.geoMetersToOffset(offsetInMeters);
       iDContext.background().offset(offset);
     } else {
       // reset offset if params not present
@@ -62,12 +65,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
   useEffect(() => {
-    if (windowInit) {
-      if (iDContext === null) {
-        // we need to keep iD context on redux store because iD works better if
-        // the context is not restarted while running in the same browser session
-        dispatch({ type: 'SET_EDITOR', context: window.iD.coreContext() });
-      }
+    if (!windowInit) return;
+    const context = resolveIdEditorContext(iDContext, 'official', () => officialID.coreContext());
+    if (context && context !== iDContext) {
+      dispatch({ type: 'SET_EDITOR', context });
     }
   }, [windowInit, iDContext, dispatch]);
 
@@ -78,16 +79,16 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   }, [comment, iDContext]);
 
   useEffect(() => {
-    if (session && locale && iD && iDContext) {
+    if (session && locale && iD && iDContext && iDContext.__idEditorType === 'official') {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets.length) {
-          window.iD.presetManager.addablePresetIDs(presets);
+          officialID.presetManager.addablePresetIDs(presets);
         } else {
-          window.iD.presetManager.addablePresetIDs(null);
+          officialID.presetManager.addablePresetIDs(null);
         }
       } catch (e) {
-        window.iD.presetManager.addablePresetIDs(null);
+        officialID.presetManager.addablePresetIDs(null);
       }
       // setup the context
       iDContext
@@ -96,7 +97,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         .locale(locale)
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
-      // init the ui or restart if it was loaded previously
+      // init the ui or restart if it was loaded previously. Either path ends
+      // with osm.switch() below, which resets the (module-scoped, session-wide)
+      // tile cache and triggers a fresh load from the current view — so a
+      // reused/fresh context never serves stale, pre-edit data.
       if (iDContext.ui() !== undefined) {
         iDContext.reset();
         iDContext.ui().restart();

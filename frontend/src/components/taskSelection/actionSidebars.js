@@ -37,6 +37,7 @@ import {
   submitValidationTask,
 } from '../../api/projects';
 import ReactPlaceholder from 'react-placeholder';
+import * as safeStorage from '../../utils/safe_storage';
 
 const CommentInputField = lazy(() =>
   import('../comments/commentInput' /* webpackChunkName: "commentInput" */),
@@ -69,7 +70,7 @@ export function CompletionTabForMapping({
   const clearLockedTasks = useClearLockedTasks();
   const directedFrom = localStorage.getItem('lastProjectPathname');
   const { projectId } = project;
-  const SESSION_KEY = 'task-comment';
+  const SESSION_KEY = `tm-comment-mapping-${projectId}-${tasksIds?.[0]}`;
 
   const splitTaskMutation = useMutation({
     mutationFn: () => splitTask(projectId, tasksIds[0], token, locale),
@@ -148,7 +149,7 @@ export function CompletionTabForMapping({
       payload.status = selectedStatus;
     }
     submitTaskMutation.mutate({ url, payload });
-    sessionStorage.removeItem(SESSION_KEY);
+    safeStorage.removeItem(SESSION_KEY);
   };
 
   const invalidateProjectData = () => {
@@ -390,8 +391,15 @@ export function CompletionTabForValidation({
   const updateStatus = (id, newStatus) =>
     setValidationStatus({ ...validationStatus, [id]: newStatus });
 
-  const updateComment = (id, newComment) =>
+  const updateComment = (id, newComment) => {
     setValidationComments({ ...validationComments, [id]: newComment });
+    const key = `tm-comment-validation-${projectId}-${id}`;
+    if (newComment) {
+      safeStorage.setItem(key, newComment);
+    } else {
+      safeStorage.removeItem(key);
+    }
+  };
 
   const copyCommentToTasks = (id, statusFilter) => {
     const comment = validationComments[id];
@@ -420,6 +428,9 @@ export function CompletionTabForValidation({
       })),
     };
     stopValidationMutation.mutate(payload);
+    tasksIds?.forEach((taskId) => {
+      safeStorage.removeItem(`tm-comment-validation-${projectId}-${taskId}`);
+    });
   };
 
   const onSubmitTask = () => {
@@ -431,6 +442,9 @@ export function CompletionTabForValidation({
       })),
     };
     submitTaskMutation.mutate(payload);
+    tasksIds?.forEach((taskId) => {
+      safeStorage.removeItem(`tm-comment-validation-${projectId}-${taskId}`);
+    });
   };
 
   const navigateToTasksPage = (applyFilter = false) => {

@@ -17,9 +17,11 @@ describe('Header', () => {
   const setup = () => {
     return {
       ...renderWithRouter(
-        <ReduxIntlProviders>
-          <Header />
-        </ReduxIntlProviders>,
+        <QueryClientProviders>
+          <ReduxIntlProviders>
+            <Header />
+          </ReduxIntlProviders>
+        </QueryClientProviders>,
       ),
     };
   };
