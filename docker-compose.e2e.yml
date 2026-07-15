@@ -1,0 +1,23 @@
+# Docker Compose override used exclusively for real-backend E2E tests.
+# It exposes the backend and database on host ports and mounts the scripts/
+# and frontend/ directories so the E2E seed script can write its token manifest
+# back to the host workspace.
+#
+# Usage:
+#   docker compose --env-file tasking-manager.env -f docker-compose.yml -f docker-compose.e2e.yml up -d tm-db tm-migration tm-backend
+#   docker compose --env-file tasking-manager.env -f docker-compose.yml -f docker-compose.e2e.yml exec tm-backend python scripts/e2e-seed.py
+#   cd frontend && E2E_BACKEND=real yarn test:e2e
+
+name: tasking-manager-main
+
+services:
+  tm-db:
+    ports:
+      - 5434:5432
+
+  tm-backend:
+    ports:
+      - 5000:5000
+    volumes:
+      - ./scripts:/usr/src/app/scripts
+      - ./frontend:/usr/src/app/frontend

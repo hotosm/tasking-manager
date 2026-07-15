@@ -1,7 +1,9 @@
 """Seed script for E2E tests against a real backend.
 
-Run inside the backend container:
-    docker compose exec tm-backend python scripts/e2e-seed.py
+Run inside the backend container started with the E2E compose override:
+    docker compose --env-file tasking-manager.env \
+        -f docker-compose.yml -f docker-compose.e2e.yml \
+        exec tm-backend python scripts/e2e-seed.py
 
 Or from host with the Python environment set up and DB exposed:
     POSTGRES_ENDPOINT=127.0.0.1 POSTGRES_PORT=5434 python scripts/e2e-seed.py
