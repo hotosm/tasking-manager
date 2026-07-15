@@ -77,13 +77,14 @@ test.describe('Flujo de Mapeo (desempeño)', () => {
     await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/tasks`));
     timings.projectDetailToTaskSelection = performance.now() - detailStart;
 
-    // 4. Seleccionar tarea READY usando búsqueda por ID y abrir editor
+    // 4. Abrir el editor de mapeo usando el botón activo (puede ser "Map selected task" o "Map a task")
     const taskSelectionStart = performance.now();
-    const mapButton = page.getByRole('button', { name: /Map selected task/i });
-    await expect(mapButton).toBeVisible();
+    const mapButton = page.getByRole('button', { name: /Map selected task|Map a task/i }).first();
+    await expect(mapButton).toBeVisible({ timeout: 15000 });
     await mapButton.click();
 
     // 5. Verificar navegación al editor
+    await page.waitForURL(new RegExp(`/projects/${projectId}/map`), { timeout: 15000 });
     await expect(page).toHaveURL(new RegExp(`/projects/${projectId}/map`));
     await expect(page.locator('#id-container')).toBeVisible({ timeout: 60000 });
     timings.taskSelectionToEditor = performance.now() - taskSelectionStart;

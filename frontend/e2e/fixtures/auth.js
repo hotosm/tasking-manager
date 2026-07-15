@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { userQueryDetails } = require('../../src/network/tests/mockData/userList');
 const { seed, isRealBackend } = require('./e2e-seed');
 
@@ -36,6 +37,14 @@ const VALIDATOR_USER = isRealBackend
     };
 
 async function loginViaCallback(page, user = TEST_USER, redirectTo = '/explore') {
+  // Limpiar cualquier sesión previa para evitar que Redux/localStorage afecte el login.
+  await page.context().clearCookies();
+  await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
   const params = new URLSearchParams({
     username: user.username,
     session_token: user.sessionToken,
@@ -43,11 +52,13 @@ async function loginViaCallback(page, user = TEST_USER, redirectTo = '/explore')
     picture: '',
     redirect_to: redirectTo,
   });
-  await page.goto(`/authorized/?${params.toString()}`, { waitUntil: 'networkidle' });
-  // Esperar a que el redirect termine y la página destino empiece a renderizar.
-  // Se usa waitForLoadState en lugar de waitForURL porque la redirección puede
-  // dejar query params o hashes intermedios dependiendo del entorno.
-  await page.waitForLoadState('networkidle');
+  await page.goto(`/authorized/?${params.toString()}`, { waitUntil: 'domcontentloaded' });
+  // Esperar a que la navegación termine y el header esté renderizado.
+  await page.waitForSelector('header nav, [data-testid="user-avatar"]', { state: 'visible', timeout: 30000 });
+  // Confirmar que la sesión se estableció observando el avatar/nombre del usuario.
+  await expect(
+    page.locator('[data-testid="user-avatar"], header button').filter({ hasText: user.username }).first(),
+  ).toBeVisible({ timeout: 15000 });
 }
 
 async function loginAsAdmin(page, redirectTo = '/explore') {
