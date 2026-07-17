@@ -286,3 +286,27 @@ class TestMappingService:
         assert len(remaining_rows) == 1
         assert remaining_rows[0]["action"] == TaskAction.EXTENDED_FOR_MAPPING.name
         assert remaining_rows[0]["action_text"] is not None
+
+    async def test_is_task_undoable_returns_false_if_not_author_and_not_permitted(self):
+        from tests.api.helpers.test_helpers import return_canned_user, create_canned_user
+        other_user = await return_canned_user(self.db, "other_user", 999999)
+        await create_canned_user(self.db, other_user)
+        
+        # arrange
+        task = await Task.get(2, self.test_project_id, self.db)
+        # Author maps it
+        await Task.lock_task_for_mapping(
+            2, self.test_project_id, self.test_user.id, self.db
+        )
+        await Task.unlock_task(
+            2, self.test_project_id, self.test_user.id, TaskStatus.MAPPED, self.db
+        )
+        
+        # act
+        task_dict = await Task.get(2, self.test_project_id, self.db)
+        
+        # Act
+        result = await MappingService._is_task_undoable(other_user.id, task_dict, self.db)
+        
+        # assert
+        assert result is False

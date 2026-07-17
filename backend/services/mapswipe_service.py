@@ -253,13 +253,13 @@ class MapswipeService:
     ) -> GroupedPartnerStatsDTO:
         group_stats = json.loads(resp_body)["data"]
         group_info = group_stats["contributorUserGroup"]
-        stats_info = group_stats["communityUserGroupStats"]
 
         if group_info is None:
             raise Conflict(
                 "INVALID_MAPSWIPE_GROUP_ID",
                 "The mapswipe group ID linked to this partner is invalid. Please contact an admin.",
             )
+        stats_info = group_stats["communityUserGroupStats"]
 
         group_dto = GroupedPartnerStatsDTO(provider="mapswipe")
         group_dto.id = partner_id

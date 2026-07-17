@@ -223,6 +223,23 @@ class TestValidatorService:
         """Valida la agrupación de tareas mapeadas por usuario en un proyecto."""
         from tests.api.helpers.test_helpers import create_canned_project
         proj, user, project_id = await create_canned_project(self.db)
+        await self.db.execute(
+            "UPDATE tasks SET mapped_by = :user_id WHERE project_id = :project_id AND id = :task_id",
+            {"user_id": user.id, "project_id": project_id, "task_id": 1},
+        )
+        await self.db.execute(
+            """
+            INSERT INTO task_history (project_id, task_id, action, action_text, action_date, user_id)
+            VALUES (:project_id, :task_id, :action, :action_text, current_timestamp, :user_id)
+            """,
+            {
+                "project_id": project_id,
+                "task_id": 1,
+                "action": "STATE_CHANGE",
+                "action_text": "MAPPED",
+                "user_id": user.id,
+            },
+        )
         
         # En create_canned_project la tarea 1 está MAPPED (2) por el usuario de prueba
         result = await ValidatorService.get_mapped_tasks_by_user(project_id, self.db)
@@ -267,7 +284,7 @@ class TestValidatorService:
         from backend.models.dtos.validator_dto import RevertUserTasksDTO
         mock_permitted.return_value = False
         
-        dto = RevertUserTasksDTO(projectId=1, userId=123, actionBy=456, action="VALIDATED")
+        dto = RevertUserTasksDTO(project_id=1, user_id=123, action_by=456, action="VALIDATED")
         
         with pytest.raises(ValidatorServiceError, match="UserActionNotPermitted"):
             await ValidatorService.revert_user_tasks(dto, self.db)
