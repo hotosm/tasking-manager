@@ -28,6 +28,7 @@ class TestCampaignService:
             name=unique_name,
             organisations=[23] # ID asegurado por create_canned_project
         )
+        await self.db.execute("SELECT setval('campaigns_id_seq', (SELECT MAX(id) FROM campaigns))")
         
         campaign_id = await CampaignService.create_campaign(dto, self.db)
         assert campaign_id is not None

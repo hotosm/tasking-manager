@@ -4,6 +4,7 @@ from backend.services.organisation_service import NotFound, OrganisationService
 from tests.api.helpers.test_helpers import (
     create_canned_organisation,
     create_canned_user,
+    return_canned_organisation,
     return_canned_user,
 )
 
@@ -107,7 +108,8 @@ class TestOrganisationService:
     async def test_assert_validate_name_raises_error_if_name_exists(self):
         """Valida que falle la validación si el nombre ya está tomado por otra organización."""
         # Intentar validar el nombre de la organización actual contra un nuevo nombre que ya existe
-        other_org = await create_canned_organisation(self.db, id=100, name="Other Org", slug="other")
+        other_org = return_canned_organisation(org_id=100, org_name="Other Org", org_slug="other")
+        await create_canned_organisation(self.db, other_org)
         
         from backend.services.organisation_service import OrganisationServiceError
         with pytest.raises(OrganisationServiceError, match="NameExists"):
@@ -130,7 +132,8 @@ class TestOrganisationService:
 
     async def test_can_user_manage_organisation_false_for_non_manager(self):
         """Valida que un usuario común no tenga permisos de gestión sobre la organización."""
-        other_user = await create_canned_user(self.db, id=888, username="other")
+        other_user = await return_canned_user(self.db, username="other", id=888)
+        await create_canned_user(self.db, other_user)
         res = await OrganisationService.can_user_manage_organisation(self.test_org.id, other_user.id, self.db)
         assert res is False
 
