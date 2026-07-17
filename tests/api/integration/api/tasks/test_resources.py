@@ -43,6 +43,14 @@ class TestGetTasksQueriesJsonAPI:
         resp = await client.get("/api/v2/projects/11111/tasks/")
         assert resp.status_code == 404
 
+    async def test_returns_403_if_project_is_private_and_user_not_allowed(self, client: AsyncClient):
+        await self.db.execute(
+            "UPDATE projects SET private = True WHERE id = :id",
+            {"id": int(self.test_project_id)},
+        )
+        resp = await client.get(self.url)
+        assert resp.status_code == 403
+
     async def test_returns_all_tasks_if_task_ids_not_specified(
         self, client: AsyncClient
     ):
@@ -295,3 +303,64 @@ class TestTasksQueriesMappedAPI:
         assert body["mappedTasks"][1]["mappedTaskCount"] == 1
         assert body["mappedTasks"][0]["tasksMapped"] == [1]
         assert body["mappedTasks"][1]["tasksMapped"] == [2]
+
+@pytest.mark.anyio
+class TestTasksQueriesInvalidatedAPI:
+    @pytest.fixture(autouse=True)
+    async def _setup(self, db_connection_fixture):
+        self.db = db_connection_fixture
+        self.test_project, self.test_author, self.test_project_id = (
+            await create_canned_project(self.db)
+        )
+        payload = await return_canned_user(self.db, "invalidated_user", 9999123)
+        self.test_user = await create_canned_user(self.db, payload)
+        self.user_session_token = _encode_token(
+            AuthenticationService.generate_session_token_for_user(self.test_user.id)
+        )
+        self.url = f"/api/v2/projects/{self.test_user.username}/tasks/queries/own/invalidated/"
+
+    async def test_get_invalidated_tasks_returns_401_if_unauthorized(self, client: AsyncClient):
+        response = await client.get(self.url)
+        assert response.status_code == 401
+
+    async def test_get_invalidated_tasks_returns_403_if_different_user(self, client: AsyncClient):
+        different_token = _encode_token(
+            AuthenticationService.generate_session_token_for_user(self.test_author.id)
+        )
+        response = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {different_token}"}
+        )
+        assert response.status_code == 403
+
+    async def test_get_invalidated_tasks_returns_200_and_data(self, client: AsyncClient):
+        # Setup an invalidated task
+        t1 = await Task.get(1, self.test_project_id, self.db)
+        
+        # User maps it
+        await Task.lock_task_for_mapping(
+            t1.id, t1.project_id, self.test_user.id, self.db
+        )
+        await Task.unlock_task(
+            t1.id, t1.project_id, self.test_user.id, TaskStatus.MAPPED, self.db
+        )
+        
+        # Author invalidates it
+        await Task.lock_task_for_validating(
+            t1.id, t1.project_id, self.test_author.id, self.db
+        )
+        await Task.unlock_task(
+            t1.id, t1.project_id, self.test_author.id, TaskStatus.INVALIDATED, self.db
+        )
+
+        response = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.user_session_token}"}
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert "invalidatedTasks" in body
+        assert len(body["invalidatedTasks"]) == 1
+        assert body["invalidatedTasks"][0]["taskId"] == 1
+        assert body["invalidatedTasks"][0]["projectId"] == int(self.test_project_id)
+
