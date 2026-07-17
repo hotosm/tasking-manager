@@ -161,6 +161,12 @@ export default function SandboxEditor({
           access_token: tokenData.access_token,
         });
 
+        // Fetch map data in z18 tiles (1/16th the area of iD's default z16) so each
+        // /api/0.6/map.json request stays under the OSM API's 50k-node limit in
+        // densely mapped sandbox areas, where a single z16 tile would otherwise
+        // return a 400 "You requested too many nodes".
+        iDContext.connection().tileZoom(18);
+
         const thereAreChanges = (changes) =>
           changes.modified.length || changes.created.length || changes.deleted.length;
 
