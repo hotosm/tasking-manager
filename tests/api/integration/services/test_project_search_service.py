@@ -9,7 +9,58 @@ from tests.backend.helpers.test_helpers import get_canned_json
 from unittest.mock import patch, MagicMock, AsyncMock
 from shapely.geometry import Polygon, box
 import shapely.wkt
+from datetime import datetime
+from types import SimpleNamespace
 
+from backend.models.dtos.project_dto import ProjectSearchDTO
+from backend.models.postgis.statuses import (
+    ProjectDifficulty,
+    ProjectPriority,
+    ProjectStatus,
+    UserRole,
+)
+
+class RecordingSearchDB:
+    """DB falso para probar filtros sin depender de datos complejos."""
+
+    def __init__(self):
+        self.fetch_all_calls = []
+        self.fetch_val_calls = []
+        self.fetch_one_calls = []
+
+    async def fetch_all(self, query=None, values=None, **kwargs):
+        query = query or kwargs.get("query")
+        values = values or kwargs.get("values")
+        self.fetch_all_calls.append((query, values))
+
+        if "FROM user_interests" in query:
+            return [{"interest_id": 1}]
+
+        if "FROM project_favorites" in query:
+            return [{"project_id": 10}]
+
+        if "JOIN partners" in query:
+            return [{"name": "Coverage Partner"}]
+
+        return []
+
+    async def fetch_val(self, query=None, values=None, **kwargs):
+        query = query or kwargs.get("query")
+        values = values or kwargs.get("values")
+        self.fetch_val_calls.append((query, values))
+        return 0
+
+    async def fetch_one(self, query=None, values=None, **kwargs):
+        query = query or kwargs.get("query")
+        values = values or kwargs.get("values")
+        self.fetch_one_calls.append((query, values))
+        return {"name": "Coverage CSV Project"}
+
+    def joined_queries(self):
+        queries = [call[0] for call in self.fetch_all_calls]
+        queries += [call[0] for call in self.fetch_val_calls]
+        queries += [call[0] for call in self.fetch_one_calls]
+        return "\n".join(query for query in queries if query)
 
 @pytest.mark.anyio
 class TestProjectSearchService:
@@ -142,3 +193,181 @@ class TestProjectSearchService:
         area = await ProjectSearchService._get_area_sqm(polygon, db=self.db)
         # assert
         assert area == pytest.approx(28276407740.2797, abs=1e-3)
+    
+    @patch.object(Project, "get_project_total_contributions", new_callable=AsyncMock)
+    @patch.object(UserService, "get_user_by_id", new_callable=AsyncMock)
+    @patch.object(ProjectSearchService, "_filter_projects", new_callable=AsyncMock)
+    async def test_search_projects_as_csv_returns_admin_csv_with_partner_names(
+        self,
+        mock_filter_projects,
+        mock_get_user_by_id,
+        mock_get_total_contributions,
+    ):
+        # Cubre la conversión de resultados a CSV y el agregado de partners para admin.
+        fake_db = RecordingSearchDB()
+        admin_user = SimpleNamespace(id=1, role=UserRole.ADMIN.value)
+
+        mock_get_user_by_id.return_value = admin_user
+        mock_get_total_contributions.return_value = 7
+        mock_filter_projects.return_value = [
+            {
+                "id": 99,
+                "priority": ProjectPriority.HIGH.value,
+                "difficulty": ProjectDifficulty.EASY.value,
+                "default_locale": "en",
+                "status": ProjectStatus.PUBLISHED.value,
+                "sandbox": False,
+                "database": "osm",
+                "last_updated": datetime(2026, 7, 9, 10, 0, 0),
+                "due_date": None,
+                "total_tasks": 10,
+                "tasks_mapped": 5,
+                "tasks_validated": 2,
+                "tasks_bad_imagery": 0,
+                "author_name": "Project Author",
+                "author_username": "project_author",
+                "organisation_name": "Coverage Org",
+                "percent_mapped": 70,
+                "percent_validated": 20,
+                "total_area": 123.4567,
+                "country": ["Peru"],
+                "creation_date": datetime(2026, 7, 1, 10, 0, 0),
+            }
+        ]
+
+        search_dto = ProjectSearchDTO(
+            preferred_locale="es",
+            page=1,
+            download_as_csv=True,
+        )
+
+        csv_result = await ProjectSearchService.search_projects_as_csv(
+            search_dto,
+            user=admin_user.id,
+            db=fake_db,
+            as_csv=True,
+        )
+
+        assert "projectId" in csv_result
+        assert "name" in csv_result
+        assert "partnerNames" in csv_result
+        assert "Coverage CSV Project" in csv_result
+        assert "Coverage Partner" in csv_result
+        assert "HIGH" in csv_result
+        assert "EASY" in csv_result
+        assert "PUBLISHED" in csv_result
+
+    @patch.object(UserService, "get_projects_mapped", new_callable=AsyncMock)
+    @patch.object(ProjectSearchService, "filter_projects_to_map", new_callable=AsyncMock)
+    async def test_filter_projects_applies_multiple_search_filters(
+        self,
+        mock_filter_projects_to_map,
+        mock_get_projects_mapped,
+    ):
+        # Activa muchas ramas del filtrado avanzado en una sola prueba.
+        fake_db = RecordingSearchDB()
+        admin_user = SimpleNamespace(id=1, role=UserRole.ADMIN.value)
+
+        mock_get_projects_mapped.return_value = [10, 11]
+        mock_filter_projects_to_map.return_value = [10]
+
+        search_dto = ProjectSearchDTO(
+            preferred_locale="en",
+            text_search="coverage project",
+            project_statuses=["PUBLISHED", "DRAFT"],
+            based_on_user_interests=1,
+            created_by=1,
+            mapped_by=1,
+            favorited_by=1,
+            difficulty="EASY",
+            action="map",
+            imagery="custom",
+            organisation_name="Coverage Org",
+            organisation_id=1,
+            team_id=1,
+            campaign="Coverage Campaign",
+            mapping_types=["ROADS"],
+            mapping_types_exact=True,
+            country="Peru",
+            last_updated_gte="2026-01-01",
+            last_updated_lte="2026-12-31",
+            created_gte="2026-01-01",
+            created_lte="2026-12-31",
+            sandbox=True,
+            database="osm",
+            partner_id=1,
+            partnership_from="2026-01-01",
+            partnership_to="2026-12-31",
+            order_by="percent_mapped",
+            order_by_type="DESC",
+            page=1,
+            omit_map_results=True,
+        )
+
+        result = await ProjectSearchService._filter_projects(
+            search_dto,
+            admin_user,
+            fake_db,
+        )
+
+        queries = fake_db.joined_queries()
+
+        assert result[2].total == 0
+        assert "text_searchable" in queries
+        assert "project_interests" in queries
+        assert "p.author_id = :created_by" in queries
+        assert "p.id = ANY(:mapped_projects)" in queries
+        assert "p.id  = ANY(:favorited_projects)" in queries
+        assert "p.difficulty = :difficulty" in queries
+        assert "p.imagery LIKE :imagery" in queries
+        assert "o.name = :organisation_name" in queries
+        assert "o.id = :organisation_id" in queries
+        assert "project_teams" in queries
+        assert "campaign_projects" in queries
+        assert "p.mapping_types @>" in queries
+        assert "LOWER(:country)" in queries
+        assert "p.last_updated >=" in queries
+        assert "p.created >=" in queries
+        assert "p.sandbox = :sandbox" in queries
+        assert "p.database = :database" in queries
+        assert "project_partnerships" in queries
+        assert "percent_mapped" in queries or "tasks_mapped" in queries
+
+    @patch.object(
+        ProjectSearchService,
+        "filter_projects_to_validate",
+        new_callable=AsyncMock,
+    )
+    async def test_filter_projects_applies_validate_action_and_percent_validated_order(
+        self,
+        mock_filter_projects_to_validate,
+    ):
+        # Cubre la rama alternativa de validación y orden por porcentaje validado.
+        fake_db = RecordingSearchDB()
+        admin_user = SimpleNamespace(id=1, role=UserRole.ADMIN.value)
+
+        mock_filter_projects_to_validate.return_value = [20, 21]
+
+        search_dto = ProjectSearchDTO(
+            preferred_locale="en",
+            project_statuses=["PUBLISHED"],
+            action="validate",
+            order_by="percent_validated",
+            order_by_type="ASC",
+            page=1,
+            omit_map_results=False,
+        )
+
+        result = await ProjectSearchService._filter_projects(
+            search_dto,
+            admin_user,
+            fake_db,
+            as_csv=True,
+        )
+
+        queries = fake_db.joined_queries()
+
+        assert result == []
+        assert "p.id = ANY(:validation_project_ids)" in queries
+        assert "tasks_validated" in queries
+        assert "ORDER BY" in queries
