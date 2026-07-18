@@ -3,9 +3,10 @@ import { check, sleep } from 'k6';
 import { SharedArray } from 'k6/data';
 
 // 1. Cargar tokens desde el archivo JSON externo (como diseñó Jorge)
-const tokens = new SharedArray('users', function () {
-    return JSON.parse(open('./tokens.json')).tokens;
-});
+// 1. Cargar datos desde el archivo generado por el script e2e-seed.py del backend
+const seedData = JSON.parse(open('../frontend/e2e/.e2e-seed.json'));
+const tokens = [seedData.mapper.token, seedData.validator.token, seedData.admin.token];
+const projectId = seedData.project.id;
 
 // 2. Configuración de Escenarios y Thresholds exactos del diseño
 export const options = {
@@ -21,20 +22,20 @@ export const options = {
 };
 
 export default function () {
-    const BASE_URL = 'http://localhost:5000'; // Ruteado interno definido en topología
+    const BASE_URL = 'http://localhost:3000'; // Traefik (Bug #1 arreglado)
 
     // Selección de token aleatorio para simular usuario distinto
     const randomToken = tokens[Math.floor(Math.random() * tokens.length)];
     const params = {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${randomToken}`,
+            'Authorization': `Token ${randomToken}`, // No es JWT Bearer (Bug #3 arreglado)
             'Accept-Language': 'en'
         },
     };
 
     // FASE 1: Obtener la grilla espacial (GET)
-    const resGet = http.get(`${BASE_URL}/api/v2/projects/1/tasks/`, params);
+    const resGet = http.get(`${BASE_URL}/api/v2/projects/${projectId}/tasks/`, params);
     check(resGet, {
         'GET tasks status is 200': (r) => r.status === 200,
     });
@@ -49,7 +50,8 @@ export default function () {
         lockAction: "lock" // Ajustado según API standard de TM
     });
     
-    const resPost = http.post(`${BASE_URL}/api/v2/tasks/${randomTaskId}/lock/`, payload, params);
+    // Bug #2 arreglado: Endpoint correcto
+    const resPost = http.post(`${BASE_URL}/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${randomTaskId}/`, payload, params);
     check(resPost, {
         'POST lock status is 200': (r) => r.status === 200,
     });
