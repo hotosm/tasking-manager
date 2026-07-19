@@ -92,5 +92,6 @@ export default function () {
     
     // Pausa al final de la iteración para simular el tiempo que le toma a un usuario
     // real leer la pantalla antes de volver a intentarlo, y darle un respiro al pool de DB
-    sleep(1);
+    // Aumentamos a 2-4 segundos para relajar la contención de 50 usuarios sobre 1 sola tarea.
+    sleep(Math.random() * (4 - 2) + 2);
 }
