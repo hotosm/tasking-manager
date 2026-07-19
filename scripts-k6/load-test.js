@@ -89,4 +89,8 @@ export default function () {
         'POST lock: respuesta valida del sistema': (r) =>
             r.status === 200 || r.status === 403 || r.status === 409,
     });
+    
+    // Pausa al final de la iteración para simular el tiempo que le toma a un usuario
+    // real leer la pantalla antes de volver a intentarlo, y darle un respiro al pool de DB
+    sleep(1);
 }
