@@ -1,11 +1,16 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { SharedArray } from 'k6/data';
+import { b64encode } from 'k6/encoding';
 
 // 1. Cargar tokens desde el archivo JSON externo (como diseñó Jorge)
 // 1. Cargar datos desde el archivo generado por el script e2e-seed.py del backend
+// y pre-codificar los tokens en Base64 (el backend hace base64.b64decode() sobre las credenciales)
 const seedData = JSON.parse(open('../frontend/e2e/.e2e-seed.json'));
-const tokens = [seedData.mapper.token, seedData.validator.token, seedData.admin.token];
+const tokens = [
+    b64encode(seedData.mapper.token),
+    b64encode(seedData.validator.token),
+    b64encode(seedData.admin.token),
+];
 const projectId = seedData.project.id;
 
 // 2. Configuración de Escenarios y Thresholds exactos del diseño
