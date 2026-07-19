@@ -1,6 +1,10 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { b64encode } from 'k6/encoding';
+import { Counter } from 'k6/metrics';
+
+// Contador para desglose de códigos de estado
+const lockStatusCounter = new Counter('lock_status_codes');
 
 // 1. Cargar tokens desde el archivo JSON externo (como diseñó Jorge)
 // 1. Cargar datos desde el archivo generado por el script e2e-seed.py del backend
@@ -63,6 +67,10 @@ export default function () {
     
     // Bug #2 arreglado: Endpoint correcto
     const resPost = http.post(`${BASE_URL}/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${randomTaskId}/`, payload, params);
+    
+    // Contar exactamente qué código devolvió
+    lockStatusCounter.add(1, { status: resPost.status.toString() });
+
     check(resPost, {
         // 200: lock exitoso | 403: ya bloqueada por otro | 409: conflicto
         // Todos son respuestas validas que demuestran la integridad del sistema bajo carga
