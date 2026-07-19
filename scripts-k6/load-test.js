@@ -3,8 +3,11 @@ import { check, sleep } from 'k6';
 import { b64encode } from 'k6/encoding';
 import { Counter } from 'k6/metrics';
 
-// Contador para desglose de códigos de estado
-const lockStatusCounter = new Counter('lock_status_codes');
+// Contadores individuales para que K6 los desglose en la consola
+const lock200 = new Counter('lock_200_ok');
+const lock403 = new Counter('lock_403_conflict_or_state');
+const lock409 = new Counter('lock_409_other');
+const lockOther = new Counter('lock_other_unexpected');
 
 // 1. Cargar tokens desde el archivo JSON externo (como diseñó Jorge)
 // 1. Cargar datos desde el archivo generado por el script e2e-seed.py del backend
@@ -61,18 +64,27 @@ export default function () {
     // El seed crea SOLO 4 tareas (IDs 1-4). Task #2 es la unica en estado READY.
     // Con 50 VUs concurrentes, las colisiones de lock son el escenario INT-MAP-02 (Race Condition).
     const randomTaskId = Math.floor(Math.random() * 4) + 1; // rango 1-4
-    const payload = JSON.stringify({
-        lockAction: "lock" // Ajustado según API standard de TM
-    });
     
-    // Bug #2 arreglado: Endpoint correcto
-    const resPost = http.post(`${BASE_URL}/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${randomTaskId}/`, payload, params);
+    // El endpoint real lock-for-mapping no lee body, solo path params.
+    const resPost = http.post(`${BASE_URL}/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${randomTaskId}/`, null, params);
     
     // Contar exactamente qué código devolvió
-    lockStatusCounter.add(1, { status: resPost.status.toString() });
+    if (resPost.status === 200) lock200.add(1);
+    else if (resPost.status === 403) lock403.add(1);
+    else if (resPost.status === 409) lock409.add(1);
+    else lockOther.add(1);
+
+    // Si el lock fue exitoso, liberamos la tarea inmediatamente para mantener la concurrencia real
+    if (resPost.status === 200) {
+        http.post(
+            `${BASE_URL}/api/v2/projects/${projectId}/tasks/actions/unlock-after-mapping/${randomTaskId}/`,
+            JSON.stringify({ status: 'READY' }),
+            params
+        );
+    }
 
     check(resPost, {
-        // 200: lock exitoso | 403: ya bloqueada por otro | 409: conflicto
+        // 200: lock exitoso | 403: colisión/estado inválido | 409: UserLicenseError
         // Todos son respuestas validas que demuestran la integridad del sistema bajo carga
         'POST lock: respuesta valida del sistema': (r) =>
             r.status === 200 || r.status === 403 || r.status === 409,
