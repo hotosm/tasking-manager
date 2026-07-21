@@ -1,93 +1,87 @@
+# Contribuir al Tasking Manager
 
-# Contributing to the Tasking Manager
+## Bienvenido
 
-## Welcome
+Antes que nada, nos alegra mucho que estés leyendo esto, ¡porque
+necesitamos desarrolladores voluntarios que nos ayuden a mejorar el Tasking Manager!
 
-First off, I'm really glad you're reading this, because we
-need volunteer developers to help improve the Tasking Manager.!
+Damos la bienvenida y animamos a colaboradores de todos los niveles de habilidad y estamos
+comprometidos a garantizar que tu participación en nuestro colectivo tecnológico sea
+inclusiva, agradable y gratificante. Si nunca antes has contribuido a
+un proyecto de código abierto, somos un buen lugar para empezar y nos
+aseguraremos de apoyarte en cada paso del camino. Si tienes **cualquier**
+pregunta, ¡por favor hazla!
 
-We welcome and encourage contributors of all skill levels and we are
-committed to making sure your participation in our tech collective is
-inclusive, enjoyable and rewarding. If you have never contributed to
-an open-source project before, we are a good place to start and will
-make sure you are supported every step of the way. If you have **any**
-questions, please ask!
+Hay muchas formas de contribuir al Proyecto Tasking Manager:
 
-We are collaborating with [Naxa](https://www.naxa.com.np/) on the
-maintenance of the Tasking Manager - expect to hear a lot from all of
-us on Github :-)
+## Reportar errores y sugerir mejoras:
 
-There are many ways to contribute to the Tasking Manager Project:
+La [cola de problemas (issues)](https://github.com/hotosm/tasking-manager/issues) es
+la mejor manera de empezar. Hay plantillas de problemas para ERRORES (BUGs) y
+CARACTERÍSTICAS (FEATURES) que puedes usar, o puedes crear la tuya propia. Una vez que hayas
+enviado un problema, se le asignará una etiqueta de las siguientes
+[categorías de etiquetas](https://github.com/hotosm/tasking-manager/labels):
 
-## Report bugs and suggest improvements:
-
-The [issue queue](https://github.com/hotosm/tasking-manager/issues) is
-the best way to get started. There are issue templates for BUGs and
-FEATURES that you can use, or you can create your own. Once you have
-submitted an issue, it will be assigned one label out of the following
-[label categories](https://github.com/hotosm/tasking-manager/labels):
-
-- **Backlog**:  Backlog=triage will first be assigned to any new issues
+- **Backlog**: Backlog=triage se asignará primero a cualquier problema nuevo
 - **Component**
 
-On a monthly basis, we will collaboratively triage issues from the
-*backlog=triage* and assign one of the below labels:
+Mensualmente, clasificaremos colaborativamente los problemas del
+*backlog=triage* y asignaremos una de las siguientes etiquetas:
 
-- **Assigned**: once reviewed the issue will be assigned either to
-  hot_tech OR tm_collective. Issues assigned to tm_collective are
-  where we really need your help!
-- **Type**: specifying whether the issue is a bug or feature/enhancement
-- **Priority**: specifying the priority level for each issue. We want
-  to collaboratively agree on the criteria for prioritisation.
-- **Status**: specifying whether the issue is in progress or done.
-- **Experience**: we have added a beginner label for good first
-  issues. We will work with the community to update the labels in this
-  category and make them suitable.
+- **Assigned**: una vez revisado, el problema se asignará ya sea a
+  hot_tech O A tm_collective. ¡Los problemas asignados a tm_collective son
+  donde realmente necesitamos tu ayuda!
+- **Type**: especifica si el problema es un error (bug) o una característica/mejora (feature/enhancement)
+- **Priority**: especifica el nivel de prioridad para cada problema. Queremos
+  acordar colaborativamente los criterios de priorización.
+- **Status**: especifica si el problema está en progreso o terminado.
+- **Experience**: hemos añadido una etiqueta de principiante (beginner) para buenos primeros
+  problemas. Trabajaremos con la comunidad para actualizar las etiquetas de esta
+  categoría y hacerlas adecuadas.
 
-Note: Issues older than 6 months from the point of raising the issue
-with no engagement will be labelled as *archived*.
+Nota: Los problemas con más de 6 meses de antigüedad desde el momento de su creación
+y que no tengan interacción serán etiquetados como *archived* (archivados).
 
-## Testing
+## Pruebas (Testing)
 
-Test a bug fix or new feature. Once an issue has been addressed and
-Pull Request (PR) change deployed to the [Tasking Manager Staging
-site](https://tasks-stage.hotosm.org/), you will be able to view and
-test the change on the staging site. If you notice any issues while
-testing, please comment on the PR directly.
+Prueba una corrección de errores o una nueva característica. Una vez que se haya abordado un problema y
+se haya desplegado el cambio del Pull Request (PR) en el [sitio de pruebas (Staging) de
+Tasking Manager](https://tasks-stage.hotosm.org/), podrás ver y
+probar el cambio en el sitio de pruebas. Si notas algún problema al
+probar, por favor comenta directamente en el PR.
 
-## Code contributions
+## Contribuciones de código
 
-Create pull requests (PRs) for changes that you think are needed. We
-would really appreciate your help! We ask that you follow our [coding
-contribution guidelines](contributing-guidelines.md)
+Crea pull requests (PRs) para los cambios que consideres necesarios. ¡Agradeceríamos
+mucho tu ayuda! Te pedimos que sigas nuestras [pautas de
+contribución de código](contributing-guidelines.md)
 
-Skills with the following would be beneficial:
+Sería beneficioso tener habilidades en lo siguiente:
 
 - Python
 - FastAPI
 - Javascript
 - React
 - Docker
-- CI/CD workflows
+- Flujos de trabajo CI/CD
 
-Our latest task board can be found
-[here](https://github.com/orgs/hotosm/projects/14).
+Nuestro tablero de tareas más reciente se puede encontrar
+[aquí](https://github.com/orgs/hotosm/projects/14).
 
-## Translating
+## Traducción
 
-Review or submit [language
-translations](translations.md). Translations are important
-as it makes Tasking Manager more efficient when it supports local
-languages.
+Revisa o envía [traducciones de
+idiomas](translations.md). Las traducciones son importantes
+ya que hacen que Tasking Manager sea más eficiente al admitir los
+idiomas locales.
 
-## Thank you!
+## ¡Gracias!
 
-Thank you very much in advance for your contributions!! Please ensure
-you refer to our [Code of
-Conduct](code_of_conduct.md) when you contribute!
+¡Muchas gracias de antemano por tus contribuciones! ¡Por favor, asegúrate
+de consultar nuestro [Código de
+Conducta](code_of_conduct.md) cuando contribuyas!
 
-If you've read the guidelines, but you are still not sure how to
-contribute on Github, please reach out to us via our [ HOT Tech
-Support
-page]([https://hotosm.atlassian.net/servicedesk/customer/portal/4](https://hotosm.atlassian.net/servicedesk/customer/portal/4/group/5/create/51)
-and we will be happy to help!
+Si has leído las pautas, pero aún no estás seguro de cómo
+contribuir en Github, por favor ponte en contacto con nosotros a través de nuestra [página de
+Soporte Técnico de HOT](https://hotosm.atlassian.net/servicedesk/customer/portal/4/group/5/create/51)
+¡y estaremos encantados de ayudarte!

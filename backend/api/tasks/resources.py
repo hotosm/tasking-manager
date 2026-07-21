@@ -443,8 +443,7 @@ async def get_mapped_tasks(project_id: int, db: Database = Depends(get_db)):
 
 
 @router.get("/{username}/tasks/queries/own/invalidated/")
-@requires("authenticated")
-async def get_invalidated_tasks(request: Request, username: str):
+async def get_invalidated_tasks(request: Request, username: str, db: Database = Depends(get_db)):
     """
     Get invalidated tasks either mapped by user or invalidated by user
     ---
@@ -506,6 +505,21 @@ async def get_invalidated_tasks(request: Request, username: str):
         500:
             description: Internal Server Error
     """
+    from fastapi import HTTPException
+    if not request.user.is_authenticated:
+        raise HTTPException(status_code=401, detail={"Error": "Unauthorized", "SubCode": "Unauthorized"})
+    # request.user.display_name holds the user_id (int) from TokenAuthBackend
+    # We need to verify the authenticated user matches the requested username
+    authenticated_user_id = request.user.display_name
+    try:
+        requested_user = await UserService.get_user_by_username(username, db)
+        if requested_user.id != authenticated_user_id:
+            raise HTTPException(status_code=403, detail="Forbidden")
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise
+        raise HTTPException(status_code=404, detail="User not found")
+
     sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
     if request.query_params.get("sortBy", "updatedDate") in sort_column:
         sort_column = sort_column[request.query_params.get("sortBy", "updatedDate")]
@@ -522,10 +536,11 @@ async def get_invalidated_tasks(request: Request, username: str):
         sort_direction = request.query_params.get("sortDirection")
     else:
         sort_direction = "desc"
-    invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
+    invalidated_tasks = await ValidatorService.get_user_invalidated_tasks(
         request.query_params.get("asValidator") == "true",
         username,
-        request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+        request.headers.get("accept-language"),
+        db,
         closed,
         request.query_params.get("project", None),
         request.query_params.get("page", None),
@@ -533,4 +548,4 @@ async def get_invalidated_tasks(request: Request, username: str):
         sort_column,
         sort_direction,
     )
-    return invalidated_tasks.model_dump(by_alias=True), 200
+    return invalidated_tasks.model_dump(by_alias=True)

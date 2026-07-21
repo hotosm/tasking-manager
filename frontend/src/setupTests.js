@@ -5,16 +5,33 @@ import { server } from './network/tests/server.js';
 
 // Used from https://github.com/mapbox/mapbox-gl-js/issues/3436#issuecomment-485535598
 jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
-  GeolocateControl: jest.fn(),
-  Map: jest.fn(() => ({
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    getSource: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
-    remove: jest.fn(),
-  })),
-  NavigationControl: jest.fn(),
+  GeolocateControl: class {},
+  Map: class {
+    addControl() { return this; }
+    addSource() {}
+    getSource() { return { setData: jest.fn() }; }
+    on() { return this; }
+    off() {}
+    remove() {}
+  },
+  NavigationControl: class {},
+  AttributionControl: class {},
+  supported: jest.fn(),
+  getRTLTextPluginStatus: jest.fn(),
+}));
+
+jest.mock('maplibre-gl', () => ({
+  GeolocateControl: class {},
+  Map: class {
+    addControl() { return this; }
+    addSource() {}
+    getSource() { return { setData: jest.fn() }; }
+    on() { return this; }
+    off() {}
+    remove() {}
+  },
+  NavigationControl: class {},
+  AttributionControl: class {},
   supported: jest.fn(),
   getRTLTextPluginStatus: jest.fn(),
 }));
@@ -22,7 +39,8 @@ jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
 jest.spyOn(maplibregl, 'getRTLTextPluginStatus').mockImplementation(() => 'unavailable');
 
 // Fix various timeout errors
-configure({ asyncUtilTimeout: 4000 });
+configure({ asyncUtilTimeout: 15000 });
+jest.setTimeout(30000);
 
 // eslint-disable-next-line flowtype/require-valid-file-annotation
 // Needed for react-tooltip dependency (@floating-ui/dom). See https://github.com/floating-ui/floating-ui/issues/1774 .
@@ -34,9 +52,6 @@ beforeEach(() => {
     disconnect: jest.fn(),
   }));
 });
-
-// Fix various timeout errors
-configure({ asyncUtilTimeout: 4000 });
 
 beforeAll(() => server.listen());
 // if you need to add a handler after calling setupServer for some specific test

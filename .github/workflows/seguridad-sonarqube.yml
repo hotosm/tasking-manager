@@ -1,0 +1,38 @@
+name: "Pruebas de Seguridad (SAST & SonarQube)"
+
+on:
+  push:
+    branches: [ "main", "develop", "test/pruebas-de-sistema" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  sast-gitleaks:
+    name: "SAST - Escaneo de Secretos (Gitleaks)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sonarqube:
+    name: "Análisis de Código (SonarCloud)"
+    runs-on: ubuntu-latest
+    needs: sast-gitleaks # Solo corre si no hay secretos expuestos
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

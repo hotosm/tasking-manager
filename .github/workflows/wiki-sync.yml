@@ -1,0 +1,157 @@
+name: 📚 Sync Tests-Docs to Wiki
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - "tests-docs/**"
+  workflow_dispatch: # Permite ejecución manual desde la UI de GitHub
+
+# Permisos mínimos necesarios
+permissions:
+  contents: write   # Para hacer push a la wiki (repo git separado)
+
+jobs:
+  sync-wiki:
+    name: Push tests-docs → GitHub Wiki
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─────────────────────────────────────────────
+      # 1. Checkout del repo principal (con historial
+      #    completo para obtener todos los assets)
+      # ─────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # ─────────────────────────────────────────────
+      # 2. Clonar la Wiki como repo git separado.
+      #    La Wiki de GitHub es un repositorio Git
+      #    oculto en: <repo-url>.wiki.git
+      #    IMPORTANTE: La Wiki debe tener al menos
+      #    una página creada manualmente antes de
+      #    que este workflow funcione.
+      # ─────────────────────────────────────────────
+      - name: Clone Wiki repository
+        run: |
+          git clone \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" \
+            wiki-repo
+
+      # ─────────────────────────────────────────────
+      # 3. Copiar los archivos .md al root de la Wiki.
+      #    La Wiki de GitHub NO soporta subdirectorios:
+      #    todos los .md deben estar en el root y sus
+      #    nombres se mapean directamente a las URLs.
+      #
+      #    Estrategia:
+      #    - Archivos .md → root de la wiki (aplanado)
+      #    - Imágenes → carpeta /uploads/ en la wiki
+      #      (GitHub Wiki sí sirve archivos estáticos
+      #       desde el repo de la wiki si están en root)
+      #
+      #    Convención de nombres usada en _Sidebar.md:
+      #    "01-introduccion-y-alcance.md" → [[01 introduccion y alcance]]
+      #    Los guiones se reemplazan por espacios en los wikilinks.
+      # ─────────────────────────────────────────────
+      - name: Flatten and copy Markdown files
+        run: |
+          # Copiar todos los .md de tests-docs/ al root de la wiki
+          # find preserva subdirectorios en el nombre de archivo NO: usamos -exec cp
+          find tests-docs/ -name "*.md" | while read filepath; do
+            filename=$(basename "$filepath")
+            cp "$filepath" "wiki-repo/$filename"
+            echo "Copied: $filepath → wiki-repo/$filename"
+          done
+
+      # ─────────────────────────────────────────────
+      # 4. Copiar imágenes a la wiki.
+      #    Las imágenes en los .md usan rutas absolutas
+      #    tipo: /tests-docs/03-ejecucion.../img/foto.png
+      #    En la Wiki esas rutas no existen, así que:
+      #    - Copiamos todas las imágenes a wiki-repo/uploads/
+      #    - Reescribimos las rutas en cada .md
+      #
+      #    Resultado: /tests-docs/.../img/foto.png
+      #           → uploads/foto.png (en la wiki)
+      # ─────────────────────────────────────────────
+      - name: Copy images to wiki uploads folder
+        run: |
+          mkdir -p wiki-repo/uploads
+
+          # Copiar todas las imágenes preservando solo el nombre de archivo
+          # (si hay colisión de nombres, se sobreescribe — asegúrate de que
+          # los nombres de imagen sean únicos en todo el proyecto)
+          find tests-docs/ -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.gif" -o -name "*.webp" \) | while read imgpath; do
+            imgname=$(basename "$imgpath")
+            cp "$imgpath" "wiki-repo/uploads/$imgname"
+            echo "Image: $imgpath → wiki-repo/uploads/$imgname"
+          done
+
+      # ─────────────────────────────────────────────
+      # 5. Reescribir rutas de imágenes en los .md
+      #    copiados a la wiki.
+      #
+      #    Antes: src="/tests-docs/.../img/foto.png"
+      #    Después: src="uploads/foto.png"
+      #
+      #    Esto cubre el patrón usado en los .md:
+      #    <img src="/tests-docs/ruta/imagen.png" ...>
+      # ─────────────────────────────────────────────
+      - name: Rewrite image paths in wiki markdown files
+        run: |
+          find wiki-repo/ -maxdepth 1 -name "*.md" | while read mdfile; do
+            # Reemplazar rutas (absolutas o relativas) extrayendo solo el nombre del archivo al final
+            sed -i -E 's@src="[^"]*(tests-docs|img)/[^"]*/([^"/]+)"@src="uploads/\2"@g' "$mdfile"
+            
+            # También cubrir rutas en markdown puro: ![alt](ruta)
+            sed -i -E 's@\([^)]*(tests-docs|img)/[^)]*/([^)/]+)\)@(uploads/\2)@g' "$mdfile"
+            
+            echo "Processed image paths in: $mdfile"
+          done
+
+      # ─────────────────────────────────────────────
+      # 6. Copiar _Sidebar.md y Home.md si existen
+      #    en tests-docs/ (archivos especiales de Wiki)
+      # ─────────────────────────────────────────────
+      - name: Copy special wiki files (Sidebar & Home)
+        run: |
+          # _Sidebar.md controla la navegación lateral
+          if [ -f "tests-docs/_Sidebar.md" ]; then
+            cp "tests-docs/_Sidebar.md" "wiki-repo/_Sidebar.md"
+            echo "Copied _Sidebar.md"
+          fi
+
+          # Home.md es la página de inicio de la Wiki
+          if [ -f "tests-docs/Home.md" ]; then
+            cp "tests-docs/Home.md" "wiki-repo/Home.md"
+            echo "Copied Home.md"
+          fi
+
+      # ─────────────────────────────────────────────
+      # 7. Commit y push a la Wiki.
+      #    Solo hace push si hay cambios reales.
+      # ─────────────────────────────────────────────
+      - name: Commit and push to Wiki
+        run: |
+          cd wiki-repo
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          # Solo hacer commit si hay cambios staged
+          if git diff --staged --quiet; then
+            echo "No changes detected in wiki. Skipping push."
+          else
+            # Mensaje de commit con referencia al commit del repo principal
+            git commit -m "docs(wiki): sync from tests-docs @ ${{ github.sha }} | by ${{ github.actor }} on ${{ github.ref_name }}"
+
+            git push origin HEAD
+            echo "Wiki updated successfully."
+          fi

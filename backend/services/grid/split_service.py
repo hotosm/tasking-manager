@@ -228,6 +228,15 @@ class SplitService:
             values={"task_id": task_id, "project_id": project_id},
         )
 
+        # Delete related task_annotations records
+        await db.execute(
+            """
+            DELETE FROM task_annotations
+            WHERE task_id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
         # Finally, delete the task itself
         await db.execute(
             """

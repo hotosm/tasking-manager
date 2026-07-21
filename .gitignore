@@ -11,6 +11,10 @@ frontend/package-lock.json
 frontend/.env
 frontend/.eslintcache
 frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+frontend/playwright/.cache/
+frontend/e2e/.e2e-seed.json
 # Sentry Auth Token
 frontend/.sentryclirc
 
@@ -79,3 +83,6 @@ scripts/aws/infra/staging/variables.py
 
 # Files
 tests/test_db_dump/tm_sample_db.sql
+
+# site pages
+site

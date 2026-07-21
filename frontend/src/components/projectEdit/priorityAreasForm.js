@@ -108,17 +108,17 @@ export const PriorityAreasForm = () => {
   });
 
   useLayoutEffect(() => {
-    const map =
-      isWebglSupported() &&
-      new maplibregl.Map({
-        container: mapRef.current,
-        style: DEFAULT_MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new maplibregl.AttributionControl({ compact: false }))
-        .addControl(new maplibregl.NavigationControl());
+    if (!isWebglSupported()) return;
+    const map = new maplibregl.Map({
+      container: mapRef.current,
+      style: DEFAULT_MAP_STYLE,
+      center: [0, 0],
+      zoom: 1,
+      attributionControl: false,
+    });
+    console.log('MAP INSTANCE:', map);
+    map.addControl(new maplibregl.AttributionControl({ compact: false }));
+    map.addControl(new maplibregl.NavigationControl());
 
     setMapObj({ ...mapObj, map: map });
 

@@ -173,13 +173,8 @@ class InvalidatedTask(BaseModel):
 
 
 class InvalidatedTasks(BaseModel):
-    def __init__(self):
-        """DTO constructor initialise all arrays to empty"""
-        super().__init__()
-        self.invalidated_tasks = []
-
-    invalidated_tasks: List[InvalidatedTask] = Field(alias="invalidatedTasks")
-    pagination: Pagination
+    invalidated_tasks: List[InvalidatedTask] = Field(default_factory=list, alias="invalidatedTasks")
+    pagination: Optional[Pagination] = None
 
     class Config:
         populate_by_name = True

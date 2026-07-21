@@ -382,10 +382,11 @@ class ValidatorService:
         return mapped_tasks
 
     @staticmethod
-    def get_user_invalidated_tasks(
+    async def get_user_invalidated_tasks(
         as_validator,
         username: str,
         preferred_locale: str,
+        db,
         closed=None,
         project_id=None,
         page=1,
@@ -394,42 +395,90 @@ class ValidatorService:
         sort_direction="desc",
     ) -> InvalidatedTasks:
         """Get invalidated tasks either mapped or invalidated by the user"""
-        user = UserService.get_user_by_username(username)
-        query = (
-            TaskInvalidationHistory.query.filter_by(invalidator_id=user.id)
-            if as_validator
-            else TaskInvalidationHistory.query.filter_by(mapper_id=user.id)
-        )
-
+        user = await UserService.get_user_by_username(username, db)
+        
+        where_clauses = []
+        values = {}
+        
+        if as_validator:
+            where_clauses.append("invalidator_id = :user_id")
+        else:
+            where_clauses.append("mapper_id = :user_id")
+        values["user_id"] = user.id
+        
         if closed is not None:
-            query = query.filter_by(is_closed=closed)
-
+            where_clauses.append("is_closed = :closed")
+            values["closed"] = closed
+            
         if project_id is not None:
-            query = query.filter_by(project_id=project_id)
-
-        results = query.order_by(text(sort_by + " " + sort_direction)).paginate(
-            page=page, per_page=page_size, error_out=True
-        )
+            where_clauses.append("project_id = :project_id")
+            values["project_id"] = project_id
+            
+        where_str = " AND ".join(where_clauses)
+        if where_str:
+            where_str = "WHERE " + where_str
+            
+        sort_col_map = {
+            "updated_date": "updated_date",
+            "project_id": "project_id"
+        }
+        actual_sort = sort_col_map.get(sort_by, "updated_date")
+        actual_dir = "DESC" if sort_direction.lower() == "desc" else "ASC"
+        
+        page = int(page) if page else 1
+        page_size = int(page_size) if page_size else 10
+        offset = (page - 1) * page_size
+        
+        count_query = f"SELECT COUNT(*) FROM task_invalidation_history {where_str}"
+        total_items = await db.fetch_val(count_query, values)
+        
+        query = f"SELECT * FROM task_invalidation_history {where_str} ORDER BY {actual_sort} {actual_dir} LIMIT :limit OFFSET :offset"
+        values["limit"] = page_size
+        values["offset"] = offset
+        
+        results = await db.fetch_all(query, values)
+        
         project_names = {}
-        invalidated_tasks_dto = InvalidatedTasks()
-        for entry in results.items:
-            dto = InvalidatedTask()
-            dto.task_id = entry.task_id
-            dto.project_id = entry.project_id
-            dto.history_id = entry.invalidation_history_id
-            dto.closed = entry.is_closed
-            dto.updated_date = entry.updated_date
-
-            if dto.project_id not in project_names:
-                project_names[dto.project_id] = ProjectInfo.get_dto_for_locale(
-                    dto.project_id, preferred_locale
-                ).name
-            dto.project_name = project_names[dto.project_id]
-
-            invalidated_tasks_dto.invalidated_tasks.append(dto)
-
-        invalidated_tasks_dto.pagination = Pagination(results)
-        return invalidated_tasks_dto
+        project_names = {}
+        invalidated_tasks_list = []
+        for entry in results:
+            task_id = entry["task_id"]
+            project_id = entry["project_id"]
+            
+            if project_id not in project_names:
+                locale_to_use = preferred_locale if preferred_locale else "en"
+                name = await db.fetch_val("SELECT name FROM project_info WHERE project_id = :project_id AND locale = :locale", {"project_id": project_id, "locale": locale_to_use})
+                if not name:
+                     name = await db.fetch_val("SELECT name FROM project_info WHERE project_id = :project_id AND locale = 'en'", {"project_id": project_id})
+                project_names[project_id] = name if name else str(project_id)
+                
+            dto = InvalidatedTask(
+                task_id=task_id,
+                project_id=project_id,
+                history_id=entry["id"],
+                closed=bool(entry["is_closed"]),
+                date=entry["mapped_date"] if as_validator else entry["invalidated_date"],
+                updated_date=entry["updated_date"],
+                project_name=project_names[project_id]
+            )
+            invalidated_tasks_list.append(dto)
+            
+        import math
+        pages = math.ceil(total_items / page_size) if total_items > 0 else 0
+        pagination = Pagination(
+            has_next=page < pages,
+            has_prev=page > 1,
+            next_num=page + 1 if page < pages else None,
+            page=page,
+            pages=pages,
+            prev_num=page - 1 if page > 1 else None,
+            per_page=page_size,
+            total=total_items
+        )
+        return InvalidatedTasks(
+            invalidated_tasks=invalidated_tasks_list,
+            pagination=pagination
+        )
 
     @staticmethod
     async def invalidate_all_tasks(project_id: int, user_id: int, db: Database):

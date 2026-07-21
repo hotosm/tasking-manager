@@ -1,151 +1,135 @@
 import '@testing-library/jest-dom';
-import { Provider } from 'react-redux';
-import { screen } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { Members, JoinRequests } from '../members';
+import { renderWithRouter, ReduxIntlProviders } from '../../../utils/testWithIntl';
+import * as network from '../../../network/genericJSONRequest';
 
-import messages from '../messages';
-import { usersList } from '../../../network/tests/mockData/userList';
-import { store } from '../../../store';
-import {
-  createComponentWithIntl,
-  renderWithRouter,
-  ReduxIntlProviders,
-} from '../../../utils/testWithIntl';
-import { JoinRequests, Members } from '../members';
-import { UserAvatar } from '../../user/avatar';
-import { Button } from '../../button';
-import { MemoryRouter } from 'react-router-dom';
-
-describe('test JoinRequest list', () => {
-  const requests = [
-    {
-      username: 'test_1',
-      function: 'MANAGER',
-      active: false,
-      pictureUrl: 'https://www.gravatar.com/avatar.png',
-    },
-    { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
-  ];
-  const element = createComponentWithIntl(
-    <MemoryRouter>
-      <Provider store={store}>
-        <JoinRequests requests={requests} managers={[]} />
-      </Provider>
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('initial div has the correct classes', () => {
-    expect(testInstance.findAllByType('div')[0].props.className).toBe(
-      'bg-white b--grey-light pa4 ba blue-dark',
-    );
-  });
-  it('h3 element has the correct title', () => {
-    expect(testInstance.findByType('h3').children[0].props.id).toBe(
-      'management.teams.join_requests',
-    );
-  });
-  it('number of UserAvatar components is correct', () => {
-    expect(testInstance.findAllByType(UserAvatar).length).toBe(2);
-  });
-  it('Accept and Deny buttons are present', () => {
-    expect(testInstance.findAllByType(Button).length).toBe(4);
-    expect(testInstance.findAllByProps({ className: 'pr2 blue-dark bg-white' }).length).toBe(2);
-    expect(testInstance.findAllByProps({ className: 'pr2 bg-red white' }).length).toBe(2);
-  });
-  it('no requests message is NOT present', () => {
-    expect(() =>
-      testInstance
-        .findByProps({ className: 'tc' })
-        .toThrow(new Error('No instances found with props: {className: "tc"}')),
-    );
-  });
-});
-
-describe('test JoinRequest list without requests', () => {
-  const element = createComponentWithIntl(
-    <MemoryRouter>
-      <Provider store={store}>
-        <JoinRequests requests={[]} managers={[]} />
-      </Provider>
-    </MemoryRouter>,
-  );
-  const testInstance = element.root;
-  it('initial div has the correct classes', () => {
-    expect(testInstance.findAllByType('div')[0].props.className).toBe(
-      'bg-white b--grey-light pa4 ba blue-dark',
-    );
-  });
-  it('h3 element has the correct title', () => {
-    expect(testInstance.findByType('h3').children[0].props.id).toBe(
-      'management.teams.join_requests',
-    );
-  });
-  it('number of UserAvatar components is correct', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(UserAvatar)
-        .toThrow(new Error('No instances found with node type: "UserAvatar"')),
-    );
-  });
-  it('Accept and Deny buttons are present', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(Button)
-        .toThrow(new Error('No instances found with node type: "Button"')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 blue-dark bg-white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 blue-dark bg-white"}')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 bg-red white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 bg-red white"}')),
-    );
-  });
-  it('no requests message is present', () => {
-    expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
-      'management.teams.join_requests.empty',
-    );
-  });
-});
+jest.mock('../../../network/genericJSONRequest');
 
 describe('Members Component', () => {
-  it('should display no members when no members are present', () => {
+  const members = [{ username: 'user1', pictureUrl: null }];
+  const defaultProps = {
+    addMembers: jest.fn(),
+    removeMembers: jest.fn(),
+    saveMembersFn: jest.fn(),
+    resetMembersFn: jest.fn(),
+    members,
+    type: 'members',
+    totalMembersOnTeam: 2,
+  };
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly with initial members', () => {
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders><Members {...defaultProps} /></ReduxIntlProviders>
+    );
+    expect(screen.getByText('Members')).toBeInTheDocument();
+    expect(screen.getByTitle('user1')).toBeInTheDocument();
+  });
+
+  it('renders correctly with type managers', () => {
     renderWithRouter(
-      <ReduxIntlProviders>
-        <Members members={[]} />
-      </ReduxIntlProviders>,
+      <ReduxIntlProviders><Members {...defaultProps} type="managers" /></ReduxIntlProviders>
     );
-    expect(screen.getByText(messages.noMembers.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByText('Managers')).toBeInTheDocument();
   });
 
-  it('should display actionable buttons when edit button is clicked', async () => {
-    const { user } = renderWithRouter(
-      <ReduxIntlProviders>
-        <Members members={[]} />
-      </ReduxIntlProviders>,
+  it('shows no members message when array is empty', () => {
+    renderWithRouter(
+      <ReduxIntlProviders><Members {...defaultProps} members={[]} /></ReduxIntlProviders>
     );
-    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: messages.edit.defaultMessage }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: messages.cancel.defaultMessage }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: messages.done.defaultMessage })).toBeInTheDocument();
+    expect(screen.getByText('There are no members yet.')).toBeInTheDocument();
   });
 
-  it('should not display cross icon with only one member present', async () => {
-    const mockRemoveMembers = jest.fn();
-    const { user, container } = renderWithRouter(
-      <ReduxIntlProviders>
-        <Members members={[usersList.users[0]]} removeMembers={mockRemoveMembers} />
-      </ReduxIntlProviders>,
+  it('shows member join team error', () => {
+    renderWithRouter(
+      <ReduxIntlProviders><Members {...defaultProps} memberJoinTeamError="UserAlreadyInList" /></ReduxIntlProviders>
     );
-    await user.click(screen.getByRole('button', { name: messages.edit.defaultMessage }));
-    // Matching with that one SVG being displayed from the react-select
-    expect(container.querySelectorAll('svg').length).toBe(1);
+    expect(screen.getByText(/already a member/i)).toBeInTheDocument();
+  });
+
+  it('can enter edit mode and render search', async () => {
+    network.fetchLocalJSONAPI.mockResolvedValue({ users: [{ username: 'user2' }] });
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders><Members {...defaultProps} /></ReduxIntlProviders>
+    );
+    
+    fireEvent.click(screen.getByText('Edit'));
+    
+    // ReactSelect becomes visible
+    // We can test if "Done" and "Cancel" buttons appear
+    expect(screen.getByText('Done')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+
+    // cancel
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(defaultProps.resetMembersFn).toHaveBeenCalled();
+  });
+
+  it('submits members on done', () => {
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders><Members {...defaultProps} /></ReduxIntlProviders>
+    );
+    fireEvent.click(screen.getByText('Edit'));
+    fireEvent.click(screen.getByText('Done'));
+    expect(defaultProps.saveMembersFn).toHaveBeenCalled();
+  });
+});
+
+describe('JoinRequests Component', () => {
+  const requests = [{ username: 'reqUser1', joinedDate: '2023-01-01' }];
+  const defaultProps = {
+    requests,
+    teamId: 1,
+    addMembers: jest.fn(),
+    updateRequests: jest.fn(),
+    managers: [{ username: 'manager1', function: 'MANAGER', joinRequestNotifications: true }],
+    updateTeam: jest.fn(),
+    joinMethod: 'BY_REQUEST',
+    members: [],
+  };
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders join requests', () => {
+    renderWithRouter(
+      <ReduxIntlProviders><JoinRequests {...defaultProps} /></ReduxIntlProviders>
+    );
+    expect(screen.getByText('Join requests')).toBeInTheDocument();
+    expect(screen.getByText('reqUser1')).toBeInTheDocument();
+  });
+
+  it('accepts request', async () => {
+    network.pushToLocalJSONAPI.mockResolvedValue({});
+    renderWithRouter(
+      <ReduxIntlProviders><JoinRequests {...defaultProps} /></ReduxIntlProviders>
+    );
+    fireEvent.click(screen.getByText('Accept'));
+    await waitFor(() => expect(network.pushToLocalJSONAPI).toHaveBeenCalled());
+    expect(defaultProps.addMembers).toHaveBeenCalled();
+    expect(defaultProps.updateRequests).toHaveBeenCalled();
+  });
+
+  it('rejects request', async () => {
+    network.pushToLocalJSONAPI.mockResolvedValue({});
+    renderWithRouter(
+      <ReduxIntlProviders><JoinRequests {...defaultProps} /></ReduxIntlProviders>
+    );
+    fireEvent.click(screen.getByText('Reject'));
+    await waitFor(() => expect(network.pushToLocalJSONAPI).toHaveBeenCalled());
+    expect(defaultProps.addMembers).not.toHaveBeenCalled();
+    expect(defaultProps.updateRequests).toHaveBeenCalled();
+  });
+
+  it('shows no requests when empty', () => {
+    renderWithRouter(
+      <ReduxIntlProviders><JoinRequests {...defaultProps} requests={[]} /></ReduxIntlProviders>
+    );
+    expect(screen.getByText("There aren't any requests to join the team.")).toBeInTheDocument();
   });
 });

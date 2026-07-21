@@ -64,3 +64,17 @@ class TestSplitService:
                 result_feature["geometry"]["type"]
                 == expected_feature["geometry"]["type"]
             )
+
+    async def test_create_split_tasks_from_geometry(self):
+        # arrange
+        task = await Task.get(2, self.test_project_id, self.db)
+        
+        # act
+        result = await SplitService._create_split_tasks_from_geometry(task, self.db)
+        
+        # assert
+        assert len(result) > 0
+        for feature in result:
+            assert feature["type"] == "Feature"
+            assert "geometry" in feature
+            assert feature["geometry"]["type"] == "MultiPolygon"

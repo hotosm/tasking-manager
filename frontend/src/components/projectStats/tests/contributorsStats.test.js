@@ -12,6 +12,15 @@ jest.mock('react-chartjs-2', () => ({
   Bar: () => null,
 }));
 
+jest.mock('../../../network/genericJSONRequest', () => ({
+  fetchLocalJSONAPI: jest.fn(),
+}));
+
+beforeEach(() => {
+  const { fetchLocalJSONAPI } = require('../../../network/genericJSONRequest');
+  fetchLocalJSONAPI.mockImplementation(() => Promise.resolve({ levels: [] }));
+});
+
 test('ContributorsStats renders the correct labels and numbers', async () => {
   const { getByText } = render(
     <Provider store={store}>

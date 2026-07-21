@@ -1,12 +1,20 @@
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
+from datetime import datetime
+from backend.models.dtos.mapping_dto import StopMappingTaskDTO
+from backend.services.users.user_service import UserService
 from backend.services.mapping_service import (
     MappingService,
     MappingServiceError,
     UserLicenseError,
 )
 from backend.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
-from backend.models.dtos.mapping_dto import LockTaskDTO, MappedTaskDTO
+from backend.models.dtos.mapping_dto import (
+    LockTaskDTO, 
+    MappedTaskDTO, 
+    StopMappingTaskDTO,
+    ExtendLockTimeDTO
+)
 from backend.services.project_service import ProjectService, MappingNotAllowed
 from backend.exceptions import NotFound
 from tests.api.helpers.test_helpers import (
@@ -35,7 +43,6 @@ class TestMappingService:
         self.task_stub.lock_holder = test_user
 
         self.lock_task_dto = LockTaskDTO(user_id=123456, task_id=1, project_id=1)
-
         self.mapped_task_dto = MappedTaskDTO(
             user_id=123456, task_id=1, project_id=1, status=TaskStatus.MAPPED.name
         )
@@ -293,3 +300,93 @@ class TestMappingService:
 
         # Assert
         assert not is_undoable
+
+    @patch.object(UserService, "is_user_blocked")
+    async def test_add_task_comment_raises_forbidden_if_user_blocked(self, mock_blocked):
+        """Valida que un usuario bloqueado no pueda comentar en tareas."""
+        from backend.models.dtos.mapping_dto import TaskCommentDTO
+        mock_blocked.return_value = True
+        dto = TaskCommentDTO(userId=1, taskId=1, projectId=1, comment="Blocked")
+        
+        with pytest.raises(Exception): # FastAPI suele lanzar HTTPException 403 aquí
+            await MappingService.add_task_comment(dto, self.db)
+
+    async def test_stop_mapping_task_releases_lock_and_reverts_status(self):
+        """Valida que detener el mapeo libere el candado y mantenga el estado previo."""
+        project, user, project_id = await create_canned_project(self.db)
+        await self.db.execute(
+            "UPDATE tasks SET task_status = 1, locked_by = :uid WHERE id = 2 AND project_id = :pid",
+            {"uid": user.id, "pid": project_id}
+        )
+        # Usar snake_case y pasar todos los campos requeridos por Pydantic
+        dto = StopMappingTaskDTO(
+            project_id=project_id, 
+            task_id=2, 
+            user_id=user.id, 
+            comment="Stopped"
+        )
+        
+        await MappingService.stop_mapping_task(dto, self.db)
+        
+        task = await Task.get(2, project_id, self.db)
+        assert task["locked_by"] is None
+        assert task["task_status"] == 0 
+
+    async def test_generate_gpx_returns_valid_xml_bytes(self):
+        """Valida la generación de datos GPX para las tareas del proyecto."""
+        project, user, project_id = await create_canned_project(self.db)
+        
+        gpx_bytes = await MappingService.generate_gpx(project_id, "1,2", self.db)
+        
+        assert isinstance(gpx_bytes, bytes)
+        assert b"<gpx" in gpx_bytes
+        assert b"trkseg" in gpx_bytes
+
+    async def test_map_all_tasks_marks_entire_project_as_mapped(self):
+        """Valida que el comando administrativo marque todas las tareas elegibles como MAPPED."""
+        project, user, project_id = await create_canned_project(self.db)
+        # La tarea 2 está READY.
+        await MappingService.map_all_tasks(project_id, user.id, self.db)
+        
+        task2 = await Task.get(2, project_id, self.db)
+        assert task2["task_status"] == 2 # MAPPED
+        # El contador del proyecto debe reflejar 3 tareas (tarea 1 mapeada original + tarea 2 + tarea 4 ya validada)
+        count = await self.db.fetch_val("SELECT tasks_mapped FROM projects WHERE id = :id", {"id": project_id})
+        assert count >= 2
+
+    async def test_reset_all_badimagery_reverts_to_ready(self):
+        """Valida que las tareas marcadas como BADIMAGERY vuelvan a estar disponibles."""
+        project, user, project_id = await create_canned_project(self.db)
+        # La tarea 3 está como BADIMAGERY (6) en canned project.
+        await MappingService.reset_all_badimagery(project_id, user.id, self.db)
+        
+        task3 = await Task.get(3, project_id, self.db)
+        assert task3["task_status"] == 0 # READY
+        
+        bad_count = await self.db.fetch_val("SELECT tasks_bad_imagery FROM projects WHERE id = :id", {"id": project_id})
+        assert bad_count == 0
+
+    async def test_extend_task_lock_time_updates_history(self):
+        """Valida que se pueda extender el tiempo de expiración de una tarea bloqueada."""
+        project, user, project_id = await create_canned_project(self.db)
+        await self.db.execute(
+            "UPDATE tasks SET task_status = 3, locked_by = :uid WHERE id = 1 AND project_id = :pid",
+            {"uid": user.id, "pid": project_id}
+        )
+        # SQL INSERT corregido (coincidencia de columnas y expresiones)
+        await self.db.execute(
+            """INSERT INTO task_history (project_id, task_id, user_id, action, action_date) 
+               VALUES (:pid, 1, :uid, 'LOCKED_FOR_VALIDATION', :date)""",
+            {"pid": project_id, "uid": user.id, "date": datetime.utcnow()}
+        )
+        
+        # Usar snake_case para el DTO
+        dto = ExtendLockTimeDTO(project_id=project_id, task_ids=[1], user_id=user.id)
+        
+        await MappingService.extend_task_lock_time(dto, self.db)
+        
+        history_exists = await self.db.fetch_val(
+            "SELECT COUNT(*) FROM task_history WHERE action = 'EXTENDED_FOR_VALIDATION' AND task_id = 1 AND project_id = :pid",
+            {"pid": project_id}
+        )
+        assert history_exists == 1

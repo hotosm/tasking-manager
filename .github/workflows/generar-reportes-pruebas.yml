@@ -1,0 +1,62 @@
+name: Generación de Reportes de Pruebas
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  generar-reportes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Crear archivo de entorno
+        run: |
+          cp example.env tasking-manager.env
+
+      - name: Levantar contenedores
+        run: |
+          docker compose up -d
+
+      - name: Esperar backend
+        run: |
+          sleep 30
+
+      - name: Ejecutar pruebas unitarias
+        run: |
+          docker compose exec -T tm-backend pytest \
+          tests/api/unit/ \
+          --junitxml=/usr/src/app/reporte-unitarias.xml
+
+      - name: Ejecutar pruebas de integración
+        run: |
+          docker compose exec -T tm-backend pytest \
+          tests/api/integration/ \
+          --junitxml=/usr/src/app/reporte-integracion.xml
+
+      - name: Copiar reporte unitario
+        run: |
+          docker cp \
+          $(docker compose ps -q tm-backend):/usr/src/app/reporte-unitarias.xml \
+          ./reporte-unitarias.xml
+
+      - name: Copiar reporte integración
+        run: |
+          docker cp \
+          $(docker compose ps -q tm-backend):/usr/src/app/reporte-integracion.xml \
+          ./reporte-integracion.xml
+
+      - name: Subir reporte unitario
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-unitarias
+          path: reporte-unitarias.xml
+
+      - name: Subir reporte integración
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-integracion
+          path: reporte-integracion.xml

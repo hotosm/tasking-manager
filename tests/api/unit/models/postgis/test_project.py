@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
@@ -11,6 +12,7 @@ from tests.api.helpers.test_helpers import (
     create_canned_organisation,
     create_canned_project,
     create_canned_user,
+    return_canned_user,
     return_canned_draft_project_json,
 )
 
@@ -87,3 +89,123 @@ class TestProject:
         assert test_project.country is not None
         assert len(test_project.country) > 0, "Nominatim may have given a bad response"
         assert test_project.country == ["United Kingdom"]
+
+
+    async def test_exists_raises_not_found_if_invalid_id(self):
+        """Valida que exists lance NotFound si el ID no existe."""
+        with pytest.raises(NotFound):
+            await Project.exists(999999, self.db)
+
+    async def test_favorite_lifecycle(self):
+        """Valida el ciclo de vida de marcar un proyecto como favorito."""
+        project, author, project_id = await create_canned_project(self.db)
+        
+        # 1. Marcar como favorito
+        await Project.favorite(project_id, author.id, self.db)
+        assert await Project.is_favorited(project_id, author.id, self.db) is True
+        
+        # 2. Quitar de favoritos
+        await Project.unfavorite(project_id, author.id, self.db)
+        assert await Project.is_favorited(project_id, author.id, self.db) is False
+
+    async def test_set_as_featured_lifecycle(self):
+        """Valida la lógica de destacar proyectos y errores de duplicidad."""
+        project_obj, author, project_id = await create_canned_project(self.db)
+        project_obj.id = project_id 
+        
+        # 1. Destacar
+        await project_obj.set_as_featured(self.db)
+        # Sincronizamos el estado del objeto manualmente para que la validación interna funcione
+        project_obj.featured = True 
+        
+        featured_status = await self.db.fetch_val("SELECT featured FROM projects WHERE id = :id", {"id": project_id})
+        assert featured_status is True
+        
+        # 2. Ahora sí debe lanzar ValueError porque project_obj.featured es True
+        with pytest.raises(ValueError, match="AlreadyFeatured"):
+            await project_obj.set_as_featured(self.db)
+            
+        # 3. Quitar destacado
+        await project_obj.unset_as_featured(self.db)
+        project_obj.featured = False # Sincronizamos de nuevo
+        
+        featured_status_after = await self.db.fetch_val("SELECT featured FROM projects WHERE id = :id", {"id": project_id})
+        assert featured_status_after is False
+
+    async def test_get_all_countries_returns_unique_tags(self):
+        """Valida que se recuperen etiquetas de países de forma única y ordenada."""
+        project, author, project_id = await create_canned_project(self.db)
+        await self.db.execute(
+            "UPDATE projects SET country = :countries WHERE id = :id",
+            {"countries": ["Bolivia", "Peru"], "id": project_id}
+        )
+        
+        dto = await Project.get_all_countries(self.db)
+        assert "Bolivia" in dto.tags
+        assert "Peru" in dto.tags
+
+    async def test_get_project_total_contributions_excludes_comments(self):
+        """Valida que el conteo de contribuciones ignore las acciones de tipo comentario."""
+        project, author, project_id = await create_canned_project(self.db)
+        
+        # SOLUCIÓN: Crear el usuario 999 para que la base de datos permita la relación
+        commenter_obj = await return_canned_user(self.db, username="commenter", id=999)
+        await create_canned_user(self.db, commenter_obj)
+
+        now = datetime.utcnow()
+        
+        # 1. Registro de actividad real (Mapeo) por el autor
+        await self.db.execute(
+            "INSERT INTO task_history (project_id, task_id, user_id, action, action_date) VALUES (:pid, 1, :uid, 'STATE_CHANGE', :date)",
+            {"pid": project_id, "uid": author.id, "date": now}
+        )
+        
+        # 2. Registro de comentario (No es contribución) por el usuario 999
+        await self.db.execute(
+            "INSERT INTO task_history (project_id, task_id, user_id, action, action_date) VALUES (:pid, 1, 999, 'COMMENT', :date)",
+            {"pid": project_id, "date": now}
+        )
+        
+        # El resultado debe ser 1 (solo cuenta el autor que mapeó, el que comentó se ignora)
+        count = await Project.get_project_total_contributions(project_id, self.db)
+        assert count == 1
+
+    async def test_clear_existing_priority_areas_removes_physical_records(self):
+        """Valida la limpieza física de geometrías de prioridad al actualizar."""
+        project, author, project_id = await create_canned_project(self.db)
+        # Crear área de prioridad manual
+        pa_id = await self.db.fetch_val("INSERT INTO priority_areas (geometry) \
+            VALUES (ST_GeomFromText('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))', 4326)) RETURNING id")
+        await self.db.execute("INSERT INTO project_priority_areas (project_id, priority_area_id) VALUES (:pid, :paid)",
+            {"pid": project_id, "paid": pa_id})
+            
+        # Limpiar
+        await Project.clear_existing_priority_areas(self.db, project_id)
+        
+        # Verificar que se borró el vínculo y el área física
+        link_exists = await self.db.fetch_val("SELECT COUNT(*) FROM project_priority_areas WHERE project_id = :pid", {"pid": project_id})
+        area_exists = await self.db.fetch_val("SELECT COUNT(*) FROM priority_areas WHERE id = :paid", {"paid": pa_id})
+        assert link_exists == 0
+        assert area_exists == 0
+
+    async def test_update_project_author_updates_correctly(self):
+        """Valida el método estático para transferir la autoría de un proyecto."""
+        project, author, project_id = await create_canned_project(self.db)
+        
+        # Ahora return_canned_user está importado correctamente
+        new_author_obj = await return_canned_user(self.db, username="new_boss", id=8888)
+        await create_canned_user(self.db, new_author_obj)
+        
+        await Project.update_project_author(project_id, 8888, self.db)
+        
+        current_author_id = await self.db.fetch_val("SELECT author_id FROM projects WHERE id = :id", {"id": project_id})
+        assert current_author_id == 8888
+
+    async def test_as_dto_for_admin_includes_locales(self):
+        """Valida que el DTO para administradores incluya las traducciones."""
+        project, author, project_id = await create_canned_project(self.db)
+        
+        dto = await Project.as_dto_for_admin(project_id, self.db)
+        
+        assert hasattr(dto, 'project_info_locales')
+        assert len(dto.project_info_locales) > 0

@@ -1,159 +1,68 @@
-# Code contributions
+# Contribuciones de código
 
-Project and code leads are experienced HOT volunteer and staff
-developers and the main points of contact for the project. They are
-also the final reviewers of issues and pull requests. Code leads will
-review pull requests and provide feedback. The purpose of this role is
-to help contributors, provide consistency and ensure code quality.
+Los líderes del proyecto y de código son desarrolladores experimentados, tanto voluntarios como personal de HOT, y son los principales puntos de contacto para el proyecto. También son los revisores finales de los *issues* y *pull requests*. Los líderes de código revisarán los *pull requests* y proporcionarán comentarios. El propósito de este rol es ayudar a los colaboradores, aportar consistencia y garantizar la calidad del código.
 
-Currently, HOT has been collaborating with the developers at
-[Naxa](https://www.naxa.com.np/) to help maintain and support
-community development on the project. Their role as leaders on the
-project and in the development community has greatly benefitted the
-Tasking Manager development and sustainability of the project.
-Previously [Kathmandu Living Labs](https://kathmandulivinglabs.org/)
-has been maintained the Tasking Manager.
+Actualmente, HOT ha estado colaborando con los desarrolladores de [Naxa](https://www.naxa.com.np/) para ayudar a mantener y respaldar el desarrollo comunitario en el proyecto. Su rol como líderes en el proyecto y en la comunidad de desarrollo ha beneficiado enormemente al progreso del Tasking Manager y a la sostenibilidad del proyecto. Anteriormente, [Kathmandu Living Labs](https://kathmandulivinglabs.org/) se encargaba del mantenimiento del Tasking Manager.
 
-All of the development is going to happen in the [project
-repository](https://github.com/hotosm/tasking-manager) and everything
-we work on shall be related to and documented in issues of the related
-[issue queue](https://github.com/hotosm/tasking-manager/issues).
+Todo el desarrollo se llevará a cabo en el [repositorio del proyecto](https://github.com/hotosm/tasking-manager) y todo aquello en lo que trabajemos deberá estar relacionado y documentado en los *issues* de la correspondiente [lista de issues](https://github.com/hotosm/tasking-manager/issues).
 
-## Code basics
+## Conceptos básicos del código
 
-1. Write tests for all new backend features and use a tool (like
-   coveralls.io) to measure test coverage.
-2. Consider writing tests when building new frontend.
-3. Stick to pep8 python style guide for the backend.
-4. Apply ESLint and [prettier](https://prettier.io/) style guide rules
-   for the frontend code.
-5. Export translatable strings with `make refresh-translatables` and
-   include them in your commit.
-6. When creating new environment variables or changing existing ones,
-   make sure to add them to the AWS Cloudformation template (see [the
-   deployment docs](../sysadmins/deployment.md)) and note them in the
-   Pull Request.
+1. Escribir pruebas para todas las nuevas funcionalidades del *backend* y usar una herramienta (como coveralls.io) para medir la cobertura de las pruebas.
+2. Considerar la escritura de pruebas al construir el nuevo *frontend*.
+3. Apegarse a la guía de estilo Python PEP 8 para el *backend*.
+4. Aplicar las reglas de las guías de estilo de ESLint y [prettier](https://prettier.io/) para el código del *frontend*.
+5. Exportar las cadenas traducibles con `make refresh-translatables` e incluirlas en tu *commit*.
 
-## Code collaboration and version control
+* Utilizar ramas en el proyecto tasking-manager. Esto permite que otros hagan un *rebase* de tu rama cuando la estén revisando o para continuar el trabajo iniciado. Seguimos la convención de nomenclatura de git flow:
+  - `feature/NUMERO_DE_ISSUE-TITULO-CORTO-SEPARADO-POR-GUIONES` para nuevas funcionalidades generales en las que estés trabajando.
+  - `hotfix/NUMERO_DE_ISSUE-TITULO-CORTO-SEPARADO-POR-GUIONES` para correcciones de errores importantes que deban incluirse en las versiones principales lo antes posible.
+  - `bugfix/NUMERO_DE_ISSUE-TITULO-CORTO-SEPARADO-POR-GUIONES` para correcciones no críticas que puedan desplegarse en el próximo lanzamiento programado. (Por ejemplo, para una funcionalidad normal: `feature/893-restrict-available-editors`).
+  - `NUMERO_DE_ISSUE-TITULO-CORTO-SEPARADO-POR-GUIONES` Para cambios asignados directamente desde una issue en el proyecto del curso. (Por ejemplo, `32-actualizar-pruebas-de-integracion`).
+* Intentar construir un historial de *commits* limpio y comprensible para el proyecto. Por favor, utiliza [*commit messages* significativos](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99) e intenta unificar/combinar (*squash*) el trabajo relacionado en un solo *commit*. Eventualmente, combinaremos los *commits* antes de fusionar una nueva funcionalidad o *hotfix* en las ramas principales (`develop` y `master`).
+* Proporcionar instrucciones de prueba significativas y comprensibles en tu PR. Resalta las condiciones previas importantes e intenta facilitarle la vida al revisor.
 
-*Note: We use **git flow** as our branching model. Read more
-[here](https://nvie.com/posts/a-successful-git-branching-model/) and
-[here](https://jeffkreeftmeijer.com/git-flow/), and refer to this
-[cheatsheet](https://danielkummer.github.io/git-flow-cheatsheet/) if
-you aren’t familiar with it yet. You probably want to install a
-[helper application](https://github.com/nvie/gitflow/wiki/Installation) to
-facilitate the flow a bit.*
+### Comentarios
 
-* Use branches in the tasking-manager project. This allows others to
-  rebase your branch when they are reviewing or to continue started
-  work. We follow git flow’s naming convention
-  - `feature/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for general
-    new features you are working on
-  - `hotfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for
-    important bug fixes that need to go into the main releases as soon
-    as possible
-  - `bugfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for
-  non-critical fixes that can be deployed in the next scheduled
-  release. (e.g. for a normal feature
-  feature/893-restrict-available-editors).
-* Make sure your PR is always up to date and rebased with the latest
-  develop branch.
-* Try to build a nice and understandable commit history of the
-  project. Please use [meaningful commit
-  messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99)
-  and try to unite/squash related work into one commit. Eventually we
-  will squash commits before merging a new feature or hotfix into the
-  main branches (develop and master).
-* Give meaningful and understandable testing instructions in your
-  PR. Highlight important preconditions and try to make life easier
-  for the reviewer.
+A veces no resulta evidente a partir del propio código qué es lo que hace, o más importante aún, **por qué** lo hace. Los buenos comentarios ayudan a tus compañeros desarrolladores a entender mejor el código y a asegurarse de que está haciendo lo correcto.
 
-### Comments
+Al desarrollar, deberías:
 
-Sometimes it's not apparent from the code itself what it does, or
-more importantly, **why** it does that. Good comments help your fellow
-developers understand the code better and make sure that it is doing the
-right thing.
+* Comentar tu código: no te excedas, pero explica los fragmentos que puedan ser difíciles de comprender. Como regla general, intenta explicar qué hace el código, por qué lo hace, por qué debería ser así o dónde se podría mejorar en el futuro.
 
-When developing, you should:
+* Verificar los comentarios existentes para asegurarte de que no sean engañosos.
 
-* Comment your code - do not go overboard, but explain the bits which
-might be difficult to understand. As a general rule of thumb, try to
-explain what the code does, why it does it, and why it should be the
-way it is or where it could be improved in the future.
+### Committing (Confirmación de cambios)
 
-* Check existing comments to ensure they are not misleading.
+Cuando envías un *pull request*, el mantenedor del proyecto tiene que leerlo y entenderlo. Esto ya es bastante difícil de por sí, y un malentendido en los *pull requests* puede hacer que sean más complicados de fusionar. Para ayudar con esto, al realizar *pull requests* deberías:
 
-### Committing
+* Dividir los cambios grandes en unidades de funcionalidad más pequeñas.
+* Mantener tus mensajes de *commit* relevantes para los cambios de cada unidad individual.
 
-When you submit pull requests, the project maintainer has to read them and
-understand them. This is difficult enough at the best of times, and
-misunderstanding pull requests can lead to them being more difficult to
-merge. To help with this, when making pull requests you should:
+Al escribir mensajes de *commit*, intenta mantener el mismo estilo que los demás *commits*, es decir:
 
-* Split up large changes into smaller units of functionality.
-* Keep your commit messages relevant to the changes in each individual
-unit.
+* Un resumen de una sola línea, comenzando con una letra mayúscula.
+* Una línea en blanco.
+* Descripción completa, redactada en oraciones correctas.
 
-When writing commit messages please try and stick to the same style as
-other commits, namely:
+Para *commits* simples, el resumen de una sola línea suele ser suficiente y el cuerpo del mensaje de *commit* se puede omitir.
 
-* A one line summary, starting with a capital letter.
-* A blank line.
-* Full description, as proper sentences.
+Antes de enviar un PR, asegúrate de ejecutar los siguientes comandos e incluir los cambios en tu *commit*.
 
-For simple commits the one line summary is often enough and the body
-of the commit message can be left out.
+* Formateo de código:
+  * Formatear todo el código del *backend* ejecutando [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` o `uv run lint`
+  * Formatear todo el código del *frontend* con [prettier](https://prettier.io/), ya sea [configurando tu editor](https://prettier.io/docs/en/editors.html) o ejecutando `yarn prettier` dentro del directorio `frontend`.
+* Estándares de código: Asegurarse de cumplir con los estándares de código señalados por [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py backend tests migrations` o `uv run flake8`
+* Preparación para traducciones: En caso de que hayas introducido nuevas cadenas en el *frontend*, el archivo fuente de traducción debe ser actualizado; esto se puede hacer mediante `make refresh-translatables` o `yarn build-locales` (dentro del directorio `frontend`).
 
-Before sending a PR, make sure you run the following commands and
-include the changes in your commit.
+Si has forkeado este proyecto en GitHub, la mejor manera de enviar tus parches es subir tus cambios a tu repositorio de GitHub y luego enviar un "pull request" a través de GitHub al repositorio principal.
 
-* Code formatting:
-  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` or `uv run lint`
-  * Format all frontend code with [prettier](https://prettier.io/)
-    either by [configuring your
-    editor](https://prettier.io/docs/en/editors.html) or by running
-    `yarn prettier` inside the `frontend` directory.
-* Coding standards: Make sure you adhere to the coding standards
-  eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/):
-  `flake8 manage.py backend tests migrations` or `uv run flake8`
-* Prepare for translations: In case you have introduced new strings on
-  the frontend, the translation source file must be updated this can
-  be done via `make refresh-translatables` or `yarn build-locales`
-  (inside the `frontend` directory).
+Puedes usar este [hook de pre-commit de git](https://git-scm.com/docs/githooks#_pre_commit) para formatear tanto el código del *frontend* como el del *backend*:
 
-If you have forked this project on GitHub then the best way to submit
-your patches is to push your changes back to your GitHub repository
-and then send a "pull request" via GitHub to the main repository.
+## Documentación
 
-You can use this [git pre-commit hook](https://git-scm.com/docs/githooks#_pre_commit) to format both the frontend and the backend code:
+La documentación del proyecto debe estar en [formato Markdown](https://www.markdownguide.org/) y dentro de un subdirectorio llamado _docs_. Aunque es posible usar HTML en documentos Markdown para tablas e imágenes, se prefiere utilizar el estilo propio de Markdown, ya que es mucho más fácil de leer.
 
-```
-#!/bin/sh
-JS_FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.js" "*.jsx" | sed 's| |\\ |g')
-PY_FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.py" | sed 's| |\\ |g')
-([ -z "$JS_FILES" ] && [ -z "$PY_FILES" ]) && exit 0
+### Revisión de Pull Requests
 
-# Prettify all selected files
-echo "$JS_FILES" | xargs ./frontend/node_modules/.bin/prettier --write
-echo "$PY_FILES" | xargs black
-
-# Add back the modified/prettified files to staging
-echo "$JS_FILES" | xargs git add
-echo "$PY_FILES" | xargs git add
-
-exit 0
-```
-## Documentation
-
-Project documentation should be in [Markdown
-format](https://www.markdownguide.org/), and in a _docs_
-subdirectory. While it is possible to use HTML in Markdown documents
-for tables and images, it is prefered to use the Markdown style as
-it's much easier to read.
-
-### Reviewing Pull Requests
-
-We welcome community members to review Pull Request. The process to
-review a PR  is by adding a comment if already reviewed and everything
-looks good, or specifying what change is needed.
+Damos la bienvenida a los miembros de la comunidad para que revisen los *Pull Requests*. El proceso para revisar un PR consiste en añadir un comentario si ya ha sido revisado y todo se ve bien, o especificar qué cambio es necesario de lo contrario.

@@ -59,5 +59,5 @@ export function Authorized(props) {
     navigate(redirectUrl);
   }, [dispatch, location.search, navigate]);
 
-  return <div class="pa3"><h3><AnimatedLoadingIcon /> Redirecting ...</h3></div>;
+  return <div className="pa3"><h3><AnimatedLoadingIcon /> Redirecting ...</h3></div>;
 }

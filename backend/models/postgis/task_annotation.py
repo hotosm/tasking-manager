@@ -1,4 +1,5 @@
 from databases import Database
+import json
 from sqlalchemy import (
     JSON,
     Column,
@@ -108,15 +109,18 @@ class TaskAnnotation(Base):
         project_task_annotations_dto = ProjectTaskAnnotationsDTO(project_id=project_id)
 
         for row in results:
+            row_dict = dict(row)
+            if isinstance(row_dict["properties"], str):
+                row_dict["properties"] = json.loads(row_dict["properties"])
+                
             task_annotation_dto = TaskAnnotationDTO(
-                task_id=row["task_id"],
-                properties=row["properties"],
-                annotation_type=row["annotation_type"],
-                annotation_source=row["annotation_source"],
-                annotation_markdown=row["annotation_markdown"],
+                task_id=row_dict["task_id"],
+                properties=row_dict["properties"],
+                annotation_type=row_dict["annotation_type"],
+                annotation_source=row_dict["annotation_source"],
+                annotation_markdown=row_dict.get("annotation_markdown")
             )
             project_task_annotations_dto.tasks.append(task_annotation_dto)
-
         return project_task_annotations_dto
 
     @staticmethod
@@ -142,12 +146,18 @@ class TaskAnnotation(Base):
         project_task_annotations_dto = ProjectTaskAnnotationsDTO(project_id=project_id)
 
         for row in results:
+            row_dict = dict(row)
+            
+            props = row_dict["properties"]
+            if isinstance(props, str):
+                props = json.loads(props)
+
             task_annotation_dto = TaskAnnotationDTO(
-                task_id=row["task_id"],
-                properties=row["properties"],
-                annotation_type=row["annotation_type"],
-                annotation_source=row["annotation_source"],
-                annotation_markdown=row.get("annotation_markdown"),
+                task_id=row_dict["task_id"],
+                properties=props,
+                annotation_type=row_dict["annotation_type"],
+                annotation_source=row_dict["annotation_source"],
+                annotation_markdown=row_dict.get("annotation_markdown"),
             )
             project_task_annotations_dto.tasks.append(task_annotation_dto)
 
