@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from backend.models.postgis.statuses import TaskStatus, UserRole
 from backend.models.postgis.task import Task

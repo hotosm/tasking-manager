@@ -361,7 +361,7 @@ class Project(Base):
             "Referer": os.environ.get("TM_APP_BASE_URL", "https://example.com"),
         }
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, timeout=30)
             response.raise_for_status()
             country_info = response.json()  # returns a dict
             if country_info["address"].get("country") is not None:

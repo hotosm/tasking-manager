@@ -575,8 +575,8 @@ def setup_search_dto(request) -> ProjectSearchDTO:
         if request.query_params.get("basedOnMyInterests") == "true":
             search_dto.based_on_user_interests = authenticated_user_id
 
-    except Exception:
-        pass
+    except AttributeError as e:
+        logger.warning("Unable to read authenticated user details: {}", e)
 
     mapping_types_str = request.query_params.get("mappingTypes")
     if mapping_types_str:

@@ -17,7 +17,8 @@ class TestSystemReleaseAPI(BaseTestCase):
         url = "/api/v2/system/release/"
         response = self.client.post(url)
         release = requests.get(
-            "https://api.github.com/repos/hotosm/tasking-manager/releases/latest"
+            "https://api.github.com/repos/hotosm/tasking-manager/releases/latest",
+            timeout=30,
         ).json()
         # Assert
         self.assertEqual(response.status_code, 201)

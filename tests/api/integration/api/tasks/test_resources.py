@@ -1,6 +1,6 @@
 # tests/api/integration/test_tasks_queries_refactored.py
 import base64
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 import pytest
 from httpx import AsyncClient

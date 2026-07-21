@@ -915,7 +915,11 @@ class ProjectSearchService:
                     project.default_locale,
                 )
             except Exception:
-                pass
+                logger.exception(
+                    "Failed to load localized project info for project_id={}",
+                    project.id,
+                )
+                continue
 
             properties = {
                 "projectId": project.id,

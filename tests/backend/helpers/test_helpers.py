@@ -1,7 +1,7 @@
 import base64
 import json
 import os
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 from typing import Tuple
 
 import geojson
