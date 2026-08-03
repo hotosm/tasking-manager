@@ -264,6 +264,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
                       taskId={tasksIds[0]}
                       showOsmFeatures={showOsmFeatures}
                       osmLayerOpacity={osmLayerOpacity}
+                      extraIdParams={project.extraIdParams}
                     />
                   ) : (
                     <div>Rapid sandbox editor is under developemnt</div>

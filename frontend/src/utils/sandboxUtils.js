@@ -100,23 +100,3 @@ export async function getSandboxToken(sessionId) {
   await handleErrors(response, 'Something went wrong on sandbox OAuth token for session');
   return response.json();
 }
-
-/**
- * Fetch sandbox license info
- */
-export async function fetchSandboxLicense(sandboxId) {
-  if (!DASHBOARD_API_URL) throw new Error('Failed to get dashboard URL');
-  if (!sandboxId) throw new Error('Failed to get Sandbox ID');
-
-  const response = await fetch(`${DASHBOARD_API_URL}/v1/boxes/${sandboxId}`);
-
-  await handleErrors(response, 'Something went wrong on sandbox license');
-  const result = await response.json();
-  const license = result && result.license;
-
-  if (!license) {
-    throw new Error('Failed to get sandbox license info');
-  }
-
-  return license;
-}
