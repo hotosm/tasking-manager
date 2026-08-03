@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
-import * as iD from '@osm-sandbox/sandbox-id';
-import '@osm-sandbox/sandbox-id/dist/iD.css';
+import * as iD from '@openstreetmap/id';
+import '@openstreetmap/id/dist/iD.css';
 
 import messages from './messages';
 import {
@@ -13,7 +13,7 @@ import {
   setSandboxAuthStatus,
 } from '../store/actions/auth';
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
-import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
+import { getValidTokenOrInitiateAuth } from '../utils/sandboxUtils';
 import { useOsmFeaturesQuery } from '../api/projects';
 import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
 
@@ -30,6 +30,7 @@ export default function SandboxEditor({
   taskId,
   showOsmFeatures,
   osmLayerOpacity,
+  extraIdParams,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,7 +70,33 @@ export default function SandboxEditor({
         }
       }
     }
-  }, [customImageryIsSet, imagery, iDContext, customSource]);
+
+    // wait till iDContext loads background
+    if (!iDContext?.background()) return;
+
+    // this fixes the custom imagery persisting from previous load
+    // when no imagery is selected in project setting
+    if (!imagery) {
+      // set Bing as default
+      const imagerySource = iDContext.background().findSource('Bing');
+      if (!imagerySource) return;
+      iDContext.background().baseLayerSource(imagerySource);
+    }
+
+    // this sets imagery offset from extraIdParams if present
+    if (extraIdParams) {
+      const params = new URLSearchParams(extraIdParams);
+      const offsetStr = params.get('offset'); // "10,-10"
+      if (!offsetStr) return;
+      const offsetInMeters = offsetStr.split(',').map(Number); // [10, -10]
+      const offset = sandboxID.geoMetersToOffset(offsetInMeters);
+      iDContext.background().offset(offset);
+    } else {
+      // reset offset if params not present
+      // this is needed to fix the offset persisting from previous project issue
+      iDContext.background().offset([0, 0]);
+    }
+  }, [customImageryIsSet, imagery, iDContext, customSource, extraIdParams]);
 
   useEffect(() => {
     const context = resolveIdEditorContext(iDContext, 'sandbox', () => sandboxID.coreContext());
@@ -116,9 +143,6 @@ export default function SandboxEditor({
           return;
         }
 
-        // fetch sandbox license info
-        const license = await fetchSandboxLicense(sandboxId);
-
         // set up presets
         try {
           if (presets && presets.length) {
@@ -130,20 +154,16 @@ export default function SandboxEditor({
           sandboxID.presetManager.addablePresetIDs(null);
         }
 
-        // set up the context
+        // Current Tasking Manager deployments are expected to use only ODbL
+        // sandboxes, so upstream iD does not need the fork's license restrictions.
+        // Restore license-aware imagery and overlay restrictions before adding
+        // support for CC0 or other sandbox licenses.
         iDContext
           .embed(true)
-          .license(license)
           .assetPath('/static/id/')
           .locale(locale)
           .setsDocumentTitle(false)
           .containerNode(document.getElementById('id-container'));
-
-        // @osm-sandbox/sandbox-id has no dark theme of its own, but it shares the
-        // "ideditor" root class with @openstreetmap/id, which does have one keyed
-        // off the OS/browser's prefers-color-scheme. Force light explicitly so
-        // this editor doesn't pick up a dark theme it was never styled for.
-        iDContext.container().classed('theme-light', true);
 
         // init the ui or restart if it was loaded previously. Either path ends
         // with connection().switch() below, which resets the (module-scoped,
