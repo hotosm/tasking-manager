@@ -97,7 +97,7 @@ class ProjectAdminService:
             tasks = draft_project_dto.tasks
 
         await ProjectAdminService._attach_tasks_to_project(draft_project, tasks, db)
-        draft_project.set_country_info()
+        await draft_project.set_country_info()
 
         if draft_project_dto.cloneFromProjectId:
             draft_project.set_default_changeset_comment()

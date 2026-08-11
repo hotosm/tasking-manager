@@ -362,7 +362,7 @@ class TestProjectAdminService:
     ):
         # Arrange - project stub (avoid coroutines)
         stub_project = Project()
-        stub_project.set_country_info = lambda: None
+        stub_project.set_country_info = AsyncMock()
         stub_project.set_default_changeset_comment = lambda: None
         stub_project.tasks = []
         mock_project_get.return_value = stub_project
@@ -476,7 +476,7 @@ class TestProjectAdminService:
         stub_project.status = ProjectStatus.DRAFT.value
         # make sure stub_project won't create coroutine warnings if service calls non-async helpers
         stub_project.tasks = []
-        stub_project.set_country_info = lambda: None
+        stub_project.set_country_info = AsyncMock()
         stub_project.set_default_changeset_comment = lambda: None
 
         mock_project_get.return_value = stub_project
