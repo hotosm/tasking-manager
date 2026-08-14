@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from databases import Database
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -104,7 +106,7 @@ async def get_project_user_stats(
 
 @router.get("/{project_id}/tasks/invalidated/")
 async def get_project_invalidated_counts(
-    project_id: int, db: Database = Depends(get_db)
+    project_id: int, db: Annotated[Database, Depends(get_db)]
 ):
     """
     Return all tasks in a project with the number of times each task was invalidated.
