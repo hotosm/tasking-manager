@@ -13,6 +13,9 @@ from backend.models.postgis.priority_area import PriorityArea  # noqa: F401
 from backend.models.postgis.project_chat import ProjectChat  # noqa: F401
 from backend.models.postgis.project_info import ProjectInfo  # noqa: F401
 from backend.models.postgis.project import Project  # noqa: F401
+from backend.models.postgis.project_organisation import (  # noqa: F401
+    ProjectOrganisation,
+)
 from backend.models.postgis.project_partner import ProjectPartnership  # noqa: F401
 from backend.models.postgis.release_version import ReleaseVersion  # noqa: F401
 from backend.models.postgis.task_annotation import TaskAnnotation  # noqa: F401
