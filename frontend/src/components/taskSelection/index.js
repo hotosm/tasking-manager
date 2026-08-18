@@ -30,6 +30,7 @@ import {
   useActivitiesQuery,
   useProjectContributionsQuery,
   useTasksQuery,
+  useInvalidatedTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
 
@@ -70,6 +71,7 @@ export function TaskSelection({ project }: Object) {
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
+  const [showChoropleth, setShowChoropleth] = useState(false);
   const isFirstRender = useRef(true); // to check if component is rendered first time
 
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
@@ -101,6 +103,14 @@ export function TaskSelection({ project }: Object) {
     isLoading: isPriorityAreasLoading,
     isLoadingError: isPriorityAreasLoadingError,
   } = usePriorityAreasQuery(projectId);
+
+  const { data: invalidatedTasksData } = useInvalidatedTasksQuery(projectId, {
+    enabled: showChoropleth,
+    // No staleTime — data is immediately stale so React Query refetches on
+    // every window focus or remount. This ensures if a user invalidates a task
+    // and comes back to this page, the count is always up to date.
+    refetchOnWindowFocus: true,
+  });
 
   const tasks = useMemo(
     () => (tasksData && activities ? updateTasksStatus(tasksData, activities) : undefined),
@@ -377,8 +387,11 @@ export function TaskSelection({ project }: Object) {
                 taskBordersOnly={false}
                 priorityAreas={priorityAreas}
                 animateZoom={false}
+                showChoropleth={showChoropleth}
+                invalidatedTasksData={invalidatedTasksData}
+                onToggleChoropleth={() => setShowChoropleth((v) => !v)}
               />
-              <TasksMapLegend />
+              <TasksMapLegend showChoropleth={showChoropleth} />
             </ReactPlaceholder>
           )}
         </div>
