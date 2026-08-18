@@ -7,7 +7,11 @@ import '@openstreetmap/id/dist/iD.css';
 
 import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
-import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
+import {
+  captureIdEditorPackage,
+  removeUnavailableImagerySources,
+  resolveIdEditorContext,
+} from '../utils/idEditorContext';
 
 const officialID = captureIdEditorPackage();
 
@@ -107,6 +111,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
       } else {
         iDContext.init();
       }
+      removeUnavailableImagerySources(iDContext.background());
       if (gpxUrl) {
         fetch(gpxUrl)
           .then((response) => response.text())

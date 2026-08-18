@@ -1,3 +1,24 @@
+const backgroundsWithFilteredImagery = new WeakSet();
+const unavailableImagerySourceIds = new Set(['OpenAerialMapMosaic']);
+
+// Both iD editors still include the retired Kontur OAM imagery source.
+// Wrap each background instance once so the unavailable source is hidden,
+// while preserving every argument expected by iD's source lookup.
+export function removeUnavailableImagerySources(background) {
+  if (
+    !background ||
+    typeof background.sources !== 'function' ||
+    backgroundsWithFilteredImagery.has(background)
+  ) {
+    return;
+  }
+
+  const originalSources = background.sources.bind(background);
+  background.sources = (...args) =>
+    originalSources(...args).filter((source) => !unavailableImagerySourceIds.has(source.id));
+  backgroundsWithFilteredImagery.add(background);
+}
+
 // Both @openstreetmap/id and @osm-sandbox/sandbox-id have no real ESM/CJS
 // exports — each only assigns itself to window.iD as a side effect on
 // import, and whichever loaded last wins that global for the rest of the
