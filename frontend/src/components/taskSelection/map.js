@@ -427,11 +427,22 @@ export const TasksMap = ({
       someResultsReady;
     const mapLayersAlreadyDefined = map !== null && map.getSource('tasks') !== undefined;
 
-    /* set up style/sources for the map, either immediately or on base load */
+    /* set up style/sources for the map, either immediately (style already
+     * parsed) or on the 'style.load' event. We intentionally do NOT wait for
+     * the 'load' event: 'load' only fires after the first visually complete
+     * render, which includes the base raster tiles downloading. On a slow
+     * connection that would keep the task grid hidden until the imagery
+     * appears, so we draw the grid as soon as the style is ready instead. */
     if (mapReadyTasksReady && !mapLayersAlreadyDefined) {
       maplibreLayerDefn();
     } else if (tasksReadyMapLoading && !mapLayersAlreadyDefined) {
-      map.on('load', maplibreLayerDefn);
+      // 'style.load' fires once the style JSON is parsed, before the base
+      // raster tiles finish downloading — unlike 'load', which waits for the
+      // first complete render (tiles included). Using it keeps the task grid
+      // from being blocked behind slow base imagery.
+      map.once('style.load', () => {
+        if (map.getSource('tasks') === undefined) maplibreLayerDefn();
+      });
     } else if (tasksReadyMapLoading || mapReadyTasksReady) {
       console.error('One of the hook dependencies changed and try to redefine the map');
     }

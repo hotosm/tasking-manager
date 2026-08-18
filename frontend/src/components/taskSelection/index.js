@@ -1,4 +1,4 @@
-import { lazy, useState, useEffect, useCallback, Suspense, useRef } from 'react';
+import { lazy, useState, useEffect, useCallback, useMemo, Suspense, useRef } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -90,9 +90,10 @@ export function TaskSelection({ project }: Object) {
   });
   const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
     useErrorBoundary: true,
-    // Task status on the map were not being updated when coming from the action page,
-    // so added this as a workaround.
-    cacheTime: 0,
+    // Keep the cached grid so the map paints instantly (stale) on remount instead
+    // of showing a white screen. `staleTime: 0` lets invalidateQueries mark it stale
+    // so a background refetch is allowed; a fresh refetch is triggered on mount below.
+    staleTime: 0,
     enabled: false,
   });
   const {
@@ -101,7 +102,10 @@ export function TaskSelection({ project }: Object) {
     isLoadingError: isPriorityAreasLoadingError,
   } = usePriorityAreasQuery(projectId);
 
-  const tasks = tasksData && activities && updateTasksStatus(tasksData, activities);
+  const tasks = useMemo(
+    () => (tasksData && activities ? updateTasksStatus(tasksData, activities) : undefined),
+    [tasksData, activities],
+  );
   const randomTask = activities && [getRandomTaskByAction(activities.activity, taskAction)];
   const isValidationAllowed = user && userTeams && userCanValidate(user, project, userTeams.teams);
 
@@ -109,6 +113,12 @@ export function TaskSelection({ project }: Object) {
     isPriorityAreasLoadingError &&
       toast.error(<FormattedMessage {...messages.priorityAreasLoadingError} />);
   }, [isPriorityAreasLoadingError]);
+
+  // Fetch fresh task geometry on mount. With the cache kept, the stale grid paints
+  // immediately (no white screen) while this refetch silently refreshes it.
+  useEffect(() => {
+    if (token) refetchTasks();
+  }, [token, refetchTasks]);
 
   useEffect(() => {
     const { lastLockedTasksIds, lastLockedProjectId } = location.state || {};

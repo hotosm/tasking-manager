@@ -97,8 +97,15 @@ const fallbackRasterStyle = {
   sources: {
     'raster-tiles': {
       type: 'raster',
-      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
-      tileSize: 128,
+      // Round-robin across a/b/c subdomains for more concurrent tile requests,
+      // and use the native 256px tile size (128 caused ~4x more requests and
+      // downscaled/blurry tiles), which hammered the single HOT tile host.
+      tiles: [
+        'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        'https://b.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        'https://c.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+      ],
+      tileSize: 256,
       attribution:
         '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
     },
