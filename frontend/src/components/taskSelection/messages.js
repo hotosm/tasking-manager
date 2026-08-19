@@ -934,6 +934,18 @@ export default defineMessages({
     id: 'project.tasks.map.invalidationChoropleth.toggle',
     defaultMessage: 'Show invalidation heatmap',
   },
+  invalidationChoroplethToggleOff: {
+    id: 'project.tasks.map.invalidationChoropleth.toggle.off',
+    defaultMessage: 'Hide invalidation heatmap',
+  },
+  invalidationChoroplethLoading: {
+    id: 'project.tasks.map.invalidationChoropleth.loading',
+    defaultMessage: 'Loading invalidation data...',
+  },
+  invalidatedTasksLoadingError: {
+    id: 'project.tasks.map.invalidationChoropleth.loading.error',
+    defaultMessage: 'An error occured while loading the invalidation counts for the project',
+  },
   invalidationChoroplethLegendTitle: {
     id: 'project.tasks.map.invalidationChoropleth.legend.title',
     defaultMessage: 'Invalidation count',
@@ -953,6 +965,11 @@ export default defineMessages({
   invalidationChoroplethHigh: {
     id: 'project.tasks.map.invalidationChoropleth.legend.high',
     defaultMessage: '6+ times',
+  },
+  invalidationCountTooltip: {
+    id: 'project.tasks.map.invalidationChoropleth.tooltip.count',
+    defaultMessage:
+      '{count, plural, =0 {Never invalidated} one {Invalidated # time} other {Invalidated # times}}',
   },
   invalidationChoroplethRampHint: {
     id: 'project.tasks.map.invalidationChoropleth.legend.rampHint',
