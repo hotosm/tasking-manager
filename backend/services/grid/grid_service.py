@@ -189,7 +189,9 @@ class GridService:
             if len(coordinates) >= 4 and coordinates[0] == coordinates[-1]:
                 geometry = geojson.geometry.Polygon([coordinates])
 
-        if isinstance(geometry, (geojson.geometry.Polygon, geojson.geometry.MultiPolygon)):
+        if isinstance(
+            geometry, (geojson.geometry.Polygon, geojson.geometry.MultiPolygon)
+        ):
             # adapt the geometry for use as a shapely geometry
             # http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
             feature.geometry = shapely.geometry.shape(geometry)
