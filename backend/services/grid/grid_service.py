@@ -179,12 +179,20 @@ class GridService:
         :param feature: geojson.feature to be adapted
         :return: feature with geometry adapted
         """
-        if isinstance(
-            feature.geometry, (geojson.geometry.Polygon, geojson.geometry.MultiPolygon)
-        ):
+        geometry = feature.geometry
+        if isinstance(geometry, geojson.geometry.LineString):
+            # A closed LineString (first/last coordinate match, at least 4
+            # points) is unambiguously a polygon outline. Tools like
+            # geojson.io convert a closed .osm way to a LineString rather
+            # than a Polygon, which otherwise gets rejected outright.
+            coordinates = geometry["coordinates"]
+            if len(coordinates) >= 4 and coordinates[0] == coordinates[-1]:
+                geometry = geojson.geometry.Polygon([coordinates])
+
+        if isinstance(geometry, (geojson.geometry.Polygon, geojson.geometry.MultiPolygon)):
             # adapt the geometry for use as a shapely geometry
             # http://toblerity.org/shapely/manual.html#shapely.geometry.asShape
-            feature.geometry = shapely.geometry.shape(feature.geometry)
+            feature.geometry = shapely.geometry.shape(geometry)
             return feature
         else:
             return None
