@@ -300,8 +300,10 @@ class Project(Base):
 
         query = """
         SELECT ST_AsEWKT(
-            ST_SetSRID(
-                ST_GeomFromGeoJSON(:geojson), 4326
+            ST_ForceRHR(
+                ST_SetSRID(
+                    ST_GeomFromGeoJSON(:geojson), 4326
+                )
             )
         ) AS geometry_wkt;
         """
