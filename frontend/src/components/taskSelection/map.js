@@ -1,11 +1,11 @@
-import { createRef, useLayoutEffect, useState, useRef } from 'react';
+import { createRef, useLayoutEffect, useMemo, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import bbox from '@turf/bbox';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { NineCellsGridIcon } from '../svgIcons';
+import { NineCellsGridIcon, LoadingIcon } from '../svgIcons';
 
 import WebglUnsupported from '../webglUnsupported';
 import isWebglSupported from '../../utils/isWebglSupported';
@@ -37,12 +37,25 @@ export const TasksMap = ({
   selected: selectedOnMap,
   invalidatedTasksData,
   showChoropleth = false,
+  isChoroplethLoading = false,
+  showHoverTooltip = false,
   onToggleChoropleth,
 }) => {
   const intl = useIntl();
   const mapRef = createRef();
   const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
+
+  // taskId -> invalidation count, shared by the choropleth layer and its hover tooltip
+  const invalidationCountMap = useMemo(() => {
+    const countMap = {};
+    (invalidatedTasksData || []).forEach(({ taskId, invalidatedCount }) => {
+      countMap[taskId] = invalidatedCount;
+    });
+    return countMap;
+  }, [invalidatedTasksData]);
+  // Distinguishes "counts haven't loaded yet" from "every task has zero invalidations"
+  const hasInvalidationData = Array.isArray(invalidatedTasksData);
 
   const [map, setMapObj] = useState(null);
   const lastZoomedIdRef = useRef(null);
@@ -349,29 +362,15 @@ export const TasksMap = ({
           'point-tasks-centroid-inner',
         );
       }
-      const popup = new maplibregl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        offset: {
-          top: [-10, 0],
-          bottom: [0, -10],
-          left: [0, -10],
-          right: [-10, 0],
-        },
-      })
-        .setHTML(`${intl.formatMessage(messages.cantValidateMappedTask)}`)
-        .trackPointer();
-
       map.on('mousemove', 'tasks-fill', function (e) {
         // To now allow validators to select tasks that they mapped
         if (
-          e.features[0].properties.mappedBy === authDetails.id &&
-          e.features[0].properties.taskStatus === 'MAPPED'
+          !(
+            e.features[0].properties.mappedBy === authDetails.id &&
+            e.features[0].properties.taskStatus === 'MAPPED'
+          )
         ) {
-          popup.addTo(map);
-        } else {
           map.getCanvas().style.cursor = 'pointer';
-          popup.isOpen() && popup.remove();
         }
         if (showTaskIds) {
           // when the user hover on a task they are validating, enable the task id dialog
@@ -407,13 +406,6 @@ export const TasksMap = ({
         map.getCanvas().style.cursor = '';
         // disable the task id dialog when the mouse go outside the task grid
         showTaskIds && setHoveredTaskId(null);
-        popup.isOpen() && popup.remove();
-
-        // Cursor style won't change to original state with trackPointer()
-        // https://github.com/mapbox/mapbox-gl-js/issues/12223
-        if (map._canvasContainer) {
-          map._canvasContainer.classList.remove('maplibregl-track-pointer');
-        }
       });
       updateTMZoom();
     };
@@ -515,18 +507,14 @@ export const TasksMap = ({
     const CHOROPLETH_LAYER = 'tasks-invalidation-fill';
 
     const buildChoroplethGeoJSON = () => {
-      if (!mapResults || !invalidatedTasksData) return null;
-      const countMap = {};
-      invalidatedTasksData.forEach(({ taskId, invalidatedCount }) => {
-        countMap[taskId] = invalidatedCount;
-      });
+      if (!mapResults || !hasInvalidationData) return null;
       return {
         type: 'FeatureCollection',
         features: mapResults.features.map((f) => ({
           ...f,
           properties: {
             ...f.properties,
-            invalidatedCount: countMap[f.properties.taskId] || 0,
+            invalidatedCount: invalidationCountMap[f.properties.taskId] || 0,
           },
         })),
       };
@@ -544,7 +532,7 @@ export const TasksMap = ({
       return;
     }
 
-    if (!invalidatedTasksData || !mapResults?.features?.length) return;
+    if (!hasInvalidationData || !mapResults?.features?.length) return;
 
     const geojson = buildChoroplethGeoJSON();
     if (!geojson) return;
@@ -573,11 +561,17 @@ export const TasksMap = ({
           source: CHOROPLETH_SOURCE,
           paint: {
             'fill-color': [
-              'interpolate', ['linear'], ['get', 'invalidatedCount'],
-              0, '#f9fafb',   // never invalidated: near-white
-              1, '#fde68a',   // once: light amber
-              3, '#f97316',   // moderate: orange
-              6, '#b91c1c',   // high: deep red
+              'interpolate',
+              ['linear'],
+              ['get', 'invalidatedCount'],
+              0,
+              '#f9fafb', // never invalidated: near-white
+              1,
+              '#fde68a', // once: light amber
+              3,
+              '#f97316', // moderate: orange
+              6,
+              '#b91c1c', // high: deep red
             ],
             'fill-opacity': 1,
           },
@@ -617,7 +611,139 @@ export const TasksMap = ({
       map.on('idle', onIdle);
       return () => map.off('idle', onIdle);
     }
-  }, [map, showChoropleth, invalidatedTasksData, mapResults]);
+  }, [map, showChoropleth, hasInvalidationData, invalidationCountMap, mapResults]);
+
+  /* ------------------------------------------------------------------
+   * Task hover: outline the hovered task and show a pointer-following
+   * tooltip with its id and status. While the choropleth is on, the
+   * tooltip also carries the task's invalidation count.
+   * ------------------------------------------------------------------ */
+  useLayoutEffect(() => {
+    if (!map || !showHoverTooltip) return;
+
+    const HOVER_LAYER = 'hovered-task-border';
+
+    const popup = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: {
+        top: [-12, 0],
+        bottom: [0, -12],
+        left: [0, -12],
+        right: [-12, 0],
+      },
+    }).trackPointer();
+
+    let lastTaskId = null;
+
+    const buildPopupHTML = ({ taskId, taskStatus, mappedBy }) => {
+      const lines = [
+        `<div class="fw6">${intl.formatMessage(messages.taskId, { id: taskId })}</div>`,
+      ];
+      const statusMessage = messages[`taskStatus_${taskStatus}`];
+      if (statusMessage) {
+        lines.push(`<div>${intl.formatMessage(statusMessage)}</div>`);
+      }
+      if (showChoropleth && hasInvalidationData) {
+        lines.push(
+          `<div>${intl.formatMessage(messages.invalidationCountTooltip, {
+            count: invalidationCountMap[taskId] || 0,
+          })}</div>`,
+        );
+      }
+      // Validators can't select tasks they mapped themselves, so warn on hover
+      if (mappedBy === authDetails.id && taskStatus === 'MAPPED') {
+        lines.push(`<div class="red">${intl.formatMessage(messages.cantValidateMappedTask)}</div>`);
+      }
+      return `<div class="base-font f6 dark-gray">${lines.join('')}</div>`;
+    };
+
+    const highlightTask = (taskId) => {
+      if (!map.getLayer(HOVER_LAYER)) return;
+      map.setFilter(
+        HOVER_LAYER,
+        taskId === null ? ['in', 'taskId', ''] : ['==', ['get', 'taskId'], taskId],
+      );
+    };
+
+    const onMouseMove = (e) => {
+      const properties = e.features?.[0]?.properties;
+      if (!properties || properties.taskId === undefined || properties.taskId === null) return;
+      // Only rebuild the tooltip and the highlight when the hovered task changes
+      if (properties.taskId !== lastTaskId) {
+        lastTaskId = properties.taskId;
+        popup.setHTML(buildPopupHTML(properties));
+        highlightTask(properties.taskId);
+      }
+      if (!popup.isOpen()) popup.addTo(map);
+    };
+
+    const onMouseLeave = () => {
+      lastTaskId = null;
+      popup.remove();
+      highlightTask(null);
+
+      // Cursor style won't change to original state with trackPointer()
+      // https://github.com/mapbox/mapbox-gl-js/issues/12223
+      if (map._canvasContainer) {
+        map._canvasContainer.classList.remove('maplibregl-track-pointer');
+      }
+    };
+
+    const setup = () => {
+      if (!map.getLayer(HOVER_LAYER)) {
+        map.addLayer({
+          id: HOVER_LAYER,
+          type: 'line',
+          source: 'tasks',
+          paint: {
+            'line-color': '#2c3038',
+            'line-width': 3,
+          },
+          filter: ['in', 'taskId', ''],
+        });
+      }
+      map.on('mousemove', 'tasks-fill', onMouseMove);
+      map.on('mouseleave', 'tasks-fill', onMouseLeave);
+    };
+
+    const teardown = () => {
+      map.off('mousemove', 'tasks-fill', onMouseMove);
+      map.off('mouseleave', 'tasks-fill', onMouseLeave);
+      popup.remove();
+      if (map.getLayer(HOVER_LAYER)) map.removeLayer(HOVER_LAYER);
+    };
+
+    // Wait for the tasks layer to exist before binding, otherwise MapLibre logs
+    // errors when the delegated listener queries a layer that isn't there yet.
+    if (map.getLayer('tasks-fill')) {
+      setup();
+      return teardown;
+    }
+
+    const onIdle = () => {
+      if (!map.getLayer('tasks-fill')) return;
+      map.off('idle', onIdle);
+      setup();
+    };
+    map.on('idle', onIdle);
+    return () => {
+      map.off('idle', onIdle);
+      teardown();
+    };
+  }, [
+    map,
+    showHoverTooltip,
+    showChoropleth,
+    hasInvalidationData,
+    invalidationCountMap,
+    authDetails.id,
+    intl,
+  ]);
+
+  let choroplethToggleMessage = messages.invalidationChoroplethToggle;
+  if (showChoropleth) choroplethToggleMessage = messages.invalidationChoroplethToggleOff;
+  if (isChoroplethLoading) choroplethToggleMessage = messages.invalidationChoroplethLoading;
 
   if (!isWebglSupported()) {
     return <WebglUnsupported className={`w-100 h-100 fr ${className || ''}`} />;
@@ -635,10 +761,11 @@ export const TasksMap = ({
           <button
             id="invalidation-choropleth-toggle"
             onClick={onToggleChoropleth}
-            title={showChoropleth ? 'Hide invalidation heatmap' : 'Show invalidation heatmap'}
+            title={intl.formatMessage(choroplethToggleMessage)}
+            aria-busy={isChoroplethLoading}
             style={{
               position: 'absolute',
-              top: 103,   // 10px margin + 58px zoom cluster + 29px compass + 6px gap
+              top: 103, // 10px margin + 58px zoom cluster + 29px compass + 6px gap
               right: 10,
               zIndex: 5,
               width: 29,
@@ -656,14 +783,18 @@ export const TasksMap = ({
               transition: 'background 0.15s',
             }}
           >
-            <NineCellsGridIcon
-              style={{
-                width: 15,
-                height: 15,
-                fill: showChoropleth ? '#d73f3f' : '#404040',
-                transition: 'fill 0.15s',
-              }}
-            />
+            {isChoroplethLoading ? (
+              <LoadingIcon className="red h1 w1" style={{ animation: 'spin 1s linear infinite' }} />
+            ) : (
+              <NineCellsGridIcon
+                style={{
+                  width: 15,
+                  height: 15,
+                  fill: showChoropleth ? '#d73f3f' : '#404040',
+                  transition: 'fill 0.15s',
+                }}
+              />
+            )}
           </button>
         )}
 

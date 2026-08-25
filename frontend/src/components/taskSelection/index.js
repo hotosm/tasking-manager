@@ -104,7 +104,11 @@ export function TaskSelection({ project }: Object) {
     isLoadingError: isPriorityAreasLoadingError,
   } = usePriorityAreasQuery(projectId);
 
-  const { data: invalidatedTasksData } = useInvalidatedTasksQuery(projectId, {
+  const {
+    data: invalidatedTasksData,
+    isInitialLoading: isInvalidatedTasksLoading,
+    isLoadingError: isInvalidatedTasksLoadingError,
+  } = useInvalidatedTasksQuery(projectId, {
     enabled: showChoropleth,
     // No staleTime — data is immediately stale so React Query refetches on
     // every window focus or remount. This ensures if a user invalidates a task
@@ -123,6 +127,11 @@ export function TaskSelection({ project }: Object) {
     isPriorityAreasLoadingError &&
       toast.error(<FormattedMessage {...messages.priorityAreasLoadingError} />);
   }, [isPriorityAreasLoadingError]);
+
+  useEffect(() => {
+    isInvalidatedTasksLoadingError &&
+      toast.error(<FormattedMessage {...messages.invalidatedTasksLoadingError} />);
+  }, [isInvalidatedTasksLoadingError]);
 
   // Fetch fresh task geometry on mount. With the cache kept, the stale grid paints
   // immediately (no white screen) while this refetch silently refreshes it.
@@ -389,6 +398,8 @@ export function TaskSelection({ project }: Object) {
                 animateZoom={false}
                 showChoropleth={showChoropleth}
                 invalidatedTasksData={invalidatedTasksData}
+                isChoroplethLoading={isInvalidatedTasksLoading}
+                showHoverTooltip
                 onToggleChoropleth={() => setShowChoropleth((v) => !v)}
               />
               <TasksMapLegend showChoropleth={showChoropleth} />
