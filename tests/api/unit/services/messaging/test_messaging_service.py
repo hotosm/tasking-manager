@@ -4,7 +4,6 @@ from unittest.mock import patch, AsyncMock
 from backend.models.postgis.message import Message
 from backend.services.messaging.message_service import MessageService
 
-
 MESSAGE_TYPES = "3,2,1"
 TEST_USER_ID = 111111111
 
