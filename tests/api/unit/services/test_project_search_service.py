@@ -91,3 +91,49 @@ class TestProjectService:
         assert project_search_dto is not None
         assert len(project_search_dto.results) > 0
         assert any(p.project_id == self.project_id for p in project_search_dto.results)
+
+    async def test_default_sort_order_places_featured_between_urgent_and_high(self):
+        """
+        Issue #6704: When no order_by is specified, projects should be sorted as:
+        Urgent (priority=0) > Featured > High (priority=1) > Medium (priority=2) > Low.
+        """
+        # Arrange: create 3 more canned projects so we have 4 total covering each tier
+        _, _, urgent_id = await create_canned_project(self.db, name="urgent_proj")
+        _, _, featured_id = await create_canned_project(self.db, name="featured_proj")
+        _, _, high_id = await create_canned_project(self.db, name="high_proj")
+        # The original self.project_id will be our MEDIUM tier project
+
+        # Set priority/featured/status for each project to define the test scenario
+        configs = [
+            (urgent_id, 0, False),  # URGENT (priority=0)
+            (featured_id, 1, True),  # FEATURED (high priority, but featured=TRUE)
+            (high_id, 1, False),  # HIGH (priority=1)
+            (self.project_id, 2, False),  # MEDIUM (priority=2)
+        ]
+        for pid, priority, featured in configs:
+            await self.db.execute(
+                """
+                UPDATE projects
+                SET priority = :priority, featured = :featured, status = :status
+                WHERE id = :id
+                """,
+                {
+                    "priority": priority,
+                    "featured": featured,
+                    "status": ProjectStatus.PUBLISHED.value,
+                    "id": pid,
+                },
+            )
+
+        # Act: search with no explicit order_by (default sort path)
+        search_dto = ProjectSearchDTO(project_statuses=["PUBLISHED"], page=1)
+        result = await ProjectSearchService.search_projects(search_dto, None, self.db)
+
+        # Assert: extract the order of just our 4 seeded projects
+        seeded = {urgent_id, featured_id, high_id, self.project_id}
+        observed = [p.project_id for p in result.results if p.project_id in seeded]
+        expected = [urgent_id, featured_id, high_id, self.project_id]
+        assert observed == expected, (
+            f"Expected default sort Urgent>Featured>High>Medium "
+            f"({expected}), but got {observed}"
+        )
