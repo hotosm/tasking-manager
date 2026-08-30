@@ -281,7 +281,7 @@ The project includes a suite of Unit and Integration tests that you
 should run after any changes.
 
 ```
-python3 -m unittest discover tests/backend
+pytest tests/api
 ```
 or
 ```
