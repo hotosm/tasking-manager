@@ -28,7 +28,7 @@ services:
       - tm-net
 
   tm-backend:
-    image: ghcr.io/hotosm/tasking-manager/backend:main
+    image: ghcr.io/hotosm/tasking-manager/backend:${TAG_OVERRIDE:-main}
     build:
       context: .
       target: ${TARGET_TAG:-debug}
@@ -71,7 +71,7 @@ services:
       - tm-net
 
   tm-migration:
-    image: ghcr.io/hotosm/tasking-manager/backend:main
+    image: ghcr.io/hotosm/tasking-manager/backend:${TAG_OVERRIDE:-main}
     build:
       context: .
       target: ${TARGET_TAG:-debug}
@@ -101,7 +101,7 @@ services:
       - tm-net
 
   tm-cron-jobs:
-    image: ghcr.io/hotosm/tasking-manager/backend:main
+    image: ghcr.io/hotosm/tasking-manager/backend:${TAG_OVERRIDE:-main}
     build:
       context: .
       target: ${TARGET_TAG:-debug}

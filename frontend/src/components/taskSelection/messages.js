@@ -926,4 +926,53 @@ export default defineMessages({
     id: 'project.tasks.osm_data_controls.show.title',
     defaultMessage: 'Show OSM features',
   },
+  invalidationChoropleth: {
+    id: 'project.tasks.map.invalidationChoropleth',
+    defaultMessage: 'Legend',
+  },
+  invalidationChoroplethToggle: {
+    id: 'project.tasks.map.invalidationChoropleth.toggle',
+    defaultMessage: 'Show invalidation heatmap',
+  },
+  invalidationChoroplethToggleOff: {
+    id: 'project.tasks.map.invalidationChoropleth.toggle.off',
+    defaultMessage: 'Hide invalidation heatmap',
+  },
+  invalidationChoroplethLoading: {
+    id: 'project.tasks.map.invalidationChoropleth.loading',
+    defaultMessage: 'Loading invalidation data...',
+  },
+  invalidatedTasksLoadingError: {
+    id: 'project.tasks.map.invalidationChoropleth.loading.error',
+    defaultMessage: 'An error occured while loading the invalidation counts for the project',
+  },
+  invalidationChoroplethLegendTitle: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.title',
+    defaultMessage: 'Invalidation count',
+  },
+  invalidationChoroplethNone: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.none',
+    defaultMessage: 'Never invalidated',
+  },
+  invalidationChoroplethLow: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.low',
+    defaultMessage: '1–2 times',
+  },
+  invalidationChoroplethMedium: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.medium',
+    defaultMessage: '3–5 times',
+  },
+  invalidationChoroplethHigh: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.high',
+    defaultMessage: '6+ times',
+  },
+  invalidationCountTooltip: {
+    id: 'project.tasks.map.invalidationChoropleth.tooltip.count',
+    defaultMessage:
+      '{count, plural, =0 {Never invalidated} one {Invalidated # time} other {Invalidated # times}}',
+  },
+  invalidationChoroplethRampHint: {
+    id: 'project.tasks.map.invalidationChoropleth.legend.rampHint',
+    defaultMessage: 'Colour blends continuously between stops',
+  },
 });

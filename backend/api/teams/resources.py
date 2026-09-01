@@ -1,12 +1,14 @@
 import csv
 import io
 from datetime import datetime
+from urllib.parse import quote
 
 from databases import Database
 from fastapi import APIRouter, Body, Depends, Query, Request, Response
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from backend.config import settings
 from backend.db import get_db
 from backend.models.dtos.team_dto import NewTeamDTO, TeamSearchDTO, UpdateTeamDTO
 from backend.models.dtos.user_dto import AuthUserDTO
@@ -441,6 +443,82 @@ async def create_team(
         return JSONResponse(content={"Error": str(e)}, status_code=400)
 
 
+async def _get_task_stats_by_user(user_ids: list, db: Database) -> dict:
+    """Batches tasks-mapped/validated counts and time spent mapping for a
+    list of user ids into two grouped queries, rather than one query per user."""
+    counts_query = """
+        SELECT
+            user_id,
+            COUNT(DISTINCT (project_id, task_id))
+                FILTER (WHERE action_text = 'MAPPED') AS tasks_mapped,
+            COUNT(DISTINCT (project_id, task_id))
+                FILTER (WHERE action_text = 'VALIDATED') AS tasks_validated
+        FROM task_history
+        WHERE user_id = ANY(:user_ids) AND action_text IN ('MAPPED', 'VALIDATED')
+        GROUP BY user_id
+    """
+    time_query = """
+        SELECT
+            user_id,
+            SUM(
+                EXTRACT(EPOCH FROM to_timestamp(action_text, 'HH24:MI:SS') -
+                    to_timestamp('00:00:00', 'HH24:MI:SS'))
+            ) AS time_spent_mapping
+        FROM task_history
+        WHERE user_id = ANY(:user_ids)
+        AND action IN ('LOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_MAPPING')
+        GROUP BY user_id
+    """
+    counts_rows = await db.fetch_all(counts_query, values={"user_ids": user_ids})
+    time_rows = await db.fetch_all(time_query, values={"user_ids": user_ids})
+
+    stats = {
+        row["user_id"]: {
+            "tasks_mapped": row["tasks_mapped"],
+            "tasks_validated": row["tasks_validated"],
+        }
+        for row in counts_rows
+    }
+    for row in time_rows:
+        stats.setdefault(row["user_id"], {})["time_spent_mapping"] = int(
+            row["time_spent_mapping"] or 0
+        )
+    return stats
+
+
+async def _get_other_teams_by_user(
+    user_ids: list, current_team_id: int, db: Database
+) -> dict:
+    """Returns, for each user id, a comma-separated list of other teams
+    they are already an active member of."""
+    query = """
+        SELECT
+            tm.user_id AS user_id,
+            STRING_AGG(t.name, ', ' ORDER BY t.name) AS other_teams
+        FROM team_members tm
+        INNER JOIN teams t ON tm.team_id = t.id
+        WHERE tm.user_id = ANY(:user_ids)
+        AND tm.active = TRUE
+        AND tm.team_id != :current_team_id
+        GROUP BY tm.user_id
+    """
+    rows = await db.fetch_all(
+        query, values={"user_ids": user_ids, "current_team_id": current_team_id}
+    )
+    return {row["user_id"]: row["other_teams"] for row in rows}
+
+
+def _username_hyperlink(username: str) -> str:
+    """Renders the username as a spreadsheet HYPERLINK formula pointing at the
+    candidate's TM profile, so the name is clickable straight from the CSV.
+    Quotes in either argument are doubled up, which is how a spreadsheet escapes
+    them inside a string literal, so an unusual username can't break out of the
+    formula."""
+    url = f"{settings.APP_BASE_URL}/users/{quote(username)}/"
+    label = username.replace('"', '""')
+    return f'=HYPERLINK("{url}","{label}")'
+
+
 @router.get("/join_requests/")
 async def get_join_requests(
     request: Request,
@@ -449,7 +527,9 @@ async def get_join_requests(
     user: AuthUserDTO = Depends(login_required),
 ):
     """
-    Downloads join requests for a specific team as a CSV.
+    Downloads join requests for a specific team as a CSV, including each
+    candidate's mapper level, task/time contributions and other team
+    memberships. The username is written as a link to their TM profile.
     ---
     tags:
         - teams
@@ -472,22 +552,27 @@ async def get_join_requests(
             description: Internal server error
     """
     try:
+        team_id = int(team_id)
         query = """
             SELECT
+                u.id AS user_id,
                 u.username AS username,
                 tm.joined_date AS joined_date,
-                t.name AS team_name
+                t.name AS team_name,
+                ml.name AS mapping_level
             FROM
                 team_members tm
             INNER JOIN
                 users u ON tm.user_id = u.id
             INNER JOIN
                 teams t ON tm.team_id = t.id
+            LEFT JOIN
+                mapping_levels ml ON u.mapping_level = ml.id
             WHERE
                 tm.team_id = :team_id
                 AND tm.active = FALSE
         """
-        team_members = await db.fetch_all(query=query, values={"team_id": int(team_id)})
+        team_members = await db.fetch_all(query=query, values={"team_id": team_id})
 
         if not team_members:
             return JSONResponse(
@@ -495,20 +580,42 @@ async def get_join_requests(
                 status_code=200,
             )
 
+        user_ids = [getattr(member, "user_id") for member in team_members]
+        task_stats = await _get_task_stats_by_user(user_ids, db)
+        other_teams = await _get_other_teams_by_user(user_ids, team_id, db)
+
         csv_output = io.StringIO()
         writer = csv.writer(csv_output)
-        writer.writerow(["Username", "Date Joined (UTC)", "Team Name"])
+        writer.writerow(
+            [
+                "Username",
+                "Date Joined (UTC)",
+                "Team Name",
+                "Mapper Level",
+                "Tasks Mapped",
+                "Tasks Validated",
+                "Time Spent Mapping (seconds)",
+                "Other Teams Joined",
+            ]
+        )
 
         for member in team_members:
+            member_user_id = getattr(member, "user_id")
             joined_date = getattr(member, "joined_date")
             joined_date_str = (
                 joined_date.strftime("%Y-%m-%dT%H:%M:%S") if joined_date else "N/A"
             )
+            stats = task_stats.get(member_user_id, {})
             writer.writerow(
                 [
-                    getattr(member, "username"),
+                    _username_hyperlink(getattr(member, "username")),
                     joined_date_str,
                     getattr(member, "team_name"),
+                    getattr(member, "mapping_level") or "N/A",
+                    stats.get("tasks_mapped", 0),
+                    stats.get("tasks_validated", 0),
+                    stats.get("time_spent_mapping", 0),
+                    other_teams.get(member_user_id, ""),
                 ]
             )
 

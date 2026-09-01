@@ -1,16 +1,15 @@
 import json
-import os
 import re
 from typing import Optional
 
 import geojson
-import requests
 from cachetools import TTLCache
 from databases import Database
 from fastapi import HTTPException
 from geoalchemy2 import Geometry, WKTElement
 from geoalchemy2.shape import to_shape
 from loguru import logger
+from pg_nearest_city import AsyncNearestCity, DbConfig
 from shapely import wkb
 from shapely.geometry import shape
 from sqlalchemy import (
@@ -326,8 +325,9 @@ class Project(Base):
             else f"{default_comment}-{self.id}"
         )
 
-    def set_country_info(self):
-        """Sets the default country based on centroid"""
+    async def set_country_info(self):
+        """Sets the default country based on centroid, using the local
+        pg-nearest-city dataset instead of a remote Nominatim lookup"""
         if not self.centroid:
             logger.debug("Skipping country lookup due to missing centroid")
             return
@@ -349,30 +349,23 @@ class Project(Base):
         centroid = WKTElement(centroid_wkt, srid=4326)
         centroid = to_shape(centroid)
         lat, lng = (centroid.y, centroid.x)
-        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
-            settings.OSM_NOMINATIM_SERVER_URL, lat, lng
+
+        db_config = DbConfig(
+            dbname=settings.POSTGRES_DB,
+            user=settings.POSTGRES_USER,
+            password=settings.POSTGRES_PASSWORD,
+            host=settings.POSTGRES_ENDPOINT,
+            port=int(settings.POSTGRES_PORT),
         )
-        headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/58.0.3029.110 Safari/537.3"
-            ),
-            "Referer": os.environ.get("TM_APP_BASE_URL", "https://example.com"),
-        }
         try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-            country_info = response.json()  # returns a dict
-            if country_info["address"].get("country") is not None:
-                self.country = [country_info["address"]["country"]]
-        except (
-            KeyError,
-            AttributeError,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.HTTPError,
-        ) as e:
-            logger.debug(e, exc_info=True)
+            async with AsyncNearestCity(db_config) as geocoder:
+                location = await geocoder.query(lng, lat)
+            if location is not None:
+                self.country = [location.country_name]
+        except (RuntimeError, ValueError) as e:
+            logger.debug(
+                f"Country lookup via pg-nearest-city failed: {e}", exc_info=True
+            )
 
     async def create(self, project_name: str, db: Database):
         """Creates and saves the current model to the DB"""
@@ -890,7 +883,7 @@ class Project(Base):
 
         # try to update country info if that information is not present
         if not self.country:
-            self.set_country_info()
+            await self.set_country_info()
 
         columns = {
             c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs

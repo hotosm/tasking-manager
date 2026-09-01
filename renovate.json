@@ -1,0 +1,130 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "baseBranches": ["develop"],
+  "timezone": "Etc/UTC",
+  "schedule": ["before 9am on monday"],
+  "enabledManagers": ["pep621", "npm", "dockerfile", "docker-compose"],
+  "rangeStrategy": "update-lockfile",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 4,
+  "ignoreDeps": [
+    "postgis/postgis",
+    "python",
+    "docker.io/python",
+    "node",
+    "ghcr.io/hotosm/tasking-manager/backend",
+    "ghcr.io/hotosm/tasking-manager/frontend"
+  ],
+  "packageRules": [
+    {
+      "description": "Scope labels per ecosystem",
+      "matchManagers": ["pep621"],
+      "addLabels": ["scope: backend"]
+    },
+    {
+      "matchManagers": ["npm"],
+      "addLabels": ["scope: frontend"]
+    },
+    {
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "addLabels": ["scope: infrastructure"]
+    },
+    {
+      "description": "Keep major updates as individual PRs for careful review",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Group remaining Python minor/patch updates",
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "python-non-major"
+    },
+    {
+      "description": "Group remaining npm minor/patch updates",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "npm-non-major"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["fastapi*", "uvicorn*", "pydantic*", "starlette*"],
+      "groupName": "fastapi-stack"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["SQLAlchemy*", "alembic*", "databases*", "asyncpg*", "GeoAlchemy2*"],
+      "groupName": "database-stack"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["shapely*", "geojson*", "pyproj*"],
+      "groupName": "geo-stack"
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["sentry-sdk*"],
+      "groupName": "sentry-python"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["react", "react-dom", "react-router-dom", "react-scripts", "@types/react", "@types/react-dom"],
+      "groupName": "react-core"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["@tanstack/*"],
+      "groupName": "tanstack"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["@turf/*"],
+      "groupName": "turf"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["maplibre-gl", "@maplibre/*", "@watergis/*", "terra-draw"],
+      "groupName": "maplibre"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["@sentry/*"],
+      "groupName": "sentry-js"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["@testing-library/*", "msw", "jest*", "react-test-renderer"],
+      "groupName": "testing"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["workbox-*"],
+      "groupName": "workbox"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["redux", "react-redux", "redux-*"],
+      "groupName": "redux-state"
+    }
+  ]
+}

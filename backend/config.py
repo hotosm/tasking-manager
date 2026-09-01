@@ -63,11 +63,8 @@ class Settings(BaseSettings):
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY: str = os.getenv("TM_SECRET", None)
 
-    # OSM API, Nomimatim URLs
+    # OSM API URL
     OSM_SERVER_URL: str = os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")
-    OSM_NOMINATIM_SERVER_URL: str = os.getenv(
-        "OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org"
-    )
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", None)
