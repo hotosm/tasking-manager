@@ -1,6 +1,8 @@
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from pg_nearest_city import Location
+
 from backend.config import settings
 from backend.exceptions import NotFound
 from backend.models.dtos.project_dto import DraftProjectDTO
@@ -78,12 +80,41 @@ class TestProject:
         assert test_project.changeset_comment == expected_comment
 
     async def test_set_country_info(self):
-        """Test setting the country info for a project."""
+        """Test setting the country info for a project from the nearest city lookup."""
         # Arrange
         test_project, _author_id, project_id = await create_canned_project(self.db)
-        # Act
-        test_project.set_country_info()
+        mock_location = Location(
+            city="London",
+            country="GBR",
+            lat=51.5,
+            lon=-0.1,
+            country_alpha3="GBR",
+            country_name="United Kingdom",
+        )
+        with patch(
+            "backend.models.postgis.project.AsyncNearestCity"
+        ) as mock_geocoder_cls:
+            mock_geocoder = mock_geocoder_cls.return_value
+            mock_geocoder.__aenter__ = AsyncMock(return_value=mock_geocoder)
+            mock_geocoder.__aexit__ = AsyncMock(return_value=False)
+            mock_geocoder.query = AsyncMock(return_value=mock_location)
+            # Act
+            await test_project.set_country_info()
         # Assert
-        assert test_project.country is not None
-        assert len(test_project.country) > 0, "Nominatim may have given a bad response"
         assert test_project.country == ["United Kingdom"]
+
+    async def test_set_country_info_leaves_country_unset_on_lookup_failure(self):
+        """Test a failed nearest city lookup doesn't blow up project creation."""
+        # Arrange
+        test_project, _author_id, project_id = await create_canned_project(self.db)
+        with patch(
+            "backend.models.postgis.project.AsyncNearestCity"
+        ) as mock_geocoder_cls:
+            mock_geocoder = mock_geocoder_cls.return_value
+            mock_geocoder.__aenter__ = AsyncMock(return_value=mock_geocoder)
+            mock_geocoder.__aexit__ = AsyncMock(return_value=False)
+            mock_geocoder.query = AsyncMock(side_effect=RuntimeError("db not ready"))
+            # Act
+            await test_project.set_country_info()
+        # Assert
+        assert not test_project.country

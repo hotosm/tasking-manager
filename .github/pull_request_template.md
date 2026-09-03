@@ -28,6 +28,12 @@ Did you attempt any other approaches that are not documented in code?
 
 Notes for the reviewer. How to test this change?
 
+## AI Disclosure
+
+- [ ] This PR was created with significant help from AI tools (e.g., Claude, Copilot, ChatGPT)
+
+If checked, briefly describe what AI assisted with (e.g., code generation, refactoring, tests, documentation) and confirm you have reviewed and understood the changes.
+
 ## Checklist before requesting a review
 
 - 📖 Read the Tasking Manager Contributing Guide: <https://github.com/hotosm/tasking-manager/blob/develop/docs/developers/contributing.md>

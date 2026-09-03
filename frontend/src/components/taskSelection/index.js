@@ -1,4 +1,4 @@
-import { lazy, useState, useEffect, useCallback, Suspense, useRef } from 'react';
+import { lazy, useState, useEffect, useCallback, useMemo, Suspense, useRef } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
@@ -30,6 +30,7 @@ import {
   useActivitiesQuery,
   useProjectContributionsQuery,
   useTasksQuery,
+  useInvalidatedTasksQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
 
@@ -70,6 +71,7 @@ export function TaskSelection({ project }: Object) {
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
+  const [showChoropleth, setShowChoropleth] = useState(false);
   const isFirstRender = useRef(true); // to check if component is rendered first time
 
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
@@ -90,9 +92,10 @@ export function TaskSelection({ project }: Object) {
   });
   const { data: tasksData, refetch: refetchTasks } = useTasksQuery(projectId, {
     useErrorBoundary: true,
-    // Task status on the map were not being updated when coming from the action page,
-    // so added this as a workaround.
-    cacheTime: 0,
+    // Keep the cached grid so the map paints instantly (stale) on remount instead
+    // of showing a white screen. `staleTime: 0` lets invalidateQueries mark it stale
+    // so a background refetch is allowed; a fresh refetch is triggered on mount below.
+    staleTime: 0,
     enabled: false,
   });
   const {
@@ -101,7 +104,22 @@ export function TaskSelection({ project }: Object) {
     isLoadingError: isPriorityAreasLoadingError,
   } = usePriorityAreasQuery(projectId);
 
-  const tasks = tasksData && activities && updateTasksStatus(tasksData, activities);
+  const {
+    data: invalidatedTasksData,
+    isInitialLoading: isInvalidatedTasksLoading,
+    isLoadingError: isInvalidatedTasksLoadingError,
+  } = useInvalidatedTasksQuery(projectId, {
+    enabled: showChoropleth,
+    // No staleTime — data is immediately stale so React Query refetches on
+    // every window focus or remount. This ensures if a user invalidates a task
+    // and comes back to this page, the count is always up to date.
+    refetchOnWindowFocus: true,
+  });
+
+  const tasks = useMemo(
+    () => (tasksData && activities ? updateTasksStatus(tasksData, activities) : undefined),
+    [tasksData, activities],
+  );
   const randomTask = activities && [getRandomTaskByAction(activities.activity, taskAction)];
   const isValidationAllowed = user && userTeams && userCanValidate(user, project, userTeams.teams);
 
@@ -109,6 +127,17 @@ export function TaskSelection({ project }: Object) {
     isPriorityAreasLoadingError &&
       toast.error(<FormattedMessage {...messages.priorityAreasLoadingError} />);
   }, [isPriorityAreasLoadingError]);
+
+  useEffect(() => {
+    isInvalidatedTasksLoadingError &&
+      toast.error(<FormattedMessage {...messages.invalidatedTasksLoadingError} />);
+  }, [isInvalidatedTasksLoadingError]);
+
+  // Fetch fresh task geometry on mount. With the cache kept, the stale grid paints
+  // immediately (no white screen) while this refetch silently refreshes it.
+  useEffect(() => {
+    if (token) refetchTasks();
+  }, [token, refetchTasks]);
 
   useEffect(() => {
     const { lastLockedTasksIds, lastLockedProjectId } = location.state || {};
@@ -367,8 +396,13 @@ export function TaskSelection({ project }: Object) {
                 taskBordersOnly={false}
                 priorityAreas={priorityAreas}
                 animateZoom={false}
+                showChoropleth={showChoropleth}
+                invalidatedTasksData={invalidatedTasksData}
+                isChoroplethLoading={isInvalidatedTasksLoading}
+                showHoverTooltip
+                onToggleChoropleth={() => setShowChoropleth((v) => !v)}
               />
-              <TasksMapLegend />
+              <TasksMapLegend showChoropleth={showChoropleth} />
             </ReactPlaceholder>
           )}
         </div>

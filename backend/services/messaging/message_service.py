@@ -1,6 +1,6 @@
+import asyncio
 import datetime
 import re
-import time
 from typing import List
 
 import bleach
@@ -238,7 +238,7 @@ class MessageService:
             )
 
             if (i + 1) % 10 == 0:
-                time.sleep(0.5)
+                await asyncio.sleep(0.5)
 
         if messages_objs:
             insert_values = [

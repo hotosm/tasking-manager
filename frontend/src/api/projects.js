@@ -138,6 +138,22 @@ export const useTasksQuery = (projectId, otherOptions = {}) => {
   });
 };
 
+export const useInvalidatedTasksQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const fetchInvalidatedTasks = ({ signal }) => {
+    return api(token).get(`projects/${projectId}/tasks/invalidated/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-invalidated-tasks', projectId],
+    queryFn: fetchInvalidatedTasks,
+    select: (data) => data.data.tasks,
+    ...otherOptions,
+  });
+};
+
 export const usePriorityAreasQuery = (projectId) => {
   const fetchProjectPriorityArea = (signal) => {
     return api().get(`projects/${projectId}/queries/priority-areas/`, {

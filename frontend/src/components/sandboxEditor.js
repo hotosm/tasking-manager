@@ -15,7 +15,11 @@ import {
 import { useSandboxOAuthCallback } from '../hooks/UseSandboxOAuthCallback';
 import { getValidTokenOrInitiateAuth, fetchSandboxLicense } from '../utils/sandboxUtils';
 import { useOsmFeaturesQuery } from '../api/projects';
-import { captureIdEditorPackage, resolveIdEditorContext } from '../utils/idEditorContext';
+import {
+  captureIdEditorPackage,
+  removeUnavailableImagerySources,
+  resolveIdEditorContext,
+} from '../utils/idEditorContext';
 
 const sandboxID = captureIdEditorPackage();
 
@@ -155,6 +159,8 @@ export default function SandboxEditor({
         } else {
           iDContext.init();
         }
+
+        removeUnavailableImagerySources(iDContext.background());
 
         iDContext.connection().switch({
           url: tokenData.sandbox_api_url,
