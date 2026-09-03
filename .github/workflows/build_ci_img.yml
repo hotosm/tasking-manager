@@ -16,7 +16,7 @@ on:
 
 jobs:
   backend-ci-build:
-    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@3.2.0
+    uses: hotosm/gh-workflows/.github/workflows/image_build.yml@3.6.0
     with:
       context: .
       build_target: ci
