@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from backend.exceptions import Conflict
@@ -69,6 +71,28 @@ class TestMappingLevelService:
         assert levels.levels[0].name == "BEGINNER"
         assert levels.levels[1].name == "INTERMEDIATE"
         assert levels.levels[2].name == "ADVANCED"
+
+    async def test_get_by_id_not_found_reports_the_requested_id(self):
+        # Act
+        with pytest.raises(NotFound) as e:
+            await MappingLevelService.get_by_id(999999, self.db)
+
+        # Assert
+        assert e.value.detail["error"]["details"] == {"mapping_level_id": 999999}
+        # the exception handler serializes detail to JSON, so an unserializable
+        # value here turns the 404 into a 500
+        json.dumps(e.value.detail)
+
+    async def test_get_by_name_not_found_reports_the_requested_name(self):
+        # Act
+        with pytest.raises(NotFound) as e:
+            await MappingLevelService.get_by_name("NO SUCH LEVEL", self.db)
+
+        # Assert
+        assert e.value.detail["error"]["details"] == {
+            "mapping_level_name": "NO SUCH LEVEL"
+        }
+        json.dumps(e.value.detail)
 
     async def test_create_requires_badges(self):
         with pytest.raises(ValueError):
