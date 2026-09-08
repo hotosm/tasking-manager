@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.partner_stats_dto.AreaSwipedByProjectTypeDTO" name="backend.models.dtos.partner_stats_dto.AreaSwipedByProjectTypeDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,133,288,233"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="53,5,139,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,83,132,132,127,134,109,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="164,5,233,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,72,173,119,168,117,185,70"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.mapping_badge_dto.MappingBadgePublicListDTO" name="backend.models.dtos.mapping_badge_dto.MappingBadgePublicListDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,133,285,213"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="59,5,146,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,83,135,132,130,134,114,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="171,5,208,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="181,72,166,119,161,117,176,70"/>
+</map>

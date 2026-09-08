@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.mapping_dto.ExtendLockTimeDTO" name="backend.models.dtos.mapping_dto.ExtendLockTimeDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,133,219,233"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="26,5,113,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,83,100,132,95,134,80,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="137,5,175,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="149,72,134,119,129,117,144,70"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.task_annotation_dto.TaskAnnotationDTO" name="backend.models.dtos.task_annotation_dto.TaskAnnotationDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,192,256,272"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="37,5,123,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,83,123,191,118,192,89,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="148,5,217,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,72,148,177,143,176,172,70"/>
+</map>

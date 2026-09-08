@@ -1,0 +1,10 @@
+<map id="backend.services.mapswipe_service.MapswipeService._post_graphql" name="backend.services.mapswipe_service.MapswipeService._post_graphql">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,84,211,139"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a521ba1b620433512458fc982cf0b86ae" title=" " alt="" coords="259,5,464,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,81,259,62,261,67,197,86"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a881c1139b0c70605d15ecaf7830e8d77" title=" " alt="" coords="259,84,464,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="211,109,245,109,245,114,211,114"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a3bf787b415e01a159cbcb6c2c5e603db" title=" " alt="" coords="512,117,717,172"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="200,136,259,147,382,155,498,152,498,157,382,160,258,153,199,141"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="465,122,499,127,498,132,464,127"/>
+</map>

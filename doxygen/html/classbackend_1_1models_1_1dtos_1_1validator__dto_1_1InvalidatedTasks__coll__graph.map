@@ -1,0 +1,12 @@
+<map id="backend.models.dtos.validator_dto.InvalidatedTasks" name="backend.models.dtos.validator_dto.InvalidatedTasks">
+<area shape="rect" id="Node000001" title=" " alt="" coords="59,379,273,459"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="43,85,38,134,37,193,43,255,62,315,84,349,112,377,108,381,79,352,57,317,38,256,31,193,32,134,38,84"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1models_1_1dtos_1_1stats__dto_1_1Pagination.html" title=" " alt="" coords="72,236,260,316"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="73,82,149,234,144,237,68,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="285,243,322,309"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="291,310,276,334,259,356,244,370,241,366,255,353,272,331,286,307"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="169,316,169,362,163,362,163,316"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="131,5,201,71"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="169,71,169,220,163,220,163,71"/>
+</map>

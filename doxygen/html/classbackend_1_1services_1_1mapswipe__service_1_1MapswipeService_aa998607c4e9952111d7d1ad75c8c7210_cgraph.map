@@ -1,0 +1,20 @@
+<map id="backend.services.mapswipe_service.MapswipeService.fetch_grouped_partner_stats" name="backend.services.mapswipe_service.MapswipeService.fetch_grouped_partner_stats">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,178,236,233"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#aca8f70a664bee33a8e29f6562f2d31b0" title=" " alt="" coords="299,5,504,75"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="153,176,212,130,283,84,294,78,296,83,285,89,215,135,156,180"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#ac00cef3b5ac53823b2b97a9f978688f3" title=" " alt="" coords="286,99,517,154"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="218,175,289,155,291,160,220,180"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#af95cf9b7317ed79e1a4b055b6e1aadc3" title=" " alt="" coords="299,178,504,233"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="236,203,285,203,285,208,236,208"/>
+<area shape="rect" id="Node000008" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#ae962805b1bf194e19b1d63921939b1f5" title=" " alt="" coords="284,257,519,311"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="220,230,291,250,289,255,218,235"/>
+<area shape="rect" id="Node000009" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a92d2c99d0a782940accc6056dddc25eb" title=" " alt="" coords="284,335,519,390"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="155,231,214,277,285,322,297,327,295,332,283,326,211,281,152,235"/>
+<area shape="rect" id="Node000005" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a521ba1b620433512458fc982cf0b86ae" title=" " alt="" coords="567,99,772,154"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="494,175,562,155,563,161,496,180"/>
+<area shape="rect" id="Node000006" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a881c1139b0c70605d15ecaf7830e8d77" title=" " alt="" coords="567,178,772,233"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="504,203,553,203,553,208,504,208"/>
+<area shape="rect" id="Node000007" href="$classbackend_1_1services_1_1mapswipe__service_1_1MapswipeService.html#a3bf787b415e01a159cbcb6c2c5e603db" title=" " alt="" coords="820,211,1025,266"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="499,230,567,243,690,250,806,246,806,252,690,255,566,248,498,235"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="773,216,807,221,806,226,772,221"/>
+</map>

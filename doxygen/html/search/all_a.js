@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['last_0',['last',['../classbackend_1_1pagination_1_1Pagination.html#a9185bf38de74eb1ac483d3353a0d4d40',1,'backend::pagination::Pagination']]],
+  ['levelstats_1',['LevelStats',['../classbackend_1_1models_1_1dtos_1_1stats__dto_1_1LevelStats.html',1,'backend::models::dtos::stats_dto']]],
+  ['license_2',['License',['../classbackend_1_1models_1_1postgis_1_1licenses_1_1License.html',1,'backend::models::postgis::licenses']]],
+  ['licensedto_3',['LicenseDTO',['../classbackend_1_1models_1_1dtos_1_1licenses__dto_1_1LicenseDTO.html',1,'backend::models::dtos::licenses_dto']]],
+  ['licenselistdto_4',['LicenseListDTO',['../classbackend_1_1models_1_1dtos_1_1licenses__dto_1_1LicenseListDTO.html',1,'backend::models::dtos::licenses_dto']]],
+  ['licenseservice_5',['LicenseService',['../classbackend_1_1services_1_1license__service_1_1LicenseService.html',1,'backend::services::license_service']]],
+  ['listcampaigndto_6',['ListCampaignDTO',['../classbackend_1_1models_1_1dtos_1_1campaign__dto_1_1ListCampaignDTO.html',1,'backend::models::dtos::campaign_dto']]],
+  ['listchatmessagedto_7',['ListChatMessageDTO',['../classbackend_1_1models_1_1dtos_1_1message__dto_1_1ListChatMessageDTO.html',1,'backend::models::dtos::message_dto']]],
+  ['listeduser_8',['ListedUser',['../classbackend_1_1models_1_1dtos_1_1user__dto_1_1ListedUser.html',1,'backend::models::dtos::user_dto']]],
+  ['listorganisationsdto_9',['ListOrganisationsDTO',['../classbackend_1_1models_1_1dtos_1_1organisation__dto_1_1ListOrganisationsDTO.html',1,'backend::models::dtos::organisation_dto']]],
+  ['listsearchresultdto_10',['ListSearchResultDTO',['../classbackend_1_1models_1_1dtos_1_1project__dto_1_1ListSearchResultDTO.html',1,'backend::models::dtos::project_dto']]],
+  ['listteamsdto_11',['ListTeamsDTO',['../classbackend_1_1models_1_1dtos_1_1team__dto_1_1ListTeamsDTO.html',1,'backend::models::dtos::team_dto']]],
+  ['lock_5ftask_5ffor_5fmapping_12',['lock_task_for_mapping',['../classbackend_1_1models_1_1postgis_1_1task_1_1Task.html#a8aaa1398439f08b003d1af657c3c56f0',1,'backend.models.postgis.task.Task.lock_task_for_mapping()'],['../classbackend_1_1services_1_1mapping__service_1_1MappingService.html#aab3e34fa67d6b90019e9fc48355b13b4',1,'backend.services.mapping_service.MappingService.lock_task_for_mapping()']]],
+  ['lock_5ftask_5ffor_5fvalidating_13',['lock_task_for_validating',['../classbackend_1_1models_1_1postgis_1_1task_1_1Task.html#abdd9e14156fc3fc38cbd816a755f4fea',1,'backend::models::postgis::task::Task']]],
+  ['lock_5ftasks_5ffor_5fvalidation_14',['lock_tasks_for_validation',['../classbackend_1_1services_1_1validator__service_1_1ValidatorService.html#a490fcbb7103b3ba332598de800e80b9c',1,'backend::services::validator_service::ValidatorService']]],
+  ['lockedtasksforuser_15',['LockedTasksForUser',['../classbackend_1_1models_1_1dtos_1_1project__dto_1_1LockedTasksForUser.html',1,'backend::models::dtos::project_dto']]],
+  ['lockforvalidationdto_16',['LockForValidationDTO',['../classbackend_1_1models_1_1dtos_1_1validator__dto_1_1LockForValidationDTO.html',1,'backend::models::dtos::validator_dto']]],
+  ['locktaskdto_17',['LockTaskDTO',['../classbackend_1_1models_1_1dtos_1_1mapping__dto_1_1LockTaskDTO.html',1,'backend::models::dtos::mapping_dto']]],
+  ['login_5fuser_18',['login_user',['../classbackend_1_1services_1_1users_1_1authentication__service_1_1AuthenticationService.html#abcd3de4879cd6473c0bb0707aadca0a6',1,'backend::services::users::authentication_service::AuthenticationService']]]
+];

@@ -1,0 +1,5 @@
+<map id="backend.models.dtos.grid_dto.GridDTO" name="backend.models.dtos.grid_dto.GridDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,119,187,239"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="53,5,139,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,85,99,118,93,118,93,85"/>
+</map>
