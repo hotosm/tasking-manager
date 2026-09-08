@@ -119,14 +119,13 @@ export const formatExtraParams = (values) => {
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
   await loadTasksBoundaries(project, selectedTasks);
   await loadImageryonJosm(project);
-  await selectedTasks.map(
-    async (task, n) =>
-      await loadOsmDataToTasks(
-        project,
-        taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task]),
-        n === 0 ? true : false,
-      ),
-  );
+  for (const [n, task] of selectedTasks.entries()) {
+    await loadOsmDataToTasks(
+      project,
+      taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task]),
+      n === 0,
+    );
+  }
   return true;
 };
 
