@@ -10,7 +10,7 @@ export function openEditor(
   windowObjectReference,
 ) {
   if (editor === 'JOSM') {
-    sendJosmCommands(project, tasks, selectedTasks, windowSize);
+    sendJosmCommands(project, tasks, selectedTasks, windowSize, undefined, windowObjectReference);
     return '?editor=JOSM';
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
@@ -116,21 +116,37 @@ export const formatExtraParams = (values) => {
   return extraParams;
 };
 
-export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
-  await loadTasksBoundaries(project, selectedTasks);
-  await loadImageryonJosm(project);
-  for (const [n, task] of selectedTasks.entries()) {
-    await loadOsmDataToTasks(
-      project,
-      taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task]),
-      n === 0,
-    );
+export const sendJosmCommands = async (
+  project,
+  tasks,
+  selectedTasks,
+  windowSize,
+  taskBbox,
+  popup,
+) => {
+  try {
+    if (!popup) popup = prepareJosmWindow();
+    const send = (uri) => callJosmRemoteControl(uri, popup);
+    await loadTasksBoundaries(project, selectedTasks, send);
+    await loadImageryonJosm(project, send);
+    for (const [n, task] of selectedTasks.entries()) {
+      await loadOsmDataToTasks(
+        project,
+        taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task]),
+        n === 0,
+        send,
+      );
+    }
+    return true;
+  } catch (error) {
+    return false;
+  } finally {
+    if (popup && !popup.closed) popup.close();
   }
-  return true;
 };
 
 // creates a new layer on JOSM and then add the tasks boundaries
-function loadTasksBoundaries(project, selectedTasks) {
+function loadTasksBoundaries(project, selectedTasks, callJosmRemoteControl) {
   const layerName = `Boundary for task${selectedTasks.length > 1 ? 's:' : ':'} ${selectedTasks.join(
     ',',
   )} of TM Project #${project.projectId} - Do not edit or upload`;
@@ -161,7 +177,7 @@ export function getImageryInfo(url) {
   ];
 }
 
-function loadImageryonJosm(project) {
+function loadImageryonJosm(project, callJosmRemoteControl) {
   if (project.imagery) {
     if (project.imagery.includes('http')) {
       const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
@@ -180,7 +196,7 @@ function loadImageryonJosm(project) {
   }
 }
 
-function loadOsmDataToTasks(project, bbox, newLayer) {
+function loadOsmDataToTasks(project, bbox, newLayer, callJosmRemoteControl) {
   const loadAndZoomParams = {
     left: bbox[0],
     bottom: bbox[1],
@@ -215,29 +231,29 @@ export function formatUrlParams(params) {
   return `?${urlParams}`;
 }
 
-let safariWindowReference = null;
-const callJosmRemoteControl = function (uri) {
-  // Safari won't send AJAX commands to the default (insecure) JOSM port when
-  // on a secure site, and the secure JOSM port uses a self-signed certificate
-  // that requires the user to jump through a bunch of hoops to trust before
-  // communication can proceed. So for Safari only, fall back to sending JOSM
-  // requests via the opening of a separate window instead of AJAX.
-  // Source: https://github.com/osmlab/maproulette3
-  if (window.safari) {
+// Safari won't send AJAX commands to an insecure port when on a secure site:
+// https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Mixed_content#browser_compatibility
+// JOSM hasn't supported self-signed HTTPS since changeset 15469 (2019-10-22):
+// https://josm.openstreetmap.de/changeset/15469/josm. So for Safari only, fall
+// back to sending JOSM requests via the opening of a separate window instead of
+// AJAX - re-using the same window for each request, to avoid issues with popup
+// blockers.
+export const requiresJosmPopup = () => Boolean(window.safari);
+
+const callJosmRemoteControl = function (uri, popup) {
+  if (requiresJosmPopup()) {
     return new Promise((resolve, reject) => {
-      if (safariWindowReference && !safariWindowReference.closed) {
-        safariWindowReference.close();
+      if (!popup || popup.closed) {
+        reject(new Error('JOSM_POPUP_BLOCKED'));
+        return;
       }
 
-      safariWindowReference = window.open(uri);
+      popup.location = uri.href;
 
-      // Close the window after 1 second and resolve the promise
-      setTimeout(() => {
-        if (safariWindowReference && !safariWindowReference.closed) {
-          safariWindowReference.close();
-        }
-        resolve(true);
-      }, 1000);
+      // Wait 1 second before the next command
+      // The window is not closed until after the batch is complete
+      // We cannot confirm whether JOSM handled the command.
+      setTimeout(() => resolve(true), 1000);
     });
   }
 
@@ -248,3 +264,13 @@ const callJosmRemoteControl = function (uri) {
       return false;
     });
 };
+
+export function prepareJosmWindow() {
+  if (!requiresJosmPopup()) return null;
+  // Safari's HTTPS-only warning blocks navigating
+  // to a blank popup, so we load the version endpoint
+  // even though we cannot read the response
+  const popup = window.open(formatJosmUrl('version', {}).href, '_blank');
+  if (!popup) throw new Error('JOSM_POPUP_BLOCKED');
+  return popup;
+}
