@@ -213,7 +213,7 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
       );
       if (url) {
         navigate(`./${url}`);
-        if (arr[0].value === 'JOSM') {
+        if (arr[0].value === 'JOSM' && !window.safari) {
           try {
             await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
           } catch (e) {
