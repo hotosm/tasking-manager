@@ -1,6 +1,6 @@
 import pytest
 from backend.services.users.osm_service import OSMService, OSMServiceError
-from tests.backend.helpers.test_helpers import get_canned_osm_user_json_details
+from tests.api.helpers.test_helpers import get_canned_osm_user_json_details
 
 
 class TestOsmService:
