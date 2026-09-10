@@ -56,6 +56,17 @@ jobs:
         working-directory: ./frontend
         run: yarn install
 
+      # Fails on a duplicate message id (build-locales exits non-zero) and on a
+      # stale catalog (regenerating changes the committed file). See #7284.
+      - name: Check translation source file is up to date
+        working-directory: ./frontend
+        run: |
+          yarn build-locales
+          # combine-messages writes no trailing newline; pre-commit's end-of-file-fixer
+          # adds one to the committed file. Match it so the diff is content-only.
+          [ -z "$(tail -c1 src/locales/en.json)" ] || printf '\n' >> src/locales/en.json
+          git diff --exit-code -- src/locales/en.json
+
       - name: Run Yarn test
         working-directory: ./frontend
         run: yarn test

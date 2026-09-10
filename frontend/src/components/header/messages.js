@@ -179,8 +179,4 @@ export default defineMessages({
     id: 'serviceWorker.dialog.remindMeLater',
     defaultMessage: 'Remind me later',
   },
-  sandbox: {
-    id: 'project.detail.sandbox',
-    defaultMessage: 'Sandbox Mode',
-  },
 });

@@ -77,9 +77,10 @@ If you run into certificate-related errors, update the paths in the script or tr
 - `yarn build-locales` - Execute that command in the `frontend`
   folder to get the new translatable strings from all the
   `messages.js` files in the frontend code. The changes in the strings
-  will be pushed to `frontend/src/locales/en.json` file. The ideal is
-  to execute that command before every pull request that change
-  something in the translatable strings.
+  will be pushed to `frontend/src/locales/en.json` file. Run it before
+  opening any pull request that changes translatable strings: CI
+  regenerates the file and fails the build if the committed copy is
+  stale, or if two `messages.js` files declare the same message id.
 - After the pull request is merged to the `develop` branch, the
   command `tx push -s` needs to be executed in order to push the
   changes to Transifex. The translators receive a notification every
