@@ -56,6 +56,10 @@ jobs:
         working-directory: ./frontend
         run: yarn install
 
+      - name: Check for duplicate translation message ids
+        working-directory: ./frontend
+        run: yarn build-locales
+
       - name: Run Yarn test
         working-directory: ./frontend
         run: yarn test
