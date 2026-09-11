@@ -98,6 +98,47 @@ class TestValidatorService:
         with pytest.raises(UserLicenseError):
             await ValidatorService.lock_tasks_for_validation(lock_dto, self.db)
 
+    @patch.object(UserService, "is_user_an_admin")
+    @patch.object(Task, "get")
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
+    async def test_lock_tasks_raises_level_subcode_if_user_level_too_low(
+        self, mock_project, mock_task, mock_user
+    ):
+        # Arrange
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.MAPPED.value
+        mock_task.return_value = task_stub
+        mock_project.return_value = (
+            False,
+            ValidatingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL,
+        )
+        mock_user.return_value = True
+
+        lock_dto = LockForValidationDTO(project_id=1, task_ids=[1, 2], user_id=1234)
+
+        # Act / Assert
+        with pytest.raises(ValidatorServiceError, match="^UserNotCorrectMappingLevel-"):
+            await ValidatorService.lock_tasks_for_validation(lock_dto, self.db)
+
+    @patch.object(UserService, "is_user_an_admin")
+    @patch.object(Task, "get")
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
+    async def test_lock_tasks_raises_team_subcode_if_user_not_team_member(
+        self, mock_project, mock_task, mock_user
+    ):
+        # Arrange
+        task_stub = Task()
+        task_stub.task_status = TaskStatus.MAPPED.value
+        mock_task.return_value = task_stub
+        mock_project.return_value = (False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER)
+        mock_user.return_value = True
+
+        lock_dto = LockForValidationDTO(project_id=1, task_ids=[1, 2], user_id=1234)
+
+        # Act / Assert
+        with pytest.raises(ValidatorServiceError, match="^UserNotTeamMember-"):
+            await ValidatorService.lock_tasks_for_validation(lock_dto, self.db)
+
     @patch.object(Task, "get")
     async def test_unlock_tasks_for_validation_raises_error_if_task_not_found(
         self, mock_task
