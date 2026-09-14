@@ -465,8 +465,7 @@ def upgrade():
         # overlap) restricts the UPDATE to rows that actually contain one
         # of the old names, so untouched rows are never rewritten.
         conn.execute(
-            sa.text(
-                """
+            sa.text("""
                 UPDATE projects
                 SET country = ARRAY(
                     SELECT COALESCE(m.new_name, u.elem)
@@ -477,8 +476,7 @@ def upgrade():
                     ORDER BY u.ord
                 )
                 WHERE country && :old_names
-                """
-            ).bindparams(
+                """).bindparams(
                 sa.bindparam("old_names", type_=sa.ARRAY(sa.String)),
                 sa.bindparam("new_names", type_=sa.ARRAY(sa.String)),
             ),
