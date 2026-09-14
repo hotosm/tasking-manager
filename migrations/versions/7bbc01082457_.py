@@ -255,17 +255,9 @@ def upgrade():
 
             if mapped_org not in orgs_inserted:
                 org_managers[mapped_org] = org_manager
-                conn.execute(
-                    sa.text(
-                        "insert into organisation_managers \
+                conn.execute(sa.text("insert into organisation_managers \
                     (organisation_id,user_id) \
-                    values("
-                        + org_id
-                        + ","
-                        + org_manager
-                        + ")"
-                    )
-                )
+                    values(" + org_id + "," + org_manager + ")"))
                 print(
                     str(count)
                     + "/"
