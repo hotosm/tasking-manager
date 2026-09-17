@@ -11,6 +11,7 @@ import {
   captureIdEditorPackage,
   removeUnavailableImagerySources,
   resolveIdEditorContext,
+  setBackgroundHashParam,
 } from '../utils/idEditorContext';
 
 const officialID = captureIdEditorPackage();
@@ -109,6 +110,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         iDContext.reset();
         iDContext.ui().restart();
       } else {
+        // Cold start only: restart() doesn't re-run iD's background selection,
+        // and on a warm context the imagery effect above already applies the
+        // project's source correctly, because the imagery index is loaded.
+        setBackgroundHashParam(imagery);
         iDContext.init();
       }
       removeUnavailableImagerySources(iDContext.background());
@@ -149,7 +154,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         }
       });
     }
-  }, [session, iDContext, setDisable, presets, locale, gpxUrl, intl]);
+  }, [session, iDContext, setDisable, presets, locale, gpxUrl, intl, imagery]);
 
   return <div className="w-100 vh-minus-69-ns" id="id-container"></div>;
 }

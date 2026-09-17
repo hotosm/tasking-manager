@@ -59,3 +59,29 @@ export function resolveIdEditorContext(existingContext, editorType, buildContext
   context.__idEditorType = editorType;
   return context;
 }
+
+// iD chooses its background exactly once, after its UI has finished loading,
+// and takes the hash `background=` param over anything else -- the same
+// contract the external-editor launch URL relies on (see openEditor.js) and
+// that RapiD already gets via generateStartingHash in rapidEditor.js. So the
+// project's imagery is written into the hash before the embedded iD's init().
+//
+// Applying it imperatively afterwards can't be relied on for a cold start: the
+// editor's imagery effect gates on findSource('custom'), which stays null until
+// iD's imagery index arrives, and nothing re-renders React when that async load
+// completes. The effect never runs, iD falls through to Bing, and the mapper
+// only sees the right imagery after some unrelated click happens to re-render
+// (#7255).
+export function setBackgroundHashParam(imagery) {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  // `custom:<template>` is how iD spells a custom source in the hash. With no
+  // project imagery, ask for Bing explicitly so a background left over from a
+  // previous project doesn't carry across.
+  params.set(
+    'background',
+    !imagery ? 'Bing' : imagery.startsWith('http') ? `custom:${imagery}` : imagery,
+  );
+  // replaceState, as iD's own patchHash does: no navigation entry, and no
+  // hashchange for the router to react to.
+  window.history.replaceState(null, '', `#${params.toString()}`);
+}
