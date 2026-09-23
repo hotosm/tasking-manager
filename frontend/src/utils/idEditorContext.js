@@ -59,3 +59,23 @@ export function resolveIdEditorContext(existingContext, editorType, buildContext
   context.__idEditorType = editorType;
   return context;
 }
+
+// iD picks its background once, during init(), from the hash `background=`
+// param. Set it before init() so the project's imagery wins on a cold start.
+export function setBackgroundHashParam(imagery) {
+  let background;
+  if (!imagery) {
+    // Explicit Bing, so a previous project's background can't carry across.
+    background = 'Bing';
+  } else if (imagery.startsWith('http')) {
+    // `custom:<template>` is how iD spells a custom source in the hash.
+    background = `custom:${imagery}`;
+  } else {
+    background = imagery;
+  }
+
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  params.set('background', background);
+  // replaceState, as iD's own patchHash does: no hashchange for the router.
+  window.history.replaceState(null, '', `#${params.toString()}`);
+}
