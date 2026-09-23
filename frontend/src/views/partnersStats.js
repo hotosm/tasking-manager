@@ -7,7 +7,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { Leaderboard } from '../components/partners/leaderboard';
 import { PartnersMapswipeStats } from './partnersMapswipeStats';
 import { Resources } from '../components/partners/partnersResources';
-import { OHSOME_STATS_API_URL } from '../config';
+import api from '../api/apiClient';
 import { TwitterIcon, FacebookIcon, InstagramIcon } from '../components/svgIcons';
 import { Button } from '../components/button';
 
@@ -43,14 +43,12 @@ export const PartnersStats = () => {
         hashtag = hashtag.slice(1);
       }
       hashtag = hashtag.toLowerCase();
-      const response = await fetch(OHSOME_STATS_API_URL + '/stats/hashtags/' + hashtag);
-      if (response.ok) {
-        const jsonData = await response.json();
-        if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
-          setPartnerStats(jsonData.result[hashtag]);
-      } else {
-        console.error('Error al obtener los datos:', response.statusText);
-      }
+      const response = await api().get(
+        `system/statistics/ohsome/hashtags/?hashtags=${encodeURIComponent(hashtag)}`,
+      );
+      const jsonData = response.data;
+      if (jsonData.result !== undefined && Object.keys(jsonData.result).length !== 0)
+        setPartnerStats(jsonData.result[hashtag]);
     } catch (error) {
       console.error('Error al procesar la solicitud:', error);
     }

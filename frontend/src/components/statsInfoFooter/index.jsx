@@ -21,7 +21,7 @@ export default function StatsInfoFooter({ className }) {
           These statistics come from{' '}
           <a
             className="blue-grey"
-            href="https://stats.now.ohsome.org/about"
+            href="https://ohsome-now.heigit.org/about"
             target="_blank"
             rel="noreferrer"
           >

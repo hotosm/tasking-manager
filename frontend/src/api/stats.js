@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import api from './apiClient';
-import { OHSOME_STATS_API_URL, OHSOME_STATS_TOPICS, defaultChangesetComment } from '../config';
+import { OHSOME_STATS_TOPICS, defaultChangesetComment } from '../config';
 
 const ohsomeProxyAPI = (userId, topics) => {
   const token = localStorage.getItem('token');
@@ -45,7 +44,7 @@ export const useOsmStatsQuery = ({ topics = [] }) => {
 
   const fetchOsmStats = ({ signal }) => {
     return api().get(
-      `${OHSOME_STATS_API_URL}/stats?hashtag=${defaultChangesetComment}-%2A${topicQueryParams}`,
+      `system/statistics/ohsome/?hashtag=${defaultChangesetComment}-%2A${topicQueryParams}`,
       {
         signal,
       },
@@ -65,7 +64,7 @@ export const useOsmHashtagStatsQuery = (defaultComment) => {
 
   const fetchOsmStats = ({ signal }) => {
     return api().get(
-      `${OHSOME_STATS_API_URL}/stats?topics=contributor,road,building,edit&hashtag=${encodeURIComponent(hashtag)}`,
+      `system/statistics/ohsome/?topics=contributor,road,building,edit&hashtag=${encodeURIComponent(hashtag)}`,
       { signal },
     );
   };
@@ -103,15 +102,15 @@ export const useUserOsmStatsQuery = (id) => {
 };
 
 export const useOsmStatsMetadataQuery = () => {
-  const fetchOsmStatsMetadata = () => {
-    return fetchExternalJSONAPI(`${OHSOME_STATS_API_URL}/metadata`);
+  const fetchOsmStatsMetadata = ({ signal }) => {
+    return api().get(`system/statistics/ohsome/metadata/`, { signal });
   };
 
   return useQuery({
     queryKey: ['osm-stats-metadata'],
     queryFn: fetchOsmStatsMetadata,
     useErrorBoundary: true,
-    select: (data) => data.result,
+    select: (data) => data.data.result,
   });
 };
 

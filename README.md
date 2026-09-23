@@ -31,7 +31,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 Status | Feature | Release
 -------|---------|---------
-✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
+✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://ohsome-now.heigit.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
 
 
 ### 2024

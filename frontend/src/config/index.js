@@ -3,10 +3,11 @@ export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
 export const API_URL = process.env.REACT_APP_API_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
+// ohsomeNow website, used for outbound links only. The ohsomeNow API itself now
+// requires a token on every request, so it is reached through the TM backend
+// (see api/stats.js) rather than directly from the browser.
 export const OHSOME_STATS_BASE_URL =
-  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://stats.now.ohsome.org';
-export const OHSOME_STATS_API_URL =
-  process.env.REACT_APP_OHSOME_STATS_API_URL || 'https://stats.now.ohsome.org/api';
+  process.env.REACT_APP_OHSOME_STATS_BASE_URL || 'https://ohsome-now.heigit.org';
 export const OHSOME_STATS_TOPICS =
   process.env.REACT_APP_OHSOME_STATS_TOPICS || 'road,waterway,building,poi';
 // APPLICATION SETTINGS

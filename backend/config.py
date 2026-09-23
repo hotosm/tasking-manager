@@ -271,12 +271,14 @@ class Settings(BaseSettings):
         "MAPSWIPE_API_URL", "https://backend.mapswipe.org/graphql/"
     )
 
-    # Ohsome Stats Token
+    # ohsomeNow Stats. The token is required on every request to the API.
     OHSOME_STATS_TOKEN: str = os.getenv("OHSOME_STATS_TOKEN", None)
     OHSOME_STATS_API_URL: str = os.getenv(
-        "OHSOME_STATS_API_URL", "https://stats.now.ohsome.org/api"
+        "OHSOME_STATS_API_URL", "https://api.heigit.org/ohsome-now/v1"
     )
-    OHSOME_STATS_TOPICS: str = os.getenv("OHSOME_STATS_TOPICS", None)
+    OHSOME_STATS_TOPICS: str = os.getenv(
+        "OHSOME_STATS_TOPICS", "road,waterway,building,poi"
+    )
     OSM_USER_AGENT: str = os.getenv(
         "OSM_USER_AGENT",
         "HOT-TaskingManager-API/5.0 (https://tasking-manager-production-api.hotosm.org)",
