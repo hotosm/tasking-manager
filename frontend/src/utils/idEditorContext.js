@@ -60,28 +60,22 @@ export function resolveIdEditorContext(existingContext, editorType, buildContext
   return context;
 }
 
-// iD chooses its background exactly once, after its UI has finished loading,
-// and takes the hash `background=` param over anything else -- the same
-// contract the external-editor launch URL relies on (see openEditor.js) and
-// that RapiD already gets via generateStartingHash in rapidEditor.js. So the
-// project's imagery is written into the hash before the embedded iD's init().
-//
-// Applying it imperatively afterwards can't be relied on for a cold start: the
-// editor's imagery effect gates on findSource('custom'), which stays null until
-// iD's imagery index arrives, and nothing re-renders React when that async load
-// completes. The effect never runs, iD falls through to Bing, and the mapper
-// only sees the right imagery after some unrelated click happens to re-render
-// (#7255).
+// iD picks its background once, during init(), from the hash `background=`
+// param. Set it before init() so the project's imagery wins on a cold start.
 export function setBackgroundHashParam(imagery) {
+  let background;
+  if (!imagery) {
+    // Explicit Bing, so a previous project's background can't carry across.
+    background = 'Bing';
+  } else if (imagery.startsWith('http')) {
+    // `custom:<template>` is how iD spells a custom source in the hash.
+    background = `custom:${imagery}`;
+  } else {
+    background = imagery;
+  }
+
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-  // `custom:<template>` is how iD spells a custom source in the hash. With no
-  // project imagery, ask for Bing explicitly so a background left over from a
-  // previous project doesn't carry across.
-  params.set(
-    'background',
-    !imagery ? 'Bing' : imagery.startsWith('http') ? `custom:${imagery}` : imagery,
-  );
-  // replaceState, as iD's own patchHash does: no navigation entry, and no
-  // hashchange for the router to react to.
+  params.set('background', background);
+  // replaceState, as iD's own patchHash does: no hashchange for the router.
   window.history.replaceState(null, '', `#${params.toString()}`);
 }
