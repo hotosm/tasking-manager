@@ -189,7 +189,7 @@ const Parameters = {
     Type: "String"
   },
   OhsomeStatsToken: {
-    Description: "Ohsome Stats Token (must be same as frontend)",
+    Description: "HeiGIT API token for the ohsomeNow Stats API (backend only)",
     Type: "String"
   }
 };

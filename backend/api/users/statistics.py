@@ -1,16 +1,15 @@
 from datetime import date, timedelta, datetime
 from typing import Optional
 
-import httpx
 from databases import Database
 from fastapi import APIRouter, Depends, Request, Query, HTTPException
 from fastapi.responses import JSONResponse
 
 from backend.api.utils import validate_date_input
-from backend.config import settings
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserNextLevelDTO
 from backend.services.interests_service import InterestService
+from backend.services.ohsome_service import OhsomeService
 from backend.services.stats_service import StatsService
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
@@ -186,9 +185,8 @@ async def get_ohsome_stats(
     user: AuthUserDTO = Depends(login_required),
 ):
     """
-    Get OHSOME stats for a given user and topics.
+    Get ohsomeNow stats for a given user and topics.
     """
-    headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
 
     def format_date(date_str: str) -> str:
         try:
@@ -200,9 +198,6 @@ async def get_ohsome_stats(
                 status_code=400,
                 detail=f"Invalid date format for '{date_str}', expected YYYY-MM-DD",
             )
-
-    raw_base = settings.OHSOME_STATS_API_URL
-    base_url = raw_base.rstrip("/") + "/stats/user"
 
     params = {
         "userId": userId,
@@ -217,15 +212,11 @@ async def get_ohsome_stats(
         params["hashtag"] = hashtag
 
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(base_url, params=params, headers=headers)
-            response.raise_for_status()
-
-        json_data = response.json()
+        json_data = await OhsomeService.fetch("/user", params)
 
         await UserStats.update(user.id, json_data, db)
 
-        return JSONResponse(content=json_data, status_code=response.status_code)
+        return JSONResponse(content=json_data, status_code=200)
     except Exception as e:
         return JSONResponse(
             content={"Error": str(e), "SubCode": "Error fetching data"}, status_code=400

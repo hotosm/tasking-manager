@@ -146,7 +146,7 @@ class TestUserService:
             return_value={
                 "status": 500,
                 "error": "Internal Server Error",
-                "path": "/api/stats/user",
+                "path": "/ohsome-now/v1/user",
             }
         )
 
