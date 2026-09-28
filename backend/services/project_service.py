@@ -813,14 +813,17 @@ class ProjectService:
             mapping_types,
             ST_AsGeoJSON(geometry) AS geometry
         FROM projects
-        WHERE status = :status
+        WHERE status = ANY(:statuses)
         AND sandbox = :sandbox
         AND id = ANY(:project_ids)
         """
         project_result = await db.fetch_all(
             query_projects,
             {
-                "status": ProjectStatus.PUBLISHED.value,
+                "statuses": [
+                    ProjectStatus.PUBLISHED.value,
+                    ProjectStatus.ARCHIVED.value,
+                ],
                 "project_ids": project_ids,
                 "sandbox": sandbox,
             },
