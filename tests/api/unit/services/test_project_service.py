@@ -18,6 +18,7 @@ from backend.services.project_service import (
 from backend.models.postgis.statuses import MappingPermission, ValidationPermission
 
 from tests.api.helpers.test_helpers import (
+    create_canned_project,
     create_canned_user,
 )
 
@@ -28,6 +29,46 @@ class TestProjectService:
     async def setup_test_data(self, db_connection_fixture, request):
         assert db_connection_fixture is not None, "Database connection is not available"
         request.cls.db = db_connection_fixture
+
+    async def test_get_active_projects_includes_recent_archived_but_not_draft(self):
+        _, user, project_id = await create_canned_project(
+            self.db, "recent archived project"
+        )
+        await self.db.execute(
+            "UPDATE projects SET status = :status WHERE id = :id",
+            {
+                "status": ProjectStatus.ARCHIVED.value,
+                "id": project_id,
+            },
+        )
+        await self.db.execute(
+            """
+            INSERT INTO task_history
+                (project_id, task_id, action, action_text, action_date, user_id)
+            VALUES
+                (:project_id, 1, :action, :action_text, current_timestamp, :user_id)
+            """,
+            {
+                "project_id": project_id,
+                "action": "STATE_CHANGE",
+                "action_text": "state change",
+                "user_id": user.id,
+            },
+        )
+
+        active_projects = await ProjectService.get_active_projects(24, self.db)
+        assert len(active_projects.features) == 1
+        assert active_projects.features[0]["properties"]["project_id"] == project_id
+
+        await self.db.execute(
+            "UPDATE projects SET status = :status WHERE id = :id",
+            {
+                "status": ProjectStatus.DRAFT.value,
+                "id": project_id,
+            },
+        )
+        active_projects = await ProjectService.get_active_projects(24, self.db)
+        assert len(active_projects.features) == 0
 
     @patch.object(Project, "get")
     async def test_project_service_raises_error_if_project_not_found(
