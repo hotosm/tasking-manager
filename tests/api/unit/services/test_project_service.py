@@ -43,16 +43,15 @@ class TestProjectService:
         )
         await self.db.execute(
             """
-            INSERT INTO task_history
-                (project_id, task_id, action, action_text, action_date, user_id)
+            INSERT INTO project_chat
+                (project_id, user_id, message, time_stamp)
             VALUES
-                (:project_id, 1, :action, :action_text, current_timestamp, :user_id)
+                (:project_id, :user_id, :message, current_timestamp)
             """,
             {
                 "project_id": project_id,
-                "action": "STATE_CHANGE",
-                "action_text": "state change",
                 "user_id": user.id,
+                "message": "refresh archived export",
             },
         )
 
