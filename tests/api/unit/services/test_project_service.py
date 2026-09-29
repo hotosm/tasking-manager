@@ -113,12 +113,10 @@ class TestProjectService:
             feature["properties"]["project_id"] for feature in active_projects.features
         }
 
-
         assert archived_id in active_ids
         assert published_id in active_ids
         assert draft_id not in active_ids
         assert stale_archived_id not in active_ids
-
 
     @patch.object(Project, "get")
     async def test_project_service_raises_error_if_project_not_found(
