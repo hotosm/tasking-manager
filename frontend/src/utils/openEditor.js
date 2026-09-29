@@ -162,7 +162,13 @@ export function getImageryInfo(url) {
   ];
 }
 
-function loadImageryonJosm(project) {
+// JOSM defaults a TMS layer's max zoom to 18, which downgrades high-resolution
+// custom imagery (e.g. OpenAerialMap) that TM already shows at full detail in
+// iD. When the project imagery URL does not specify a max zoom, request a
+// higher one so JOSM renders the imagery at its native resolution. See #7228.
+export const JOSM_DEFAULT_TMS_MAX_ZOOM = 22;
+
+export function loadImageryonJosm(project) {
   if (project.imagery) {
     if (project.imagery.includes('http')) {
       const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
@@ -171,7 +177,11 @@ function loadImageryonJosm(project) {
         type: type,
       };
       if (minZoom) imageryParams.min_zoom = minZoom;
-      if (maxZoom) imageryParams.max_zoom = maxZoom;
+      if (maxZoom) {
+        imageryParams.max_zoom = maxZoom;
+      } else if (type === 'tms') {
+        imageryParams.max_zoom = JOSM_DEFAULT_TMS_MAX_ZOOM;
+      }
       imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
 
       return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
