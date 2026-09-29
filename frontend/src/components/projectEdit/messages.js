@@ -752,15 +752,15 @@ export default defineMessages({
     defaultMessage: 'Something went wrong!',
   },
   databse: {
-    id: 'management.projects.create.review.database',
+    id: 'management.projects.edit.database',
     defaultMessage: 'Database',
   },
   databaseOSM: {
-    id: 'management.projects.create.review.database.osm',
+    id: 'management.projects.edit.database.osm',
     defaultMessage: 'OSM',
   },
   databaseSandbox: {
-    id: 'management.projects.create.review.database.sandbox',
+    id: 'management.projects.edit.database.sandbox',
     defaultMessage: 'Sandbox',
   },
   disabledSandboxPriority: {
