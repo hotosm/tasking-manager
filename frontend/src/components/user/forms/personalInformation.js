@@ -12,6 +12,7 @@ import { logout, pushUserDetails } from '../../../store/actions/auth';
 import { fetchLocalJSONAPI } from '../../../network/genericJSONRequest';
 import { ORG_CODE } from '../../../config';
 import { DeleteModal } from '../../deleteModal';
+import { EMAIL_INPUT_PATTERN } from '../../../utils/emailValidation';
 
 export const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -156,7 +157,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                         {...input}
                         type="email"
                         className={fieldClasses}
-                        pattern="^([a-zA-Z0-9+_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"
+                        pattern={EMAIL_INPUT_PATTERN}
                         required
                       />
                       {meta.error && meta.touched && <div className="mt1 red">{meta.error}</div>}
