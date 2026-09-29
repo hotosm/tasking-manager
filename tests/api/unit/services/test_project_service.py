@@ -31,14 +31,41 @@ class TestProjectService:
         request.cls.db = db_connection_fixture
 
     async def test_get_active_projects_includes_recent_archived_but_not_draft(self):
-        _, user, project_id = await create_canned_project(
+        _, user, archived_id = await create_canned_project(
             self.db, "recent archived project"
+        )
+        _, _, published_id = await create_canned_project(
+            self.db, "recent published project"
+        )
+        _, _, draft_id = await create_canned_project(self.db, "recent draft project")
+        _, _, stale_archived_id = await create_canned_project(
+            self.db, "stale archived project"
+        )
+
+        await self.db.execute(
+            "UPDATE projects SET status = :status WHERE id = :id",
+            {"status": ProjectStatus.ARCHIVED.value, "id": archived_id},
         )
         await self.db.execute(
             "UPDATE projects SET status = :status WHERE id = :id",
+            {"status": ProjectStatus.PUBLISHED.value, "id": published_id},
+        )
+        await self.db.execute(
+            "UPDATE projects SET status = :status WHERE id = :id",
+            {"status": ProjectStatus.ARCHIVED.value, "id": stale_archived_id},
+        )
+
+        await self.db.execute(
+            """
+            INSERT INTO project_chat
+                (project_id, user_id, message, time_stamp)
+            VALUES
+                (:project_id, :user_id, :message, current_timestamp)
+            """,
             {
-                "status": ProjectStatus.ARCHIVED.value,
-                "id": project_id,
+                "project_id": archived_id,
+                "user_id": user.id,
+                "message": "refresh archived export",
             },
         )
         await self.db.execute(
@@ -49,25 +76,49 @@ class TestProjectService:
                 (:project_id, :user_id, :message, current_timestamp)
             """,
             {
-                "project_id": project_id,
+                "project_id": published_id,
                 "user_id": user.id,
-                "message": "refresh archived export",
+                "message": "refresh published export",
             },
         )
-
-        active_projects = await ProjectService.get_active_projects(24, self.db)
-        assert len(active_projects.features) == 1
-        assert active_projects.features[0]["properties"]["project_id"] == project_id
-
         await self.db.execute(
-            "UPDATE projects SET status = :status WHERE id = :id",
+            """
+            INSERT INTO project_chat
+                (project_id, user_id, message, time_stamp)
+            VALUES
+                (:project_id, :user_id, :message, current_timestamp)
+            """,
             {
-                "status": ProjectStatus.DRAFT.value,
-                "id": project_id,
+                "project_id": draft_id,
+                "user_id": user.id,
+                "message": "draft should stay excluded",
             },
         )
+        await self.db.execute(
+            """
+            INSERT INTO project_chat
+                (project_id, user_id, message, time_stamp)
+            VALUES
+                (:project_id, :user_id, :message, current_timestamp - interval '48 hours')
+            """,
+            {
+                "project_id": stale_archived_id,
+                "user_id": user.id,
+                "message": "stale archived activity",
+            },
+        )
+
         active_projects = await ProjectService.get_active_projects(24, self.db)
-        assert len(active_projects.features) == 0
+        active_ids = {
+            feature["properties"]["project_id"] for feature in active_projects.features
+        }
+
+
+        assert archived_id in active_ids
+        assert published_id in active_ids
+        assert draft_id not in active_ids
+        assert stale_archived_id not in active_ids
+
 
     @patch.object(Project, "get")
     async def test_project_service_raises_error_if_project_not_found(
