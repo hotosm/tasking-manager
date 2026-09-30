@@ -163,7 +163,7 @@ export const HeaderProfile = ({ userDetails, selfProfile }) => {
             <p className="f125 ma0 mb2 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
-            {userDetails && <NextMappingLevel userId={userDetails.id} />}
+            {user.id && <NextMappingLevel userId={user.id} />}
             <SocialMedia data={user} />
           </div>
           <div className="pt1 dib fl w-50-l w-100 v-btm">

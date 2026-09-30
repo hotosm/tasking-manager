@@ -19,6 +19,7 @@ import { featuredProjects } from './mockData/featuredProjects';
 import {
   newUsersStats,
   userStats,
+  userNextLevel,
   osmStatsProject,
   userLockedTasksDetails,
   ohsomeNowUserStats,
@@ -206,6 +207,9 @@ const handlers = [
   // USER
   rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {
     return res(ctx.json(newUsersStats));
+  }),
+  rest.get(API_URL + 'users/statistics/nextlevel/', async (req, res, ctx) => {
+    return res(ctx.json(userNextLevel));
   }),
   rest.get(API_URL + 'tasks/statistics/', async (req, res, ctx) => {
     return res(ctx.json(newUsersStats));
