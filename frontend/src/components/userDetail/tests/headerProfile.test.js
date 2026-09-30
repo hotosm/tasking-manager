@@ -177,4 +177,23 @@ describe('Header Profile Component', () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it('should display next level progress on own contributions page', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 123, username: userQueryDetails.username },
+      });
+    });
+    renderWithRouter(
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile selfProfile={true} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
+    );
+    expect(await screen.findByText(/changesets to level INTERMEDIATE/)).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText('250')).toBeInTheDocument();
+  });
 });

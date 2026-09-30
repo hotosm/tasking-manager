@@ -11,6 +11,13 @@ export const newUsersStats = {
   genders: { male: 158, female: 130, preferNotIdentify: 23, selfDescribe: 0 },
 };
 
+export const userNextLevel = {
+  nextLevel: 'INTERMEDIATE',
+  aggregatedGoal: 250,
+  aggregatedProgress: 100,
+  metrics: ['changeset'],
+};
+
 export const userStats = {
   totalTimeSpent: 652752,
   timeSpentMapping: 531841,
