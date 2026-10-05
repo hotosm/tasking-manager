@@ -396,7 +396,7 @@ class StatsService:
             LEFT JOIN mapped m ON u.id = m.user_id
             LEFT JOIN badimagery b ON u.id = b.user_id
             LEFT JOIN validated v ON u.id = v.user_id
-            ORDER BY total DESC;
+            ORDER BY total DESC, bad_imagery DESC;
         """
 
         # Execute the query
