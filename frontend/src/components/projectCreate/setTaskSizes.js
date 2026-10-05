@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import area from '@turf/area';
 import transformScale from '@turf/transform-scale';
 import { featureCollection } from '@turf/helpers';
@@ -19,25 +20,35 @@ import { getAllFeatures, removeFeaturesById } from '../../utils/terrawDraw';
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const [splitMode, setSplitMode] = useState(null);
 
-  const splitHandler = useCallback(
-    (event) => {
-      const taskGrid = mapObj.map.getSource('grid')._data;
+  // Always-current refs so event handlers registered on external objects
+  // (MapLibre map, TerraDraw) never close over stale metadata/updateMetadata.
+  const metadataRef = useRef(metadata);
+  const updateMetadataRef = useRef(updateMetadata);
+  const finishHandlerRef = useRef(null);
 
-      if (metadata.tempTaskGrid === null) {
-        updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
-      }
-      // Make the geom smaller to avoid borders.
-      const geom = transformScale(event.features[0].geometry, 0.5);
-      const newTaskGrid = splitTaskGrid(taskGrid, geom);
+  useEffect(() => {
+    metadataRef.current = metadata;
+    updateMetadataRef.current = updateMetadata;
+  });
 
-      updateMetadata({
-        ...metadata,
-        taskGrid: featureCollection(newTaskGrid),
-        tasksNumber: featureCollection(newTaskGrid).features.length,
-      });
-    },
-    [updateMetadata, metadata, mapObj.map],
-  );
+  const splitHandler = useCallback((event) => {
+    const md = metadataRef.current;
+    const upd = updateMetadataRef.current;
+    const taskGrid = md.taskGrid;
+
+    if (md.tempTaskGrid === null) {
+      upd({ ...md, tempTaskGrid: taskGrid });
+    }
+    // Make the geom smaller to avoid borders.
+    const geom = transformScale(event.features[0].geometry, 0.5);
+    const newTaskGrid = splitTaskGrid(taskGrid, geom);
+
+    upd({
+      ...md,
+      taskGrid: featureCollection(newTaskGrid),
+      tasksNumber: featureCollection(newTaskGrid).features.length,
+    });
+  }, []);
 
   useEffect(() => {
     if (splitMode === 'click') {
@@ -48,6 +59,9 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         mapObj.map.getCanvas().style.cursor = '';
       });
       mapObj.map.on('click', 'grid', splitHandler);
+      return () => {
+        mapObj.map.off('click', 'grid', splitHandler);
+      };
     } else {
       mapObj.map.on('mouseenter', 'grid', (event) => {
         mapObj.map.getCanvas().style.cursor = '';
@@ -68,7 +82,14 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     setSplitMode('draw');
     drawInstance.setMode('polygon');
 
-    drawInstance.on('finish', (id) => {
+    // Remove any previously registered finish handler before adding a new one.
+    if (finishHandlerRef.current) {
+      drawInstance.off('finish', finishHandlerRef.current);
+    }
+
+    const onFinish = (id) => {
+      const md = metadataRef.current;
+      const upd = updateMetadataRef.current;
       const allFeatures = getAllFeatures(drawInstance);
       const previousFeatureIds = allFeatures.reduce(
         (prev, curr) => (curr.id !== id ? [...prev, curr.id] : prev),
@@ -82,15 +103,15 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
       if (newFeature.length > 0) {
         const geom = newFeature[0].geometry;
-        const taskGrid = mapObj.map.getSource('grid')._data;
-        if (metadata.tempTaskGrid === null) {
-          updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
+        const taskGrid = md.taskGrid;
+        if (md.tempTaskGrid === null) {
+          upd({ ...md, tempTaskGrid: taskGrid });
         }
 
         const newTaskGrid = splitTaskGrid(taskGrid, geom);
 
-        updateMetadata({
-          ...metadata,
+        upd({
+          ...md,
           taskGrid: featureCollection(newTaskGrid),
           tasksNumber: featureCollection(newTaskGrid).features.length,
         });
@@ -98,11 +119,23 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       removeFeaturesById(drawInstance, [id]);
       drawInstance.setMode('select');
       setSplitMode(null);
-    });
-  }, [mapObj.draw, mapObj.map, splitMode, metadata, updateMetadata]);
+      drawInstance.off('finish', onFinish);
+      finishHandlerRef.current = null;
+    };
 
+    finishHandlerRef.current = onFinish;
+    drawInstance.on('finish', onFinish);
+  }, [mapObj.draw, splitMode]);
+
+  // Rebuild the grid instead of using tempTaskGrid, which holds the split grid after returning from step 3.
   const resetGrid = () => {
-    updateMetadata({ ...metadata, taskGrid: metadata.tempTaskGrid });
+    const squareGrid = makeGrid(metadata.geom, metadata.zoomLevel);
+    updateMetadata({
+      ...metadata,
+      tempTaskGrid: squareGrid,
+      taskGrid: squareGrid,
+      tasksNumber: squareGrid.features.length,
+    });
   };
 
   const smallerSize = useCallback(() => {
@@ -140,11 +173,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         data: { type: 'FeatureCollection', features: metadata.taskGrid },
       });
     }
-    return () => {
-      // remove the split on click function when leaving the page
-      mapObj.map.off('click', 'grid', splitHandler);
-    };
-  }, [metadata, mapObj, smallerSize, largerSize, splitHandler]);
+  }, [metadata, mapObj, smallerSize, largerSize]);
 
   return (
     <>
@@ -228,3 +257,18 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     </>
   );
 }
+
+SetTaskSizes.propTypes = {
+  metadata: PropTypes.shape({
+    taskGrid: PropTypes.object,
+    tempTaskGrid: PropTypes.object,
+    zoomLevel: PropTypes.number,
+    geom: PropTypes.object,
+    tasksNumber: PropTypes.number,
+  }).isRequired,
+  mapObj: PropTypes.shape({
+    map: PropTypes.object,
+    draw: PropTypes.object,
+  }).isRequired,
+  updateMetadata: PropTypes.func.isRequired,
+};
