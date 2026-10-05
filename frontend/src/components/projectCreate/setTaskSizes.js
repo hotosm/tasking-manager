@@ -119,6 +119,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       removeFeaturesById(drawInstance, [id]);
       drawInstance.setMode('select');
       setSplitMode(null);
+      drawInstance.off('finish', onFinish);
       finishHandlerRef.current = null;
     };
 
@@ -126,8 +127,15 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     drawInstance.on('finish', onFinish);
   }, [mapObj.draw, splitMode]);
 
+  // Rebuild the grid instead of using tempTaskGrid, which holds the split grid after returning from step 3.
   const resetGrid = () => {
-    updateMetadata({ ...metadata, taskGrid: metadata.tempTaskGrid });
+    const squareGrid = makeGrid(metadata.geom, metadata.zoomLevel);
+    updateMetadata({
+      ...metadata,
+      tempTaskGrid: squareGrid,
+      taskGrid: squareGrid,
+      tasksNumber: squareGrid.features.length,
+    });
   };
 
   const smallerSize = useCallback(() => {
