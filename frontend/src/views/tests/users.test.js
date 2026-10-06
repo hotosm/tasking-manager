@@ -94,7 +94,7 @@ describe('Change of role and mapper level', () => {
     const triggers = await within(tbody).findAllByTestId('action-trigger');
     await user.click(triggers[0]);
 
-    const tooltip = await screen.findByTestId('action-content', {}, { timeout: 1000 });
+    const tooltip = await screen.findByTestId('action-content');
 
     const advancedOption = await within(tooltip).findByText(/advanced/i);
     await user.click(advancedOption);
@@ -113,7 +113,7 @@ describe('Change of role and mapper level', () => {
     const triggers = await within(tbody).findAllByTestId('action-trigger');
     await user.click(triggers[0]);
 
-    const tooltip = await screen.findByTestId('action-content', {}, { timeout: 1000 });
+    const tooltip = await screen.findByTestId('action-content');
 
     const adminOption = await within(tooltip).findByText(/admin/i);
     await user.click(adminOption);
