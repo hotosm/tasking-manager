@@ -13,11 +13,9 @@ export const UsersList = () => {
   const [levels, setLevels] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      const res = await fetchLocalJSONAPI(`levels/`);
-
-      setLevels(res.levels);
-    })();
+    fetchLocalJSONAPI(`levels/`)
+      .then((res) => setLevels(res.levels))
+      .catch((e) => console.log(e));
   }, []);
 
   return (
