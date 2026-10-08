@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { gpx } from '@tmcw/togeojson';
@@ -11,6 +11,7 @@ import {
   captureIdEditorPackage,
   removeUnavailableImagerySources,
   resolveIdEditorContext,
+  setBackgroundHashParam,
 } from '../utils/idEditorContext';
 
 const officialID = captureIdEditorPackage();
@@ -22,6 +23,10 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
+  // Read via a ref, so a mid-session imagery change can't re-run the init
+  // effect below — its warm branch calls reset(), which drops unsaved edits.
+  const imageryRef = useRef(imagery);
+  imageryRef.current = imagery;
   const windowInit = typeof window !== 'undefined';
   const customSource =
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
@@ -109,6 +114,9 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
         iDContext.reset();
         iDContext.ui().restart();
       } else {
+        // Cold start only: restart() doesn't re-run iD's background selection,
+        // and on a warm context the imagery effect above already applies it.
+        setBackgroundHashParam(imageryRef.current);
         iDContext.init();
       }
       removeUnavailableImagerySources(iDContext.background());

@@ -1,4 +1,4 @@
-import { removeUnavailableImagerySources } from '../idEditorContext';
+import { removeUnavailableImagerySources, setBackgroundHashParam } from '../idEditorContext';
 
 describe('removeUnavailableImagerySources', () => {
   it('removes the unavailable Kontur imagery source', () => {
@@ -55,5 +55,40 @@ describe('removeUnavailableImagerySources', () => {
 
   it('ignores a missing background', () => {
     expect(() => removeUnavailableImagerySources()).not.toThrow();
+  });
+});
+
+describe('setBackgroundHashParam', () => {
+  // iD reads the hash with URLSearchParams (utilStringQs), so compare the same
+  // way rather than as raw strings -- how `:` and `{}` get percent-encoded is
+  // irrelevant to it.
+  const hashParams = () => new URLSearchParams(window.location.hash.replace(/^#/, ''));
+
+  beforeEach(() => {
+    window.history.replaceState(null, '', '#');
+  });
+
+  it('names a built-in source directly', () => {
+    setBackgroundHashParam('EsriWorldImagery');
+    expect(hashParams().get('background')).toEqual('EsriWorldImagery');
+  });
+
+  it('prefixes a custom template with custom:, as iD expects', () => {
+    setBackgroundHashParam('https://example.com/{z}/{x}/{y}.png');
+    expect(hashParams().get('background')).toEqual('custom:https://example.com/{z}/{x}/{y}.png');
+  });
+
+  it('asks for Bing explicitly when the project has no imagery', () => {
+    setBackgroundHashParam(null);
+    expect(hashParams().get('background')).toEqual('Bing');
+    setBackgroundHashParam(undefined);
+    expect(hashParams().get('background')).toEqual('Bing');
+  });
+
+  it('replaces a background left over from a previous project and keeps the rest of the hash', () => {
+    window.history.replaceState(null, '', '#map=18.00/27.74/85.32&background=Bing');
+    setBackgroundHashParam('EsriWorldImagery');
+    expect(hashParams().get('background')).toEqual('EsriWorldImagery');
+    expect(hashParams().get('map')).toEqual('18.00/27.74/85.32');
   });
 });
