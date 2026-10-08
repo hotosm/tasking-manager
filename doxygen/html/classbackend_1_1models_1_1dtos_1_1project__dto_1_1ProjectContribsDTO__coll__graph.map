@@ -1,0 +1,7 @@
+<map id="backend.models.dtos.project_dto.ProjectContribsDTO" name="backend.models.dtos.project_dto.ProjectContribsDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,133,207,213"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="12,5,99,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,83,94,132,89,134,70,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="123,5,193,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="148,72,130,119,125,117,143,70"/>
+</map>

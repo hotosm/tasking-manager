@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.project_dto.ProjectSearchBBoxDTO" name="backend.models.dtos.project_dto.ProjectSearchBBoxDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="35,148,236,228"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="76,81,115,146,110,149,72,84"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,154,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="138,71,138,131,133,131,133,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="179,5,249,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="208,72,187,125,181,136,176,133,182,123,203,70"/>
+</map>

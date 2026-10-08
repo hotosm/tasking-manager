@@ -1,0 +1,53 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,781,92,806"/>
+<area shape="rect" id="Node000001" href="$classbackend_1_1models_1_1postgis_1_1organisation_1_1InvalidRoleException.html" title=" " alt="" coords="155,5,423,45"/>
+<area shape="poly" id="edge212_Node000000_Node000001" title=" " alt="" coords="49,767,59,611,77,385,104,173,120,97,129,72,138,56,153,43,157,47,142,59,133,74,125,99,109,174,83,386,64,611,54,767"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1InvalidData.html" title=" " alt="" coords="182,69,397,109"/>
+<area shape="poly" id="edge213_Node000000_Node000002" title=" " alt="" coords="47,767,48,632,59,438,69,338,86,246,108,171,122,142,138,120,158,104,181,93,183,98,161,108,142,123,127,145,113,173,91,248,75,339,64,438,54,632,52,767"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1InvalidGeoJson.html" title=" " alt="" coords="182,133,397,173"/>
+<area shape="poly" id="edge214_Node000000_Node000003" title=" " alt="" coords="47,767,51,643,63,468,74,379,90,297,111,230,123,203,138,183,158,168,181,157,183,162,161,172,142,187,128,206,116,232,95,298,79,380,68,469,56,643,53,767"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1NotFound.html" title=" " alt="" coords="182,197,397,237"/>
+<area shape="poly" id="edge215_Node000000_Node000004" title=" " alt="" coords="48,767,53,655,67,499,78,420,93,348,113,288,125,265,138,247,158,232,181,222,183,226,161,236,142,251,129,268,118,290,99,349,83,421,72,500,58,656,53,767"/>
+<area shape="rect" id="Node000005" href="$classbackend_1_1models_1_1postgis_1_1utils_1_1UserLicenseError.html" title=" " alt="" coords="182,261,397,301"/>
+<area shape="poly" id="edge216_Node000000_Node000005" title=" " alt="" coords="49,766,55,666,71,530,82,461,97,398,116,347,138,312,158,296,181,286,183,291,161,301,142,315,120,349,102,400,88,462,76,531,61,667,54,767"/>
+<area shape="rect" id="Node000006" href="$classbackend_1_1services_1_1campaign__service_1_1CampaignServiceError.html" title=" " alt="" coords="177,325,402,365"/>
+<area shape="poly" id="edge217_Node000000_Node000006" title=" " alt="" coords="49,767,58,679,75,562,101,449,118,405,138,376,156,362,175,352,178,357,158,366,142,379,123,408,106,451,80,563,64,680,55,767"/>
+<area shape="rect" id="Node000007" href="$classbackend_1_1services_1_1grid_1_1grid__service_1_1GridServiceError.html" title=" " alt="" coords="193,389,385,429"/>
+<area shape="poly" id="edge218_Node000000_Node000007" title=" " alt="" coords="51,766,61,691,80,593,105,500,121,464,138,439,163,422,192,411,194,416,166,427,142,443,125,467,110,502,85,594,67,692,56,767"/>
+<area shape="rect" id="Node000008" href="$classbackend_1_1services_1_1grid_1_1split__service_1_1SplitServiceError.html" title=" " alt="" coords="192,453,387,493"/>
+<area shape="poly" id="edge219_Node000000_Node000008" title=" " alt="" coords="47,767,51,712,64,641,76,603,91,567,112,533,138,503,163,487,191,476,193,481,165,491,142,507,116,536,96,569,81,605,69,642,56,712,53,767"/>
+<area shape="rect" id="Node000009" href="$classbackend_1_1services_1_1mapping__service_1_1MappingServiceError.html" title=" " alt="" coords="182,517,397,557"/>
+<area shape="poly" id="edge220_Node000000_Node000009" title=" " alt="" coords="50,766,58,723,73,669,99,614,117,589,138,567,158,554,181,545,183,549,161,559,142,571,121,592,104,617,78,671,63,724,55,767"/>
+<area shape="rect" id="Node000010" href="$classbackend_1_1services_1_1messaging_1_1message__service_1_1MessageServiceError.html" title=" " alt="" coords="153,581,425,621"/>
+<area shape="poly" id="edge221_Node000000_Node000010" title=" " alt="" coords="55,767,66,735,83,698,107,662,138,631,159,619,161,624,142,635,111,665,88,701,71,737,60,768"/>
+<area shape="rect" id="Node000011" href="$classbackend_1_1services_1_1organisation__service_1_1OrganisationServiceError.html" title=" " alt="" coords="168,645,411,685"/>
+<area shape="poly" id="edge222_Node000000_Node000011" title=" " alt="" coords="64,768,95,730,116,711,139,695,167,682,169,687,141,700,119,715,99,733,68,771"/>
+<area shape="rect" id="Node000012" href="$classbackend_1_1services_1_1overpass__service_1_1OverpassServiceError.html" title=" " alt="" coords="179,709,399,749"/>
+<area shape="poly" id="edge223_Node000000_Node000012" title=" " alt="" coords="94,773,139,759,186,747,188,752,141,764,96,779"/>
+<area shape="rect" id="Node000013" href="$classbackend_1_1services_1_1partner__service_1_1PartnerServiceError.html" title=" " alt="" coords="187,773,392,813"/>
+<area shape="poly" id="edge224_Node000000_Node000013" title=" " alt="" coords="106,791,187,791,187,796,106,796"/>
+<area shape="rect" id="Node000014" href="$classbackend_1_1services_1_1project__admin__service_1_1ProjectAdminServiceError.html" title=" " alt="" coords="142,837,437,877"/>
+<area shape="poly" id="edge225_Node000000_Node000014" title=" " alt="" coords="96,808,141,823,188,835,186,840,139,828,94,813"/>
+<area shape="rect" id="Node000015" href="$classbackend_1_1services_1_1project__admin__service_1_1ProjectStoreError.html" title=" " alt="" coords="170,901,409,941"/>
+<area shape="poly" id="edge226_Node000000_Node000015" title=" " alt="" coords="68,816,99,853,119,872,141,887,171,900,169,905,139,892,116,876,95,857,64,819"/>
+<area shape="rect" id="Node000016" href="$classbackend_1_1services_1_1project__partnership__service_1_1ProjectPartnershipServiceError.html" title=" " alt="" coords="150,966,429,1021"/>
+<area shape="poly" id="edge227_Node000000_Node000016" title=" " alt="" coords="60,818,72,849,89,885,112,921,142,951,161,964,158,968,138,955,108,924,84,888,67,852,55,820"/>
+<area shape="rect" id="Node000017" href="$classbackend_1_1services_1_1project__search__service_1_1BBoxTooBigError.html" title=" " alt="" coords="170,1045,409,1085"/>
+<area shape="poly" id="edge228_Node000000_Node000017" title=" " alt="" coords="55,819,61,865,76,922,102,981,120,1007,142,1030,171,1048,169,1053,138,1034,116,1010,97,983,71,924,56,866,49,820"/>
+<area shape="rect" id="Node000018" href="$classbackend_1_1services_1_1project__search__service_1_1ProjectSearchServiceError.html" title=" " alt="" coords="140,1109,439,1149"/>
+<area shape="poly" id="edge229_Node000000_Node000018" title=" " alt="" coords="52,819,55,877,67,952,78,991,94,1029,115,1065,142,1095,158,1107,154,1111,138,1099,111,1068,89,1032,73,993,62,953,50,877,47,820"/>
+<area shape="rect" id="Node000019" href="$classbackend_1_1services_1_1project__service_1_1ProjectServiceError.html" title=" " alt="" coords="187,1173,391,1213"/>
+<area shape="poly" id="edge230_Node000000_Node000019" title=" " alt="" coords="56,820,66,898,84,1001,109,1098,125,1135,142,1159,163,1175,188,1185,186,1190,161,1179,138,1163,120,1137,104,1099,79,1002,61,899,50,820"/>
+<area shape="rect" id="Node000020" href="$classbackend_1_1services_1_1team__service_1_1TeamJoinNotAllowed.html" title=" " alt="" coords="182,1237,397,1277"/>
+<area shape="poly" id="edge231_Node000000_Node000020" title=" " alt="" coords="54,820,63,911,79,1032,91,1093,105,1149,122,1194,142,1224,161,1238,183,1248,181,1253,158,1242,138,1227,118,1196,100,1150,86,1095,74,1033,58,911,49,820"/>
+<area shape="rect" id="Node000021" href="$classbackend_1_1services_1_1team__service_1_1TeamServiceError.html" title=" " alt="" coords="192,1301,387,1341"/>
+<area shape="poly" id="edge232_Node000000_Node000021" title=" " alt="" coords="54,820,60,922,75,1063,87,1135,101,1199,120,1252,142,1288,165,1305,193,1315,191,1320,163,1309,138,1291,115,1255,96,1201,81,1136,70,1064,55,923,48,820"/>
+<area shape="rect" id="Node000022" href="$classbackend_1_1services_1_1users_1_1authentication__service_1_1AuthServiceError.html" title=" " alt="" coords="154,1365,425,1405"/>
+<area shape="poly" id="edge233_Node000000_Node000022" title=" " alt="" coords="53,820,58,934,71,1095,82,1176,98,1250,117,1311,129,1334,142,1352,155,1363,152,1367,138,1355,125,1337,112,1313,92,1252,77,1177,66,1095,52,935,48,820"/>
+<area shape="rect" id="Node000023" href="$classbackend_1_1services_1_1users_1_1osm__service_1_1OSMServiceError.html" title=" " alt="" coords="187,1429,392,1469"/>
+<area shape="poly" id="edge234_Node000000_Node000023" title=" " alt="" coords="53,820,55,946,67,1126,78,1217,94,1301,115,1370,128,1396,142,1415,163,1432,188,1442,186,1447,160,1436,138,1419,123,1399,110,1372,89,1302,73,1218,62,1126,50,946,47,820"/>
+<area shape="rect" id="Node000024" href="$classbackend_1_1services_1_1users_1_1user__service_1_1UserServiceError.html" title=" " alt="" coords="187,1493,392,1533"/>
+<area shape="poly" id="edge235_Node000000_Node000024" title=" " alt="" coords="52,820,53,958,63,1156,74,1259,90,1352,112,1428,126,1458,142,1479,163,1496,188,1506,185,1511,160,1500,138,1483,122,1460,107,1430,85,1353,68,1259,58,1157,48,958,47,820"/>
+<area shape="rect" id="Node000025" href="$classbackend_1_1services_1_1validator__service_1_1ValidatorServiceError.html" title=" " alt="" coords="181,1557,398,1597"/>
+<area shape="poly" id="edge236_Node000000_Node000025" title=" " alt="" coords="54,820,64,979,82,1210,94,1325,109,1426,125,1503,133,1528,142,1544,160,1558,181,1568,179,1573,157,1563,138,1547,128,1531,120,1504,103,1427,89,1326,77,1210,58,979,49,820"/>
+</map>

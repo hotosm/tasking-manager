@@ -1,0 +1,13 @@
+<map id="backend.models.dtos.organisation_dto.UpdateOrganisationDTO" name="backend.models.dtos.organisation_dto.UpdateOrganisationDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="146,464,383,544"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1models_1_1dtos_1_1organisation__dto_1_1OrganisationDTO.html" title=" " alt="" coords="146,295,383,415"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="267,428,267,464,262,464,262,428"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="221,5,308,71"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="267,85,267,294,262,294,262,85"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="37,5,106,71"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="59,72,34,139,22,182,13,229,8,277,11,325,22,371,43,413,61,434,82,451,132,476,129,481,79,456,57,438,39,416,17,373,6,326,3,277,7,228,17,181,29,138,54,70"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="82,70,112,164,137,218,168,269,178,281,174,284,164,272,132,221,108,166,77,72"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="373,5,410,71"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="409,70,415,94,434,186,444,261,443,297,436,334,421,373,398,416,381,438,361,456,357,452,377,434,393,413,416,371,431,332,438,297,439,262,429,187,410,95,403,72"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="375,67,358,96,318,190,288,280,283,278,313,188,353,93,370,64"/>
+</map>

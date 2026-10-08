@@ -1,0 +1,9 @@
+<map id="backend.models.dtos.organisation_dto.NewOrganisationDTO" name="backend.models.dtos.organisation_dto.NewOrganisationDTO">
+<area shape="rect" id="Node000001" title=" " alt="" coords="33,221,270,321"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,92,71"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,82,132,220,127,222,66,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,5,186,71"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,71,154,205,149,205,149,71"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="275,5,313,71"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="298,71,292,133,283,167,267,199,257,211,253,208,262,196,278,165,287,132,293,71"/>
+</map>

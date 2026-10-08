@@ -1,0 +1,49 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,717,64,742"/>
+<area shape="rect" id="Node000001" href="$classbackend_1_1models_1_1dtos_1_1project__partner__dto_1_1ProjectPartnerAction.html" title=" " alt="" coords="115,5,355,45"/>
+<area shape="poly" id="edge189_Node000000_Node000001" title=" " alt="" coords="35,703,43,559,58,354,80,162,94,94,110,56,123,44,127,48,114,59,99,95,86,163,63,355,48,560,40,703"/>
+<area shape="rect" id="Node000002" href="$classbackend_1_1models_1_1postgis_1_1message_1_1MessageType.html" title=" " alt="" coords="112,69,359,109"/>
+<area shape="poly" id="edge190_Node000000_Node000002" title=" " alt="" coords="33,703,33,580,42,405,51,316,65,234,84,166,96,140,110,120,123,108,127,112,114,123,101,143,89,168,70,235,56,317,47,406,39,580,38,703"/>
+<area shape="rect" id="Node000003" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1BannerType.html" title=" " alt="" coords="114,133,357,173"/>
+<area shape="poly" id="edge191_Node000000_Node000003" title=" " alt="" coords="33,703,36,592,45,437,55,357,68,285,86,225,97,202,110,184,124,171,128,175,114,187,102,204,91,227,74,286,60,358,51,437,41,592,39,703"/>
+<area shape="rect" id="Node000004" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1Editors.html" title=" " alt="" coords="114,197,357,237"/>
+<area shape="poly" id="edge192_Node000000_Node000004" title=" " alt="" coords="34,703,38,603,50,467,59,398,72,335,89,283,110,248,124,235,128,239,114,251,94,286,77,337,64,399,55,468,43,603,39,703"/>
+<area shape="rect" id="Node000005" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1EncouragingEmailType.html" title=" " alt="" coords="114,261,357,301"/>
+<area shape="poly" id="edge193_Node000000_Node000005" title=" " alt="" coords="35,702,41,615,54,498,76,386,91,342,110,312,124,300,128,304,114,315,96,344,81,387,59,499,46,615,40,703"/>
+<area shape="rect" id="Node000006" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1MappingNotAllowed.html" title=" " alt="" coords="114,325,357,365"/>
+<area shape="poly" id="edge194_Node000000_Node000006" title=" " alt="" coords="36,703,43,627,58,530,80,437,94,401,110,376,125,363,128,367,114,379,98,403,85,439,63,531,49,628,41,703"/>
+<area shape="rect" id="Node000007" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1MappingPermission.html" title=" " alt="" coords="114,389,357,429"/>
+<area shape="poly" id="edge195_Node000000_Node000007" title=" " alt="" coords="32,703,34,648,43,577,53,540,67,504,86,470,110,439,125,428,129,432,114,443,90,472,72,506,58,542,48,578,39,648,37,703"/>
+<area shape="rect" id="Node000008" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1MappingTypes.html" title=" " alt="" coords="114,453,357,493"/>
+<area shape="poly" id="edge196_Node000000_Node000008" title=" " alt="" coords="35,702,40,659,52,605,74,551,90,526,110,503,126,492,129,496,114,507,95,529,79,553,57,607,45,660,40,703"/>
+<area shape="rect" id="Node000009" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1OrganisationType.html" title=" " alt="" coords="114,517,357,557"/>
+<area shape="poly" id="edge197_Node000000_Node000009" title=" " alt="" coords="39,702,48,671,62,635,82,598,110,567,129,555,132,560,114,571,87,601,67,637,53,673,44,704"/>
+<area shape="rect" id="Node000010" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1ProjectDifficulty.html" title=" " alt="" coords="114,581,357,621"/>
+<area shape="poly" id="edge198_Node000000_Node000010" title=" " alt="" coords="47,703,73,666,91,647,111,631,133,619,136,624,113,636,94,651,77,669,51,706"/>
+<area shape="rect" id="Node000011" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1ProjectPriority.html" title=" " alt="" coords="114,645,357,685"/>
+<area shape="poly" id="edge199_Node000000_Node000011" title=" " alt="" coords="75,709,111,695,150,683,152,688,113,700,77,714"/>
+<area shape="rect" id="Node000012" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1ProjectStatus.html" title=" " alt="" coords="114,709,357,749"/>
+<area shape="poly" id="edge200_Node000000_Node000012" title=" " alt="" coords="78,727,114,727,114,732,78,732"/>
+<area shape="rect" id="Node000013" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TaskCreationMode.html" title=" " alt="" coords="114,773,357,813"/>
+<area shape="poly" id="edge201_Node000000_Node000013" title=" " alt="" coords="77,745,113,759,152,771,150,776,111,764,75,750"/>
+<area shape="rect" id="Node000014" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TaskStatus.html" title=" " alt="" coords="114,837,357,877"/>
+<area shape="poly" id="edge202_Node000000_Node000014" title=" " alt="" coords="51,752,77,789,94,808,113,823,136,835,133,840,111,828,91,812,73,793,47,755"/>
+<area shape="rect" id="Node000015" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TeamJoinMethod.html" title=" " alt="" coords="114,901,357,941"/>
+<area shape="poly" id="edge203_Node000000_Node000015" title=" " alt="" coords="44,755,53,786,67,822,87,857,114,887,132,899,129,904,110,891,82,860,62,824,48,788,39,757"/>
+<area shape="rect" id="Node000016" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TeamMemberFunctions.html" title=" " alt="" coords="114,965,357,1005"/>
+<area shape="poly" id="edge204_Node000000_Node000016" title=" " alt="" coords="40,756,45,799,57,852,79,905,95,930,114,951,129,963,126,967,110,955,90,933,74,908,52,853,40,800,35,756"/>
+<area shape="rect" id="Node000017" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TeamRoles.html" title=" " alt="" coords="114,1029,357,1069"/>
+<area shape="poly" id="edge205_Node000000_Node000017" title=" " alt="" coords="37,756,39,810,48,880,58,917,72,953,90,986,114,1015,129,1027,125,1031,110,1019,86,989,67,955,53,919,43,881,34,811,32,756"/>
+<area shape="rect" id="Node000018" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1TeamVisibility.html" title=" " alt="" coords="114,1093,357,1133"/>
+<area shape="poly" id="edge206_Node000000_Node000018" title=" " alt="" coords="41,755,49,831,63,928,85,1020,98,1056,114,1080,128,1091,125,1095,110,1083,94,1058,80,1022,58,929,43,831,36,756"/>
+<area shape="rect" id="Node000019" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1UserGender.html" title=" " alt="" coords="114,1157,357,1197"/>
+<area shape="poly" id="edge207_Node000000_Node000019" title=" " alt="" coords="40,756,46,843,59,960,81,1071,96,1114,114,1144,128,1155,124,1159,110,1147,91,1117,76,1073,54,961,41,844,35,756"/>
+<area shape="rect" id="Node000020" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1UserRole.html" title=" " alt="" coords="114,1221,357,1261"/>
+<area shape="poly" id="edge208_Node000000_Node000020" title=" " alt="" coords="39,756,43,855,55,991,64,1060,77,1122,94,1173,114,1208,128,1219,124,1223,110,1211,89,1175,72,1123,59,1061,50,992,38,856,34,756"/>
+<area shape="rect" id="Node000021" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1ValidatingNotAllowed.html" title=" " alt="" coords="114,1285,357,1325"/>
+<area shape="poly" id="edge209_Node000000_Node000021" title=" " alt="" coords="39,755,41,867,51,1022,60,1101,74,1173,91,1232,102,1254,114,1272,128,1283,124,1287,110,1275,97,1257,86,1234,68,1174,55,1101,45,1022,36,867,33,756"/>
+<area shape="rect" id="Node000022" href="$classbackend_1_1models_1_1postgis_1_1statuses_1_1ValidationPermission.html" title=" " alt="" coords="114,1349,357,1389"/>
+<area shape="poly" id="edge210_Node000000_Node000022" title=" " alt="" coords="38,756,39,879,47,1053,56,1142,70,1223,89,1290,101,1316,114,1336,127,1347,123,1351,110,1339,96,1319,84,1292,65,1225,51,1143,42,1053,33,879,33,756"/>
+<area shape="rect" id="Node000023" href="$classbackend_1_1models_1_1postgis_1_1task_1_1TaskAction.html" title=" " alt="" coords="128,1413,343,1453"/>
+<area shape="poly" id="edge211_Node000000_Node000023" title=" " alt="" coords="40,755,48,899,63,1104,86,1296,99,1363,114,1400,130,1413,126,1417,110,1403,94,1365,80,1296,58,1104,43,899,35,756"/>
+</map>
