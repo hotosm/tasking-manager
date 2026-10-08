@@ -7,10 +7,12 @@ import storage from 'redux-persist/lib/storage';
 import { setItem } from '../utils/safe_storage';
 import reducers from './reducers';
 
+// Whitelist, not blacklist: only durable state (session + preferences) is
+// persisted. Transient state such as `loader` must never reach disk.
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['editor', 'orgBarVisibility'],
+  whitelist: ['preferences', 'auth'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);
