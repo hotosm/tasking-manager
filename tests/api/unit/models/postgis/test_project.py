@@ -27,9 +27,6 @@ class TestProject:
 
     async def test_clone_project_raises_error_if_project_not_found(self):
         """Test cloning a non-existent project raises NotFound error."""
-        # Arrange
-        Project.get = AsyncMock(return_value=None)
-
         # Act / Assert
         with pytest.raises(NotFound):
             await Project.clone(12, 777777, self.db, False, "OSM")

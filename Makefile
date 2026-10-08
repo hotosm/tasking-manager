@@ -38,7 +38,7 @@ test-frontend:
 	docker-compose exec frontend sh -c "cd /usr/src/app/frontend && CI=true npm test"
 
 test-backend:
-	docker-compose exec backend sh -c "python -m unittest discover tests/backend"
+	docker-compose exec tm-backend sh -c "pytest tests/api -p no:warnings"
 
 fetch:
 ifndef PRNUMBER

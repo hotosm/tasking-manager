@@ -17,11 +17,11 @@ mode for more than a short time runs the risk of being ignored.
 The backend has unit tests which can be run manually. These are the
 same tests the CI support runs. To run all the tests, do this:
 
-	python3 -m unittest discover ./tests
+	pytest tests/api
 
 To run a specific test case, you can do it like this:
 
-	python -m unittest tests/backend/integration/services/test_license_service.py
+	pytest tests/api/integration/services/test_license_service.py
 
 Whenever you add a new endpoint in the backend, you should add a test
 case for it.
