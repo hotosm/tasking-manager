@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, act } from '@testing-library/react';
+import { rest } from 'msw';
 
 import { HeaderProfile, SocialMedia, MyContributionsNav } from '../headerProfile';
 import {
@@ -9,7 +10,10 @@ import {
   renderWithRouter,
 } from '../../../utils/testWithIntl';
 import { userQueryDetails } from '../../../network/tests/mockData/userList';
+import { userNextLevel } from '../../../network/tests/mockData/userStats';
+import { server } from '../../../network/tests/server';
 import { store } from '../../../store';
+import { API_URL } from '../../../config';
 
 let mockData = {
   id: 10291369,
@@ -176,5 +180,49 @@ describe('Header Profile Component', () => {
         name: 'My projects',
       }),
     ).toBeInTheDocument();
+  });
+
+  it('should display next level progress on own contributions page', async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 123, username: userQueryDetails.username },
+      });
+    });
+    renderWithRouter(
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile selfProfile={true} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
+    );
+    expect(await screen.findByText(/changesets to level INTERMEDIATE/)).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument();
+    expect(screen.getByText('250')).toBeInTheDocument();
+  });
+
+  it("should display the viewed user's next level progress, not the logged in user's", async () => {
+    act(() => {
+      store.dispatch({
+        type: 'SET_USER_DETAILS',
+        userDetails: { id: 123, username: 'loggedInUser' },
+      });
+    });
+    server.use(
+      rest.get(API_URL + 'users/statistics/nextlevel/', (req, res, ctx) =>
+        req.url.searchParams.get('userId') === String(userQueryDetails.id)
+          ? res(ctx.json({ ...userNextLevel, nextLevel: 'ADVANCED' }))
+          : res(ctx.json(userNextLevel)),
+      ),
+    );
+    renderWithRouter(
+      <QueryClientProviders>
+        <ReduxIntlProviders>
+          <HeaderProfile userDetails={userQueryDetails} selfProfile={false} />
+        </ReduxIntlProviders>
+      </QueryClientProviders>,
+    );
+    expect(await screen.findByText(/changesets to level ADVANCED/)).toBeInTheDocument();
+    expect(screen.queryByText(/changesets to level INTERMEDIATE/)).not.toBeInTheDocument();
   });
 });
