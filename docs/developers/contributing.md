@@ -102,7 +102,6 @@ you refer to our [Code of
 Conduct](code_of_conduct.md) when you contribute!
 
 If you've read the guidelines, but you are still not sure how to
-contribute on Github, please reach out to us via our [ HOT Tech
-Support
-page]([https://hotosm.atlassian.net/servicedesk/customer/portal/4](https://hotosm.atlassian.net/servicedesk/customer/portal/4/group/5/create/51)
+contribute on Github, please reach out to us via our [HOT Tech
+Support page](https://roadmap.hotosm.org/#tech-request)
 and we will be happy to help!
