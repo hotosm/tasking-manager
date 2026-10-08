@@ -1,5 +1,4 @@
 import { formatISO } from 'date-fns';
-import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
 
 export const newUsersStats = {
   total: 1044,
@@ -86,8 +85,6 @@ export const ohsomeNowUserStats = {
     object_edits: 291,
   },
 };
-
-const projectHashtag = `${TM_DEFAULT_CHANGESET_COMMENT.replace(/^#/, '')}-1`;
 
 export const osmStatsProject = {
   result: {
