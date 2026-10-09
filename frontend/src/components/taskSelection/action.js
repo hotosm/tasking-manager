@@ -14,7 +14,14 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
-import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';
+import {
+  openEditor,
+  getTaskGpxUrl,
+  formatImageryUrl,
+  formatJosmUrl,
+  prepareJosmWindow,
+  requiresJosmPopup,
+} from '../../utils/openEditor';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
@@ -203,17 +210,26 @@ export function TaskMapAction({ project, tasks, activeTasks, getTasks, action, e
     setIsJosmError(false);
     if (!disabled) {
       setActiveEditor(arr[0].value);
+      let windowObjectReference = null;
+      if (arr[0].value === 'JOSM') {
+        try {
+          windowObjectReference = prepareJosmWindow();
+        } catch (error) {
+          setIsJosmError(true);
+          return;
+        }
+      }
       const url = openEditor(
         arr[0].value,
         project,
         tasks,
         tasksIds,
         [window.innerWidth, window.innerHeight],
-        null,
+        windowObjectReference,
       );
       if (url) {
         navigate(`./${url}`);
-        if (arr[0].value === 'JOSM') {
+        if (arr[0].value === 'JOSM' && !requiresJosmPopup()) {
           try {
             await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
           } catch (e) {

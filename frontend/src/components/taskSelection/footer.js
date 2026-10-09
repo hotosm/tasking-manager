@@ -7,7 +7,12 @@ import PropTypes from 'prop-types';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
-import { openEditor, formatJosmUrl } from '../../utils/openEditor';
+import {
+  openEditor,
+  formatJosmUrl,
+  prepareJosmWindow,
+  requiresJosmPopup,
+} from '../../utils/openEditor';
 import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
@@ -51,8 +56,7 @@ const TaskSelectionFooter = ({
   };
 
   const lockFailed = (windowObjectReference, message) => {
-    // JOSM and iD don't open a new window
-    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
+    if (windowObjectReference && !windowObjectReference.closed) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
@@ -76,7 +80,7 @@ const TaskSelectionFooter = ({
       return;
     }
     // then pass to the JOSM check and validate/map checks
-    if (editor === 'JOSM' && !window.safari) {
+    if (editor === 'JOSM' && !requiresJosmPopup()) {
       try {
         await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
       } catch (e) {
@@ -85,7 +89,14 @@ const TaskSelectionFooter = ({
       }
     }
     let windowObjectReference;
-    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
+    if (editor === 'JOSM') {
+      try {
+        windowObjectReference = prepareJosmWindow();
+      } catch (error) {
+        setLockError('JOSM');
+        return;
+      }
+    } else if (!['ID', 'RAPID'].includes(editor)) {
       windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
@@ -96,6 +107,7 @@ const TaskSelectionFooter = ({
           ).length,
       );
       if (!mappedTasks.length) {
+        if (windowObjectReference && !windowObjectReference.closed) windowObjectReference.close();
         setLockError('noMappedTasksSelected');
       } else {
         setIsPending(true);
