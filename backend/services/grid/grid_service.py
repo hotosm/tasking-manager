@@ -112,6 +112,23 @@ class GridService:
         multi_polygon = GridService._convert_to_multipolygon(parsed_geojson)
         if dissolve:
             multi_polygon = GridService._dissolve(multi_polygon)
+        if not multi_polygon.is_valid:
+            # geojson.MultiPolygon.is_valid below only checks structure (ring
+            # closure etc), not real topology, so a self-intersecting AOI
+            # (e.g. from a hand-drawn or imported boundary) can slip through
+            # it. Repairing here, before it's used to clip the task grid,
+            # avoids passing a self-intersecting AOI into the per-tile
+            # intersection() calls, which otherwise produce corrupted task
+            # geometries (self-intersecting "spikes") even though the tiles
+            # themselves start out as clean squares.
+            multi_polygon = multi_polygon.buffer(0)
+            if multi_polygon.geom_type == "Polygon":
+                # buffer(0) may collapse a MultiPolygon down to a plain
+                # Polygon if the repaired geometry is a single shape (same
+                # thing _dissolve already guards against below for
+                # unary_union's output) - force back to MultiPolygon so the
+                # type check right after this doesn't reject a valid repair.
+                multi_polygon = MultiPolygon([multi_polygon])
         aoi_multi_polygon_geojson = geojson.loads(json.dumps(mapping(multi_polygon)))
 
         # validate the geometry
