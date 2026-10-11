@@ -21,6 +21,22 @@ describe('test OSMCha link to project', () => {
     );
   });
 
+  it('uses only the default project hashtag from a project changeset comment', () => {
+    const project = {
+      projectId: 46866,
+      osmchaFilterId: null,
+      aoiBBOX: '139.408264,-5.163437,140.252838,-4.521666',
+      changesetComment:
+        '#hotosm-project-46866 mapped buildings in Indonesia for #msf #missingmaps #indonesia25',
+      created: '2026-03-23T12:20:42.460024Z',
+    };
+    expect(formatOSMChaLink(project)).toBe(
+      `https://osmcha.org/?filters=${encodeURIComponent(
+        '{"in_bbox":[{"label":"139.408264,-5.163437,140.252838,-4.521666","value":"139.408264,-5.163437,140.252838,-4.521666"}],"area_lt":[{"label":2,"value":2}],"date__gte":[{"label":"2026-03-23","value":"2026-03-23"}],"comment":[{"label":"#hotosm-project-46866","value":"#hotosm-project-46866"}]}',
+      )}`,
+    );
+  });
+
   it('with aoiBBOX as a list', () => {
     const project = {
       osmchaFilterId: null,

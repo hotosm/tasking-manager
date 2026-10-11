@@ -1,3 +1,5 @@
+import { retrieveDefaultChangesetComment } from './defaultChangesetComment';
+
 export function formatOSMChaLink(infoObj) {
   const baseURL = 'https://osmcha.org/';
   // If a custom filter id is given, ignores everything else
@@ -26,7 +28,7 @@ export function formatOSMChaLink(infoObj) {
   }
 
   if (infoObj.changesetComment) {
-    filterParams['comment'] = buildFilter(infoObj.changesetComment);
+    filterParams['comment'] = buildFilter(getOsmchaCommentFilter(infoObj));
   }
 
   if (typeof infoObj.usernames === 'object') {
@@ -34,6 +36,17 @@ export function formatOSMChaLink(infoObj) {
   }
 
   return `${baseURL}?filters=${encodeURIComponent(JSON.stringify(filterParams))}`;
+}
+
+function getOsmchaCommentFilter(infoObj) {
+  if (infoObj.projectId) {
+    const defaultProjectComment = retrieveDefaultChangesetComment(
+      infoObj.changesetComment,
+      infoObj.projectId,
+    );
+    return defaultProjectComment[0] || infoObj.changesetComment;
+  }
+  return infoObj.changesetComment;
 }
 
 function buildFilterValue(value) {
