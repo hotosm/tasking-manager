@@ -113,9 +113,19 @@ class ValidatorService:
                     raise ValidatorServiceError(
                         "UserAlreadyHasTaskLocked- User already has a task locked"
                     )
+            elif error_reason == ValidatingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL:
+                raise ValidatorServiceError(
+                    "UserNotCorrectMappingLevel- Validation not allowed because: "
+                    "User's experience level is below the project's required level"
+                )
+            elif error_reason == ValidatingNotAllowed.USER_NOT_TEAM_MEMBER:
+                raise ValidatorServiceError(
+                    "UserNotTeamMember- Validation not allowed because: "
+                    "User is not a member of a validation team for this project"
+                )
             else:
                 raise ValidatorServiceError(
-                    f"ValidtionNotAllowed- Validation not allowed because: {error_reason}"
+                    f"ValidationNotAllowed- Validation not allowed because: {error_reason}"
                 )
 
         # Lock all tasks for validation
