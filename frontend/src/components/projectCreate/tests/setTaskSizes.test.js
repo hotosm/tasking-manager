@@ -1,10 +1,13 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import maplibregl from 'maplibre-gl';
+import { featureCollection } from '@turf/helpers';
 
 import SetTaskSizes from '../setTaskSizes';
 import { projectMetadata } from '../../../utils/tests/snippets/projectMetadata';
 import { IntlProviders } from '../../../utils/testWithIntl';
+import { makeGrid, splitTaskGrid } from '../../../utils/taskGrid';
 
 jest.mock('maplibre-gl/dist/maplibre-gl', () => ({
   GeolocateControl: jest.fn(),
@@ -66,4 +69,83 @@ describe('setTaskSizes Component', () => {
   });
 
   // To do: simulate splitting and making the task grid smaller/bigger
+});
+
+describe('setTaskSizes reset', () => {
+  it('rebuilds the square grid even when tempTaskGrid holds a split grid', async () => {
+    const squareGrid = makeGrid(projectMetadata.geom, projectMetadata.zoomLevel);
+    const splitGrid = featureCollection(splitTaskGrid(squareGrid, squareGrid.features[0].geometry));
+    // Going back from step 3 leaves the split grid in both taskGrid and tempTaskGrid.
+    const metadata = { ...projectMetadata, taskGrid: splitGrid, tempTaskGrid: splitGrid };
+    const updateMetadata = jest.fn();
+    const user = userEvent.setup();
+    render(
+      <IntlProviders>
+        <SetTaskSizes
+          metadata={metadata}
+          mapObj={{
+            map: {
+              on: jest.fn(),
+              off: jest.fn(),
+              getCanvas: jest.fn(() => ({ style: {} })),
+              getSource: jest.fn(() => ({ setData: jest.fn() })),
+            },
+            draw: {},
+          }}
+          updateMetadata={updateMetadata}
+        />
+      </IntlProviders>,
+    );
+
+    await user.click(screen.getByText(/Reset/));
+
+    expect(updateMetadata).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        taskGrid: squareGrid,
+        tempTaskGrid: squareGrid,
+        tasksNumber: squareGrid.features.length,
+      }),
+    );
+  });
+});
+
+describe('setTaskSizes click to split', () => {
+  it('splits the clicked task using the task grid from metadata', async () => {
+    // maplibre-gl >= 5.x no longer exposes the GeoJSON on the private `_data` property.
+    const gridSource = { setData: jest.fn() };
+    const splitMap = {
+      on: jest.fn(),
+      off: jest.fn(),
+      getCanvas: jest.fn(() => ({ style: {} })),
+      getSource: jest.fn(() => gridSource),
+      addSource: jest.fn(),
+    };
+    const updateMetadata = jest.fn();
+    const user = userEvent.setup();
+    render(
+      <IntlProviders>
+        <SetTaskSizes
+          metadata={projectMetadata}
+          mapObj={{ map: splitMap, draw: {} }}
+          updateMetadata={updateMetadata}
+        />
+      </IntlProviders>,
+    );
+
+    await user.click(screen.getByText(/Click to split/));
+    const clickCall = splitMap.on.mock.calls.find(
+      ([event, layer]) => event === 'click' && layer === 'grid',
+    );
+    expect(clickCall).toBeDefined();
+
+    const clickedTask = projectMetadata.taskGrid.features[0];
+    act(() => clickCall[2]({ features: [clickedTask] }));
+
+    expect(updateMetadata).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        taskGrid: expect.objectContaining({ type: 'FeatureCollection' }),
+        tasksNumber: 4,
+      }),
+    );
+  });
 });
