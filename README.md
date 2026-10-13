@@ -66,9 +66,10 @@ Status | Feature | Release
 ✅ | [Digital Public Goods](https://www.digitalpublicgoods.net/registry) badge display | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Filter by imagery type using API | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Backend support for messaging all Campaign Contributors | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
-✅ | Additional imagery filter under explore projects section |
+✅ | Additional imagery filter under explore projects section | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Allow data downloads for sandbox projects through frontend |
-✅ | Choropleth layer to highlight most invalidated tasks |
+✅ | Sandbox: compare existing OSM data while mapping, and filter for sandbox projects | [v5.6](https://github.com/hotosm/tasking-manager/releases/tag/v5.6)
+✅ | Choropleth layer to highlight most invalidated tasks | [v5.6.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.6.1)
 🔄 | Dependency & Framework health check |
 🔄 | Expanding Project Types beyond basemap features - fAIr validation project, data conflation focused projects
 🔄 | AI Integration: [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment, difficulty estimation, and validation
