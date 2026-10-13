@@ -70,7 +70,7 @@ import {
   ohsomeNowMetadata,
 } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
-import { API_URL, OHSOME_STATS_API_URL, defaultChangesetComment } from '../../config';
+import { API_URL } from '../../config';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { systemLanguages } from './mockData/header';
 import { authLogin, setUser, userRegister } from './mockData/auth';
@@ -361,22 +361,28 @@ const handlers = [
   rest.get(API_URL + 'system/statistics/', (req, res, ctx) => {
     return res(ctx.json(systemStats));
   }),
-  // EXTERNAL API
-  rest.get(`${OHSOME_STATS_API_URL}/stats/${defaultChangesetComment}-%2A`, (req, res, ctx) => {
-    return res(ctx.json(homepageStats));
-  }),
-  rest.get(`${OHSOME_STATS_API_URL}/hot-tm-user`, (req, res, ctx) => {
-    return res(ctx.json(ohsomeNowUserStats));
-  }),
-  rest.get(`${OHSOME_STATS_API_URL}/metadata`, (req, res, ctx) => {
+  // ohsomeNow stats, proxied through the TM backend
+  rest.get(API_URL + 'system/statistics/ohsome/metadata/', (req, res, ctx) => {
     return res(ctx.json(ohsomeNowMetadata));
   }),
-  rest.get(`${OHSOME_STATS_API_URL}/stats`, (req, res, ctx) => {
+  rest.get(API_URL + 'system/statistics/ohsome/hashtags/', (req, res, ctx) => {
+    // ohsomeNow keys hashtag stats by the hashtag that was asked for
+    const hashtags = req.url.searchParams.get('hashtags')?.split(',') ?? [];
+    return res(
+      ctx.json({
+        result: Object.fromEntries(hashtags.map((hashtag) => [hashtag, homepageStats.result])),
+      }),
+    );
+  }),
+  rest.get(API_URL + 'system/statistics/ohsome/', (req, res, ctx) => {
     const hashtag = req.url.searchParams.get('hashtag');
     if (hashtag && !hashtag.includes('*') && !hashtag.includes('%2A')) {
       return res(ctx.json(osmStatsProject));
     }
     return res(ctx.json(updatedOhsomeStats));
+  }),
+  rest.get(API_URL + 'users/statistics/ohsome/', (req, res, ctx) => {
+    return res(ctx.json(ohsomeNowUserStats));
   }),
 
   rest.get('http://127.0.0.1:8111/version', (req, res, ctx) => {
