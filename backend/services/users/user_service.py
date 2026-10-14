@@ -46,6 +46,7 @@ from backend.services.messaging.template_service import (
     get_txt_template,
     template_var_replacing,
 )
+from backend.services.ohsome_service import OhsomeService
 from backend.services.users.osm_service import OSMService
 from backend.services.mapping_levels import MappingLevelService
 from fastapi import HTTPException
@@ -170,18 +171,19 @@ class UserService:
     @staticmethod
     async def get_and_save_stats(user_id: int, db: Database) -> dict:
         hashtag = settings.DEFAULT_CHANGESET_COMMENT.replace("#", "")
-        oh_some_url = (
-            f"{settings.OHSOME_STATS_API_URL}/stats/user?"
-            f"hashtag={hashtag}-%2A&userId={user_id}"
-            f"&topics={settings.OHSOME_STATS_TOPICS}"
-        )
+        oh_some_params = {
+            "hashtag": f"{hashtag}-*",
+            "userId": user_id,
+            "topics": settings.OHSOME_STATS_TOPICS,
+        }
         osm_user_details_url = f"{settings.OSM_SERVER_URL}/api/0.6/user/{user_id}.json"
 
-        oh_some_headers = {"Authorization": f"Basic {settings.OHSOME_STATS_TOKEN}"}
         osm_headers = {"User-Agent": settings.OSM_USER_AGENT}
 
+        oh_some_response = await OhsomeService.request(
+            "/user", oh_some_params, timeout=10.0
+        )
         async with AsyncClient(timeout=10.0) as client:
-            oh_some_response = await client.get(oh_some_url, headers=oh_some_headers)
             changeset_response = await client.get(
                 osm_user_details_url, headers=osm_headers
             )
@@ -191,7 +193,7 @@ class UserService:
             error_msg = (
                 "External-Error in Ohsome API: url=%s status_code=%s response=%s"
                 % (
-                    oh_some_url,
+                    oh_some_response.url,
                     oh_some_response.status_code,
                     oh_some_response.text[:500],
                 )

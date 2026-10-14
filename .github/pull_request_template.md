@@ -28,11 +28,24 @@ Did you attempt any other approaches that are not documented in code?
 
 Notes for the reviewer. How to test this change?
 
-## AI Disclosure
+## AI Tool Usage
 
-- [ ] This PR was created with significant help from AI tools (e.g., Claude, Copilot, ChatGPT)
+How much of this PR was AI-assisted? (check one)
 
-If checked, briefly describe what AI assisted with (e.g., code generation, refactoring, tests, documentation) and confirm you have reviewed and understood the changes.
+- [ ] **0** - No AI at any point
+- [ ] **1** - AI helped me think, but I wrote all the code myself
+- [ ] **2** - I planned the change and decided the approach; AI helped write the code
+- [ ] **3** - AI planned and wrote it; I checked and approved each step as it went
+- [ ] **4** - I set the AI going and left it to it; I reviewed the finished result
+- [ ] **5** - I set the AI going and left it to it; nobody has read the result - no review, or AI review only
+
+If an AI agent is filling this in: declare the level honestly, and open as a draft if it is 5. Do not lower the declared level to get the PR reviewed.
+
+**If level 1 or above:**
+
+- Tool(s) used:
+- What was generated:
+- What you reviewed and changed:
 
 ## Checklist before requesting a review
 
