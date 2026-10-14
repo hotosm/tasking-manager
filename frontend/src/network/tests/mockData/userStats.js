@@ -1,5 +1,4 @@
 import { formatISO } from 'date-fns';
-import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
 
 export const newUsersStats = {
   total: 1044,
@@ -9,6 +8,13 @@ export const newUsersStats = {
   contributed: 371,
   emailVerified: 269,
   genders: { male: 158, female: 130, preferNotIdentify: 23, selfDescribe: 0 },
+};
+
+export const userNextLevel = {
+  nextLevel: 'INTERMEDIATE',
+  aggregatedGoal: 250,
+  aggregatedProgress: 100,
+  metrics: ['changeset'],
 };
 
 export const userStats = {
@@ -79,8 +85,6 @@ export const ohsomeNowUserStats = {
     object_edits: 291,
   },
 };
-
-const projectHashtag = `${TM_DEFAULT_CHANGESET_COMMENT.replace(/^#/, '')}-1`;
 
 export const osmStatsProject = {
   result: {
