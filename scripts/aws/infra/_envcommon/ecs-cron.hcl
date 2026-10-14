@@ -53,7 +53,7 @@ inputs = {
     app_port         = 80
     cpu_architecture = "X86_64"
     image_url        = "ghcr.io/hotosm/tasking-manager/backend"
-    image_tag        = "fastapi"
+    image_tag        = local.environment
     service_name     = format("%s-%s-%s-%s", local.application, local.team, local.environment, "cron")
   }
 
