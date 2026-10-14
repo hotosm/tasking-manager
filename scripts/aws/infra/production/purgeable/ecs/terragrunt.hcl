@@ -92,7 +92,7 @@ inputs = {
   ## Scaling Policy Target Values
   scaling_target_values = {
     container_min_count = 2
-    container_max_count = 9
+    container_max_count = 12
   }
 
   # Merge non-sensetive together
