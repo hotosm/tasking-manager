@@ -33,7 +33,7 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'e
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
-  return fetch(url, {
+  return fetch(url.href, {
     method: method,
     headers: headers,
   })
@@ -58,7 +58,7 @@ export function fetchLocalJSONAPIWithAbort(
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
-  return fetch(url, {
+  return fetch(url.href, {
     method: method,
     headers: headers,
     signal: signal,
@@ -71,7 +71,7 @@ export function fetchLocalJSONAPIWithAbort(
 
 export function pushToLocalJSONAPI(endpoint, payload, token, method = 'POST', language = 'en') {
   const url = new URL(endpoint, API_URL);
-  return fetch(url, {
+  return fetch(url.href, {
     method: method,
     headers: {
       'Content-Type': 'application/json',

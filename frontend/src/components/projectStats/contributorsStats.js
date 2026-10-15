@@ -27,11 +27,9 @@ export default function ContributorsStats({ contributors }) {
   const [levels, setLevels] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      const res = await fetchLocalJSONAPI(`levels/`);
-
-      setLevels(res.levels);
-    })();
+    fetchLocalJSONAPI(`levels/`)
+      .then((res) => setLevels(res.levels))
+      .catch((e) => console.log(e));
   }, []);
 
   const fallbackColors = ['#50C1CB', '#FAA71E', '#53688B', '#F34D47', '#9B59B6', '#2ECC71'];
