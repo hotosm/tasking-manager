@@ -36,8 +36,8 @@ locals {
     NEW_RELIC_ENVIRONMENT         = get_env("NEW_RELIC_ENVIRONMENT", "tasking-manager-production")
     NEW_RELIC_CONFIG_FILE         = get_env("NEW_RELIC_CONFIG_FILE", "newrelic.ini")
     USE_SENTRY                    = get_env("USE_SENTRY", "true")
-    OHSOME_STATS_BASE_URL         = get_env("OHSOME_STATS_BASE_URL", "https://stats.now.ohsome.org")
-    OHSOME_STATS_API_URL          = get_env("OHSOME_STATS_API_URL", "https://stats.now.ohsome.org/api")
+    OHSOME_STATS_BASE_URL         = get_env("OHSOME_STATS_BASE_URL", "https://ohsome-now.heigit.org")
+    OHSOME_STATS_API_URL          = get_env("OHSOME_STATS_API_URL", "https://api.heigit.org/ohsome-now/v1")
     OHSOME_STATS_TOPICS           = get_env("OHSOME_STATS_TOPICS", "changeset,road,waterway,building")
     # Uncomment the following as needed.
     # TM_TASK_AUTOUNLOCK_AFTER    = get_env("TM_TASK_AUTOUNLOCK_AFTER", "2h")

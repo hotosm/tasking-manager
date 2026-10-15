@@ -4,7 +4,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import PartnersProgresBar from './partnersProgresBar';
 import messages from './messages';
-import { OHSOME_STATS_API_URL } from '../../config';
+import api from '../../api/apiClient';
 
 export const Activity = ({ partner }: Object) => {
   const [data, setData] = useState(null);
@@ -23,17 +23,14 @@ export const Activity = ({ partner }: Object) => {
           ?.map((tag) => tag.trim().replace('#', '').toLowerCase())
           ?.join(',') || '';
 
-      const response = await fetch(
-        OHSOME_STATS_API_URL + `/stats/hashtags/${primaryHashtag},${secondaryHashtags}`,
+      const response = await api().get(
+        `system/statistics/ohsome/hashtags/?hashtags=${encodeURIComponent(
+          `${primaryHashtag},${secondaryHashtags}`,
+        )}`,
       );
 
-      if (response.ok) {
-        const jsonData = await response.json();
-        const formattedData = formatData(jsonData.result);
-        setData(formattedData);
-      } else {
-        console.error('Error fetching data:', response.statusText);
-      }
+      const formattedData = formatData(response.data.result);
+      setData(formattedData);
     } catch (error) {
       console.error('Error processing the request:', error);
     }

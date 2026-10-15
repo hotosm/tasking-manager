@@ -31,7 +31,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 Status | Feature | Release
 -------|---------|---------
-✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://stats.now.ohsome.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
+✅ | Up-to-date OSM Statistics: Integrated with [ohsome Now](https://ohsome-now.heigit.org/) for real-time data insights.| Released in [v4.6.2](https://github.com/hotosm/tasking-manager/releases/tag/v4.6.2).
 
 
 ### 2024
@@ -66,18 +66,18 @@ Status | Feature | Release
 ✅ | [Digital Public Goods](https://www.digitalpublicgoods.net/registry) badge display | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Filter by imagery type using API | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Backend support for messaging all Campaign Contributors | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
-🔄 | Allow data downloads for sandbox projects through frontend |
-🔄 | Custom data reference layer for sandbox projects |
-🔄 | Choropleth layer to highlight most invalidated tasks |
+✅ | Additional imagery filter under explore projects section | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
+✅ | Allow data downloads for sandbox projects through frontend |
+✅ | Sandbox: compare existing OSM data while mapping, and filter for sandbox projects | [v5.6](https://github.com/hotosm/tasking-manager/releases/tag/v5.6)
+✅ | Choropleth layer to highlight most invalidated tasks | [v5.6.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.6.1)
 🔄 | Dependency & Framework health check |
-🔄 | Additional imagery filter under explore projects section |
-📅 | Expanding Project Types beyond basemap features
-📅 | AI Integration: task assignment, difficulty estimation, and validation
+🔄 | Expanding Project Types beyond basemap features - fAIr validation project, data conflation focused projects
+🔄 | AI Integration: [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment, difficulty estimation, and validation
+🔄 | Latest Translations Update: Keep all content current with the latest translations.
+📅 | Custom data reference layer for sandbox projects |
 📅 | External tools Integration: MapSwipe, uMap, Maproulette
-📅 | Latest Translations Update: Keep all content current with the latest translations.
 📅 | Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
 📅 | UI/UX Enhancements: Continuous improvements to the user interface and experience.
-
 
 
 
