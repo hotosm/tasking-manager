@@ -3,7 +3,9 @@ from backend.models.postgis.utils import sanitize_markdown
 
 def test_sanitize_markdown_allows_details_and_summary():
     """Collapsible sections in project instructions must survive sanitizing."""
-    text = "<details>\n  <summary>1. Adjust area</summary>\n  <p>Some text</p>\n</details>"
+    text = (
+        "<details>\n  <summary>1. Adjust area</summary>\n  <p>Some text</p>\n</details>"
+    )
 
     result = sanitize_markdown(text)
 
