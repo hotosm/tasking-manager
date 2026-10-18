@@ -387,7 +387,7 @@ class StatsService:
                 COALESCE(m.count, 0) AS mapped,
                 COALESCE(v.count, 0) AS validated,
                 COALESCE(b.count, 0) AS bad_imagery,
-                COALESCE(m.count, 0) + COALESCE(v.count, 0) + COALESCE(b.count, 0) AS total,
+                COALESCE(m.count, 0) + COALESCE(v.count, 0) AS total,
                 COALESCE(m.task_ids, '{}') AS mapped_tasks,
                 COALESCE(v.task_ids, '{}') AS validated_tasks,
                 COALESCE(b.task_ids, '{}') AS bad_imagery_tasks
@@ -396,7 +396,7 @@ class StatsService:
             LEFT JOIN mapped m ON u.id = m.user_id
             LEFT JOIN badimagery b ON u.id = b.user_id
             LEFT JOIN validated v ON u.id = v.user_id
-            ORDER BY total DESC;
+            ORDER BY total DESC, bad_imagery DESC;
         """
 
         # Execute the query
