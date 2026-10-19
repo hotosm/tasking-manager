@@ -17,12 +17,10 @@ depends_on = None
 
 def upgrade():
     op.execute("DROP TRIGGER IF EXISTS tsvectorupdate ON project_info;")
-    op.execute(
-        """
+    op.execute("""
         CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON project_info FOR EACH ROW EXECUTE PROCEDURE
         tsvector_update_trigger(text_searchable, "pg_catalog.english", project_id_str, short_description, description)
-        """
-    )
+        """)
 
 
 def downgrade():
