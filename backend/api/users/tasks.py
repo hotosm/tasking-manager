@@ -10,7 +10,6 @@ from backend.services.users.user_service import UserService
 
 from typing import Optional
 
-
 router = APIRouter(
     prefix="/users",
     tags=["users"],
