@@ -20,7 +20,9 @@ class TestProjectSearchDueDateOrder(unittest.IsolatedAsyncioTestCase):
         with patch.object(
             ProjectSearchService,
             "create_search_query",
-            AsyncMock(return_value=("SELECT p.id FROM projects p WHERE 1=1", "", "", {})),
+            AsyncMock(
+                return_value=("SELECT p.id FROM projects p WHERE 1=1", "", "", {})
+            ),
         ):
             await ProjectSearchService._filter_projects(search_dto, None, db)
 
