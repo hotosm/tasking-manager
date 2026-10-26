@@ -28,7 +28,7 @@ from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import TaskStatus, UserGender
 from backend.models.postgis.task import Task, TaskAction, User
-from backend.models.postgis.utils import timestamp  # noqa: F401
+from backend.models.postgis.utils import escape_like, timestamp  # noqa: F401
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
@@ -796,7 +796,7 @@ class StatsService:
                 )
             """
             )
-            values["country"] = f"%{country}%"
+            values["country"] = f"%{escape_like(country)}%"
 
         final_query = base_query.format(filters=" ".join(filters))
 

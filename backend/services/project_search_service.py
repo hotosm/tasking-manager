@@ -30,6 +30,7 @@ from backend.models.postgis.statuses import (
     TeamRoles,
     UserRole,
 )
+from backend.models.postgis.utils import escape_like
 from backend.services.users.user_service import UserService
 
 # search_cache = TTLCache(maxsize=128, ttl=300)
@@ -627,7 +628,7 @@ class ProjectSearchService:
                     if char not in "@|&!><\\():'"
                 )
                 tsquery_search = " & ".join([x for x in search_text.split(" ") if x])
-                ilike_search = f"%{search_text}%"
+                ilike_search = f"%{escape_like(search_text)}%"
 
                 subquery_filters.append(
                     """
@@ -960,6 +961,9 @@ class ProjectSearchService:
 
     @staticmethod
     async def filter_by_user_permission(user, permission: str, db: Database):
+        # permission is used as a column name below, so only these two are accepted
+        if permission not in ("mapping_permission", "validation_permission"):
+            raise ValueError("Invalid permission")
         if not user or user.role == UserRole.ADMIN.value:
             return "TRUE", {}  # Admin can access all projects
 

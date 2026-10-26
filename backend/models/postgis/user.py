@@ -41,7 +41,7 @@ from backend.models.postgis.statuses import (
     UserGender,
     UserRole,
 )
-from backend.models.postgis.utils import timestamp
+from backend.models.postgis.utils import escape_like, timestamp
 
 
 class User(Base):
@@ -208,7 +208,7 @@ class User(Base):
 
         if query.username:
             filters.append("username ILIKE :username")
-            params["username"] = f"%{query.username}%"
+            params["username"] = f"%{escape_like(query.username)}%"
 
         if query.role:
             roles = query.role.split(",")
@@ -291,7 +291,7 @@ class User(Base):
 
         offset = (page - 1) * 20
         values = {
-            "username": username.lower(),
+            "username": escape_like(username.lower()),
             "project_id": project_id,
             "offset": offset,
         }
@@ -315,7 +315,9 @@ class User(Base):
         total_query = """
             SELECT COUNT(*) FROM users u WHERE u.username ILIKE :username || '%'
         """
-        total = await db.fetch_val(total_query, values={"username": username.lower()})
+        total = await db.fetch_val(
+            total_query, values={"username": escape_like(username.lower())}
+        )
         dto.pagination = Pagination.from_total_count(
             page=page, per_page=20, total=total
         )

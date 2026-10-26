@@ -307,6 +307,21 @@ class TestUsersQueriesUsernameFilterAPI:
         assert resp.json()["users"][0]["username"] == self.user_2.username
         assert resp.json()["users"][0]["projectId"] == self.test_project_id
 
+    async def test_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # "_" would match any single character, including the "x" here, if unescaped
+        row = await return_canned_user(self.db, "userx4", 4444444)
+        await create_canned_user(self.db, row)
+
+        resp = await client.get(
+            "/api/v2/users/queries/filter/user_/",
+            headers={"Authorization": self.user_session_token},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["usernames"] == [self.user_2.username, self.user_3.username]
+        assert resp.json()["pagination"]["total"] == 2
+
 
 @pytest.mark.anyio
 class TestUsersAllAPI:
@@ -449,6 +464,31 @@ class TestUsersAllAPI:
             )
             assert resp.status_code == 200
             assert [u["username"] for u in resp.json()["users"][:3]] == usernames
+
+    async def test_username_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # "_" would match any single character, including the "x" here, if unescaped
+        row = await return_canned_user(self.db, "userx1", 31)
+        await create_canned_user(self.db, row)
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            params={"username": "user_1", "pagination": "false"},
+        )
+        assert resp.status_code == 200
+        usernames = [u["username"] for u in resp.json()["users"]]
+        assert "user_1" in usernames
+        assert "userx1" not in usernames
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            params={"username": "%", "pagination": "false"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["users"] == []
 
 
 @pytest.mark.anyio

@@ -1536,6 +1536,14 @@ class TestProjectsAllAPIAsync:
         assert len(resp_id.json()["results"]) == 1
         assert resp_id.json()["results"][0]["projectId"] == int(self.test_project_1_id)
 
+    async def test_search_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # Unescaped, "%" would match every project name
+        resp = await client.get(self.url, params={"textSearch": "%"})
+        assert resp.status_code == 200
+        assert resp.json()["results"] == []
+
     async def test_returns_projects_filtered_by_country(self, client: AsyncClient):
         # update country column (assuming JSON/array column)
         await self.db.execute(

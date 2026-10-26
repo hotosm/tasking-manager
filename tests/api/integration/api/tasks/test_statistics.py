@@ -298,3 +298,21 @@ class TestTasksStatisticsAPI:
         assert body["taskStats"][0]["mapped"] == 1
         assert body["taskStats"][0]["validated"] == 1
         assert body["taskStats"][0]["badImagery"] == 0
+
+    async def test_country_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        await self.db.execute(
+            "UPDATE projects SET country = ARRAY['Nepal'] WHERE id = :pid",
+            {"pid": self.test_project_1_id},
+        )
+
+        # "_" would match the "e" in Nepal if it weren't escaped
+        start_date = (datetime.now() - timedelta(days=6 * 30)).strftime("%Y-%m-%d")
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.user_session_token}"},
+            params={"startDate": start_date, "country": "N_pal"},
+        )
+        assert resp.status_code == 200
+        assert sum(stat["mapped"] for stat in resp.json()["taskStats"]) == 0
