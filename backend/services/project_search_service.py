@@ -918,7 +918,7 @@ class ProjectSearchService:
                     order_by_clause = f" ORDER BY {percent_validated_sql} ASC"
 
             else:
-                order_by = f"p.{order_by}"
+                order_by = Project.get_order_by_column(order_by)
                 if search_dto.order_by_type == "DESC":
                     order_by += " DESC"
                 order_by_clause = f" ORDER BY {order_by}"

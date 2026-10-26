@@ -1,4 +1,5 @@
 import base64
+import json
 import pytest
 from httpx import AsyncClient
 
@@ -421,6 +422,33 @@ class TestUsersAllAPI:
         assert resp.json()["users"][0]["mappingLevel"] == test_level["name"]
         assert resp.json()["pagination"]["page"] == 1
         assert resp.json()["pagination"]["total"] == 1
+
+    async def test_sorts_users_by_stat_in_requested_direction(
+        self, client: AsyncClient
+    ):
+        for user_id, changesets in [(1, 10), (2, 30), (3, 20)]:
+            await self.db.execute(
+                "INSERT INTO user_stats (user_id, stats, date_obtained) "
+                "VALUES (:user_id, :stats, current_timestamp)",
+                {"user_id": user_id, "stats": json.dumps({"changeset": changesets})},
+            )
+
+        expected = {
+            "desc": ["user_2", "user_3", "user_1"],
+            "DESC": ["user_2", "user_3", "user_1"],
+            "asc": ["user_1", "user_3", "user_2"],
+            "ASC": ["user_1", "user_3", "user_2"],
+            # Anything that isn't a sort direction falls back to ascending.
+            "sideways": ["user_1", "user_3", "user_2"],
+        }
+        for sort_dir, usernames in expected.items():
+            resp = await client.get(
+                self.url,
+                headers={"Authorization": self.user_session_token},
+                params={"sort": "changeset", "sort_dir": sort_dir},
+            )
+            assert resp.status_code == 200
+            assert [u["username"] for u in resp.json()["users"][:3]] == usernames
 
 
 @pytest.mark.anyio
