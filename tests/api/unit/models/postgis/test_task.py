@@ -262,3 +262,9 @@ class TestTask:
         )
         assert task_history["action_text"] == lock_duration
         assert task_history["user_id"] == user_id
+
+    async def test_get_tasks_as_geojson_raises_for_unsupported_order_by(self):
+        with pytest.raises(ValueError):
+            await Task.get_tasks_as_geojson_feature_collection(
+                self.db, self.project_id, order_by="not_a_column"
+            )

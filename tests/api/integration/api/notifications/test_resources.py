@@ -398,6 +398,38 @@ class TestNotificationsAllAPI:
         assert user_messages[0]["subject"] == "Older Test Subject"
         assert user_messages[1]["subject"] == "Test subject"
 
+    async def test_from_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        test_message = await create_canned_message(
+            db=self.db, message_type=MessageType.BROADCAST.value
+        )
+        await self.db.execute(
+            "UPDATE messages SET to_user_id = :to_id, from_user_id = :from_id "
+            "WHERE id = :id",
+            {
+                "to_id": self.test_user.id,
+                "from_id": self.test_user_1.id,
+                "id": int(test_message.id),
+            },
+        )
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.test_user_token}"},
+            params={"from": "Test"},
+        )
+        assert resp.status_code == 200
+        assert len(resp.json()["userMessages"]) == 1
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.test_user_token}"},
+            params={"from": "%"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["userMessages"] == []
+
 
 @pytest.mark.anyio
 class TestNotificationsQueriesCountUnreadAPI:

@@ -91,3 +91,9 @@ class TestProjectService:
         assert project_search_dto is not None
         assert len(project_search_dto.results) > 0
         assert any(p.project_id == self.project_id for p in project_search_dto.results)
+
+    async def test_filter_by_user_permission_rejects_unknown_permission(self):
+        with pytest.raises(ValueError):
+            await ProjectSearchService.filter_by_user_permission(
+                None, "not_a_column", self.db
+            )

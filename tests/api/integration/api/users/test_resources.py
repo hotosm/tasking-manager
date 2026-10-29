@@ -1,4 +1,5 @@
 import base64
+import json
 import pytest
 from httpx import AsyncClient
 
@@ -306,6 +307,21 @@ class TestUsersQueriesUsernameFilterAPI:
         assert resp.json()["users"][0]["username"] == self.user_2.username
         assert resp.json()["users"][0]["projectId"] == self.test_project_id
 
+    async def test_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # "_" would match any single character, including the "x" here, if unescaped
+        row = await return_canned_user(self.db, "userx4", 4444444)
+        await create_canned_user(self.db, row)
+
+        resp = await client.get(
+            "/api/v2/users/queries/filter/user_/",
+            headers={"Authorization": self.user_session_token},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["usernames"] == [self.user_2.username, self.user_3.username]
+        assert resp.json()["pagination"]["total"] == 2
+
 
 @pytest.mark.anyio
 class TestUsersAllAPI:
@@ -421,6 +437,58 @@ class TestUsersAllAPI:
         assert resp.json()["users"][0]["mappingLevel"] == test_level["name"]
         assert resp.json()["pagination"]["page"] == 1
         assert resp.json()["pagination"]["total"] == 1
+
+    async def test_sorts_users_by_stat_in_requested_direction(
+        self, client: AsyncClient
+    ):
+        for user_id, changesets in [(1, 10), (2, 30), (3, 20)]:
+            await self.db.execute(
+                "INSERT INTO user_stats (user_id, stats, date_obtained) "
+                "VALUES (:user_id, :stats, current_timestamp)",
+                {"user_id": user_id, "stats": json.dumps({"changeset": changesets})},
+            )
+
+        expected = {
+            "desc": ["user_2", "user_3", "user_1"],
+            "DESC": ["user_2", "user_3", "user_1"],
+            "asc": ["user_1", "user_3", "user_2"],
+            "ASC": ["user_1", "user_3", "user_2"],
+            # Anything that isn't a sort direction falls back to ascending.
+            "sideways": ["user_1", "user_3", "user_2"],
+        }
+        for sort_dir, usernames in expected.items():
+            resp = await client.get(
+                self.url,
+                headers={"Authorization": self.user_session_token},
+                params={"sort": "changeset", "sort_dir": sort_dir},
+            )
+            assert resp.status_code == 200
+            assert [u["username"] for u in resp.json()["users"][:3]] == usernames
+
+    async def test_username_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # "_" would match any single character, including the "x" here, if unescaped
+        row = await return_canned_user(self.db, "userx1", 31)
+        await create_canned_user(self.db, row)
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            params={"username": "user_1", "pagination": "false"},
+        )
+        assert resp.status_code == 200
+        usernames = [u["username"] for u in resp.json()["users"]]
+        assert "user_1" in usernames
+        assert "userx1" not in usernames
+
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            params={"username": "%", "pagination": "false"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["users"] == []
 
 
 @pytest.mark.anyio

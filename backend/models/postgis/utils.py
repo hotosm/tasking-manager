@@ -158,6 +158,11 @@ def parse_duration(time_str):
     return datetime.timedelta(**time_params)
 
 
+def escape_like(value: str) -> str:
+    """Escapes LIKE/ILIKE wildcards so user input only matches literally"""
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def sanitize_markdown(text: str | None) -> str | None:
     """Convert markdown to sanitized HTML. Returns None for empty input."""
     if not text:

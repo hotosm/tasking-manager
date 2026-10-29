@@ -20,7 +20,7 @@ from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.statuses import TeamRoles
 from backend.models.postgis.task import TaskAction, TaskStatus
-from backend.models.postgis.utils import timestamp
+from backend.models.postgis.utils import escape_like, timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
     clean_html,
@@ -942,7 +942,7 @@ class MessageService:
 
         if from_username:
             filters.append("u.username ILIKE :from_username")
-            params["from_username"] = from_username + "%"
+            params["from_username"] = escape_like(from_username) + "%"
 
         if filters:
             query += " AND " + " AND ".join(filters)
