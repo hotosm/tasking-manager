@@ -6,3 +6,4 @@ These scripts are a collection of scripts doing useful things on the Tasking Man
 * `proj-geom-cleanup.sql` - Clean up script for legacy projects and broken geometries.
 * `restart_table.sh` - Delete and create empty database with PostGIS extension again.
 * `export-import-projects` - Scripts to CSV export and import into the database projects with their dependent data from backups.
+* `bulk-post-project-chat.sql` - Post the same chat message to a list of projects as a given user and create #managers inbox notifications (no emails are sent).
