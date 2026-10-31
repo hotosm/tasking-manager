@@ -170,6 +170,32 @@ describe('License Modal', () => {
   });
 });
 
+describe('LockError for insufficient mapping level', () => {
+  it('should display the specific message for the UserNotCorrectMappingLevel subcode', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockError error="UserNotCorrectMappingLevel" selectedTasks={[1]} />
+      </ReduxIntlProviders>,
+    );
+    expect(
+      screen.getByText(messages.UserNotCorrectMappingLevelError.defaultMessage),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(messages.UserNotCorrectMappingLevelErrorDescription.defaultMessage),
+    ).toBeInTheDocument();
+  });
+
+  it('should fall back to the generic message for unknown subcodes', () => {
+    render(
+      <ReduxIntlProviders>
+        <LockError error="SomethingUnknown" selectedTasks={[1]} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText(messages.lockError.defaultMessage)).toBeInTheDocument();
+    expect(screen.getByText(messages.lockErrorDescription.defaultMessage)).toBeInTheDocument();
+  });
+});
+
 describe('LockError for CannotValidateMappedTask', () => {
   it('should display the Deselect and continue button', () => {
     render(

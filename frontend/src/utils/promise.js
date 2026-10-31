@@ -27,9 +27,6 @@ export async function handleErrors(response, defaultMessage = 'Something went wr
       text = res.SubCode || res.error?.sub_code || response.statusText;
     });
 
-    console.log(text, 'text******');
-
-
   throw Error(text || defaultMessage);
 }
 

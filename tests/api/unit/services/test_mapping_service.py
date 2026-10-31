@@ -79,6 +79,37 @@ class TestMappingService:
 
     @patch.object(ProjectService, "is_user_permitted_to_map")
     @patch.object(MappingService, "get_task")
+    async def test_lock_task_for_mapping_raises_level_subcode_if_user_level_too_low(
+        self, mock_task, mock_project
+    ):
+        # Arrange
+        self.task_stub.locked_by = None
+        mock_task.return_value = self.task_stub
+        mock_project.return_value = (
+            False,
+            MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL,
+        )
+
+        # Act / Assert
+        with pytest.raises(MappingServiceError, match="^UserNotCorrectMappingLevel-"):
+            await MappingService.lock_task_for_mapping(self.lock_task_dto, self.db)
+
+    @patch.object(ProjectService, "is_user_permitted_to_map")
+    @patch.object(MappingService, "get_task")
+    async def test_lock_task_for_mapping_raises_team_subcode_if_user_not_team_member(
+        self, mock_task, mock_project
+    ):
+        # Arrange
+        self.task_stub.locked_by = None
+        mock_task.return_value = self.task_stub
+        mock_project.return_value = (False, MappingNotAllowed.USER_NOT_TEAM_MEMBER)
+
+        # Act / Assert
+        with pytest.raises(MappingServiceError, match="^UserNotTeamMember-"):
+            await MappingService.lock_task_for_mapping(self.lock_task_dto, self.db)
+
+    @patch.object(ProjectService, "is_user_permitted_to_map")
+    @patch.object(MappingService, "get_task")
     async def test_lock_task_for_mapping_raises_error_if_user_has_not_accepted_license(
         self, mock_task, mock_project
     ):
