@@ -917,6 +917,24 @@ class ProjectSearchService:
                 else:
                     order_by_clause = f" ORDER BY {percent_validated_sql} ASC"
 
+            elif order_by == "due_date" and search_dto.order_by_type != "DESC":
+                # Upcoming deadlines first (soonest first), then expired ones
+                # (most recently expired first), then projects without a due
+                # date. due_date is stored as naive UTC.
+                order_by_clause = """
+                    ORDER BY
+                        CASE
+                            WHEN p.due_date IS NULL THEN 2
+                            WHEN p.due_date >= (now() AT TIME ZONE 'UTC') THEN 0
+                            ELSE 1
+                        END ASC,
+                        CASE
+                            WHEN p.due_date >= (now() AT TIME ZONE 'UTC')
+                            THEN p.due_date
+                        END ASC,
+                        p.due_date DESC
+                """
+
             else:
                 order_by = f"p.{order_by}"
                 if search_dto.order_by_type == "DESC":
