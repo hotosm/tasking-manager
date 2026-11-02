@@ -22,7 +22,6 @@ from tests.api.helpers.test_helpers import (
     TEST_USERNAME,
 )
 
-
 TEST_USER_EMAIL = "thinkwheretest@test.com"
 
 
