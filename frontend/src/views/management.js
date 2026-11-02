@@ -39,7 +39,6 @@ export function ManagementPageIndex() {
   );
 }
 const adminOnlyAccessRoutes = [
-  '/manage/campaigns',
   '/manage/partners',
   '/manage/categories',
   '/manage/users',
@@ -50,6 +49,7 @@ const orgAdminOnlyAccessRoutes = [
   '/manage/projects',
   '/manage/organizations',
   '/manage/teams',
+  '/manage/campaigns',
   '/manage/stats',
 ];
 

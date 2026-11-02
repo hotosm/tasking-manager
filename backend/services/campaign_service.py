@@ -1,9 +1,9 @@
+from asyncpg.exceptions import UniqueViolationError
 from backend.models.postgis.message import Message, MessageType
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService
 from databases import Database
 from fastapi import HTTPException
-from sqlalchemy.exc import IntegrityError
 from loguru import logger
 
 from markdown import markdown
@@ -194,6 +194,12 @@ class CampaignService:
                             )
 
                 return campaign_id
+        except UniqueViolationError as e:
+            if e.constraint_name == "campaigns_name_key":
+                raise ValueError("NameExists- Campaign name already exists") from e
+            raise HTTPException(
+                status_code=500, detail="Failed to create campaign."
+            ) from e
         except Exception as e:
             raise HTTPException(
                 status_code=500, detail="Failed to create campaign."
@@ -357,8 +363,10 @@ class CampaignService:
 
             return campaign
 
-        except IntegrityError:
-            raise HTTPException(status_code=409, detail="Campaign name already exists")
+        except UniqueViolationError as e:
+            if e.constraint_name == "campaigns_name_key":
+                raise ValueError("NameExists- Campaign name already exists") from e
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e

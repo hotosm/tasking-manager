@@ -29,7 +29,9 @@ export const CampaignError = ({ error }) => {
       {error && (
         <div className="cf pv2">
           <Alert type="error">
-            <FormattedMessage {...messages.campaignError} />
+            <FormattedMessage
+              {...(error === 'NameExists' ? messages.duplicateCampaign : messages.campaignError)}
+            />
           </Alert>
         </div>
       )}
@@ -40,6 +42,9 @@ export const CampaignError = ({ error }) => {
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
   const userDetails = useSelector((state) => state.auth.userDetails);
+  const isOrgManager = useSelector(
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
+  );
   // TO DO: filter teams of current user
   const [error, loading, campaigns] = useFetch(`campaigns/`);
   const isCampaignsFetched = !loading && !error;
@@ -48,6 +53,7 @@ export function ListCampaigns() {
     <CampaignsManagement
       campaigns={campaigns.campaigns}
       userDetails={userDetails}
+      isOrgManager={isOrgManager}
       isCampaignsFetched={isCampaignsFetched}
     />
   );
@@ -57,10 +63,10 @@ export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
-  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState(null);
 
   const createCampaign = (payload) => {
-    setIsError(false);
+    setError(null);
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
         toast.success(
@@ -73,7 +79,7 @@ export function CreateCampaign() {
         );
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch(() => setIsError(true));
+      .catch((e) => setError(e.message));
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -95,7 +101,11 @@ export function CreateCampaign() {
                   </h3>
                   <CampaignInformation />
                 </div>
-                {isError && <EntityError entity="campaign" />}
+                {error === 'NameExists' ? (
+                  <CampaignError error={error} />
+                ) : (
+                  error && <EntityError entity="campaign" />
+                )}
               </div>
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
@@ -129,17 +139,19 @@ export function EditCampaign({ id: campaignId }) {
   const id = campaignId || routeCampaignId;
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
+  // only admins can edit or delete campaigns; org managers get a read-only view
+  const isAdmin = userDetails.role === 'ADMIN';
   const [error, loading, campaign] = useFetch(`campaigns/${id}/`, id);
   useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
   );
-  const [nameError, setNameError] = useState(false);
+  const [nameError, setNameError] = useState(null);
 
   const updateCampaign = (payload) => {
-    const onSuccess = () => setNameError(false);
-    const onFailure = () => setNameError(true);
+    const onSuccess = () => setNameError(null);
+    const onFailure = (e) => setNameError(e.message);
     return updateEntity(`campaigns/${id}/`, 'campaign', payload, token, onSuccess, onFailure);
   };
 
@@ -151,19 +163,19 @@ export function EditCampaign({ id: campaignId }) {
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
           <FormattedMessage {...messages.manageCampaign} />
         </h3>
-        <DeleteModal id={campaign.id} name={campaign.name} type="campaigns" />
+        {isAdmin && <DeleteModal id={campaign.id} name={campaign.name} type="campaigns" />}
       </div>
       <div className="w-40-l w-100 mt4 fl">
         <CampaignForm
           userDetails={userDetails}
           campaign={campaign}
           updateCampaignAsync={updateCampaignAsync}
-          disabled={error || loading}
-          disableErrorAlert={() => nameError && setNameError(false)}
+          disabled={error || loading || !isAdmin}
+          disableErrorAlert={() => nameError && setNameError(null)}
         />
         <CampaignError error={nameError} />
         <div className="h1"></div>
-        <MessageContributors campaignId={campaign.id} />
+        {isAdmin && <MessageContributors campaignId={campaign.id} />}
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects

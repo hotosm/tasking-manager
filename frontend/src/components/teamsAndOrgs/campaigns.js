@@ -12,7 +12,7 @@ import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 import { TextField } from '../formInputs';
 
-export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }) {
+export function CampaignsManagement({ campaigns, userDetails, isOrgManager, isCampaignsFetched }) {
   const [query, setQuery] = useState('');
 
   const onSearchInputChange = (e) => setQuery(e.target.value);
@@ -29,7 +29,7 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
           values={{ entity: <FormattedMessage {...messages.campaigns} /> }}
         />
       }
-      showAddButton={userDetails.role === 'ADMIN'}
+      showAddButton={userDetails.role === 'ADMIN' || isOrgManager}
       managementView
     >
       <ReactPlaceholder
@@ -68,6 +68,7 @@ CampaignsManagement.propTypes = {
   userDetails: PropTypes.shape({
     role: PropTypes.string,
   }),
+  isOrgManager: PropTypes.bool,
   isCampaignsFetched: PropTypes.bool,
 };
 

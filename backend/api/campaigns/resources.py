@@ -69,7 +69,7 @@ async def update_campaign(
     campaign_dto: CampaignDTO,
     request: Request,
     campaign_id: int,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -135,17 +135,6 @@ async def update_campaign(
             description: Internal Server Error
     """
     try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            user.id, db
-        )
-        if len(orgs_dto.organisations) < 1:
-            raise ValueError("User not a Org Manager")
-    except ValueError as e:
-        error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
-    try:
         campaign = await CampaignService.update_campaign(campaign_dto, campaign_id, db)
         return JSONResponse(
             content={"Success": "Campaign {} updated".format(campaign.id)},
@@ -154,7 +143,7 @@ async def update_campaign(
     except ValueError:
         error_msg = "Campaign PATCH - name already exists"
         return JSONResponse(
-            content={"Error": error_msg, "SubCode": "NameExists"}, status_code=400
+            content={"Error": error_msg, "SubCode": "NameExists"}, status_code=409
         )
 
 
@@ -162,7 +151,7 @@ async def update_campaign(
 async def delete_campaign(
     request: Request,
     campaign_id: int,
-    user: AuthUserDTO = Depends(login_required),
+    user: AuthUserDTO = Depends(admin_only),
     db: Database = Depends(get_db),
 ):
     """
@@ -203,18 +192,6 @@ async def delete_campaign(
         500:
             description: Internal Server Error
     """
-    try:
-        orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name, db
-        )
-        if len(orgs_dto.organisations) < 1:
-            raise ValueError("User not a Org Manager")
-    except ValueError as e:
-        error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
-        return JSONResponse(
-            content={"Error": error_msg, "SubCode": "UserNotPermitted"}, status_code=403
-        )
-
     campaign = await CampaignService.get_campaign(campaign_id, db)
     await CampaignService.delete_campaign(campaign.id, db)
     return JSONResponse(content={"Success": "Campaign deleted"}, status_code=200)
@@ -305,10 +282,14 @@ async def create_campaign(
     """
     try:
         orgs_dto = await OrganisationService.get_organisations_managed_by_user_as_dto(
-            request.user.display_name, db
+            user.id, db
         )
         if len(orgs_dto.organisations) < 1:
             raise ValueError("User not a Org Manager")
+        # Admins get every organisation here, so this only restricts org managers
+        managed_org_ids = {org.organisation_id for org in orgs_dto.organisations}
+        if not set(campaign_dto.organisations or []).issubset(managed_org_ids):
+            raise ValueError("User not a manager of all the given organisations")
     except ValueError as e:
         error_msg = f"CampaignsAllAPI POST: {str(e)}"
         return JSONResponse(
@@ -319,8 +300,9 @@ async def create_campaign(
         campaign_id = await CampaignService.create_campaign(campaign_dto, db)
         return JSONResponse(content={"campaignId": campaign_id}, status_code=201)
     except ValueError as e:
+        sub_code, error = str(e).split("-", 1)
         return JSONResponse(
-            content={"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]},
+            content={"Error": error.strip(), "SubCode": sub_code},
             status_code=409,
         )
 

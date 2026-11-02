@@ -17,9 +17,9 @@ export function ManagementMenu({ isAdmin }: Object) {
     'levels',
   ];
 
-  // non admin users can only see the three first items
+  // non admin users can only see the four first items
   if (!isAdmin) {
-    links = links.slice(0, 3);
+    links = links.slice(0, 4);
   }
 
   let items = links.map((item) => ({
