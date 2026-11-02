@@ -11,6 +11,7 @@ from backend.exceptions import get_message_from_sub_code
 # async helpers - adjust import path if your project places them elsewhere
 from tests.api.helpers.test_helpers import (
     create_canned_organisation,
+    return_canned_organisation,
     create_canned_user,
     return_canned_user,
     return_canned_campaign,
@@ -60,6 +61,19 @@ class TestCampaignsRestAPI:
         # non-admin user
         self.test_non_admin = await create_canned_user(self.db)
 
+        # organisation manager (non-admin)
+        self.test_org_manager = await return_canned_user(
+            self.db, "test_org_manager", 22222222
+        )
+        self.test_org_manager = await create_canned_user(self.db, self.test_org_manager)
+        await self.db.execute(
+            """
+            INSERT INTO organisation_managers (organisation_id, user_id)
+            VALUES (:organisation_id, :user_id)
+            """,
+            {"organisation_id": self.test_org.id, "user_id": self.test_org_manager.id},
+        )
+
         # create campaign
         self.test_campaign = await create_canned_campaign(self.db)
 
@@ -77,6 +91,14 @@ class TestCampaignsRestAPI:
         )
         self.non_admin_token = base64.b64encode(
             self.non_admin_raw_token.encode("utf-8")
+        ).decode("utf-8")
+        self.org_manager_raw_token = (
+            AuthenticationService.generate_session_token_for_user(
+                self.test_org_manager.id
+            )
+        )
+        self.org_manager_token = base64.b64encode(
+            self.org_manager_raw_token.encode("utf-8")
         ).decode("utf-8")
 
     # get
@@ -130,8 +152,24 @@ class TestCampaignsRestAPI:
         response = await client.patch(url, json=payload, headers=auth_header)
         assert response.status_code == 403
         body = response.json()
-        assert body["Error"] == "CampaignsRestAPI PATCH: User not a Org Manager"
-        assert body["SubCode"] == "UserNotPermitted"
+        assert body["error"]["message"] == "Admin access required"
+
+    async def test_update_existent_campaign_by_org_manager_fails(
+        self, client: AsyncClient
+    ):
+        logger.info("PATCH campaign by org manager (should fail)")
+        url = f"{self.endpoint_url}{self.test_campaign.id}/"
+        auth_header = {"Authorization": f"Token {self.org_manager_token}"}
+        payload = {
+            "logo": None,
+            "name": NEW_CAMPAIGN_NAME,
+            "organisations": [],
+            "url": None,
+        }
+        response = await client.patch(url, json=payload, headers=auth_header)
+        assert response.status_code == 403
+        body = response.json()
+        assert body["error"]["message"] == "Admin access required"
 
     async def test_update_existent_campaign_by_unauthenticated_user_fails(
         self, client: AsyncClient
@@ -162,6 +200,19 @@ class TestCampaignsRestAPI:
         response = await client.patch(url, json=payload, headers=auth_header)
         # depending on your FastAPI validation this could be 400 or 422; original test expected 400.
         assert response.status_code in (400, 422)
+
+    async def test_update_campaign_with_existing_name_fails(self, client: AsyncClient):
+        logger.info("PATCH campaign to a name already in use (should return 409)")
+        other_campaign = await create_canned_campaign(
+            self.db, return_canned_campaign(id=2, name=NEW_CAMPAIGN_NAME)
+        )
+        url = f"{self.endpoint_url}{other_campaign.id}/"
+        auth_header = {"Authorization": f"Token {self.admin_token}"}
+        payload = {"name": self.test_campaign.name}
+        response = await client.patch(url, json=payload, headers=auth_header)
+        assert response.status_code == 409
+        body = response.json()
+        assert body["SubCode"] == "NameExists"
 
     async def test_update_non_existent_campaign_by_id_fails(self, client: AsyncClient):
         logger.info("PATCH non-existent campaign (should return 404)")
@@ -198,8 +249,16 @@ class TestCampaignsRestAPI:
         response = await client.delete(url, headers=auth_header)
         assert response.status_code == 403
         body = response.json()
-        assert body["Error"] == "CampaignsRestAPI DELETE: User not a Org Manager"
-        assert body["SubCode"] == "UserNotPermitted"
+        assert body["error"]["message"] == "Admin access required"
+
+    async def test_delete_campaign_by_org_manager_fails(self, client: AsyncClient):
+        logger.info("DELETE campaign by org manager (should fail)")
+        url = f"{self.endpoint_url}{self.test_campaign.id}/"
+        auth_header = {"Authorization": f"Token {self.org_manager_token}"}
+        response = await client.delete(url, headers=auth_header)
+        assert response.status_code == 403
+        body = response.json()
+        assert body["error"]["message"] == "Admin access required"
 
     async def test_delete_campaign_by_unauthenticated_user_fails(
         self, client: AsyncClient
@@ -241,6 +300,25 @@ class TestCampaignsAllAPI:
         )
         self.session_token = base64.b64encode(raw_token.encode("utf-8")).decode("utf-8")
 
+        # organisation manager (non-admin) of test_org
+        self.test_org_manager = await return_canned_user(
+            self.db, "test_org_manager", 22222222
+        )
+        self.test_org_manager = await create_canned_user(self.db, self.test_org_manager)
+        await self.db.execute(
+            """
+            INSERT INTO organisation_managers (organisation_id, user_id)
+            VALUES (:organisation_id, :user_id)
+            """,
+            {"organisation_id": self.test_org.id, "user_id": self.test_org_manager.id},
+        )
+        org_manager_raw_token = AuthenticationService.generate_session_token_for_user(
+            self.test_org_manager.id
+        )
+        self.org_manager_token = base64.b64encode(
+            org_manager_raw_token.encode("utf-8")
+        ).decode("utf-8")
+
     # get
     async def test_get_existent_campaigns_returns_campaigns_list(
         self, client: AsyncClient
@@ -277,6 +355,57 @@ class TestCampaignsAllAPI:
         )
         assert response.status_code == 201
         assert response.json() == {"campaignId": 1}
+
+    async def test_create_new_campaign_by_org_manager_passes(self, client: AsyncClient):
+        logger.info("POST create campaign by org manager")
+        auth_header = {"Authorization": f"Token {self.org_manager_token}"}
+        payload = {
+            "logo": None,
+            "name": NEW_CAMPAIGN_NAME,
+            "organisations": [self.test_org.id],
+            "url": None,
+        }
+        response = await client.post(
+            self.endpoint_url, json=payload, headers=auth_header
+        )
+        assert response.status_code == 201
+        campaign_id = response.json()["campaignId"]
+        response = await client.get(
+            f"/api/v2/organisations/{self.test_org.id}/campaigns/"
+        )
+        assert response.json() == {
+            "campaigns": [{"id": campaign_id, "name": NEW_CAMPAIGN_NAME}]
+        }
+
+    async def test_create_new_campaign_for_unmanaged_organisation_by_org_manager_fails(
+        self, client: AsyncClient
+    ):
+        logger.info("POST create campaign for an org the user doesn't manage")
+        other_org = await create_canned_organisation(
+            self.db,
+            return_canned_organisation(
+                org_id=24, org_name="Other Org", org_slug="other-org"
+            ),
+        )
+        auth_header = {"Authorization": f"Token {self.org_manager_token}"}
+        payload = {
+            "logo": None,
+            "name": NEW_CAMPAIGN_NAME,
+            "organisations": [self.test_org.id, other_org.id],
+            "url": None,
+        }
+        response = await client.post(
+            self.endpoint_url, json=payload, headers=auth_header
+        )
+        assert response.status_code == 403
+        body = response.json()
+        assert (
+            body["Error"]
+            == "CampaignsAllAPI POST: User not a manager of all the given organisations"
+        )
+        assert body["SubCode"] == "UserNotPermitted"
+        response = await client.get(self.endpoint_url)
+        assert response.json() == {"campaigns": []}
 
     async def test_create_new_campaign_by_non_admin_fails(self, client: AsyncClient):
         logger.info("POST create campaign by non-admin (should fail)")
@@ -341,17 +470,23 @@ class TestCampaignsAllAPI:
 
     async def test_create_already_existing_campaign_fails(self, client: AsyncClient):
         logger.info("POST create campaign which already exists (should return 409)")
-        test_campaign = return_canned_campaign()
-        await create_canned_campaign(self.db, test_campaign)
         payload = {
-            "logo": test_campaign.logo,
-            "name": test_campaign.name,
+            "logo": None,
+            "name": CAMPAIGN_NAME,
             "organisations": [self.test_org.id],
-            "url": test_campaign.url,
+            "url": None,
         }
         auth_header = {"Authorization": f"Token {self.session_token}"}
+        # create the first one through the API so the id comes from the sequence
+        # and the second insert can only clash on the name
         response = await client.post(
             self.endpoint_url, json=payload, headers=auth_header
         )
+        assert response.status_code == 201
+        response = await client.post(
+            self.endpoint_url, json=payload, headers=auth_header
+        )
+        assert response.status_code == 409
         body = response.json()
-        assert body["error"]["message"] == "Failed to create campaign."
+        assert body["Error"] == "Campaign name already exists"
+        assert body["SubCode"] == "NameExists"

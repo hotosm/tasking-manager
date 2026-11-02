@@ -34,6 +34,32 @@ describe('CampaignsManagement component', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders the new campaign button for organisation managers', () => {
+    renderWithRouter(
+      <IntlProviders>
+        <CampaignsManagement
+          userDetails={{ role: 'MAPPER' }}
+          isOrgManager={true}
+          isCampaignsFetched={true}
+        />
+      </IntlProviders>,
+    );
+    expect(screen.getByRole('button', { name: /new/i })).toBeInTheDocument();
+  });
+
+  it('does not render the new campaign button for users who are not admins or org managers', () => {
+    renderWithRouter(
+      <IntlProviders>
+        <CampaignsManagement
+          userDetails={{ role: 'MAPPER' }}
+          isOrgManager={false}
+          isCampaignsFetched={true}
+        />
+      </IntlProviders>,
+    );
+    expect(screen.queryByRole('button', { name: /new/i })).not.toBeInTheDocument();
+  });
+
   it('does not render loading placeholder after API is fetched', () => {
     const { container } = renderWithRouter(
       <IntlProviders>

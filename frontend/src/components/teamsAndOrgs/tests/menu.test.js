@@ -22,7 +22,7 @@ describe('ManagementMenu items for', () => {
     expect(screen.getByText('Teams').closest('a').href).toContain('/teams');
   });
 
-  it('non ADMIN users can see only Statistics and other 4 items', () => {
+  it('non ADMIN users can see only Statistics and other 5 items', () => {
     renderWithRouter(
       <ReduxIntlProviders>
         <ManagementMenu isAdmin={false} />
@@ -33,9 +33,9 @@ describe('ManagementMenu items for', () => {
     expect(screen.getByText('Projects').closest('a').href).toContain('/projects');
     expect(screen.getByText('Organizations').closest('a').href).toContain('/organisations');
     expect(screen.getByText('Teams').closest('a').href).toContain('/teams');
+    expect(screen.getByText('Campaigns').closest('a').href).toContain('/campaigns');
     expect(screen.queryByText('Users')).not.toBeInTheDocument();
     expect(screen.queryByText('Licenses')).not.toBeInTheDocument();
-    expect(screen.queryByText('Campaigns')).not.toBeInTheDocument();
     expect(screen.queryByText('Categories')).not.toBeInTheDocument();
   });
 });

@@ -1,7 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import toast from 'react-hot-toast';
+import { rest } from 'msw';
 
+import { store } from '../../store';
+import { API_URL } from '../../config';
 import {
   createComponentWithMemoryRouter,
   IntlProviders,
@@ -9,11 +12,14 @@ import {
   renderWithRouter,
 } from '../../utils/testWithIntl';
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
-import { setupFaultyHandlers } from '../../network/tests/server';
+import { server, setupFaultyHandlers } from '../../network/tests/server';
 
 jest.mock('react-hot-toast', () => ({
   success: jest.fn(),
 }));
+
+const nameExistsResponse = (req, res, ctx) =>
+  res(ctx.status(409), ctx.json({ Error: 'Campaign name already exists', SubCode: 'NameExists' }));
 
 describe('ListCampaigns', () => {
   it('should show loading placeholder when licenses are being fetched', () => {
@@ -49,6 +55,15 @@ describe('CampaignError', () => {
       </IntlProviders>,
     );
     expect(screen.getByText('There was an error saving this campaign.')).toBeInTheDocument();
+  });
+
+  it('should display the duplicate name message if the campaign name already exists', () => {
+    render(
+      <IntlProviders>
+        <CampaignError error="NameExists" />
+      </IntlProviders>,
+    );
+    expect(screen.getByText('A campaign with the same name already exists')).toBeInTheDocument();
   });
 });
 
@@ -128,10 +143,33 @@ describe('CreateCampaign', () => {
     );
   });
 
+  it('should display the duplicate name message if the campaign name already exists', async () => {
+    server.use(rest.post(API_URL + 'campaigns', nameExistsResponse));
+    const { user } = createComponentWithMemoryRouter(
+      <ReduxIntlProviders>
+        <CreateCampaign />
+      </ReduxIntlProviders>,
+    );
+    const inputText = screen.getByRole('textbox', { name: /name/i });
+    await user.type(inputText, 'Existing Campaign Name');
+    await user.click(screen.getByRole('button', { name: /create campaign/i }));
+    expect(
+      await screen.findByText('A campaign with the same name already exists'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Failed to create campaign/i)).not.toBeInTheDocument();
+  });
+
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
 });
 
+const setUserDetails = (userDetails) =>
+  act(() => {
+    store.dispatch({ type: 'SET_USER_DETAILS', userDetails });
+  });
+
 describe('EditCampaign', () => {
+  beforeEach(() => setUserDetails({ role: 'ADMIN' }));
+
   const setup = () => {
     const { user, container, history } = renderWithRouter(
       <ReduxIntlProviders>
@@ -254,9 +292,45 @@ describe('EditCampaign', () => {
       expect(screen.getByText(/There was an error saving this campaign./i)).toBeInTheDocument();
     });
   });
+
+  it('should display the duplicate name message when renaming to an existing name', async () => {
+    server.use(rest.patch(API_URL + 'campaigns/:id', nameExistsResponse));
+    const { user } = setup();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    const inputText = screen.getByRole('textbox', { name: /name/i });
+    await user.clear(inputText);
+    await user.type(inputText, 'Existing Campaign Name');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    expect(
+      await screen.findByText('A campaign with the same name already exists'),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('EditCampaign for non-admin organisation managers', () => {
+  beforeEach(() => setUserDetails({ role: 'MAPPER' }));
+
+  it('should display the campaign and its projects as read-only', async () => {
+    renderWithRouter(
+      <ReduxIntlProviders>
+        <EditCampaign id={123} />
+      </ReduxIntlProviders>,
+    );
+    expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /name/i }).value).toBe('Campaign Name 123');
+    });
+    expect(screen.getByRole('textbox', { name: /name/i })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
+    expect(screen.queryByText('Message contributors')).not.toBeInTheDocument();
+  });
 });
 
 describe('Delete Campaign', () => {
+  beforeEach(() => setUserDetails({ role: 'ADMIN' }));
+
   const setup = () => {
     const { user } = renderWithRouter(
       <ReduxIntlProviders>
