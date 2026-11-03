@@ -205,6 +205,8 @@ def sanitize_markdown(text: str | None) -> str | None:
         "caption",
         "col",
         "colgroup",
+        "details",
+        "summary",
     ]
 
     allowed_attributes = {
