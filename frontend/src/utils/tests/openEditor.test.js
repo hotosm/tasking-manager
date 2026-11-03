@@ -10,6 +10,8 @@ import {
   formatCustomUrl,
   getImageryInfo,
   formatExtraParams,
+  loadImageryonJosm,
+  JOSM_DEFAULT_TMS_MAX_ZOOM,
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
@@ -236,5 +238,38 @@ describe('formatExtraParams', () => {
     expect(
       formatExtraParams('&validationDisable=crossing_ways/highway*&photo_user=user1,user2'),
     ).toBe('&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2');
+  });
+});
+
+describe('loadImageryonJosm', () => {
+  let fetchMock;
+
+  beforeEach(() => {
+    fetchMock = jest.fn().mockResolvedValue({ status: 200 });
+    global.fetch = fetchMock;
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const josmImageryUrl = () => new URL(fetchMock.mock.calls[0][0]);
+
+  it('defaults max_zoom for high-resolution TMS imagery that omits a zoom tag (#7228)', () => {
+    // OpenAerialMap-style custom imagery with no [min:max] zoom tag. Without a
+    // default, JOSM caps the layer at zoom 18 and downgrades the imagery.
+    loadImageryonJosm({ imagery: 'https://oam.example/tiles/{zoom}/{x}/{y}.png' });
+    expect(josmImageryUrl().searchParams.get('max_zoom')).toBe(String(JOSM_DEFAULT_TMS_MAX_ZOOM));
+  });
+
+  it('keeps an explicit max_zoom from the imagery URL', () => {
+    loadImageryonJosm({ imagery: 'tms[0:20]https://oam.example/tiles/{zoom}/{x}/{y}.png' });
+    expect(josmImageryUrl().searchParams.get('max_zoom')).toBe('20');
+  });
+
+  it('does not add a max_zoom for a built-in imagery id', () => {
+    loadImageryonJosm({ imagery: 'Maxar-Premium' });
+    expect(josmImageryUrl().searchParams.has('max_zoom')).toBe(false);
+    expect(josmImageryUrl().searchParams.get('id')).toBe('Maxar-Premium');
   });
 });
