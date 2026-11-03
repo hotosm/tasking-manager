@@ -341,6 +341,12 @@ on your terminal (with the OS user that is the owner of the database):
 
 `psql -d <your_database> -c "UPDATE users set role = 1 where username = '<your_osm_username>'"`
 
+If you are using the standard docker set up, you can run the following command on your terminal:
+
+`docker compose exec tm-db psql -d tasking-manager -U tm -c "UPDATE users SET role = 1 WHERE username = 'YOUR_OSM_USERNAME'"`
+
+assuming the defaults for POSTGRES_DB (`tasking-manager`) and POSTGRES_USER (`tm`) in your .env variables are unchanged
+
 ## API
 
 If you plan to only work on the API you only have to build the backend
