@@ -83,6 +83,7 @@ class TestProjectsContributionsAPI:
         assert test_user_contribution["mapped"] == 1
         assert test_user_contribution["validated"] == 1
         assert test_user_contribution["badImagery"] == 0
+        assert test_user_contribution["total"] == 2
         assert test_user_contribution["mappedTasks"] == [2]
         assert test_user_contribution["badImageryTasks"] == []
         assert test_user_contribution["validatedTasks"] == [1]
@@ -139,6 +140,7 @@ class TestProjectsContributionsAPI:
         assert author_contrib["mapped"] == 0
         assert author_contrib["validated"] == 0
         assert author_contrib["badImagery"] == 1
+        assert author_contrib["total"] == 0
         assert author_contrib["mappedTasks"] == []
         assert author_contrib["validatedTasks"] == []
         assert author_contrib["badImageryTasks"] == [2]
