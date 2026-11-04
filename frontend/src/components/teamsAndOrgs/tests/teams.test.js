@@ -47,11 +47,7 @@ describe('test TeamBox', () => {
     expect(testInstance.findByType('div').children).toEqual(['Contributors']);
   });
   it('does not have img', () => {
-    expect(() =>
-      testInstance
-        .findAllByType('img')
-        .toThrow(new Error('No instances found with node type: "img"')),
-    );
+    expect(testInstance.findAllByType('img')).toHaveLength(0);
   });
 });
 
@@ -120,17 +116,9 @@ describe('test TeamBoxList without mapping and validation teams', () => {
   ];
   const element = createComponentWithIntl(<TeamsBoxList teams={teams} />);
   const testInstance = element.root;
-  it('Mapping and validation sections are present', () => {
-    expect(() =>
-      testInstance
-        .findAllByType('h4')
-        .toThrow(new Error('No instances found with node type: "h4"')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByType(TeamBox)
-        .toThrow(new Error('No instances found with node type: "TeamBox"')),
-    );
+  it('Mapping and validation sections are not present', () => {
+    expect(testInstance.findAllByType('h4')).toHaveLength(0);
+    expect(testInstance.findAllByType(TeamBox)).toHaveLength(0);
   });
 });
 
