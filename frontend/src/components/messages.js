@@ -4,6 +4,10 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on general components.
  */
 export default defineMessages({
+  remove: {
+    id: 'dropdown.option.remove',
+    defaultMessage: 'Remove',
+  },
   language: {
     id: 'localeSelect.language',
     defaultMessage: 'Language',
