@@ -10,7 +10,9 @@ import {
   renderWithRouter,
 } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
-import { OrgsManagement, OrganisationCard } from '../organisations';
+import { Form } from 'react-final-form';
+import { render, act } from '@testing-library/react';
+import { OrgsManagement, OrganisationCard, OrgInformation } from '../organisations';
 import { AddButton } from '../management';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -191,5 +193,31 @@ describe('OrgsManagement with', () => {
     await user.type(textField, 'not Singapore');
     expect(screen.queryByRole('heading', { name: 'Singapore Red Cross' })).not.toBeInTheDocument();
     expect(screen.queryByText('No organizations were found.')).toBeInTheDocument();
+  });
+});
+
+it('OrgInformation labels are linked to their inputs', () => {
+  act(() => {
+    store.dispatch({ type: 'SET_USER_DETAILS', userDetails: { role: 'ADMIN' } });
+  });
+  render(
+    <ReduxIntlProviders>
+      <MemoryRouter>
+        <Form
+          onSubmit={jest.fn()}
+          initialValues={{ type: 'FULL_FEE' }}
+          render={() => <OrgInformation hasSlug={false} formState={{ type: 'FULL_FEE' }} />}
+        />
+      </MemoryRouter>
+    </ReduxIntlProviders>,
+  );
+  expect(screen.getByLabelText('Name')).toHaveAttribute('name', 'name');
+  expect(screen.getByLabelText('Website')).toHaveAttribute('name', 'url');
+  expect(screen.getByLabelText('Description')).toHaveAttribute('name', 'description');
+  expect(screen.getByLabelText('Image')).toBeInTheDocument();
+  expect(screen.getByLabelText('Type')).toHaveAttribute('id', 'org-type');
+  expect(screen.getByLabelText('Subscribed tier')).toHaveAttribute('id', 'org-tier');
+  act(() => {
+    store.dispatch({ type: 'SET_USER_DETAILS', userDetails: {} });
   });
 });

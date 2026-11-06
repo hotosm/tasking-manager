@@ -219,10 +219,17 @@ export function OrgInformation({ hasSlug, formState }) {
   return (
     <>
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="org-name">
           <FormattedMessage {...messages.name} />
         </label>
-        <Field name="name" component="input" type="text" className={fieldClasses} required />
+        <Field
+          id="org-name"
+          name="name"
+          component="input"
+          type="text"
+          className={fieldClasses}
+          required
+        />
       </div>
       {hasSlug ? (
         <div className="cf">
@@ -261,22 +268,27 @@ export function OrgInformation({ hasSlug, formState }) {
         <></>
       )}
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="org-url">
           <FormattedMessage {...messages.website} />
         </label>
-        <Field name="url" component="input" type="text" className={fieldClasses} />
+        <Field id="org-url" name="url" component="input" type="text" className={fieldClasses} />
       </div>
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="org-description">
           <FormattedMessage {...messages.description} />
         </label>
-        <Field name="description" component="textarea" className={fieldClasses} />
+        <Field
+          id="org-description"
+          name="description"
+          component="textarea"
+          className={fieldClasses}
+        />
       </div>
       {userDetails &&
         userDetails.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
           <>
             <div className="cf">
-              <label className={labelClasses}>
+              <label className={labelClasses} htmlFor="org-type">
                 <FormattedMessage {...messages.type} />
               </label>
               <Field name="type" className={fieldClasses} validate={validateRequired}>
@@ -284,6 +296,7 @@ export function OrgInformation({ hasSlug, formState }) {
                   <>
                     <Select
                       classNamePrefix="react-select"
+                      inputId="org-type"
                       isClearable={false}
                       options={TYPE_OPTIONS}
                       placeholder={getTypePlaceholder(props.input.value)}
@@ -299,7 +312,7 @@ export function OrgInformation({ hasSlug, formState }) {
             </div>
             {['DISCOUNTED', 'FULL_FEE'].includes(formState.type) && (
               <div className="cf">
-                <label className={labelClasses}>
+                <label className={labelClasses} htmlFor="org-tier">
                   <FormattedMessage {...messages.subscribedTier} />
                 </label>
                 <Field name="subscriptionTier" className={fieldClasses} validate={validateRequired}>
@@ -307,6 +320,7 @@ export function OrgInformation({ hasSlug, formState }) {
                     <>
                       <Select
                         classNamePrefix="react-select"
+                        inputId="org-tier"
                         isClearable={false}
                         options={TIER_OPTIONS}
                         placeholder={getTierPlaceholder(props.input.value)}
@@ -324,7 +338,7 @@ export function OrgInformation({ hasSlug, formState }) {
           </>
         )}
       <div className="cf">
-        <label className={labelClasses}>
+        <label className={labelClasses} htmlFor="org-logo">
           <FormattedMessage {...messages.image} />
         </label>
         {IMAGE_UPLOAD_SERVICE ? (
@@ -332,6 +346,7 @@ export function OrgInformation({ hasSlug, formState }) {
             {(fieldProps) => (
               <>
                 <input
+                  id="org-logo"
                   type="file"
                   multiple={false}
                   accept="image/png, image/jpeg, image/webp"
@@ -355,7 +370,7 @@ export function OrgInformation({ hasSlug, formState }) {
             )}
           </Field>
         ) : (
-          <Field name="logo" component="input" type="text" className={fieldClasses} />
+          <Field id="org-logo" name="logo" component="input" type="text" className={fieldClasses} />
         )}
       </div>
     </>
