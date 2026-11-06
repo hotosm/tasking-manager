@@ -373,7 +373,8 @@ class MessageService:
                 try:
                     user = await UserService.get_user_by_id(user_id, db)
                     if user.username in usernames:
-                        break
+                        # Already notified by the mention above.
+                        continue
                 except NotFound:
                     continue
 

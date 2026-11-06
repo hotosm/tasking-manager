@@ -131,6 +131,55 @@ class TestMessageService:
         # Assert
         mock_push_message.assert_called()
 
+    @patch.object(MessageService, "_push_messages", new_callable=AsyncMock)
+    async def test_comment_notifies_contributors_after_a_mentioned_one(
+        self, mock_push_message
+    ):
+        # Arrange: two other contributors on the task, and the comment
+        # mentions the one that is returned first.
+        canned_project, canned_author, canned_project_id = await create_canned_project(
+            self.db
+        )
+        mentioned = await create_canned_user(
+            self.db,
+            await return_canned_user(username="MENTIONED_USER", id=1001, db=self.db),
+        )
+        other = await create_canned_user(
+            self.db,
+            await return_canned_user(username="OTHER_CONTRIBUTOR", id=1002, db=self.db),
+        )
+        for user_id in (mentioned.id, other.id):
+            await self.db.execute(
+                """
+                INSERT INTO task_history
+                    (project_id, task_id, action, action_text, action_date, user_id)
+                VALUES
+                    (:project_id, 1, 'STATE_CHANGE', 'MAPPED', current_timestamp,
+                     :user_id)
+                """,
+                {"project_id": int(canned_project_id), "user_id": user_id},
+            )
+
+        # Act
+        await MessageService.send_message_after_comment(
+            canned_author.id,
+            "@MENTIONED_USER Test message",
+            1,
+            int(canned_project_id),
+            db=self.db,
+        )
+
+        # Assert: the mentioned contributor only gets the mention, and the
+        # other contributor still gets the task comment notification.
+        comment_recipients = [
+            m["message"].to_user_id
+            for call in mock_push_message.await_args_list
+            for m in call.args[0]
+            if m["message"].message_type == MessageType.TASK_COMMENT_NOTIFICATION.value
+        ]
+        assert other.id in comment_recipients
+        assert mentioned.id not in comment_recipients
+
     @patch.object(SMTPService, "_send_message", new_callable=AsyncMock)
     async def test_send_project_transfer_message(self, mock_send_message):
         test_project, test_author, test_project_id = await create_canned_project(
