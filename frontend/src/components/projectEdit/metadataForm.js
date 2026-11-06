@@ -120,11 +120,12 @@ export const MetadataForm = () => {
           ))}
         </div>
         <div className="w-50 fl">
-          <label className={styleClasses.labelClass}>
+          <label className={styleClasses.labelClass} htmlFor="project-id-presets">
             <FormattedMessage {...messages.idPresets} />
           </label>
           <Select
             classNamePrefix="react-select"
+            inputId="project-id-presets"
             isClearable={true}
             isMulti={true}
             options={presets}
@@ -147,7 +148,7 @@ export const MetadataForm = () => {
         </div>
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
+        <label className={styleClasses.labelClass} htmlFor="project-extra-id-params">
           <FormattedMessage {...messages.extraIdParams} />
         </label>
         <p className={styleClasses.pClass}>
@@ -163,12 +164,13 @@ export const MetadataForm = () => {
           />
         </p>
         <ExtraIdParams
+          id="project-extra-id-params"
           value={projectInfo.extraIdParams ? projectInfo.extraIdParams : ''}
           setProjectInfo={setProjectInfo}
         />
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
+        <label className={styleClasses.labelClass} htmlFor="project-organisation">
           <FormattedMessage {...messages.organisation} />*
         </label>
         <p className={styleClasses.pClass}>
@@ -176,6 +178,7 @@ export const MetadataForm = () => {
         </p>
         <Select
           classNamePrefix="react-select"
+          inputId="project-organisation"
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.organisationId}
@@ -194,11 +197,12 @@ export const MetadataForm = () => {
         />
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
+        <label className={styleClasses.labelClass} htmlFor="project-campaign">
           <FormattedMessage {...messages.campaign} />
         </label>
         <Select
           classNamePrefix="react-select"
+          inputId="project-campaign"
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.id}
@@ -224,13 +228,14 @@ export const MetadataForm = () => {
         />
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
+        <label className={styleClasses.labelClass} htmlFor="project-osmcha-filter">
           <FormattedMessage {...messages.osmchaFilterId} />
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.osmchaFilterIdDescription} />
         </p>
         <input
+          id="project-osmcha-filter"
           className={styleClasses.inputClass}
           type="text"
           name="osmchaFilterId"

@@ -1,12 +1,13 @@
 import { styleClasses } from '../../views/projectEdit';
 
-export const ExtraIdParams = ({ value, setProjectInfo }) => {
+export const ExtraIdParams = ({ id, value, setProjectInfo }) => {
   const onInputChange = (e) => {
     setProjectInfo((p) => ({ ...p, extraIdParams: e.target.value }));
   };
 
   return (
     <input
+      id={id}
       className={styleClasses.inputClass}
       onChange={onInputChange}
       type="text"
