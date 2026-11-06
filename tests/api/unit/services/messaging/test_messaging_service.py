@@ -37,6 +37,24 @@ class TestMessagingService:
             == '<a style="color: #d73f3f" href="example.com/projects/1/tasks/?search=1">Task 1</a>'
         )
 
+    async def test_settings_link_without_section_has_no_anchor(self):
+        # Act
+        link = MessageService.get_user_settings_link(base_url="http://test.com")
+
+        # Assert
+        assert link == '<a href="http://test.com/settings">User Settings</a>'
+
+    async def test_settings_link_with_section_has_anchor(self):
+        # Act
+        link = MessageService.get_user_settings_link(
+            section="notifications", base_url="http://test.com"
+        )
+
+        # Assert
+        assert (
+            link == '<a href="http://test.com/settings#notifications">User Settings</a>'
+        )
+
     async def test_message_service_generates_correct_chat_link(self):
         # Act
         link = MessageService.get_project_link(

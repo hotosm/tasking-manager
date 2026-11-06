@@ -1170,7 +1170,8 @@ class MessageService:
         if not base_url:
             base_url = settings.APP_BASE_URL
 
-        return f'<a href="{base_url}/settings#{section}">User Settings</a>'
+        anchor = f"#{section}" if section else ""
+        return f'<a href="{base_url}/settings{anchor}">User Settings</a>'
 
     @staticmethod
     def get_organisation_link(
