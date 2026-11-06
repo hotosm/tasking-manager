@@ -271,9 +271,9 @@ class StatsService:
 
         projects = await db.fetch_all(project_query, query_params)
 
-        # Get total contributors for each project
+        # Get total contributors for each project, in the order of `projects`
         contrib_counts = await ProjectSearchService.get_total_contributions(
-            project_ids, db
+            [p["id"] for p in projects], db
         )
         zip_items = zip(projects, contrib_counts)
 

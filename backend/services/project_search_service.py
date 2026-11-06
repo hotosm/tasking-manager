@@ -399,7 +399,11 @@ class ProjectSearchService:
     async def get_total_contributions(
         project_ids: List[int], db: Database
     ) -> List[int]:
-        """Fetch total contributions for given project IDs."""
+        """Fetch the number of contributors for each of the given project IDs.
+
+        Returns one count per ID, in the same order as `project_ids`, so callers
+        can zip the result with their own project list. Unknown IDs count as 0.
+        """
         if not project_ids:
             return []
 
@@ -417,8 +421,9 @@ class ProjectSearchService:
         params = {"project_ids": project_ids}
 
         result = await db.fetch_all(query, params)
+        totals = {row["id"]: row["total"] for row in result}
 
-        return [row["total"] for row in result]
+        return [totals.get(project_id, 0) for project_id in project_ids]
 
     @staticmethod
     async def get_managed_projects(user_id, db):

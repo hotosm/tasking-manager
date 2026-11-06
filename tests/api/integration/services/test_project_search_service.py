@@ -6,6 +6,11 @@ from backend.models.postgis.project import ProjectInfo, Project
 from backend.models.dtos.project_dto import ProjectSearchBBoxDTO
 from backend.models.postgis.user import User
 from tests.backend.helpers.test_helpers import get_canned_json
+from tests.api.helpers.test_helpers import (
+    create_canned_project,
+    create_canned_user,
+    return_canned_user,
+)
 from unittest.mock import patch, MagicMock, AsyncMock
 from shapely.geometry import Polygon, box
 import shapely.wkt
@@ -142,3 +147,35 @@ class TestProjectSearchService:
         area = await ProjectSearchService._get_area_sqm(polygon, db=self.db)
         # assert
         assert area == pytest.approx(28276407740.2797, abs=1e-3)
+
+    async def test_get_total_contributions_follows_input_order(self):
+        # Arrange: two projects with different contributor counts.
+        _, _, first_id = await create_canned_project(self.db, "first project")
+        _, _, second_id = await create_canned_project(self.db, "second project")
+        for user_id in (2001, 2002):
+            await create_canned_user(
+                self.db,
+                await return_canned_user(
+                    username=f"contributor_{user_id}", id=user_id, db=self.db
+                ),
+            )
+        contributions = [(first_id, 2001), (second_id, 2001), (second_id, 2002)]
+        for project_id, user_id in contributions:
+            await self.db.execute(
+                """
+                INSERT INTO task_history
+                    (project_id, task_id, action, action_text, action_date, user_id)
+                VALUES
+                    (:project_id, 1, 'STATE_CHANGE', 'MAPPED', current_timestamp,
+                     :user_id)
+                """,
+                {"project_id": int(project_id), "user_id": user_id},
+            )
+
+        # Act: ask in the reverse order, with an id that does not exist.
+        counts = await ProjectSearchService.get_total_contributions(
+            [int(second_id), 999999, int(first_id)], self.db
+        )
+
+        # Assert: one count per requested id, in the requested order.
+        assert counts == [2, 0, 1]
