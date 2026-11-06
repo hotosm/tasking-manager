@@ -61,13 +61,23 @@ export function FormSubmitButton({
 }
 
 export const CustomButton = React.forwardRef(
-  ({ onClick, children, icon, className, disabled, loading = false }, ref): Object => {
+  (
+    { onClick, onKeyDown, children, icon, className, disabled, loading = false, ...otherProps },
+    ref,
+  ): Object => {
+    // Only ARIA attributes are passed through, so a component like Dropdown can
+    // describe the button (aria-haspopup, aria-expanded) without other props
+    // that callers pass today (style, disabledClassName) reaching the element.
+    const ariaProps = Object.fromEntries(
+      Object.entries(otherProps).filter(([key]) => key.startsWith('aria-')),
+    );
     return (
       <button
+        aria-pressed="false"
+        {...ariaProps}
+        onKeyDown={onKeyDown}
         onClick={onClick}
         ref={ref}
-        aria-pressed="false"
-        focusindex="0"
         className={`${className || ''} br1 f5 ${disabled || loading ? 'o-50' : 'pointer'}`}
         disabled={disabled || loading}
       >
