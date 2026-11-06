@@ -30,6 +30,38 @@ test('htmlFromMarkdown should not render other iframes', () => {
   expect(html).not.toContain('src="https://osm.org"');
 });
 
+test('htmlFromMarkdown registers its sanitizer hooks and parser extension only once', () => {
+  jest.isolateModules(() => {
+    const DOMPurify = require('dompurify');
+    const { marked } = require('marked');
+    const addHookSpy = jest.spyOn(DOMPurify, 'addHook');
+    const markedUseSpy = jest.spyOn(marked, 'use');
+    const { htmlFromMarkdown: freshHtmlFromMarkdown } = require('../htmlFromMarkdown');
+
+    expect(addHookSpy).toHaveBeenCalledTimes(2);
+    expect(markedUseSpy).toHaveBeenCalledTimes(1);
+
+    const first = freshHtmlFromMarkdown('[test](https://a.co/)').__html;
+    const second = freshHtmlFromMarkdown('[test](https://a.co/)').__html;
+    freshHtmlFromMarkdown('::youtube[UzT0i5XhsOQ]');
+
+    expect(addHookSpy).toHaveBeenCalledTimes(2);
+    expect(markedUseSpy).toHaveBeenCalledTimes(1);
+    expect(second).toBe(first);
+    expect(second).toContain('<p><a href="https://a.co/" target="_blank">test</a></p>');
+
+    addHookSpy.mockRestore();
+    markedUseSpy.mockRestore();
+  });
+});
+
+test('htmlFromMarkdown marks non-HTML links to open in a new window', () => {
+  const html = htmlFromMarkdown(
+    '<svg><a xlink:href="https://a.co/"><text>link</text></a></svg>',
+  ).__html;
+  expect(html).toContain('xlink:show="new"');
+});
+
 test('formatUserNamesToLink returns correct content', () => {
   expect(
     formatUserNamesToLink(

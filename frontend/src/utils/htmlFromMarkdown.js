@@ -5,36 +5,38 @@ import { gfm } from 'turndown-plugin-gfm';
 
 const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
 
-const parseMarkdown = (markdownText) => {
-  marked.use({
-    gfm: false,
-    extensions: [
-      {
-        name: 'videoExt',
-        level: 'inline',
-        start: (src) => {
-          const m = src.match(/^::youtube/);
+// Configure marked and DOMPurify once, at module load. Both keep this state
+// globally, so doing it inside htmlFromMarkdown() stacked another copy of the
+// extension and of each sanitizer hook on every call.
+marked.use({
+  gfm: false,
+  extensions: [
+    {
+      name: 'videoExt',
+      level: 'inline',
+      start: (src) => {
+        const m = src.match(/^::youtube/);
 
-          if (m) {
-            return m.index;
-          }
-        },
-        tokenizer: function (src) {
-          const match = VIDEO_TAG_REGEXP.exec(src);
+        if (m) {
+          return m.index;
+        }
+      },
+      tokenizer: function (src) {
+        const match = VIDEO_TAG_REGEXP.exec(src);
 
-          if (match) {
-            return {
-              type: 'videoExt',
-              raw: match[0],
-              text: match[1].trim(),
-              tokens: [],
-            };
-          }
-        },
-        renderer: function (token) {
-          const videoId = token.text;
+        if (match) {
+          return {
+            type: 'videoExt',
+            raw: match[0],
+            text: match[1].trim(),
+            tokens: [],
+          };
+        }
+      },
+      renderer: function (token) {
+        const videoId = token.text;
 
-          return `
+        return `
             <iframe
               src="https://www.youtube.com/embed/${videoId}"
               width="480" height="270"
@@ -45,46 +47,44 @@ const parseMarkdown = (markdownText) => {
               allowfullscreen>
             </iframe>
           `;
-        },
       },
-    ],
-  });
-  return marked.parse(markdownText);
-};
+    },
+  ],
+});
 
 /* per https://stackoverflow.com/a/34688574/272018 */
-export const htmlFromMarkdown = (markdownText) => {
-  DOMPurify.addHook('afterSanitizeAttributes', function (node) {
-    // set all elements owning target to target=_blank
-    if ('target' in node) {
-      node.setAttribute('target', '_blank');
-    }
-    // set non-HTML/MathML links to xlink:show=new
-    if (
-      !node.hasAttribute('target') &&
-      (node.hasAttribute('xlink:href') || node.hasAttribute('href'))
-    ) {
-      node.setAttribute('xlink:show', 'new');
-    }
-  });
+DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+  // set all elements owning target to target=_blank
+  if ('target' in node) {
+    node.setAttribute('target', '_blank');
+  }
+  // set non-HTML/MathML links to xlink:show=new
+  if (
+    !node.hasAttribute('target') &&
+    (node.hasAttribute('xlink:href') || node.hasAttribute('href'))
+  ) {
+    node.setAttribute('xlink:show', 'new');
+  }
+});
 
-  DOMPurify.addHook('uponSanitizeElement', (node, data) => {
-    if (data.tagName === 'iframe') {
-      const src = node.getAttribute('src') || '';
-      // allow only youtube urls to be embedded in iframes
-      if (!src.startsWith('https://www.youtube.com/embed/')) {
-        return node.parentNode?.removeChild(node);
-      }
+DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+  if (data.tagName === 'iframe') {
+    const src = node.getAttribute('src') || '';
+    // allow only youtube urls to be embedded in iframes
+    if (!src.startsWith('https://www.youtube.com/embed/')) {
+      return node.parentNode?.removeChild(node);
     }
-  });
+  }
+});
 
-  const config = {
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
-  };
-
-  return { __html: DOMPurify.sanitize(parseMarkdown(markdownText), config) };
+const SANITIZE_CONFIG = {
+  ADD_TAGS: ['iframe'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
 };
+
+export const htmlFromMarkdown = (markdownText) => ({
+  __html: DOMPurify.sanitize(marked.parse(markdownText), SANITIZE_CONFIG),
+});
 
 export const formatUserNamesToLink = (text) => {
   const regex = /@\[([^\]]+)\]/gi;
