@@ -52,7 +52,7 @@ dependencies = [
     "aiocache>=0.12.3",
     "httpx>=0.28.1",
     "pytest>=8.3.5",
-    "pg-nearest-city>=3.0.0",
+    "pg-nearest-city>=3.0.1",
 ]
 [dependency-groups]
 dev = [
