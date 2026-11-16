@@ -82,6 +82,7 @@ export function ProjectEdit() {
   const [option, setOption] = useState('description');
   const [projectInfo, setProjectInfo] = useState({
     mappingTypes: [],
+    customMappingTypes: [],
     mappingEditors: [],
     validationEditors: [],
     organisation: '',
@@ -143,6 +144,12 @@ export function ProjectEdit() {
     }
     const nonLocaleMissingFields = [];
     if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
+    if (
+      projectInfo.customMappingTypes?.some(
+        (customType) => !customType.name.trim() || customType.tags.length === 0,
+      )
+    )
+      nonLocaleMissingFields.push('customMappingTypes');
     const { mappingEditors, validationEditors, customEditor } = projectInfo;
     if (
       (mappingEditors.filter((editor) => editor !== 'CUSTOM').length === 0 &&

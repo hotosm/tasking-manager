@@ -488,6 +488,51 @@ export default defineMessages({
     id: 'projects.formInputs.id_presets',
     defaultMessage: 'iD editor presets',
   },
+  customMappingTypes: {
+    id: 'projects.formInputs.custom_mapping_types',
+    defaultMessage: 'Custom mapping types',
+  },
+  customMappingTypesDescription: {
+    id: 'projects.formInputs.custom_mapping_types.description',
+    defaultMessage:
+      'Define the features mapped in this project by their OSM tags. Each type is offered as its own data download, with features carrying any of its tags.',
+  },
+  customMappingTypeName: {
+    id: 'projects.formInputs.custom_mapping_types.name',
+    defaultMessage: 'Name',
+  },
+  customMappingTypeTags: {
+    id: 'projects.formInputs.custom_mapping_types.tags',
+    defaultMessage: 'Tags',
+  },
+  customMappingTypeTagsPlaceholder: {
+    id: 'projects.formInputs.custom_mapping_types.tags.placeholder',
+    defaultMessage: 'Type key=value, or key=* for any value, and press Enter',
+  },
+  customMappingTypeAttributes: {
+    id: 'projects.formInputs.custom_mapping_types.attributes',
+    defaultMessage: 'Extra attributes (optional)',
+  },
+  customMappingTypeAttributesPlaceholder: {
+    id: 'projects.formInputs.custom_mapping_types.attributes.placeholder',
+    defaultMessage: 'Other tag keys to keep, like operator, and press Enter',
+  },
+  customMappingTypeGeometries: {
+    id: 'projects.formInputs.custom_mapping_types.geometries',
+    defaultMessage: 'Geometries (optional, all when none are selected)',
+  },
+  customMappingTypeInvalidInput: {
+    id: 'projects.formInputs.custom_mapping_types.invalid_input',
+    defaultMessage: 'Keys use letters, numbers, _ : . or -, and values cannot contain $',
+  },
+  addCustomMappingType: {
+    id: 'projects.formInputs.custom_mapping_types.add',
+    defaultMessage: 'Add custom mapping type',
+  },
+  removeCustomMappingType: {
+    id: 'projects.formInputs.custom_mapping_types.remove',
+    defaultMessage: 'Remove',
+  },
 
   userRole: {
     id: 'projects.formInputs.user_role',

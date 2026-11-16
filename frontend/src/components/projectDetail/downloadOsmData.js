@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon, MapIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
@@ -39,6 +39,24 @@ export const TITLED_ICONS = [
     formats: ['GeoJSON', 'shp', 'kml'],
   },
 ];
+
+// The folder the data export publishes a custom mapping type under.
+export const customMappingTypeSlug = (name) =>
+  name
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .toLowerCase()
+    .replace(/^_+|_+$/g, '');
+
+export const customDownloadOptions = (customMappingTypes = []) =>
+  customMappingTypes.map(({ name, geometries }) => ({
+    Icon: MapIcon,
+    title: customMappingTypeSlug(name),
+    label: name,
+    featuretype: (geometries?.length ? geometries : ['points', 'lines', 'polygons']).map(
+      (type) => ({ type }),
+    ),
+    formats: ['GeoJSON', 'shp', 'kml'],
+  }));
 
 /**
  * Renders a list of download options for OSM data based on the project mapping types.
@@ -109,12 +127,15 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     }
   };
   useEffect(() => {
-    const filteredMappingTypes = downloadDataList?.filter((icon) =>
+    const filteredMappingTypes = TITLED_ICONS.filter((icon) =>
       projectMappingTypes?.includes(icon.value),
     );
-    setDownloadDataList(filteredMappingTypes);
+    setDownloadDataList([
+      ...filteredMappingTypes,
+      ...customDownloadOptions(project.customMappingTypes),
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectMappingTypes]);
+  }, [projectMappingTypes, project.customMappingTypes]);
 
   useEffect(() => {
     if (!selectedCategoryFormat) return;
@@ -255,7 +276,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                 className="file-list flex barlow-condensed f3 items-center "
                 style={{ display: 'flex', gap: '12px' }}
               >
-                <p className="fw5 ttc">{type.title}</p>
+                <p className="fw5 ttc">{type.label || type.title}</p>
                 <FileFormatCard
                   title={type.title}
                   fileFormats={type.formats}

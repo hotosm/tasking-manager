@@ -1,3 +1,4 @@
+import re
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Union
 
@@ -164,6 +165,96 @@ def is_known_project_difficulty(value: str) -> str:
     return value
 
 
+CUSTOM_MAPPING_TYPES_LIMIT = 10
+CUSTOM_MAPPING_TYPE_TAGS_LIMIT = 10
+CUSTOM_MAPPING_TYPE_ATTRIBUTES_LIMIT = 20
+CUSTOM_MAPPING_TYPE_GEOMETRIES = ("points", "lines", "polygons")
+# Export folders already used by the standard mapping types
+STANDARD_EXPORT_CATEGORIES = ("roads", "buildings", "waterways", "landuse")
+CUSTOM_MAPPING_TYPE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _-]{0,49}")
+OSM_KEY_PATTERN = re.compile(r"[A-Za-z0-9_:.-]{1,255}")
+
+
+def custom_mapping_type_slug(name: str) -> str:
+    """Folder the data export publishes a custom mapping type under."""
+    return re.sub(r"[^a-zA-Z0-9]+", "_", name).lower().strip("_")
+
+
+def is_valid_osm_tag(tag: str) -> bool:
+    """A key=value tag, or key=* for any value. Both end up in export queries."""
+    key, separator, value = tag.partition("=")
+    return bool(
+        separator
+        and OSM_KEY_PATTERN.fullmatch(key)
+        and value
+        and len(value) <= 255
+        and value == value.strip()
+        and value.isprintable()
+        and "$" not in value
+    )
+
+
+def is_valid_custom_mapping_types(values: list) -> list:
+    """Validates the custom mapping types the data export turns into categories."""
+    if len(values) > CUSTOM_MAPPING_TYPES_LIMIT:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"A project can have at most {CUSTOM_MAPPING_TYPES_LIMIT} "
+                "customMappingTypes."
+            ),
+        )
+    taken = set(STANDARD_EXPORT_CATEGORIES)
+    for custom_type in values:
+        name = custom_type.name
+        slug = custom_mapping_type_slug(name)
+        if not CUSTOM_MAPPING_TYPE_NAME_PATTERN.fullmatch(name) or slug in taken:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Invalid customMappingType name: {name}. Names use letters, "
+                    "numbers, spaces, _ or -, up to 50 characters, and must differ "
+                    "from each other and from the standard mapping types."
+                ),
+            )
+        taken.add(slug)
+        if not 1 <= len(custom_type.tags) <= CUSTOM_MAPPING_TYPE_TAGS_LIMIT or not all(
+            is_valid_osm_tag(tag) for tag in custom_type.tags
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Invalid tags for customMappingType {name}. Use 1 to "
+                    f"{CUSTOM_MAPPING_TYPE_TAGS_LIMIT} key=value tags, or key=* for "
+                    "any value."
+                ),
+            )
+        if len(
+            custom_type.attributes
+        ) > CUSTOM_MAPPING_TYPE_ATTRIBUTES_LIMIT or not all(
+            OSM_KEY_PATTERN.fullmatch(key) for key in custom_type.attributes
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Invalid attributes for customMappingType {name}. Use up to "
+                    f"{CUSTOM_MAPPING_TYPE_ATTRIBUTES_LIMIT} OSM keys."
+                ),
+            )
+        geometries = custom_type.geometries
+        if len(set(geometries)) != len(geometries) or not set(geometries) <= set(
+            CUSTOM_MAPPING_TYPE_GEOMETRIES
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Invalid geometries for customMappingType {name}. Valid values "
+                    f"are: {', '.join(CUSTOM_MAPPING_TYPE_GEOMETRIES)}."
+                ),
+            )
+    return values
+
+
 class DraftProjectDTO(BaseModel):
     """Describes JSON model used for creating draft project"""
 
@@ -212,6 +303,15 @@ class CustomEditorDTO(BaseModel):
     url: str = Field(None)
 
 
+class CustomMappingTypeDTO(BaseModel):
+    """DTO to define a custom mapping type by its OSM tags"""
+
+    name: str
+    tags: List[str]
+    attributes: List[str] = Field(default=[])
+    geometries: List[str] = Field(default=[])
+
+
 class ProjectDTO(BaseModel):
     """Describes JSON model for a tasking manager project"""
 
@@ -245,6 +345,9 @@ class ProjectDTO(BaseModel):
     rapid_power_user: Optional[bool] = Field(False, alias="rapidPowerUser")
     sandbox: Optional[bool] = Field(False)
     mapping_types: List[str] = Field(default=[], alias="mappingTypes")
+    custom_mapping_types: Optional[List[CustomMappingTypeDTO]] = Field(
+        default=[], alias="customMappingTypes"
+    )
     campaigns: List[CampaignDTO] = Field(default=[])
     organisation: Optional[int] = None
     organisation_name: Optional[str] = Field(None, alias="organisationName")
@@ -313,6 +416,13 @@ class ProjectDTO(BaseModel):
         if not all(is_known_mapping_type(v) for v in values):
             raise ValueError("Invalid mapping type")
         return values
+
+    @field_validator("custom_mapping_types")
+    @classmethod
+    def validate_custom_mapping_types(
+        cls, values: Optional[List[CustomMappingTypeDTO]]
+    ) -> List[CustomMappingTypeDTO]:
+        return is_valid_custom_mapping_types(values or [])
 
     @field_validator("task_creation_mode")
     @classmethod

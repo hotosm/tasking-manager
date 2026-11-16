@@ -61,6 +61,14 @@ def _encode_token(raw: str) -> str:
 
 TEST_USER_USERNAME = "test_user_delete"
 TEST_USER_ID = 9999
+CUSTOM_MAPPING_TYPES = [
+    {
+        "name": "Seagrass",
+        "tags": ["seamark:type=seagrass"],
+        "attributes": ["area", "natural"],
+        "geometries": ["polygons"],
+    }
+]
 
 
 @pytest.mark.anyio
@@ -641,6 +649,120 @@ class TestPatchProjectRestAPI:
             headers={"Authorization": f"Token {self.user_session_token}"},
         )
         assert resp.status_code == 200
+
+    async def _set_sandbox(self):
+        await self.db.execute(
+            "UPDATE projects SET sandbox = TRUE WHERE id = :id",
+            {"id": int(self.test_project_id)},
+        )
+
+    @pytest.mark.parametrize("sandbox", [False, True])
+    async def test_saves_custom_mapping_types(self, client: AsyncClient, sandbox):
+        if sandbox:
+            await self._set_sandbox()
+        body = {**self.project_update_body, "customMappingTypes": CUSTOM_MAPPING_TYPES}
+
+        # Saving twice catches the JSONB being encoded again as a string
+        for _ in range(2):
+            resp = await client.patch(
+                self.url,
+                json=body,
+                headers={"Authorization": f"Token {self.author_session_token}"},
+            )
+            assert resp.status_code == 200
+
+        stored = await self.db.fetch_one(
+            "SELECT jsonb_typeof(custom_mapping_types) AS kind FROM projects WHERE id = :id",
+            {"id": int(self.test_project_id)},
+        )
+        assert stored["kind"] == "array"
+        resp = await client.get(self.url)
+        assert resp.json()["customMappingTypes"] == CUSTOM_MAPPING_TYPES
+
+    async def test_custom_mapping_type_defaults_to_no_attributes_or_geometries(
+        self, client: AsyncClient
+    ):
+        custom_type = {"name": "Water points", "tags": ["amenity=drinking_water"]}
+        body = {**self.project_update_body, "customMappingTypes": [custom_type]}
+
+        resp = await client.patch(
+            self.url,
+            json=body,
+            headers={"Authorization": f"Token {self.author_session_token}"},
+        )
+        assert resp.status_code == 200
+        resp = await client.get(self.url)
+        assert resp.json()["customMappingTypes"] == [
+            {**custom_type, "attributes": [], "geometries": []}
+        ]
+
+    async def test_removing_every_custom_mapping_type_clears_them(
+        self, client: AsyncClient
+    ):
+        for custom_types in (CUSTOM_MAPPING_TYPES, []):
+            body = {**self.project_update_body, "customMappingTypes": custom_types}
+            resp = await client.patch(
+                self.url,
+                json=body,
+                headers={"Authorization": f"Token {self.author_session_token}"},
+            )
+            assert resp.status_code == 200
+
+        stored = await self.db.fetch_one(
+            "SELECT custom_mapping_types FROM projects WHERE id = :id",
+            {"id": int(self.test_project_id)},
+        )
+        assert stored["custom_mapping_types"] is None
+        resp = await client.get(self.url)
+        assert resp.json()["customMappingTypes"] == []
+
+    @pytest.mark.parametrize(
+        "custom_type",
+        [
+            {"name": "Buildings", "tags": ["building=yes"]},
+            {"name": "", "tags": ["building=yes"]},
+            {"name": "Wells", "tags": []},
+            {"name": "Wells", "tags": ["man_made"]},
+            {"name": "Wells", "tags": ["man_made="]},
+            {"name": "Wells", "tags": ["man'made=water_well"]},
+            {"name": "Wells", "tags": ["man_made=${oc.env:SECRET}"]},
+            {
+                "name": "Wells",
+                "tags": ["man_made=water_well"],
+                "attributes": ["x') AS y --"],
+            },
+            {
+                "name": "Wells",
+                "tags": ["man_made=water_well"],
+                "geometries": ["areas"],
+            },
+        ],
+    )
+    async def test_invalid_custom_mapping_types_return_400(
+        self, client: AsyncClient, custom_type
+    ):
+        body = {**self.project_update_body, "customMappingTypes": [custom_type]}
+
+        resp = await client.patch(
+            self.url,
+            json=body,
+            headers={"Authorization": f"Token {self.author_session_token}"},
+        )
+        assert resp.status_code == 400
+
+    async def test_custom_mapping_types_cannot_share_a_name(self, client: AsyncClient):
+        custom_types = [
+            CUSTOM_MAPPING_TYPES[0],
+            {**CUSTOM_MAPPING_TYPES[0], "name": "seagrass"},
+        ]
+        body = {**self.project_update_body, "customMappingTypes": custom_types}
+
+        resp = await client.patch(
+            self.url,
+            json=body,
+            headers={"Authorization": f"Token {self.author_session_token}"},
+        )
+        assert resp.status_code == 400
 
 
 @pytest.mark.anyio
@@ -2020,6 +2142,58 @@ class TestProjectsQueriesSummaryAPI:
         await TestGetProjectsRestAPI.assert_project_response(
             resp.json(), test_project, test_project.id, self.db, assert_type="summary"
         )
+
+
+@pytest.mark.anyio
+class TestProjectsQueriesActiveAPI:
+    @pytest.fixture(autouse=True)
+    async def _setup(self, db_connection_fixture):
+        self.db = db_connection_fixture
+        self.test_project, self.test_author, self.test_project_id = (
+            await create_canned_project(self.db)
+        )
+        await self.db.execute(
+            """
+            UPDATE projects
+            SET status = :status, custom_mapping_types = :custom
+            WHERE id = :id
+            """,
+            {
+                "status": ProjectStatus.PUBLISHED.value,
+                "custom": json.dumps(CUSTOM_MAPPING_TYPES),
+                "id": int(self.test_project_id),
+            },
+        )
+        await self.db.execute(
+            """
+            INSERT INTO project_chat (project_id, user_id, message, time_stamp)
+            VALUES (:project_id, :user_id, 'Mapping seagrass', :time_stamp)
+            """,
+            {
+                "project_id": int(self.test_project_id),
+                "user_id": self.test_author.id,
+                "time_stamp": datetime.utcnow(),
+            },
+        )
+        self.url = "/api/v2/projects/queries/active/"
+
+    @pytest.mark.parametrize("sandbox", [False, True])
+    async def test_returns_custom_mapping_types_of_active_projects(
+        self, client: AsyncClient, sandbox
+    ):
+        await self.db.execute(
+            "UPDATE projects SET sandbox = :sandbox WHERE id = :id",
+            {"sandbox": sandbox, "id": int(self.test_project_id)},
+        )
+        params = {"interval": 1, "sandbox": str(sandbox).lower()}
+        resp = await client.get(self.url, params=params)
+        assert resp.status_code == 200
+        [feature] = [
+            f
+            for f in resp.json()["features"]
+            if f["properties"]["project_id"] == int(self.test_project_id)
+        ]
+        assert feature["properties"]["custom_mapping_types"] == CUSTOM_MAPPING_TYPES
 
 
 @pytest.mark.anyio

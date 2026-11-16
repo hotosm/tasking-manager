@@ -811,6 +811,7 @@ class ProjectService:
         SELECT
             id,
             mapping_types,
+            custom_mapping_types,
             ST_AsGeoJSON(geometry) AS geometry
         FROM projects
         WHERE status = :status
@@ -833,6 +834,11 @@ class ProjectService:
                 properties={
                     "project_id": project["id"],
                     "mapping_types": project["mapping_types"],
+                    "custom_mapping_types": (
+                        json.loads(project["custom_mapping_types"])
+                        if project["custom_mapping_types"]
+                        else []
+                    ),
                 },
             )
             for project in project_result
