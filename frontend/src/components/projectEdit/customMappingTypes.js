@@ -3,12 +3,10 @@ import CreatableSelect from 'react-select/creatable';
 
 import messages from './messages';
 import { styleClasses } from '../../views/projectEdit';
-import { CheckBox } from '../formInputs';
 import { CustomButton } from '../button';
 import { PlusIcon, WasteIcon } from '../svgIcons';
 
 export const CUSTOM_MAPPING_TYPES_LIMIT = 10;
-export const GEOMETRY_TYPES = ['points', 'lines', 'polygons'];
 // Mirrors the backend validation, since tags and keys end up in the export queries.
 const OSM_KEY = '[A-Za-z0-9_:.-]+';
 const TAG_PATTERN = new RegExp(`^${OSM_KEY}=[^$]+$`);
@@ -47,10 +45,7 @@ export const CustomMappingTypes = ({ customMappingTypes = [], setProjectInfo }) 
   const addType = () =>
     setProjectInfo((p) => ({
       ...p,
-      customMappingTypes: [
-        ...(p.customMappingTypes || []),
-        { name: '', tags: [], attributes: [], geometries: [] },
-      ],
+      customMappingTypes: [...(p.customMappingTypes || []), { name: '', tags: [], attributes: [] }],
     }));
 
   const removeType = (index) =>
@@ -100,23 +95,6 @@ export const CustomMappingTypes = ({ customMappingTypes = [], setProjectInfo }) 
             placeholder={intl.formatMessage(messages.customMappingTypeAttributesPlaceholder)}
             onChange={(attributes) => updateType(index, { attributes })}
           />
-          <label className="db fw6 mt3 mb2">
-            <FormattedMessage {...messages.customMappingTypeGeometries} />
-          </label>
-          <div className="cf mb3">
-            {GEOMETRY_TYPES.map((geometry) => (
-              <div className="fl pr4" key={geometry}>
-                <div className="fl">
-                  <CheckBox
-                    activeItems={customType.geometries || []}
-                    toggleFn={(geometries) => updateType(index, { geometries })}
-                    itemId={geometry}
-                  />
-                </div>
-                <span className="fl pt1 ph2 ttc">{geometry}</span>
-              </div>
-            ))}
-          </div>
           <CustomButton
             className="red bg-white pv2 ph3 ba b--red"
             onClick={() => removeType(index)}

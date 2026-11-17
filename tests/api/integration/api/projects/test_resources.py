@@ -66,7 +66,6 @@ CUSTOM_MAPPING_TYPES = [
         "name": "Seagrass",
         "tags": ["seamark:type=seagrass"],
         "attributes": ["area", "natural"],
-        "geometries": ["polygons"],
     }
 ]
 
@@ -679,7 +678,7 @@ class TestPatchProjectRestAPI:
         resp = await client.get(self.url)
         assert resp.json()["customMappingTypes"] == CUSTOM_MAPPING_TYPES
 
-    async def test_custom_mapping_type_defaults_to_no_attributes_or_geometries(
+    async def test_custom_mapping_type_defaults_to_no_attributes(
         self, client: AsyncClient
     ):
         custom_type = {"name": "Water points", "tags": ["amenity=drinking_water"]}
@@ -692,9 +691,7 @@ class TestPatchProjectRestAPI:
         )
         assert resp.status_code == 200
         resp = await client.get(self.url)
-        assert resp.json()["customMappingTypes"] == [
-            {**custom_type, "attributes": [], "geometries": []}
-        ]
+        assert resp.json()["customMappingTypes"] == [{**custom_type, "attributes": []}]
 
     async def test_removing_every_custom_mapping_type_clears_them(
         self, client: AsyncClient
@@ -730,11 +727,6 @@ class TestPatchProjectRestAPI:
                 "name": "Wells",
                 "tags": ["man_made=water_well"],
                 "attributes": ["x') AS y --"],
-            },
-            {
-                "name": "Wells",
-                "tags": ["man_made=water_well"],
-                "geometries": ["areas"],
             },
         ],
     )

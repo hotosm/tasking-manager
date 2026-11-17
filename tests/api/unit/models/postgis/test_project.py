@@ -22,7 +22,6 @@ CUSTOM_MAPPING_TYPES = [
         "name": "Seagrass",
         "tags": ["seamark:type=seagrass"],
         "attributes": ["area", "natural"],
-        "geometries": ["polygons"],
     }
 ]
 

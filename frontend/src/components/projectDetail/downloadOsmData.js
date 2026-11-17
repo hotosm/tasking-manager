@@ -47,14 +47,13 @@ export const customMappingTypeSlug = (name) =>
     .toLowerCase()
     .replace(/^_+|_+$/g, '');
 
+// The data export writes every geometry a custom mapping type has features in.
 export const customDownloadOptions = (customMappingTypes = []) =>
-  customMappingTypes.map(({ name, geometries }) => ({
+  customMappingTypes.map(({ name }) => ({
     Icon: MapIcon,
     title: customMappingTypeSlug(name),
     label: name,
-    featuretype: (geometries?.length ? geometries : ['points', 'lines', 'polygons']).map(
-      (type) => ({ type }),
-    ),
+    featuretype: [{ type: 'points' }, { type: 'lines' }, { type: 'polygons' }],
     formats: ['GeoJSON', 'shp', 'kml'],
   }));
 

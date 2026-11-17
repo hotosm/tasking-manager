@@ -517,10 +517,6 @@ export default defineMessages({
     id: 'projects.formInputs.custom_mapping_types.attributes.placeholder',
     defaultMessage: 'Other tag keys to keep, like operator, and press Enter',
   },
-  customMappingTypeGeometries: {
-    id: 'projects.formInputs.custom_mapping_types.geometries',
-    defaultMessage: 'Geometries (optional, all when none are selected)',
-  },
   customMappingTypeInvalidInput: {
     id: 'projects.formInputs.custom_mapping_types.invalid_input',
     defaultMessage: 'Keys use letters, numbers, _ : . or -, and values cannot contain $',

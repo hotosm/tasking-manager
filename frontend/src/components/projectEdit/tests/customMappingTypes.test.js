@@ -6,12 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { CustomMappingTypes, CUSTOM_MAPPING_TYPES_LIMIT } from '../customMappingTypes';
 import { IntlProviders } from '../../../utils/testWithIntl';
 
-const SEAGRASS = {
-  name: 'Seagrass',
-  tags: ['seamark:type=seagrass'],
-  attributes: [],
-  geometries: [],
-};
+const SEAGRASS = { name: 'Seagrass', tags: ['seamark:type=seagrass'], attributes: [] };
 
 const Harness = ({ initial }) => {
   const [projectInfo, setProjectInfo] = useState({ customMappingTypes: initial });
@@ -33,21 +28,16 @@ describe('CustomMappingTypes', () => {
     const user = userEvent.setup();
     render(<Harness initial={[]} />);
     await user.click(screen.getByRole('button', { name: /Add custom mapping type/i }));
-    expect(state()).toEqual([{ name: '', tags: [], attributes: [], geometries: [] }]);
+    expect(state()).toEqual([{ name: '', tags: [], attributes: [] }]);
     expect(screen.getByLabelText('Name')).toBeInTheDocument();
   });
 
-  it('edits the name and geometries of a type', async () => {
+  it('edits the name of a type', async () => {
     const user = userEvent.setup();
     render(<Harness initial={[SEAGRASS]} />);
     await user.clear(screen.getByLabelText('Name'));
     await user.type(screen.getByLabelText('Name'), 'Seagrass beds');
-    await user.click(screen.getAllByRole('checkbox')[2]);
-    expect(state()[0]).toEqual({
-      ...SEAGRASS,
-      name: 'Seagrass beds',
-      geometries: ['polygons'],
-    });
+    expect(state()[0]).toEqual({ ...SEAGRASS, name: 'Seagrass beds' });
   });
 
   it('only creates tags written as key=value', async () => {

@@ -168,7 +168,6 @@ def is_known_project_difficulty(value: str) -> str:
 CUSTOM_MAPPING_TYPES_LIMIT = 10
 CUSTOM_MAPPING_TYPE_TAGS_LIMIT = 10
 CUSTOM_MAPPING_TYPE_ATTRIBUTES_LIMIT = 20
-CUSTOM_MAPPING_TYPE_GEOMETRIES = ("points", "lines", "polygons")
 # Export folders already used by the standard mapping types
 STANDARD_EXPORT_CATEGORIES = ("roads", "buildings", "waterways", "landuse")
 CUSTOM_MAPPING_TYPE_NAME_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _-]{0,49}")
@@ -241,17 +240,6 @@ def is_valid_custom_mapping_types(values: list) -> list:
                     f"{CUSTOM_MAPPING_TYPE_ATTRIBUTES_LIMIT} OSM keys."
                 ),
             )
-        geometries = custom_type.geometries
-        if len(set(geometries)) != len(geometries) or not set(geometries) <= set(
-            CUSTOM_MAPPING_TYPE_GEOMETRIES
-        ):
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    f"Invalid geometries for customMappingType {name}. Valid values "
-                    f"are: {', '.join(CUSTOM_MAPPING_TYPE_GEOMETRIES)}."
-                ),
-            )
     return values
 
 
@@ -309,7 +297,6 @@ class CustomMappingTypeDTO(BaseModel):
     name: str
     tags: List[str]
     attributes: List[str] = Field(default=[])
-    geometries: List[str] = Field(default=[])
 
 
 class ProjectDTO(BaseModel):

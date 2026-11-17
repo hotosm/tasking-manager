@@ -12,7 +12,7 @@ describe('customMappingTypeSlug', () => {
 });
 
 describe('customDownloadOptions', () => {
-  it('offers every geometry when none is selected', () => {
+  it('offers every geometry of a custom mapping type', () => {
     const [option] = customDownloadOptions([{ name: 'Wells', tags: ['man_made=water_well'] }]);
     expect(option.title).toBe('wells');
     expect(option.label).toBe('Wells');
@@ -21,13 +21,6 @@ describe('customDownloadOptions', () => {
       { type: 'lines' },
       { type: 'polygons' },
     ]);
-  });
-
-  it('offers only the selected geometries', () => {
-    const [option] = customDownloadOptions([
-      { name: 'Seagrass', tags: ['seamark:type=seagrass'], geometries: ['polygons'] },
-    ]);
-    expect(option.featuretype).toEqual([{ type: 'polygons' }]);
   });
 });
 
