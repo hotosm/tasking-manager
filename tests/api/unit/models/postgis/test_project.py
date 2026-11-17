@@ -1,3 +1,4 @@
+import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,6 +16,14 @@ from tests.api.helpers.test_helpers import (
     create_canned_user,
     return_canned_draft_project_json,
 )
+
+CUSTOM_MAPPING_TYPES = [
+    {
+        "name": "Seagrass",
+        "tags": ["seamark:type=seagrass"],
+        "attributes": ["area", "natural"],
+    }
+]
 
 
 @pytest.mark.anyio
@@ -52,6 +61,31 @@ class TestProject:
         assert new_proj is not None
         assert new_proj.author_id == orig_project.author_id
         assert new_proj_info.name == orig_project_info.name
+
+    @pytest.mark.parametrize("sandbox", [False, True])
+    async def test_clone_keeps_custom_mapping_types(self, sandbox):
+        """Test cloning and saving keeps custom mapping types a JSON array."""
+        # Arrange
+        _, author, project_id = await create_canned_project(self.db)
+        await self.db.execute(
+            "UPDATE projects SET custom_mapping_types = :custom WHERE id = :id",
+            {"custom": json.dumps(CUSTOM_MAPPING_TYPES), "id": project_id},
+        )
+
+        # Act
+        new_proj = await Project.clone(project_id, author.id, self.db, sandbox, "OSM")
+        await new_proj.save(self.db)
+        stored = await self.db.fetch_one(
+            """
+            SELECT custom_mapping_types, jsonb_typeof(custom_mapping_types) AS kind
+            FROM projects WHERE id = :id
+            """,
+            {"id": new_proj.id},
+        )
+
+        # Assert
+        assert stored["kind"] == "array"
+        assert json.loads(stored["custom_mapping_types"]) == CUSTOM_MAPPING_TYPES
 
     async def test_create_draft_project(self):
         """Test creating a draft project from a DTO."""
