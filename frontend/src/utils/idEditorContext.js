@@ -1,6 +1,12 @@
 const backgroundsWithFilteredImagery = new WeakSet();
 const unavailableImagerySourceIds = new Set(['OpenAerialMapMosaic']);
 
+// Tasking Manager stores some locale codes with underscores. iD passes
+// preferred locales to Intl.Locale, which expects hyphenated language tags.
+export function normalizeIdLocale(locale) {
+  return locale.replace(/_/g, '-');
+}
+
 // Both iD editors still include the retired Kontur OAM imagery source.
 // Wrap each background instance once so the unavailable source is hidden,
 // while preserving every argument expected by iD's source lookup.
