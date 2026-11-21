@@ -9,6 +9,7 @@ import { OSM_CLIENT_ID, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 import messages from './messages';
 import {
   captureIdEditorPackage,
+  normalizeIdLocale,
   removeUnavailableImagerySources,
   resolveIdEditorContext,
   setBackgroundHashParam,
@@ -103,7 +104,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl, 
       iDContext
         .embed(true)
         .assetPath('/static/id/')
-        .locale(locale)
+        .locale(normalizeIdLocale(locale))
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
       // init the ui or restart if it was loaded previously. Either path ends
