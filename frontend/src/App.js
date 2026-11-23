@@ -48,6 +48,10 @@ const App = () => {
     store.dispatch(getUserDetails(store.getState()));
   }, []);
 
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
   return (
     <ErrorBoundary fallback={<FallbackComponent />}>
       {isLoading ? (
