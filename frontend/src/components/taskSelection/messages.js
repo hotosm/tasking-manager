@@ -859,7 +859,7 @@ export default defineMessages({
       'You need to be member of one of the mapping teams to be able to map this project.',
   },
   infoBox: {
-    id: 'project.detail.sandbox',
+    id: 'project.detail.sandbox.info',
     defaultMessage: 'Sandbox(Practice)',
   },
   infoBoxTooltip: {
