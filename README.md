@@ -71,7 +71,7 @@ Status | Feature | Release
 ✅ | Sandbox: compare existing OSM data while mapping, and filter for sandbox projects | [v5.6](https://github.com/hotosm/tasking-manager/releases/tag/v5.6)
 ✅ | Choropleth layer to highlight most invalidated tasks | [v5.6.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.6.1) 
 🔄 | [Task assignment](https://github.com/hotosm/tasking-manager/issues/7362): Option for projects managers to assign users or teams to specific tasks
-🔄 | [iD editor integration](https://github.com/hotosm/tasking-manager/issues/7337 between sandbox and standard mapping projects
+🔄 | [iD editor integration](https://github.com/hotosm/tasking-manager/issues/7337) between sandbox and standard mapping projects
 🔄 | [Campaign management](https://github.com/hotosm/tasking-manager/issues/7349) for organisation managers
 🔄 | Dependency & Framework health check |
 
@@ -79,11 +79,11 @@ Status | Feature | Release
 
 Status | Feature | Release
 -------|---------|---------
-📅 | **Project Type — AI Prediction Validation (fAIr):** Localized AI model prediction validation projects and externally funded validation and training pilot. | 
+📅 | **Project Type AI Prediction Validation (fAIr):** Localized AI model prediction validation projects and externally funded validation and training pilot. | 
 📅 | **Sandbox & Portal Support:** Custom data reference layer for sandbox projects and expanded portal support. | 
-📅 | **Project Type — Street Imagery Annotation:** Planning and core development for street-level imagery annotation projects. | 
+📅 | **Project Type Street Imagery Annotation:** Planning and core development for street-level imagery annotation projects. | 
 📅 |**Task Difficulty Estimation:** Research, model development, and integration into Tasking Manager. | 
-📅 | **Project Type - Conflation:** Dedicated data conflation project workflows for reviewing and merging external datasets into OSM. | 
+📅 | **Project Type Conflation:** Dedicated data conflation project workflows for reviewing and merging external datasets into OSM. | 
 📅 | **AI Integration:** Embedding Sam's [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment for users and teams, task difficulty estimation (research, model, and TM integration), and AI-assisted validation. | 
 📅 | **Volunteers & Community:** Updated documentation and training materials to support mapper and validator onboarding. | 
 📅 | **Latest Translations Update:** Keep all content current with the latest translations. | 
