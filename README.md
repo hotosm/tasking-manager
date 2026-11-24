@@ -79,17 +79,16 @@ Status | Feature | Release
 
 Status | Feature | Release
 -------|---------|---------
-📅 | **Project Type AI Prediction Validation (fAIr):** Localized AI model prediction validation projects and externally funded validation and training pilot. | 
-📅 | **Sandbox & Portal Support:** Custom data reference layer for sandbox projects and expanded portal support. | 
+📅 | **Project Type AI Prediction Validation (fAIr):** Localized AI model prediction validation projects.| 
+📅 | **Sandbox & Portal Support:** Custom data reference layer for sandbox projects and portal support related work. | 
 📅 | **Project Type Street Imagery Annotation:** Planning and core development for street-level imagery annotation projects. | 
 📅 |**Task Difficulty Estimation:** Research, model development, and integration into Tasking Manager. | 
 📅 | **Project Type Conflation:** Dedicated data conflation project workflows for reviewing and merging external datasets into OSM. | 
-📅 | **AI Integration:** Embedding Sam's [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment for users and teams, task difficulty estimation (research, model, and TM integration), and AI-assisted validation. | 
+📅 | Embedding Sam's [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315).| 
 📅 | **Volunteers & Community:** Updated documentation and training materials to support mapper and validator onboarding. | 
 📅 | **Latest Translations Update:** Keep all content current with the latest translations. | 
 📅 | **Improved Project Sorting & Filtering:** Better sorting and filtering options to enhance project discovery. | 
 📅 | **UI/UX Enhancements:** Continuous improvements to the user interface and experience. | 
-
 
 
 
