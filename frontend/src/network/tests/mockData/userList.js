@@ -58,6 +58,7 @@ export const userQueryDetails = {
   projectsNotifications: true,
   taskValidationNotification: true,
   taskInvalidationNotification: true,
+  taskAssignmentNotification: true,
   taskCommentsNotifications: true,
   teamsAnnouncementNotifications: false,
   gender: 'MALE',

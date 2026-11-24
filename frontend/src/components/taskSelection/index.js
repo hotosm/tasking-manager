@@ -6,12 +6,21 @@ import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 import { toast } from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
+import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { getTaskAction, userCanValidate } from '../../utils/projectPermissions';
-import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
+import {
+  getActiveStage,
+  getAssignmentConflicts,
+  getRandomTaskByAction,
+  groupAssignmentsByTask,
+  mergeAssignmentsIntoTasks,
+} from '../../utils/taskAssignments';
+import { getTaskIdsInPriorityAreas } from '../../utils/priorityAreaSelection';
 import { TasksMap } from './map.js';
 import { TabSelector } from './tabSelector.js';
 import { TaskList } from './taskList';
@@ -23,6 +32,7 @@ import { ProjectDetailMap } from '../projectDetail';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
 import { Alert } from '../alert';
+import { AssignModeFooter, AssignTasksModal, UnassignTasksModal } from './assignTasks';
 import messages from './messages';
 
 import {
@@ -31,27 +41,11 @@ import {
   useProjectContributionsQuery,
   useTasksQuery,
   useInvalidatedTasksQuery,
+  useTaskAssignmentsQuery,
 } from '../../api/projects';
 import { useTeamsQuery } from '../../api/teams';
 
 const TaskSelectionFooter = lazy(() => import('./footer'));
-
-const getRandomTaskByAction = (activities, taskAction) => {
-  if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
-    return getRandomArrayItem(
-      activities
-        .filter((task) => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus))
-        .map((task) => task.taskId),
-    );
-  }
-  if (['mapATask', 'mapAnotherTask'].includes(taskAction)) {
-    return getRandomArrayItem(
-      activities
-        .filter((task) => ['READY', 'INVALIDATED'].includes(task.taskStatus))
-        .map((task) => task.taskId),
-    );
-  }
-};
 
 export function TaskSelection({ project }: Object) {
   useSetProjectPageTitleTag(project);
@@ -73,6 +67,12 @@ export function TaskSelection({ project }: Object) {
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   const [showChoropleth, setShowChoropleth] = useState(false);
   const isFirstRender = useRef(true); // to check if component is rendered first time
+  const queryClient = useQueryClient();
+  const [isProjectManager] = useEditProjectAllowed(project);
+  // task assignment mode, available to project managers
+  const [assignMode, setAssignMode] = useState(false);
+  const [assignSelection, setAssignSelection] = useState([]);
+  const [assignModal, setAssignModal] = useState(null); // 'assign' | 'unassign' | null
 
   const { data: userTeams, isLoading: isUserTeamsLoading } = useTeamsQuery(
     {
@@ -116,11 +116,34 @@ export function TaskSelection({ project }: Object) {
     refetchOnWindowFocus: true,
   });
 
-  const tasks = useMemo(
-    () => (tasksData && activities ? updateTasksStatus(tasksData, activities) : undefined),
-    [tasksData, activities],
+  const { data: assignments } = useTaskAssignmentsQuery(projectId, { enabled: !!token });
+  const userTeamIds = useMemo(
+    () => (userTeams?.teams || []).map((team) => team.teamId),
+    [userTeams],
   );
-  const randomTask = activities && [getRandomTaskByAction(activities.activity, taskAction)];
+  const assignmentsByTask = useMemo(() => groupAssignmentsByTask(assignments), [assignments]);
+
+  const tasks = useMemo(
+    () =>
+      tasksData && activities
+        ? mergeAssignmentsIntoTasks(
+            updateTasksStatus(tasksData, activities),
+            assignmentsByTask,
+            user.id,
+            userTeamIds,
+          )
+        : undefined,
+    [tasksData, activities, assignmentsByTask, user.id, userTeamIds],
+  );
+  const randomTask = activities && [
+    getRandomTaskByAction(activities.activity, taskAction, {
+      assignmentsByTask,
+      userId: user.id,
+      userTeamIds,
+      // with enforced assignment, tasks assigned to others can't be locked (managers are exempt)
+      allowOthersAssigned: !project.enforceTaskAssignment || isProjectManager,
+    }),
+  ];
   const isValidationAllowed = user && userTeams && userCanValidate(user, project, userTeams.teams);
 
   useEffect(() => {
@@ -301,6 +324,68 @@ export function TaskSelection({ project }: Object) {
       ? selected
       : randomTask;
 
+  const taskStatusById = useMemo(
+    () =>
+      Object.fromEntries(
+        (activities?.activity || []).map((task) => [task.taskId, task.taskStatus]),
+      ),
+    [activities],
+  );
+  // selected tasks the project manager meant for someone else
+  const assignmentConflicts = getAssignmentConflicts(curatedSelectedTasks, taskAction, {
+    assignmentsByTask,
+    taskStatusById,
+    userId: user.id,
+    userTeamIds,
+  });
+  const isAssignmentBlocking =
+    !!project.enforceTaskAssignment && !isProjectManager && assignmentConflicts.length > 0;
+
+  const toggleAssignSelection = (taskId) =>
+    setAssignSelection((current) =>
+      current.includes(taskId) ? current.filter((id) => id !== taskId) : current.concat([taskId]),
+    );
+  const addToAssignSelection = (taskIds) =>
+    setAssignSelection((current) => Array.from(new Set([...current, ...taskIds])));
+  // in assign mode a click toggles the task in the selection, whatever its status
+  const handleSelectTask = assignMode
+    ? (selection) =>
+        typeof selection === 'object'
+          ? setAssignSelection(selection)
+          : toggleAssignSelection(selection)
+    : selectTask;
+
+  const toggleAssignMode = (enabled) => {
+    setAssignMode(enabled);
+    setAssignSelection([]);
+    setAssignModal(null);
+  };
+
+  const selectTasksInPriorityAreas = () => {
+    const taskIds = getTaskIdsInPriorityAreas(tasks, priorityAreas);
+    if (taskIds.length) {
+      addToAssignSelection(taskIds);
+    } else {
+      toast(<FormattedMessage {...messages.noTasksInPriorityAreas} />);
+    }
+  };
+
+  const selectUnassignedTasks = () => {
+    const taskIds = (tasks?.features || [])
+      .map((task) => task.properties)
+      .filter((task) => {
+        const stage = getActiveStage(task.taskStatus);
+        return stage && !assignmentsByTask[task.taskId]?.[stage];
+      })
+      .map((task) => task.taskId);
+    addToAssignSelection(taskIds);
+  };
+
+  const onAssignmentsChanged = () => {
+    queryClient.invalidateQueries({ queryKey: ['project-task-assignments', projectId] });
+    setAssignSelection([]);
+  };
+
   return (
     <div>
       <div className="cf vh-minus-200-ns">
@@ -328,8 +413,8 @@ export function TaskSelection({ project }: Object) {
                     tasks={tasks}
                     userCanValidate={isValidationAllowed}
                     updateActivities={getActivities}
-                    selectTask={selectTask}
-                    selected={selected}
+                    selectTask={handleSelectTask}
+                    selected={assignMode ? assignSelection : selected}
                     textSearch={textSearch}
                     setTextSearch={setTextSearch}
                     setZoomedTaskId={setZoomedTaskId}
@@ -354,7 +439,7 @@ export function TaskSelection({ project }: Object) {
                 {activeSection === 'contributions' ? (
                   <Contributions
                     project={project}
-                    selectTask={selectTask}
+                    selectTask={handleSelectTask}
                     tasks={tasks}
                     contribsData={contributions}
                     activeUser={activeUser}
@@ -391,8 +476,8 @@ export function TaskSelection({ project }: Object) {
                 loading={typeof project !== 'object'}
                 className="dib w-100 fl h-100-ns vh-75"
                 zoomedTaskId={zoomedTaskId}
-                selectTask={selectTask}
-                selected={selected}
+                selectTask={handleSelectTask}
+                selected={assignMode ? assignSelection : selected}
                 taskBordersOnly={false}
                 priorityAreas={priorityAreas}
                 animateZoom={false}
@@ -402,23 +487,69 @@ export function TaskSelection({ project }: Object) {
                 showHoverTooltip
                 onToggleChoropleth={() => setShowChoropleth((v) => !v)}
               />
-              <TasksMapLegend showChoropleth={showChoropleth} />
+              <TasksMapLegend
+                showChoropleth={showChoropleth}
+                showAssignments={!!assignments?.length}
+              />
             </ReactPlaceholder>
           )}
         </div>
       </div>
       <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
-        <Suspense fallback={<div>Loading...</div>}>
-          <TaskSelectionFooter
-            defaultUserEditor={user ? user.defaultEditor : 'iD'}
-            project={project}
-            tasks={tasks}
-            taskAction={taskAction}
-            selectedTasks={curatedSelectedTasks}
-            setSelectedTasks={setSelectedTasks}
+        {assignMode ? (
+          <AssignModeFooter
+            selectedTasks={assignSelection}
+            hasPriorityAreas={!!priorityAreas?.length}
+            onSelectPriorityAreas={selectTasksInPriorityAreas}
+            onSelectUnassigned={selectUnassignedTasks}
+            onClearSelection={() => setAssignSelection([])}
+            onAssign={() => setAssignModal('assign')}
+            onUnassign={() => setAssignModal('unassign')}
+            onExit={() => toggleAssignMode(false)}
           />
-        </Suspense>
+        ) : (
+          <Suspense fallback={<div>Loading...</div>}>
+            <TaskSelectionFooter
+              defaultUserEditor={user ? user.defaultEditor : 'iD'}
+              project={project}
+              tasks={tasks}
+              taskAction={taskAction}
+              selectedTasks={curatedSelectedTasks}
+              setSelectedTasks={setSelectedTasks}
+              assignmentConflicts={assignmentConflicts}
+              isAssignmentBlocking={isAssignmentBlocking}
+              onStartAssigning={token && isProjectManager ? () => toggleAssignMode(true) : null}
+            />
+          </Suspense>
+        )}
       </div>
+      {assignMode && assignModal && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={false}
+          onClose={() => setAssignModal(null)}
+        >
+          {(close) =>
+            assignModal === 'assign' ? (
+              <AssignTasksModal
+                project={project}
+                taskIds={assignSelection}
+                close={close}
+                onSuccess={onAssignmentsChanged}
+              />
+            ) : (
+              <UnassignTasksModal
+                project={project}
+                taskIds={assignSelection}
+                close={close}
+                onSuccess={onAssignmentsChanged}
+              />
+            )
+          }
+        </Popup>
+      )}
     </div>
   );
 }

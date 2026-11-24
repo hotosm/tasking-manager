@@ -52,6 +52,7 @@ export const getProjectSummary = (id) => ({
   validationPermission: 'LEVEL',
   allowedUsernames: [],
   enforceRandomTaskSelection: id === PROJECT_ID_WITH_RANDOM_TASK_ENFORCED,
+  enforceTaskAssignment: false,
   private: false,
   teams: [],
   projectInfo: {

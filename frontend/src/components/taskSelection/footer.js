@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
 import messages from './messages';
@@ -15,6 +15,33 @@ import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
+import { Alert } from '../alert';
+import { getAssigneeName } from '../../utils/taskAssignments';
+import { ButtonDivider } from './assignTasks';
+
+export function AssignmentConflictAlert({ assignments, isBlocking }) {
+  const intl = useIntl();
+  if (!assignments || !assignments.length) return null;
+  const assignees = Array.from(
+    new Set(
+      assignments.map((assignment) =>
+        assignment.assigneeType === 'TEAM'
+          ? intl.formatMessage(messages.assigneeTeam, { name: getAssigneeName(assignment) })
+          : getAssigneeName(assignment),
+      ),
+    ),
+  ).join(', ');
+  return (
+    <div className="w-100 cf pt2">
+      <Alert type={isBlocking ? 'error' : 'warning'} compact>
+        <FormattedMessage
+          {...messages[isBlocking ? 'assignedToOtherBlocked' : 'assignedToOtherWarning']}
+          values={{ count: assignments.length, assignees }}
+        />
+      </Alert>
+    </div>
+  );
+}
 
 const TaskSelectionFooter = ({
   defaultUserEditor,
@@ -23,6 +50,9 @@ const TaskSelectionFooter = ({
   taskAction,
   selectedTasks,
   setSelectedTasks,
+  assignmentConflicts = [],
+  isAssignmentBlocking = false,
+  onStartAssigning = null,
 }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -207,6 +237,10 @@ const TaskSelectionFooter = ({
           )}
         </Popup>
       )}
+      <AssignmentConflictAlert
+        assignments={assignmentConflicts}
+        isBlocking={isAssignmentBlocking}
+      />
       <div className="w-25-ns w-40 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
@@ -235,9 +269,17 @@ const TaskSelectionFooter = ({
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
-        <div className="mt3">
+        <div className="mt3 flex flex-wrap justify-end items-center">
+          {onStartAssigning && (
+            <>
+              <Button className="white bg-red fw5 mb1" onClick={onStartAssigning}>
+                <FormattedMessage {...messages.assignTasksMode} />
+              </Button>
+              <ButtonDivider />
+            </>
+          )}
           <Button
-            className="white bg-red fw5"
+            className="white bg-red fw5 mb1"
             onClick={() => {
               if (!token) {
                 navigate('/login', {
@@ -249,6 +291,7 @@ const TaskSelectionFooter = ({
               }
             }}
             loading={isPending}
+            disabled={isAssignmentBlocking}
           >
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
@@ -274,6 +317,10 @@ TaskSelectionFooter.propTypes = {
   taskAction: PropTypes.string,
   selectedTasks: PropTypes.array,
   setSelectedTasks: PropTypes.func,
+  assignmentConflicts: PropTypes.array,
+  isAssignmentBlocking: PropTypes.bool,
+  // given to project managers: opens the task assignment mode
+  onStartAssigning: PropTypes.func,
 };
 
 export default TaskSelectionFooter;

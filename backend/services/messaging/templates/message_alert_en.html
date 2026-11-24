@@ -17,6 +17,9 @@
     {% if values['MESSAGE_TYPE'] == 8 %}
       <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['TASK_LINK']}}">Task {{values['TASK_ID']}}</a> in <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
     {% endif %}
+    {% if values['MESSAGE_TYPE'] == 12 %}
+      <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> assigned tasks to you on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
+    {% endif %}
     {% if values['MESSAGE_TYPE'] == 9 %}
       <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_NAME']}} #{{values['PROJECT_ID']}}</a>:</p>
     {% endif %}

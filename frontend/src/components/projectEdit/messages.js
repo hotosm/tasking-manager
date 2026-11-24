@@ -400,6 +400,19 @@ export default defineMessages({
     defaultMessage:
       'If checked, users must edit tasks at random for the initial editing stage (managers and admins are exempt).',
   },
+  taskAssignment: {
+    id: 'projects.formInputs.task_assignment',
+    defaultMessage: 'Task assignment',
+  },
+  enforceTaskAssignment: {
+    id: 'projects.formInputs.task_assignment.enforce',
+    defaultMessage: 'Only assignees can work on assigned tasks',
+  },
+  enforceTaskAssignmentDescription: {
+    id: 'projects.formInputs.task_assignment.enforce.description',
+    defaultMessage:
+      'Project managers can assign tasks to a user or a team from the tasks page. When this is off, assignments are a guide: other users can still map or validate an assigned task after seeing a warning. When this is on, only the assignee (or members of the assigned team) can map or validate an assigned task. Unassigned tasks stay open to everyone, and managers and admins are exempt.',
+  },
   rapidPowerUser: {
     id: 'projects.formInputs.rapid_power_user',
     defaultMessage: 'Enable Rapid Power User Features',

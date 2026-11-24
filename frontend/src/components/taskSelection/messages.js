@@ -98,6 +98,15 @@ export default defineMessages({
     defaultMessage:
       'Tasks cannot be validated by the same user who marked task as mapped or badimagery',
   },
+  TaskAssignedToOtherError: {
+    id: 'project.tasks.task_assigned_to_other_error.title',
+    defaultMessage: 'Task assigned to someone else',
+  },
+  TaskAssignedToOtherErrorDescription: {
+    id: 'project.tasks.task_assigned_to_other_error.description',
+    defaultMessage:
+      'In this project only the assignee, or members of the assigned team, can work on an assigned task. Select another task or ask a project manager to reassign it.',
+  },
   JOSMError: {
     id: 'project.tasks.josm_error',
     defaultMessage: 'Connection with JOSM failed',
@@ -974,5 +983,201 @@ export default defineMessages({
   invalidationChoroplethRampHint: {
     id: 'project.tasks.map.invalidationChoropleth.legend.rampHint',
     defaultMessage: 'Colour blends continuously between stops',
+  },
+  // Task assignment
+  assignedForMapping: {
+    id: 'project.tasks.assignment.mapping',
+    defaultMessage: 'Mapping assigned to {assignee}',
+  },
+  assignedForValidation: {
+    id: 'project.tasks.assignment.validation',
+    defaultMessage: 'Validation assigned to {assignee}',
+  },
+  assigneeTeam: {
+    id: 'project.tasks.assignment.assignee.team',
+    defaultMessage: '{name} (team)',
+  },
+  legendAssignedToMe: {
+    id: 'project.tasks.map.legend.assigned_to_me',
+    defaultMessage: 'Assigned to you or your team',
+  },
+  legendAssignedToOther: {
+    id: 'project.tasks.map.legend.assigned_to_other',
+    defaultMessage: 'Assigned to someone else',
+  },
+  filterAssignedToMe: {
+    id: 'project.tasks.filter.assigned_to_me',
+    defaultMessage: 'Assigned to me',
+  },
+  assignedToOtherWarning: {
+    id: 'project.tasks.assignment.other.warning',
+    defaultMessage:
+      '{count, plural, one {This task is} other {Some of these tasks are}} assigned to {assignees}. You can still work on {count, plural, one {it} other {them}}, but the project manager meant {count, plural, one {it} other {them}} for someone else.',
+  },
+  assignedToOtherBlocked: {
+    id: 'project.tasks.assignment.other.blocked',
+    defaultMessage:
+      '{count, plural, one {This task is} other {Some of these tasks are}} assigned to {assignees}. In this project only the assignee can work on assigned tasks.',
+  },
+  assignTasksMode: {
+    id: 'project.tasks.assignment.mode.enter',
+    defaultMessage: 'Assign tasks',
+  },
+  exitAssignMode: {
+    id: 'project.tasks.assignment.mode.exit',
+    defaultMessage: 'Done assigning',
+  },
+  assignModeHint: {
+    id: 'project.tasks.assignment.mode.hint',
+    defaultMessage: 'Click tasks on the map or in the list to add them to the selection.',
+  },
+  selectTasksInPriorityAreas: {
+    id: 'project.tasks.assignment.select.priority_areas',
+    defaultMessage: 'Select tasks in priority areas',
+  },
+  selectUnassignedTasks: {
+    id: 'project.tasks.assignment.select.unassigned',
+    defaultMessage: 'Select unassigned tasks',
+  },
+  clearSelection: {
+    id: 'project.tasks.assignment.select.clear',
+    defaultMessage: 'Clear selection',
+  },
+  selectedTasksCount: {
+    id: 'project.tasks.assignment.selected_count',
+    defaultMessage: '{number, plural, one {# task selected} other {# tasks selected}}',
+  },
+  noTasksInPriorityAreas: {
+    id: 'project.tasks.assignment.select.priority_areas.none',
+    defaultMessage: 'No tasks overlap the priority areas.',
+  },
+  assignSelectedTasks: {
+    id: 'project.tasks.assignment.assign_selected',
+    defaultMessage: 'Assign {number, plural, one {# task} other {# tasks}}',
+  },
+  unassignSelectedTasks: {
+    id: 'project.tasks.assignment.unassign_selected',
+    defaultMessage: 'Unassign {number, plural, one {# task} other {# tasks}}',
+  },
+  assignToUser: {
+    id: 'project.tasks.assignment.modal.user',
+    defaultMessage: 'User',
+  },
+  assignToTeam: {
+    id: 'project.tasks.assignment.modal.team',
+    defaultMessage: 'Team',
+  },
+  assignStage: {
+    id: 'project.tasks.assignment.modal.stage',
+    defaultMessage: 'Assign for',
+  },
+  stage_MAPPING: {
+    id: 'project.tasks.assignment.stage.mapping',
+    defaultMessage: 'Mapping',
+  },
+  stage_VALIDATION: {
+    id: 'project.tasks.assignment.stage.validation',
+    defaultMessage: 'Validation',
+  },
+  stage_BOTH: {
+    id: 'project.tasks.assignment.stage.both',
+    defaultMessage: 'Mapping and validation',
+  },
+  searchUsers: {
+    id: 'project.tasks.assignment.modal.search_users',
+    defaultMessage: 'Search for a user...',
+  },
+  searchTeams: {
+    id: 'project.tasks.assignment.modal.search_teams',
+    defaultMessage: 'Search for a team...',
+  },
+  projectTeams: {
+    id: 'project.tasks.assignment.modal.project_teams',
+    defaultMessage: 'Teams on this project',
+  },
+  otherTeams: {
+    id: 'project.tasks.assignment.modal.other_teams',
+    defaultMessage: 'Other teams',
+  },
+  noOptions: {
+    id: 'project.tasks.assignment.modal.no_options',
+    defaultMessage: 'No matches',
+  },
+  notifyAssignees: {
+    id: 'project.tasks.assignment.modal.notify',
+    defaultMessage: 'Notify the assignee (team assignments notify every active member)',
+  },
+  assign: {
+    id: 'project.tasks.assignment.modal.assign',
+    defaultMessage: 'Assign',
+  },
+  unassign: {
+    id: 'project.tasks.assignment.modal.unassign',
+    defaultMessage: 'Unassign',
+  },
+  done: {
+    id: 'project.tasks.assignment.modal.done',
+    defaultMessage: 'Done',
+  },
+  assignSuccess: {
+    id: 'project.tasks.assignment.success',
+    defaultMessage: '{number, plural, one {# task assigned} other {# tasks assigned}}',
+  },
+  assignWarningsTitle: {
+    id: 'project.tasks.assignment.warnings.title',
+    defaultMessage: 'Tasks assigned, but check this:',
+  },
+  warning_AssigneeMappingLevelTooLow: {
+    id: 'project.tasks.assignment.warning.mapping_level',
+    defaultMessage:
+      "The assignee's mapping level is below what this project requires, so they may not be able to work on these tasks yet.",
+  },
+  warning_AssigneeIsMapper: {
+    id: 'project.tasks.assignment.warning.assignee_is_mapper',
+    defaultMessage:
+      'The assignee mapped some of these tasks, so they will not be able to validate them.',
+  },
+  assignError_InvalidData: {
+    id: 'project.tasks.assignment.error.invalid_data',
+    defaultMessage: 'The assignment request was not valid. Check the selection and try again.',
+  },
+  assignError_UserBlocked: {
+    id: 'project.tasks.assignment.error.user_blocked',
+    defaultMessage: 'This user is blocked and cannot be assigned tasks.',
+  },
+  assignError_AssigneeNotPermitted: {
+    id: 'project.tasks.assignment.error.not_permitted',
+    defaultMessage:
+      'This user cannot work on this project. Add them (or one of their teams) to the project first.',
+  },
+  assignError_TeamNotOnProject: {
+    id: 'project.tasks.assignment.error.team_not_on_project',
+    defaultMessage:
+      'This project only allows its teams to work on it. Add the team to the project with a suitable role first.',
+  },
+  assignError_UserPermissionError: {
+    id: 'project.tasks.assignment.error.permission',
+    defaultMessage: 'Only managers of this project can assign tasks.',
+  },
+  assignErrorGeneric: {
+    id: 'project.tasks.assignment.error.generic',
+    defaultMessage: 'The tasks could not be assigned. Please try again.',
+  },
+  unassignTitle: {
+    id: 'project.tasks.assignment.unassign.title',
+    defaultMessage: 'Unassign {number, plural, one {# task} other {# tasks}}',
+  },
+  unassignDescription: {
+    id: 'project.tasks.assignment.unassign.description',
+    defaultMessage: 'Remove the assignment of the selected tasks for:',
+  },
+  unassignSuccess: {
+    id: 'project.tasks.assignment.unassign.success',
+    defaultMessage:
+      '{number, plural, =0 {No assignments removed} one {# assignment removed} other {# assignments removed}}',
+  },
+  unassignError: {
+    id: 'project.tasks.assignment.unassign.error',
+    defaultMessage: 'The assignments could not be removed. Please try again.',
   },
 });

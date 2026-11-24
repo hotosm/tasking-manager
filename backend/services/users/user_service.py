@@ -32,6 +32,7 @@ from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.task import Task, TaskHistory
+from backend.models.postgis.task_assignment import TaskAssignment
 from backend.models.postgis.user import (
     User,
     UserEmail,
@@ -255,6 +256,7 @@ class UserService:
             "tasks_notifications": True,
             "task_validation_notification": True,
             "task_invalidation_notification": True,
+            "task_assignment_notification": True,
             "tasks_comments_notifications": False,
             "teams_announcement_notifications": True,
             "date_registered": datetime.datetime.utcnow(),
@@ -396,6 +398,9 @@ class UserService:
                 # Delete all messages (AKA notifications) for the user
                 message_types: List[int] = [mt.value for mt in MessageType]
                 await Message.delete_all_messages(user_id, db, message_types)
+
+                # A deleted account can't work on tasks, so free up its assignments.
+                await TaskAssignment.delete_for_user(user_id, db)
                 # Leave interests, licenses, organizations, and tasks alone for now.
 
             original_dto = await UserService.get_user_dto_by_id(

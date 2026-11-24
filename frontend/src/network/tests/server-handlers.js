@@ -72,6 +72,12 @@ import {
 } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
+import {
+  noTaskAssignments,
+  assignTasksSuccess,
+  unassignTasksSuccess,
+  assignedTasks,
+} from './mockData/taskAssignments';
 import { notifications, ownCountUnread } from './mockData/notifications';
 import { systemLanguages } from './mockData/header';
 import { authLogin, setUser, userRegister } from './mockData/auth';
@@ -86,6 +92,19 @@ import {
 } from './mockData/taskHistory';
 
 const handlers = [
+  // TASK ASSIGNMENT
+  rest.get(API_URL + 'projects/:id/tasks/queries/assignments/', async (req, res, ctx) => {
+    return res(ctx.json(noTaskAssignments));
+  }),
+  rest.post(API_URL + 'projects/:id/tasks/actions/assign/', async (req, res, ctx) => {
+    return res(ctx.json(assignTasksSuccess));
+  }),
+  rest.post(API_URL + 'projects/:id/tasks/actions/unassign/', async (req, res, ctx) => {
+    return res(ctx.json(unassignTasksSuccess));
+  }),
+  rest.get(API_URL + 'users/queries/tasks/assigned/', async (req, res, ctx) => {
+    return res(ctx.json(assignedTasks));
+  }),
   rest.get(API_URL + 'projects/:id/queries/summary/', async (req, res, ctx) => {
     return res(ctx.json(getProjectSummary(Number(req.params.id))));
   }),

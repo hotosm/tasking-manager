@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import html
 import re
 from typing import List
 
@@ -129,6 +130,110 @@ class MessageService:
         await MessageService._push_messages(messages, db)
 
     @staticmethod
+    async def send_task_assignment_messages(
+        project_id: int,
+        task_ids: List[int],
+        stage: str,
+        assigner_id: int,
+        user_id: int = None,
+        team_id: int = None,
+    ):
+        """
+        Tell assignees about new task assignments: one message per person per assign
+        action, not per task. A team assignment messages every active team member.
+        Runs as a background task, so it opens its own connection.
+        """
+        if not task_ids:
+            return
+        async with db_connection.database.connection() as db:
+            project = await Project.get(project_id, db)
+            if project is None:
+                return
+            project_name = await db.fetch_val(
+                """
+                SELECT name FROM project_info
+                WHERE project_id = :project_id AND locale = :locale
+                """,
+                values={"project_id": project_id, "locale": project.default_locale},
+            )
+
+            team_name = None
+            if user_id is not None:
+                recipient_ids = [user_id]
+            else:
+                team_name = await db.fetch_val(
+                    "SELECT name FROM teams WHERE id = :team_id",
+                    values={"team_id": team_id},
+                )
+                members = await db.fetch_all(
+                    """
+                    SELECT user_id FROM team_members
+                    WHERE team_id = :team_id AND active = TRUE
+                    """,
+                    values={"team_id": team_id},
+                )
+                recipient_ids = [member["user_id"] for member in members]
+            # Assigning tasks to yourself doesn't need a notification.
+            recipient_ids = [rid for rid in recipient_ids if rid != assigner_id]
+            if not recipient_ids:
+                return
+
+            recipients = await db.fetch_all(
+                "SELECT * FROM users WHERE id = ANY(CAST(:ids AS bigint[]))",
+                values={"ids": recipient_ids},
+            )
+            assigner = await UserService.get_user_by_id(assigner_id, db)
+
+            task_ids = sorted(task_ids)
+            task_count = len(task_ids)
+            shown_ids = task_ids[:10]
+            task_links = ", ".join(
+                MessageService.get_task_link(project_id, task_id, highlight=True)
+                for task_id in shown_ids
+            )
+            if task_count > len(shown_ids):
+                task_links += f" and {task_count - len(shown_ids)} more"
+            tasks_text = "1 task" if task_count == 1 else f"{task_count} tasks"
+            stage_action = "map" if stage == "MAPPING" else "validate"
+            assignee_text = (
+                "you" if team_name is None else f"your team {html.escape(team_name)}"
+            )
+            project_link = MessageService.get_project_link(project_id, project_name)
+            assigner_link = MessageService.get_user_link(assigner.username)
+
+            messages = []
+            for recipient in recipients:
+                text_template = get_txt_template("task_assignment_message_en.txt")
+                text_template = template_var_replacing(
+                    text_template,
+                    [
+                        ["[USERNAME]", recipient.username],
+                        ["[ASSIGNER]", assigner_link],
+                        ["[ASSIGNEE]", assignee_text],
+                        ["[TASK_COUNT]", tasks_text],
+                        ["[STAGE_ACTION]", stage_action],
+                        ["[PROJECT_LINK]", project_link],
+                        ["[TASK_LINKS]", task_links],
+                        ["[ORG_NAME]", settings.ORG_NAME],
+                    ],
+                )
+                message = Message()
+                message.message_type = MessageType.TASK_ASSIGNMENT_NOTIFICATION.value
+                message.project_id = project_id
+                message.task_id = task_ids[0] if task_count == 1 else None
+                message.from_user_id = assigner_id
+                message.to_user_id = recipient.id
+                message.subject = (
+                    f"{assigner_link} assigned {assignee_text} {tasks_text} "
+                    f"to {stage_action} in Project {project_link}"
+                )
+                message.message = text_template
+                messages.append(
+                    dict(message=message, user=recipient, project_name=project_name)
+                )
+            await MessageService._push_messages(messages, db)
+
+    @staticmethod
     async def send_message_to_all_contributors(
         project_id: int, message_dto: MessageDTO
     ):
@@ -215,6 +320,11 @@ class MessageService:
             if (
                 user.task_invalidation_notification is False
                 and obj.message_type == MessageType.INVALIDATION_NOTIFICATION.value
+            ):
+                continue
+            if (
+                user.task_assignment_notification is False
+                and obj.message_type == MessageType.TASK_ASSIGNMENT_NOTIFICATION.value
             ):
                 continue
             # If the notification is enabled, send an email

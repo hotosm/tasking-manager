@@ -12,6 +12,7 @@ from shapely.ops import split
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.postgis.task import Task, TaskAction, TaskStatus
+from backend.models.postgis.task_assignment import TaskAssignment
 from backend.models.postgis.utils import InvalidGeoJson
 
 
@@ -219,6 +220,15 @@ class SplitService:
             values={"task_id": task_id, "project_id": project_id},
         )
 
+        # Delete related task_assignments records
+        await db.execute(
+            """
+            DELETE FROM task_assignments
+            WHERE task_id = :task_id AND project_id = :project_id
+            """,
+            values={"task_id": task_id, "project_id": project_id},
+        )
+
         # Delete related task_history records
         await db.execute(
             """
@@ -323,6 +333,10 @@ class SplitService:
             await db.execute(query, values=task_values)
             await Task.copy_task_history(
                 split_task_dto.task_id, new_task.id, split_task_dto.project_id, db
+            )
+            # Child tasks keep the parent's assignments (deleted with the parent below).
+            await TaskAssignment.copy_to_tasks(
+                split_task_dto.project_id, split_task_dto.task_id, [new_task.id], db
             )
             await Task.clear_task_lock(new_task.id, split_task_dto.project_id, db)
             await Task.set_task_history(

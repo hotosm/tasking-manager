@@ -234,6 +234,9 @@ class ProjectDTO(BaseModel):
     enforce_random_task_selection: Optional[bool] = Field(
         False, alias="enforceRandomTaskSelection"
     )
+    enforce_task_assignment: Optional[bool] = Field(
+        False, alias="enforceTaskAssignment"
+    )
     private: bool
     changeset_comment: Optional[str] = Field(None, alias="changesetComment")
     osmcha_filter_id: Optional[str] = Field(None, alias="osmchaFilterId")
@@ -566,6 +569,7 @@ class ProjectSummary(BaseModel):
     random_task_selection_enforced: bool = Field(
         default=False, alias="enforceRandomTaskSelection"
     )
+    task_assignment_enforced: bool = Field(default=False, alias="enforceTaskAssignment")
     private: Optional[bool] = Field(None, alias="private")
     sandbox: Optional[bool] = Field(None)
     allowed_users: List[str] = Field(default_factory=list, alias="allowedUsernames")

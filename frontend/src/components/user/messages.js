@@ -170,6 +170,15 @@ export default defineMessages({
     id: 'user.notifications.task.invalidation.description',
     defaultMessage: 'Receive an email when a task you have contributed to is invalidated.',
   },
+  taskAssignmentUpdates: {
+    id: 'user.notifications.tasks.assignment',
+    defaultMessage: 'Task assignment emails',
+  },
+  taskAssignmentUpdatesDescription: {
+    id: 'user.notifications.task.assignment.description',
+    defaultMessage:
+      'Receive an email when a project manager assigns tasks to you or to a team you belong to.',
+  },
   questionsAndComments: {
     id: 'user.notifications.questionsAndComments',
     defaultMessage: 'Questions and comments',

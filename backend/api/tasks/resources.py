@@ -16,6 +16,7 @@ from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.mapping_service import MappingService
 from backend.services.project_service import ProjectService, ProjectServiceError
+from backend.services.task_assignment_service import TaskAssignmentService
 from backend.services.users.authentication_service import login_required_optional, tm
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
@@ -440,6 +441,67 @@ async def get_mapped_tasks(project_id: int, db: Database = Depends(get_db)):
     await ProjectService.get_project_by_id(project_id, db)
     mapped_tasks = await ValidatorService.get_mapped_tasks_by_user(project_id, db)
     return mapped_tasks.model_dump(by_alias=True)
+
+
+@router.get("/{project_id}/tasks/queries/assignments/")
+async def get_task_assignments(
+    project_id: int,
+    user: Optional[AuthUserDTO] = Depends(login_required_optional),
+    db: Database = Depends(get_db),
+):
+    """
+    Get who each task on a project is assigned to, per stage
+    ---
+    tags:
+        - tasks
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Unique project ID
+          required: true
+          type: integer
+          default: 1
+    responses:
+        200:
+            description: Task assignments returned
+        403:
+            description: Private or draft project the user can't see
+        404:
+            description: Project not found
+        500:
+            description: Internal Server Error
+    """
+    # Same visibility rules as GET /projects/{project_id}/tasks/
+    is_private, status = await ProjectService.get_project_privacy_and_status(
+        project_id, db
+    )
+    if is_private or status == ProjectStatus.DRAFT.value:
+        forbidden = JSONResponse(
+            content={
+                "Error": "User not permitted: Private Project",
+                "SubCode": "PrivateProject",
+            },
+            status_code=403,
+        )
+        if user is None:
+            return forbidden
+        try:
+            if not await ProjectService.get_project_dto_for_mapper(
+                project_id, user.id, db
+            ):
+                return forbidden
+        except ProjectServiceError:
+            return forbidden
+
+    assignments = await TaskAssignmentService.get_project_assignments(project_id, db)
+    return assignments.model_dump(by_alias=True)
 
 
 @router.get("/{username}/tasks/queries/own/invalidated/")

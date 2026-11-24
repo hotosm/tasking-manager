@@ -211,6 +211,7 @@ class OrganisationService:
             LEFT JOIN users u ON tm.user_id = u.id
             WHERE t.organisation_id = :org_id
             GROUP BY t.id
+            ORDER BY t.id
         """
         teams_records = await db.fetch_all(
             teams_query, values={"org_id": org.organisation_id}

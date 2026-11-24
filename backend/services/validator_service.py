@@ -21,7 +21,7 @@ from backend.models.dtos.validator_dto import (
     UnlockAfterValidationDTO,
 )
 from backend.models.postgis.project_info import ProjectInfo
-from backend.models.postgis.statuses import ValidatingNotAllowed
+from backend.models.postgis.statuses import TaskAssignmentStage, ValidatingNotAllowed
 from backend.models.postgis.task import (
     Task,
     TaskHistory,
@@ -34,6 +34,7 @@ from backend.services.mapping_service import MappingService
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectAdminService, ProjectService
 from backend.services.stats_service import StatsService
+from backend.services.task_assignment_service import TaskAssignmentService
 from backend.services.users.user_service import UserService
 
 
@@ -83,6 +84,16 @@ class ValidatorService:
                     raise ValidatorServiceError(
                         "CannotValidateMappedTask-"
                         + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    )
+                if not await TaskAssignmentService.user_may_lock(
+                    validation_dto.project_id,
+                    task_id,
+                    validation_dto.user_id,
+                    TaskAssignmentStage.VALIDATION,
+                    db,
+                ):
+                    raise ValidatorServiceError(
+                        f"TaskAssignedToOther- Task {task_id} is assigned to another user or team"
                     )
 
             tasks_to_lock.append(task)

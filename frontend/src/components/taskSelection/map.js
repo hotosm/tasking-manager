@@ -14,12 +14,41 @@ import messages from './messages';
 import { TASK_COLOURS, MAP_STYLE } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
+import assignedToMe from '../../assets/img/assigned-to-me.svg';
+import assignedToOther from '../../assets/img/assigned-to-other.svg';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
 
 let redlockIcon = new Image(17, 20);
 redlockIcon.src = redlock;
+
+let assignedToMeIcon = new Image(20, 20);
+assignedToMeIcon.src = assignedToMe;
+
+let assignedToOtherIcon = new Image(20, 20);
+assignedToOtherIcon.src = assignedToOther;
+
+// Usernames and team names are user input, so escape them before building popup HTML
+export const escapeHtml = (value) =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+// SVG icons may still be loading when the layers are defined; add them once they are ready
+const addImageWhenLoaded = (map, name, image) => {
+  if (map.hasImage(name)) return;
+  if (image.complete && image.naturalWidth) {
+    map.addImage(name, image);
+  } else {
+    image.addEventListener('load', () => !map.hasImage(name) && map.addImage(name, image), {
+      once: true,
+    });
+  }
+};
 
 export const TasksMap = ({
   className,
@@ -149,6 +178,8 @@ export const TasksMap = ({
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
         map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
+        addImageWhenLoaded(map, 'assigned-mine', assignedToMeIcon);
+        addImageWhenLoaded(map, 'assigned-other', assignedToOtherIcon);
 
         map.addSource('tasks', {
           type: 'geojson',
@@ -174,7 +205,20 @@ export const TasksMap = ({
           const all_condition = ['all', locked, ['==', ['get', 'lockedBy'], authDetails.id]];
           taskStatusCondition = [...taskStatusCondition, ...[all_condition, 'redlock']];
         }
-        taskStatusCondition = [...taskStatusCondition, ...[locked, 'lock', '']];
+        // the lock icon wins; otherwise show who the task is assigned to (see
+        // mergeAssignmentsIntoTasks for assignmentMarker)
+        taskStatusCondition = [
+          ...taskStatusCondition,
+          ...[
+            locked,
+            'lock',
+            ['==', ['get', 'assignmentMarker'], 'mine'],
+            'assigned-mine',
+            ['==', ['get', 'assignmentMarker'], 'other'],
+            'assigned-other',
+            '',
+          ],
+        ];
 
         map.addLayer({
           id: 'tasks-icon',
@@ -636,13 +680,38 @@ export const TasksMap = ({
 
     let lastTaskId = null;
 
-    const buildPopupHTML = ({ taskId, taskStatus, mappedBy }) => {
+    const formatAssignee = (name, isTeam) =>
+      escapeHtml(isTeam ? intl.formatMessage(messages.assigneeTeam, { name }) : name);
+
+    const buildPopupHTML = ({
+      taskId,
+      taskStatus,
+      mappedBy,
+      mappingAssignee,
+      mappingAssigneeIsTeam,
+      validationAssignee,
+      validationAssigneeIsTeam,
+    }) => {
       const lines = [
         `<div class="fw6">${intl.formatMessage(messages.taskId, { id: taskId })}</div>`,
       ];
       const statusMessage = messages[`taskStatus_${taskStatus}`];
       if (statusMessage) {
         lines.push(`<div>${intl.formatMessage(statusMessage)}</div>`);
+      }
+      if (mappingAssignee) {
+        lines.push(
+          `<div>${intl.formatMessage(messages.assignedForMapping, {
+            assignee: formatAssignee(mappingAssignee, mappingAssigneeIsTeam),
+          })}</div>`,
+        );
+      }
+      if (validationAssignee) {
+        lines.push(
+          `<div>${intl.formatMessage(messages.assignedForValidation, {
+            assignee: formatAssignee(validationAssignee, validationAssigneeIsTeam),
+          })}</div>`,
+        );
       }
       if (showChoropleth && hasInvalidationData) {
         lines.push(

@@ -154,6 +154,26 @@ export const useInvalidatedTasksQuery = (projectId, otherOptions = {}) => {
   });
 };
 
+export const useTaskAssignmentsQuery = (projectId, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const ASSIGNMENTS_REFETCH_INTERVAL = 1000 * 60;
+  const fetchTaskAssignments = ({ signal }) => {
+    return api(token).get(`projects/${projectId}/tasks/queries/assignments/`, {
+      signal,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['project-task-assignments', projectId],
+    queryFn: fetchTaskAssignments,
+    select: (data) => data.data.assignments,
+    refetchIntervalInBackground: false,
+    refetchInterval: ASSIGNMENTS_REFETCH_INTERVAL,
+    refetchOnWindowFocus: true,
+    ...otherOptions,
+  });
+};
+
 export const usePriorityAreasQuery = (projectId) => {
   const fetchProjectPriorityArea = (signal) => {
     return api().get(`projects/${projectId}/queries/priority-areas/`, {
@@ -213,6 +233,15 @@ export const splitTask = (projectId, taskId, token, locale) => {
 
 export const submitMappingTask = (url, payload, token, locale) => {
   return api(token, locale).post(url, payload);
+};
+
+// TASK ASSIGNMENT
+export const assignTasks = (projectId, payload, token, locale) => {
+  return api(token, locale).post(`projects/${projectId}/tasks/actions/assign/`, payload);
+};
+
+export const unassignTasks = (projectId, payload, token, locale) => {
+  return api(token, locale).post(`projects/${projectId}/tasks/actions/unassign/`, payload);
 };
 
 // VALIDATION

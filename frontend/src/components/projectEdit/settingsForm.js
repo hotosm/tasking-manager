@@ -130,6 +130,25 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           <FormattedMessage {...messages.randomTaskSelectionDescription} />
         </p>
       </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.taskAssignment} />
+        </label>
+        <SwitchToggle
+          label={<FormattedMessage {...messages.enforceTaskAssignment} />}
+          labelPosition="right"
+          isChecked={!!projectInfo.enforceTaskAssignment}
+          onChange={() =>
+            setProjectInfo({
+              ...projectInfo,
+              enforceTaskAssignment: !projectInfo.enforceTaskAssignment,
+            })
+          }
+        />
+        <p className={styleClasses.pClass}>
+          <FormattedMessage {...messages.enforceTaskAssignmentDescription} />
+        </p>
+      </div>
       {(projectInfo.mappingEditors.includes('RAPID') ||
         projectInfo.validationEditors.includes('RAPID')) && (
         <div className={styleClasses.divClass}>

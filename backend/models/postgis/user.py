@@ -79,6 +79,9 @@ class User(Base):
     tasks_notifications = Column(Boolean, default=True, nullable=False)
     task_validation_notification = Column(Boolean, default=True, nullable=False)
     task_invalidation_notification = Column(Boolean, default=True, nullable=False)
+    task_assignment_notification = Column(
+        Boolean, default=True, nullable=False, server_default=sa.text("true")
+    )
     tasks_comments_notifications = Column(Boolean, default=False, nullable=False)
     teams_announcement_notifications = Column(Boolean, default=True, nullable=False)
     date_registered = Column(DateTime, default=timestamp)
@@ -507,6 +510,7 @@ class User(Base):
         user_dto.tasks_notifications = self.tasks_notifications
         user_dto.task_validation_notification = self.task_validation_notification
         user_dto.task_invalidation_notification = self.task_invalidation_notification
+        user_dto.task_assignment_notification = self.task_assignment_notification
         user_dto.tasks_comments_notifications = self.tasks_comments_notifications
         user_dto.teams_announcement_notifications = (
             self.teams_announcement_notifications

@@ -1,0 +1,9 @@
+Hi [USERNAME],<br />
+<br />
+[ASSIGNER] assigned [ASSIGNEE] [TASK_COUNT] to [STAGE_ACTION] in [PROJECT_LINK]: [TASK_LINKS].<br />
+<br />
+On the project's task page, choose the "Assigned to me" filter to find them.<br />
+<br />
+Thank you for contributing!<br />
+[ORG_NAME]<br />
+<br />

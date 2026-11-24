@@ -4,16 +4,16 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { useIntl, FormattedMessage } from 'react-intl';
-import AsyncSelect from 'react-select/async';
 import toast from 'react-hot-toast';
 
 import messages from './messages';
 import projectsMessages from '../projects/messages';
 import { UserAvatar } from '../user/avatar';
+import { UserSearchSelect } from '../user/userSearchSelect';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
 import { SwitchToggle } from '../formInputs';
-import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Alert } from '../alert';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import { API_URL } from '../../config';
@@ -32,7 +32,6 @@ export function Members({
   setManagerJoinTeamError,
   totalMembersOnTeam,
 }: Object) {
-  const token = useSelector((state) => state.auth.token);
   const [editMode, setEditMode] = useState(false);
   const [membersBackup, setMembersBackup] = useState(null);
   const [lastRemovingUsername, setLastRemovingUsername] = useState(null);
@@ -61,14 +60,6 @@ export function Members({
     setMembersBackup(members);
     setEditMode(false);
   };
-  const promiseOptions = (inputValue) =>
-    new Promise((resolve) => {
-      setTimeout(async () => {
-        const result = await fetchLocalJSONAPI(`users/?username=${inputValue}`, token);
-        resolve(result.users);
-      }, 1000);
-    });
-
   const doesMemberExistInTeam = (username) =>
     members.some((member) => member.username === username);
 
@@ -105,21 +96,16 @@ export function Members({
         </div>
         <div className="cf mb1">
           {editMode && (
-            <AsyncSelect
-              classNamePrefix="react-select"
+            <UserSearchSelect
               autoFocus
               isMulti
-              cacheOptions
               placeholder={selectPlaceHolder}
               isClearable={false}
               isOptionDisabled={(option) => doesMemberExistInTeam(option.username)}
               formatOptionLabel={(option, menu) => formatOptionLabel(option, menu)}
-              getOptionLabel={(option) => option.username}
-              getOptionValue={(option) => option.username}
               noOptionsMessage={({ inputValue }) =>
                 inputValue ? <FormattedMessage {...messages.noOptions} /> : null
               }
-              loadOptions={promiseOptions}
               onChange={(values) => addMembers(values || [])}
               className="z-2"
             />

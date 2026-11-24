@@ -178,4 +178,8 @@ export default defineMessages({
     id: 'notifications.message.type.project_activity_notification',
     defaultMessage: 'Project activity',
   },
+  TASK_ASSIGNMENT_NOTIFICATION: {
+    id: 'notifications.message.type.task_assignment_notification',
+    defaultMessage: 'Task assignment',
+  },
 });

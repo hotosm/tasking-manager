@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
 import {
@@ -8,6 +9,9 @@ import {
   useTaskContributionQueryParams,
 } from '../hooks/UseTaskContributionAPI';
 import { MyTasksNav } from '../components/contributions/myTasksNav';
+import { AssignedTasks } from '../components/contributions/assignedTasks';
+import contributionsMessages from '../components/contributions/messages';
+import { useAssignedTasksQuery } from '../api/user';
 import { TaskResults } from '../components/contributions/taskResults';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
@@ -51,6 +55,53 @@ export const ContributionsPage = () => {
         status={state.isLoading ? 'pending' : 'success'}
         pagination={state?.pagination}
         setQueryParam={setContributionsQuery}
+      />
+    </section>
+  );
+};
+
+export const AssignedTasksPage = () => {
+  useSetTitleTag('Assigned tasks');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userToken = useSelector((state) => state.auth.token);
+  const [page, setPage] = useState(1);
+  const [pendingOnly, setPendingOnly] = useState(true);
+  const { data, isLoading, isError } = useAssignedTasksQuery({
+    pendingOnly,
+    page,
+    perPage: 20,
+  });
+
+  useEffect(() => {
+    if (!userToken) {
+      navigate('/login', {
+        replace: true,
+        state: { from: location.pathname },
+      });
+    }
+  }, [location.pathname, navigate, userToken]);
+
+  return (
+    <section className="pb5 pt180 pull-center">
+      <header className="w-100 cf mt4">
+        <h3 className="barlow-condensed blue-dark f2 ma0 v-mid dib ttu pl2 pl0-l">
+          <FormattedMessage {...contributionsMessages.assignedTasks} />
+        </h3>
+        <Link to="/contributions/tasks" className="red link ph3 f6 v-mid dib pv2 mh1 fr">
+          <FormattedMessage {...contributionsMessages.allMyTasks} />
+        </Link>
+      </header>
+      <AssignedTasks
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        pendingOnly={pendingOnly}
+        setPendingOnly={(value) => {
+          setPendingOnly(value);
+          setPage(1);
+        }}
+        setPage={setPage}
       />
     </section>
   );

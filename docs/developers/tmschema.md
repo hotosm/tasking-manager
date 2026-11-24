@@ -74,6 +74,7 @@ key function of the Tasking Manager.
 * task_history - Table for task history
 * task_invalidation_history - Table for task invalidation history
 * task_mapping_issues - Table for issues with a task
+* task_assignments - Who a project manager wants to map or validate a task
 
 ### Task History Table
 
@@ -89,6 +90,23 @@ This table is used to track tasks that are invalidated. Unlike simple
 state changes in the task history table, this tracks which validator
 invalidated the task, when it was invalidated, and when the issue is
 resolved.
+
+### Task Assignments Table
+
+Project managers can assign a task to a user or a team, separately for
+mapping and validation (`stage`: 1 = mapping, 2 = validation). There is
+at most one row per task per stage, and exactly one of
+`assignee_user_id` / `assignee_team_id` is set. Rows are deleted with
+their task or team.
+
+An assignment only records intent: whether it is pending, in progress or
+done is worked out from the task's status and is not stored here, and
+assignment changes are not written to `task_history`. When the project's
+`enforce_task_assignment` flag is set, only the assignee, active members
+of the assigned team, or project managers can lock the task for that
+stage; otherwise anyone allowed to map or validate can, with a warning.
+Users can opt out of assignment emails with
+`users.task_assignment_notification`.
 
 ### Task Mapping Issues
 

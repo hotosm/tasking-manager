@@ -170,6 +170,10 @@ class Project(Base):
     enforce_random_task_selection = Column(
         Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
+    # Only assignees (or project managers) can lock tasks that have an assignment
+    enforce_task_assignment = Column(
+        Boolean, nullable=False, default=False, server_default=text("false")
+    )
     private = Column(Boolean, default=False)  # Only allowed users can validate
     sandbox = Column(
         Boolean, nullable=False, default=False, server_default=text("false")
@@ -630,6 +634,7 @@ class Project(Base):
             project_dto.project_info_locales.append(new_locale_dto)
         self.default_locale = project_dto.default_locale
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
+        self.enforce_task_assignment = bool(project_dto.enforce_task_assignment)
         self.private = project_dto.private
         self.difficulty = ProjectDifficulty[project_dto.difficulty.upper()].value
         self.changeset_comment = project_dto.changeset_comment
@@ -912,6 +917,7 @@ class Project(Base):
             "project_teams",
             "task_invalidation_history",
             "task_history",
+            "task_assignments",
             "tasks",
             "project_info",
             "project_chat",
@@ -1084,6 +1090,7 @@ class Project(Base):
             p.mapping_permission,
             p.validation_permission,
             p.enforce_random_task_selection,
+            p.enforce_task_assignment,
             p.private,
             p.license_id,
             p.id_presets,
@@ -1458,6 +1465,7 @@ class Project(Base):
         summary.random_task_selection_enforced = (
             project_row.enforce_random_task_selection
         )
+        summary.task_assignment_enforced = bool(project_row.enforce_task_assignment)
         summary.private = project_row.private
         summary.license_id = project_row.license_id
         summary.status = ProjectStatus(project_row["status"]).name
@@ -1698,7 +1706,7 @@ class Project(Base):
                 p.id as project_id, p.status as project_status, p.default_locale, p.priority as project_priority,
                 p.mapping_permission, p.mapping_permission_level_id, p.sandbox, p.database,
                 p.validation_permission, p.validation_permission_level_id,
-                p.enforce_random_task_selection, p.private,
+                p.enforce_random_task_selection, p.enforce_task_assignment, p.private,
                 p.difficulty, p.changeset_comment, p.osmcha_filter_id,
                 TO_CHAR(COALESCE(p.due_date, NULL), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as due_date,
                 p.imagery, p.josm_preset, p.id_presets, p.extra_id_params, p.rapid_power_user, p.country,
@@ -1757,6 +1765,7 @@ class Project(Base):
             ).name,
             validation_permission_level_id=record.validation_permission_level_id,
             enforce_random_task_selection=record.enforce_random_task_selection,
+            enforce_task_assignment=bool(record.enforce_task_assignment),
             private=record.private,
             difficulty=ProjectDifficulty(record.difficulty).name,
             changeset_comment=record.changeset_comment,

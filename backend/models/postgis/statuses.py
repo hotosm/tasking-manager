@@ -38,6 +38,20 @@ class TaskStatus(Enum):
     SPLIT = 7  # Task has been split
 
 
+class TaskAssignmentStage(Enum):
+    """The part of the workflow a task assignment applies to"""
+
+    MAPPING = 1
+    VALIDATION = 2
+
+
+class TaskAssigneeType(Enum):
+    """Whether a task is assigned to an individual user or to a team"""
+
+    USER = 1
+    TEAM = 2
+
+
 class ProjectDifficulty(Enum):
     EASY = 1
     MODERATE = 2

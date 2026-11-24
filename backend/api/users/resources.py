@@ -9,6 +9,10 @@ from loguru import logger
 from backend.db import get_db
 from backend.models.dtos.user_dto import AuthUserDTO, UserSearchQuery
 from backend.services.project_service import ProjectService
+from backend.services.task_assignment_service import (
+    TaskAssignmentService,
+    TaskAssignmentServiceError,
+)
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
 from backend.services.users.osm_service import OSMService, OSMServiceError
@@ -497,6 +501,85 @@ async def get_task_details_locked_by_user(
         user.id, preferred_locale, db
     )
     return locked_tasks.model_dump(by_alias=True)
+
+
+@router.get("/queries/tasks/assigned/")
+async def get_tasks_assigned_to_user(
+    request: Request,
+    project_id: Optional[int] = Query(None, alias="projectId"),
+    stage: Optional[str] = Query(None, description="MAPPING or VALIDATION"),
+    pending_only: bool = Query(True, alias="pendingOnly"),
+    page: int = Query(1, ge=1),
+    per_page: int = Query(20, ge=1, le=100, alias="perPage"),
+    user: AuthUserDTO = Depends(login_required),
+    db: Database = Depends(get_db),
+):
+    """
+    Gets tasks assigned to the logged in user, directly or through their teams
+    ---
+    tags:
+        - mapping
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - in: header
+          name: Accept-Language
+          description: Language user is requesting
+          type: string
+          default: en
+        - in: query
+          name: projectId
+          type: integer
+        - in: query
+          name: stage
+          type: string
+          enum: [MAPPING, VALIDATION]
+        - in: query
+          name: pendingOnly
+          description: Only tasks waiting for the assignee to map or validate
+          type: boolean
+          default: true
+        - in: query
+          name: page
+          type: integer
+          default: 1
+        - in: query
+          name: perPage
+          type: integer
+          default: 20
+    responses:
+        200:
+            description: Assigned tasks
+        400:
+            description: Invalid stage
+        401:
+            description: Unauthorized - Invalid credentials
+        500:
+            description: Internal Server Error
+    """
+    try:
+        assigned = await TaskAssignmentService.get_assigned_tasks_for_user(
+            user.id,
+            db,
+            project_id=project_id,
+            stage=stage,
+            pending_only=pending_only,
+            page=page,
+            per_page=per_page,
+            preferred_locale=request.headers.get("accept-language") or "en",
+        )
+    except TaskAssignmentServiceError as e:
+        return JSONResponse(
+            content={"Error": e.message, "SubCode": e.sub_code},
+            status_code=e.status_code,
+        )
+    return assigned.model_dump(by_alias=True)
 
 
 @router.get("/{username}/queries/interests/")

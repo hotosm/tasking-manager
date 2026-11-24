@@ -12,7 +12,14 @@ import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { getItem, setItem } from '../../utils/safe_storage';
 import { selectUnit } from '../../utils/selectUnit';
 import { TASK_COLOURS } from '../../config';
-import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
+import {
+  LockIcon,
+  ListIcon,
+  ZoomPlusIcon,
+  CloseIcon,
+  InternalLinkIcon,
+  UserIcon,
+} from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { TextField } from '../formInputs';
@@ -47,6 +54,52 @@ export function TaskStatus({ status, lockHolder }: Object) {
         )}
       </span>
     </>
+  );
+}
+
+function AssigneeName({ name, isTeam }: Object) {
+  const assignee = <span className="fw5 blue-dark">{name}</span>;
+  return isTeam ? (
+    <FormattedMessage {...messages.assigneeTeam} values={{ name: assignee }} />
+  ) : (
+    assignee
+  );
+}
+
+export function TaskAssignees({ data }: Object) {
+  if (!data.mappingAssignee && !data.validationAssignee) return null;
+  return (
+    <div className="cl pl3 pt2 f6 blue-grey truncate">
+      <UserIcon className="v-mid" width="12px" height="12px" />
+      {data.mappingAssignee && (
+        <span className="pl2 v-mid">
+          <FormattedMessage
+            {...messages.assignedForMapping}
+            values={{
+              assignee: (
+                <AssigneeName name={data.mappingAssignee} isTeam={data.mappingAssigneeIsTeam} />
+              ),
+            }}
+          />
+        </span>
+      )}
+      {data.mappingAssignee && data.validationAssignee && <span className="ph2 v-mid">&#183;</span>}
+      {data.validationAssignee && (
+        <span className={`v-mid ${data.mappingAssignee ? '' : 'pl2'}`}>
+          <FormattedMessage
+            {...messages.assignedForValidation}
+            values={{
+              assignee: (
+                <AssigneeName
+                  name={data.validationAssignee}
+                  isTeam={data.validationAssigneeIsTeam}
+                />
+              ),
+            }}
+          />
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -108,6 +161,7 @@ export function TaskItem({
         <div className="w-30-l w-60 fl blue-dark dib truncate">
           <TaskStatus status={data.taskStatus} />
         </div>
+        <TaskAssignees data={data} />
       </div>
       <div className="w-20 pv3 fr tr dib blue-light truncate overflow-empty">
         <FormattedMessage {...messages.seeTaskHistory}>
@@ -188,6 +242,7 @@ export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Objec
     },
     { label: <FormattedMessage {...messages.taskStatus_BADIMAGERY} />, value: 'BADIMAGERY' },
     { label: <FormattedMessage {...messages.taskStatus_LOCKED} />, value: 'LOCKED' },
+    { label: <FormattedMessage {...messages.filterAssignedToMe} />, value: 'ASSIGNED_TO_ME' },
   ];
 
   return (
@@ -242,6 +297,8 @@ export function TaskList({
         return tasks.filter((task) =>
           ['LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION'].includes(task.properties.taskStatus),
         );
+      case 'ASSIGNED_TO_ME':
+        return tasks.filter((task) => task.properties.assignedToMe);
       default:
         return tasks.filter((task) => task.properties.taskStatus === filter);
     }

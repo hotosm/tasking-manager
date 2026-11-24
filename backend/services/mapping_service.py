@@ -17,12 +17,13 @@ from backend.models.dtos.mapping_dto import (
     TaskCommentDTO,
     TaskDTO,
 )
-from backend.models.postgis.statuses import MappingNotAllowed
+from backend.models.postgis.statuses import MappingNotAllowed, TaskAssignmentStage
 from backend.models.postgis.task import Task, TaskAction, TaskHistory, TaskStatus
 from backend.models.postgis.utils import UserLicenseError
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.stats_service import StatsService
+from backend.services.task_assignment_service import TaskAssignmentService
 
 
 class MappingServiceError(Exception):
@@ -127,6 +128,16 @@ class MappingService:
                     raise MappingServiceError(
                         f"{error_reason}- Mapping not allowed because: {error_reason}"
                     )
+            if not await TaskAssignmentService.user_may_lock(
+                lock_task_dto.project_id,
+                lock_task_dto.task_id,
+                lock_task_dto.user_id,
+                TaskAssignmentStage.MAPPING,
+                db,
+            ):
+                raise MappingServiceError(
+                    "TaskAssignedToOther- This task is assigned to another user or team"
+                )
 
         await Task.lock_task_for_mapping(
             lock_task_dto.task_id, lock_task_dto.project_id, lock_task_dto.user_id, db

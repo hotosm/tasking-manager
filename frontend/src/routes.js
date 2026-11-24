@@ -170,6 +170,15 @@ export const router = createBrowserRouter(
           }}
         />
         <Route
+          path="tasks/assigned"
+          lazy={async () => {
+            const { AssignedTasksPage } = await import(
+              './views/contributions' /* webpackChunkName: "contributions" */
+            );
+            return { Component: AssignedTasksPage };
+          }}
+        />
+        <Route
           path="tasks/*"
           lazy={async () => {
             const { ContributionsPage } = await import(

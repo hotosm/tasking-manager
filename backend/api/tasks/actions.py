@@ -12,6 +12,7 @@ from backend.models.dtos.mapping_dto import (
     MappedTaskDTO,
     StopMappingTaskDTO,
 )
+from backend.models.dtos.task_assignment_dto import AssignTasksDTO, UnassignTasksDTO
 from backend.models.dtos.user_dto import AuthUserDTO
 from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
@@ -22,8 +23,13 @@ from backend.models.dtos.validator_dto import (
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
 from backend.services.mapping_service import MappingService, MappingServiceError
+from backend.services.messaging.message_service import MessageService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.project_service import ProjectService
+from backend.services.task_assignment_service import (
+    TaskAssignmentService,
+    TaskAssignmentServiceError,
+)
 from backend.services.users.authentication_service import login_required
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import (
@@ -964,6 +970,178 @@ async def reset_all(
     async with db.transaction():
         await ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id, db)
         return JSONResponse(content={"Success": "All tasks reset"}, status_code=200)
+
+
+@router.post("/{project_id}/tasks/actions/assign/")
+async def assign_tasks(
+    request: Request,
+    project_id: int,
+    background_tasks: BackgroundTasks,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Assign tasks to a user or a team for mapping or validation
+    ---
+    tags:
+        - tasks
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Unique project ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: >
+            Tasks to assign. Give exactly one of userId or teamId. Assigning a task
+            that already has an assignment for the stage replaces it.
+          schema:
+              properties:
+                  taskIds:
+                      type: array
+                      items:
+                          type: integer
+                  stage:
+                      type: string
+                      enum: [MAPPING, VALIDATION]
+                      default: MAPPING
+                  userId:
+                      type: integer
+                  teamId:
+                      type: integer
+                  notify:
+                      type: boolean
+                      default: true
+    responses:
+        200:
+            description: Tasks assigned, with any non-blocking warnings
+        400:
+            description: Invalid request, or the assignee can't map/validate here
+        401:
+            description: Unauthorized - Invalid credentials
+        403:
+            description: User is not a manager of the project
+        404:
+            description: Project, task, user or team not found
+        500:
+            description: Internal Server Error
+    """
+    try:
+        assign_dto = AssignTasksDTO(**(await request.json()))
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Unable to assign tasks", "SubCode": "InvalidData"},
+            status_code=400,
+        )
+
+    try:
+        async with db.transaction():
+            result = await TaskAssignmentService.assign_tasks(
+                project_id, assign_dto, user.id, db
+            )
+    except TaskAssignmentServiceError as e:
+        return JSONResponse(
+            content={"Error": e.message, "SubCode": e.sub_code},
+            status_code=e.status_code,
+        )
+
+    if assign_dto.notify:
+        background_tasks.add_task(
+            MessageService.send_task_assignment_messages,
+            project_id,
+            assign_dto.task_ids,
+            assign_dto.stage,
+            user.id,
+            assign_dto.user_id,
+            assign_dto.team_id,
+        )
+    return result.model_dump(by_alias=True)
+
+
+@router.post("/{project_id}/tasks/actions/unassign/")
+async def unassign_tasks(
+    request: Request,
+    project_id: int,
+    db: Database = Depends(get_db),
+    user: AuthUserDTO = Depends(login_required),
+):
+    """
+    Remove task assignments
+    ---
+    tags:
+        - tasks
+    produces:
+        - application/json
+    parameters:
+        - in: header
+          name: Authorization
+          description: Base64 encoded session token
+          required: true
+          type: string
+          default: Token sessionTokenHere==
+        - name: project_id
+          in: path
+          description: Unique project ID
+          required: true
+          type: integer
+          default: 1
+        - in: body
+          name: body
+          required: true
+          description: Tasks to unassign. Leave out stage to clear both stages.
+          schema:
+              properties:
+                  taskIds:
+                      type: array
+                      items:
+                          type: integer
+                  stage:
+                      type: string
+                      enum: [MAPPING, VALIDATION]
+    responses:
+        200:
+            description: Number of assignments removed
+        400:
+            description: Invalid request
+        401:
+            description: Unauthorized - Invalid credentials
+        403:
+            description: User is not a manager of the project
+        500:
+            description: Internal Server Error
+    """
+    try:
+        unassign_dto = UnassignTasksDTO(**(await request.json()))
+    except Exception as e:
+        logger.error(f"Error validating request: {str(e)}")
+        return JSONResponse(
+            content={"Error": "Unable to unassign tasks", "SubCode": "InvalidData"},
+            status_code=400,
+        )
+
+    try:
+        async with db.transaction():
+            removed = await TaskAssignmentService.unassign_tasks(
+                project_id, unassign_dto, user.id, db
+            )
+    except TaskAssignmentServiceError as e:
+        return JSONResponse(
+            content={"Error": e.message, "SubCode": e.sub_code},
+            status_code=e.status_code,
+        )
+    return {"unassigned": removed}
 
 
 @router.post("/{project_id}/tasks/actions/split/{task_id}/")

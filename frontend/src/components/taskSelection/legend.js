@@ -4,6 +4,8 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { TaskStatus } from './taskList';
 import { LockIcon, ChevronDownIcon, ChevronUpIcon } from '../svgIcons';
+import assignedToMeIcon from '../../assets/img/assigned-to-me.svg';
+import assignedToOtherIcon from '../../assets/img/assigned-to-other.svg';
 
 // Colour stops that exactly match the MapLibre interpolate expression in map.js
 const RAMP = [
@@ -41,7 +43,7 @@ function ChoroplethGradientLegend() {
   );
 }
 
-export function TasksMapLegend({ showChoropleth = false }) {
+export function TasksMapLegend({ showChoropleth = false, showAssignments = false }) {
   const lineClasses = 'mv2 blue-dark f5';
   const [expand, setExpand] = useState(true);
 
@@ -93,6 +95,22 @@ export function TasksMapLegend({ showChoropleth = false }) {
                   <FormattedMessage {...messages[`taskStatus_LOCKED`]} />
                 </span>
               </p>
+              {showAssignments && (
+                <>
+                  <p className={lineClasses}>
+                    <img src={assignedToMeIcon} alt="" className="v-mid h1 w1" />
+                    <span className="pl2 v-mid">
+                      <FormattedMessage {...messages.legendAssignedToMe} />
+                    </span>
+                  </p>
+                  <p className={lineClasses}>
+                    <img src={assignedToOtherIcon} alt="" className="v-mid h1 w1" />
+                    <span className="pl2 v-mid">
+                      <FormattedMessage {...messages.legendAssignedToOther} />
+                    </span>
+                  </p>
+                </>
+              )}
             </>
           )}
         </div>

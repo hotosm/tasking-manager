@@ -579,6 +579,7 @@ class ProjectService:
             p.mapping_permission,
             p.validation_permission,
             p.enforce_random_task_selection,
+            p.enforce_task_assignment,
             p.private,
             p.license_id,
             p.id_presets,

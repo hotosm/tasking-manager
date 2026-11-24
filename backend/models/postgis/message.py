@@ -37,6 +37,7 @@ class MessageType(Enum):
     PROJECT_CHAT_NOTIFICATION = 9
     PROJECT_ACTIVITY_NOTIFICATION = 10
     TEAM_BROADCAST = 11  # Broadcast message from a team manager
+    TASK_ASSIGNMENT_NOTIFICATION = 12  # A project manager assigned tasks to the user
 
 
 class Message(Base):

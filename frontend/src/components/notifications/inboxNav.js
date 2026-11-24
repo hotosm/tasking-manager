@@ -27,8 +27,8 @@ export const filters = [
   },
   {
     messageId: 'tasks',
-    isActiveConstraint: ['8', '4', '5'],
-    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=8,4,5',
+    isActiveConstraint: ['8', '4', '5', '12'],
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=8,4,5,12',
   },
   {
     messageId: 'teams',

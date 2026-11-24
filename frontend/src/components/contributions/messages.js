@@ -112,4 +112,40 @@ export default defineMessages({
     id: 'mytasks.tasks.comments.number',
     defaultMessage: '{number, plural, one {# comment} other {# comments}}',
   },
+  assignedToMe: {
+    id: 'mytasks.nav.assigned_to_me',
+    defaultMessage: 'Assigned to me',
+  },
+  assignedTasks: {
+    id: 'mytasks.assigned.title',
+    defaultMessage: 'Tasks assigned to me',
+  },
+  allMyTasks: {
+    id: 'mytasks.assigned.all_my_tasks',
+    defaultMessage: 'All my tasks',
+  },
+  showCompletedAssignments: {
+    id: 'mytasks.assigned.show_completed',
+    defaultMessage: 'Show completed assignments',
+  },
+  noAssignedTasks: {
+    id: 'mytasks.assigned.empty',
+    defaultMessage: 'No tasks are assigned to you right now.',
+  },
+  assignedTasksError: {
+    id: 'mytasks.assigned.error',
+    defaultMessage: 'Your assigned tasks could not be loaded.',
+  },
+  assignedForStage: {
+    id: 'mytasks.assigned.stage',
+    defaultMessage: '{stage, select, VALIDATION {Validation} other {Mapping}}',
+  },
+  assignedViaTeam: {
+    id: 'mytasks.assigned.via_team',
+    defaultMessage: 'via team {team}',
+  },
+  assignedByUser: {
+    id: 'mytasks.assigned.by_user',
+    defaultMessage: 'Assigned by {user} {time}',
+  },
 });

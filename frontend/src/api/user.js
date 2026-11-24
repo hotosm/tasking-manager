@@ -21,3 +21,25 @@ export const useLockedTasksQuery = () => {
     useErrorBoundary: true,
   });
 };
+
+export const useAssignedTasksQuery = (params = {}, otherOptions = {}) => {
+  const token = useSelector((state) => state.auth.token);
+  const locale = useSelector((state) => state.preferences['locale']);
+
+  const fetchAssignedTasks = ({ signal, queryKey }) => {
+    const [, queryParams] = queryKey;
+    return api(token, locale).get(`users/queries/tasks/assigned/`, {
+      signal,
+      params: queryParams,
+    });
+  };
+
+  return useQuery({
+    queryKey: ['assigned-tasks', params],
+    queryFn: fetchAssignedTasks,
+    select: (data) => data.data,
+    keepPreviousData: true,
+    enabled: !!token,
+    ...otherOptions,
+  });
+};

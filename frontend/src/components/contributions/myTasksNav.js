@@ -92,6 +92,9 @@ export const MyTasksNav = (props) => {
         >
           <FormattedMessage {...messages.archived} />
         </Link>
+        <Link to="/contributions/tasks/assigned" className={`bg-white blue-grey ${linkCombo}`}>
+          <FormattedMessage {...messages.assignedToMe} />
+        </Link>
       </div>
     </header>
   );

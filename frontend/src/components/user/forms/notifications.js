@@ -31,6 +31,12 @@ export function UserNotificationsForm(props) {
       default: true,
     },
     {
+      labelId: 'taskAssignmentUpdates',
+      descriptionId: 'taskAssignmentUpdatesDescription',
+      fieldName: 'taskAssignmentNotification',
+      default: true,
+    },
+    {
       labelId: 'projectUpdates',
       descriptionId: 'projectUpdatesDescription',
       fieldName: 'projectsNotifications',
