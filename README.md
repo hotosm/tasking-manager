@@ -69,15 +69,28 @@ Status | Feature | Release
 ✅ | Additional imagery filter under explore projects section | [v5.5](https://github.com/hotosm/tasking-manager/releases/tag/v5.5)
 ✅ | Allow data downloads for sandbox projects through frontend |
 ✅ | Sandbox: compare existing OSM data while mapping, and filter for sandbox projects | [v5.6](https://github.com/hotosm/tasking-manager/releases/tag/v5.6)
-✅ | Choropleth layer to highlight most invalidated tasks | [v5.6.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.6.1)
+✅ | Choropleth layer to highlight most invalidated tasks | [v5.6.1](https://github.com/hotosm/tasking-manager/releases/tag/v5.6.1) 
+🔄 | [Task assignment](https://github.com/hotosm/tasking-manager/issues/7362): Option for projects managers to assign users or teams to specific tasks
+🔄 | [iD editor integration](https://github.com/hotosm/tasking-manager/issues/7337 between sandbox and standard mapping projects
+🔄 | [Campaign management](https://github.com/hotosm/tasking-manager/issues/7349) for organisation managers
 🔄 | Dependency & Framework health check |
-🔄 | Expanding Project Types beyond basemap features - fAIr validation project, data conflation focused projects
-🔄 | AI Integration: [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment, difficulty estimation, and validation
-🔄 | Latest Translations Update: Keep all content current with the latest translations.
-📅 | Custom data reference layer for sandbox projects |
-📅 | External tools Integration: MapSwipe, uMap, Maproulette
-📅 | Improved Project Sorting & Filtering: Enhance the user experience with better sorting and filtering options.
-📅 | UI/UX Enhancements: Continuous improvements to the user interface and experience.
+
+### 2027
+
+Status | Feature | Release
+-------|---------|---------
+📅 | **Project Type — AI Prediction Validation (fAIr):** Localized AI model prediction validation projects and externally funded validation and training pilot. | 
+📅 | **Sandbox & Portal Support:** Custom data reference layer for sandbox projects and expanded portal support. | 
+📅 | **Project Type — Street Imagery Annotation:** Planning and core development for street-level imagery annotation projects. | 
+📅 |**Task Difficulty Estimation:** Research, model development, and integration into Tasking Manager. | 
+📅 | **Project Type - Conflation:** Dedicated data conflation project workflows for reviewing and merging external datasets into OSM. | 
+📅 | **AI Integration:** Embedding Sam's [AI chat assistant](https://github.com/hotosm/tasking-manager/discussions/7315), task assignment for users and teams, task difficulty estimation (research, model, and TM integration), and AI-assisted validation. | 
+📅 | **Volunteers & Community:** Updated documentation and training materials to support mapper and validator onboarding. | 
+📅 | **Latest Translations Update:** Keep all content current with the latest translations. | 
+📅 | **Improved Project Sorting & Filtering:** Better sorting and filtering options to enhance project discovery. | 
+📅 | **UI/UX Enhancements:** Continuous improvements to the user interface and experience. | 
+
+
 
 
 
