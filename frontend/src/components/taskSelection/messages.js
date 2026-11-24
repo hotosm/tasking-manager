@@ -89,6 +89,42 @@ export default defineMessages({
     id: 'project.tasks.not_ready_for_validation_error.description',
     defaultMessage: 'Task is not MAPPED, BADIMAGERY or INVALIDATED',
   },
+  UserNotCorrectMappingLevelError: {
+    id: 'project.tasks.user_not_correct_mapping_level_error.title',
+    defaultMessage: "You don't have the required experience level",
+  },
+  UserNotCorrectMappingLevelErrorDescription: {
+    id: 'project.tasks.user_not_correct_mapping_level_error.description',
+    defaultMessage:
+      'Your experience level is below the minimum level this project requires. You can raise your level by mapping more tasks on other projects.',
+  },
+  UserNotTeamMemberError: {
+    id: 'project.tasks.user_not_team_member_error.title',
+    defaultMessage: 'You are not a member of the required team',
+  },
+  UserNotTeamMemberErrorDescription: {
+    id: 'project.tasks.user_not_team_member_error.description',
+    defaultMessage:
+      "You need to be a member of one of this project's teams to be able to work on it.",
+  },
+  MappingNotAllowedError: {
+    id: 'project.tasks.mapping_not_allowed_error.title',
+    defaultMessage: 'You are not able to map this project',
+  },
+  MappingNotAllowedErrorDescription: {
+    id: 'project.tasks.mapping_not_allowed_error.description',
+    defaultMessage:
+      'Check if your user matches the level, role and permissions required by this project.',
+  },
+  ValidationNotAllowedError: {
+    id: 'project.tasks.validation_not_allowed_error.title',
+    defaultMessage: 'You are not able to validate this project',
+  },
+  ValidationNotAllowedErrorDescription: {
+    id: 'project.tasks.validation_not_allowed_error.description',
+    defaultMessage:
+      'Check if your user matches the level, role and permissions required by this project.',
+  },
   CannotValidateMappedTaskError: {
     id: 'project.tasks.cannot_validate_mapped_task_error.title',
     defaultMessage: 'Cannot Validate Mapped Task',
