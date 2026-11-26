@@ -6,8 +6,6 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from loguru import logger
 
-from markdown import markdown
-
 from backend.exceptions import NotFound
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
@@ -16,6 +14,7 @@ from backend.models.dtos.campaign_dto import (
     NewCampaignDTO,
 )
 from backend.models.postgis.campaign import Campaign
+from backend.models.postgis.utils import markdown_to_html
 from backend.services.organisation_service import OrganisationService
 from backend.services.project_service import ProjectService
 from backend.db import db_connection
@@ -411,7 +410,7 @@ class CampaignService:
                 message_dto.message = "Message for the {} campaign contributors from admin {}:<br/><br/>{}".format(
                     campaign.name,
                     MessageService.get_user_profile_link(sender),
-                    markdown(message_dto.message, output_format="html"),
+                    markdown_to_html(message_dto.message),
                 )
                 contributors = await CampaignService._get_all_contributors_for_campaign(
                     campaign_id, conn

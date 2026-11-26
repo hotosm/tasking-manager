@@ -131,6 +131,30 @@ class TestMessageService:
         # Assert
         mock_push_message.assert_called()
 
+    @patch.object(MessageService, "_push_messages", new_callable=AsyncMock)
+    async def test_comment_starting_with_a_hashtag_is_not_a_heading(
+        self, mock_push_message
+    ):
+        # Arrange
+        canned_project, canned_author, canned_project_id = await create_canned_project(
+            self.db
+        )
+        # Act
+        await MessageService.send_message_after_comment(
+            canned_author.id,
+            "#hotosm-project-1234 @TEST_USER mapped the last task",
+            1,
+            int(canned_project_id),
+            db=self.db,
+        )
+
+        # Assert
+        mock_push_message.assert_called()
+        messages = mock_push_message.call_args[0][0]
+        mentioned_message = messages[0]["message"].message
+        assert "<h1>" not in mentioned_message
+        assert "#hotosm-project-1234" in mentioned_message
+
     @patch.object(SMTPService, "_send_message", new_callable=AsyncMock)
     async def test_send_project_transfer_message(self, mock_send_message):
         test_project, test_author, test_project_id = await create_canned_project(

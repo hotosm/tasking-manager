@@ -2,8 +2,6 @@ from typing import Optional
 from databases import Database
 from fastapi.responses import JSONResponse
 from loguru import logger
-from markdown import markdown
-
 from backend.db import db_connection
 from backend.exceptions import NotFound
 from backend.models.dtos.message_dto import MessageDTO
@@ -28,6 +26,7 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
 )
 from backend.models.postgis.team import Team, TeamMembers
+from backend.models.postgis.utils import markdown_to_html
 from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
@@ -804,7 +803,7 @@ class TeamService:
                     "A message from {}, manager of {} team:<br/><br/>{}".format(
                         MessageService.get_user_profile_link(sender),
                         MessageService.get_team_link(team_name, team_id, False),
-                        markdown(message_dto.message, output_format="html"),
+                        markdown_to_html(message_dto.message),
                     )
                 )
                 messages = []

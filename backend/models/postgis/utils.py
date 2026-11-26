@@ -5,6 +5,8 @@ from geoalchemy2.functions import GenericFunction
 from loguru import logger
 import re
 from markdown import markdown
+from markdown.extensions import Extension
+from markdown.preprocessors import Preprocessor
 import bleach
 
 
@@ -158,6 +160,53 @@ def parse_duration(time_str):
     return datetime.timedelta(**time_params)
 
 
+class _SaneHeadingsPreprocessor(Preprocessor):
+    """Only treat '#' as a heading marker when a space follows it.
+
+    Python-Markdown follows the original Markdown syntax, where '#word' opens a
+    heading. Contributors use '#' for hashtags at the start of a comment
+    ("#hotosm-project-1234 ..."), so those lines were rendered as <h1> headings
+    in comments and notification messages. CommonMark requires the space after
+    the '#'s, and that is what contributors expect from every other editor.
+
+    Lines inside fenced or indented code blocks keep their '#'s. fenced_code is
+    enabled wherever this runs and stashes its blocks before this preprocessor,
+    so the fence tracking below only matters if that extension is absent;
+    an indented line never starts at the beginning of the line either way.
+    """
+
+    pattern = re.compile(r"^(#+)(?=[^#\s])")
+    fence = re.compile(r"^\s*(```|~~~)")
+
+    def run(self, lines: list) -> list:
+        result = []
+        in_fence = False
+        for line in lines:
+            if self.fence.match(line):
+                in_fence = not in_fence
+            elif not in_fence:
+                line = self.pattern.sub(lambda match: "\\" + match.group(1), line)
+            result.append(line)
+        return result
+
+
+class SaneHeadingsExtension(Extension):
+    """Markdown extension applying _SaneHeadingsPreprocessor."""
+
+    def extendMarkdown(self, md):
+        # Runs after fenced_code (25) so fenced code is already stashed.
+        md.preprocessors.register(_SaneHeadingsPreprocessor(md), "saneheadings", 20)
+
+
+def markdown_to_html(text: str) -> str:
+    """Convert markdown to HTML for text written by contributors."""
+    return markdown(
+        text,
+        extensions=["markdown.extensions.fenced_code", SaneHeadingsExtension()],
+        output_format="html",
+    )
+
+
 def sanitize_markdown(text: str | None) -> str | None:
     """Convert markdown to sanitized HTML. Returns None for empty input."""
     if not text:
@@ -239,6 +288,7 @@ def sanitize_markdown(text: str | None) -> str | None:
             "markdown.extensions.nl2br",
             "markdown.extensions.sane_lists",
             "markdown.extensions.codehilite",
+            SaneHeadingsExtension(),
         ],
     )
 
