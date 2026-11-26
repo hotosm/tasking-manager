@@ -7,7 +7,6 @@ import bleach
 from cachetools import TTLCache
 from databases import Database
 from loguru import logger
-from markdown import markdown
 from sqlalchemy import insert
 
 from backend.config import settings
@@ -20,7 +19,7 @@ from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.statuses import TeamRoles
 from backend.models.postgis.task import TaskAction, TaskStatus
-from backend.models.postgis.utils import timestamp
+from backend.models.postgis.utils import markdown_to_html, timestamp
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
     clean_html,
@@ -145,7 +144,7 @@ class MessageService:
                 MessageService.get_project_link(
                     project_id, project_info.name, highlight=True
                 ),
-                markdown(message_dto.message, output_format="html"),
+                markdown_to_html(message_dto.message),
             )
             messages = []
             for contributor in contributors:
@@ -314,7 +313,7 @@ class MessageService:
 
             # Convert comment to HTML using markdown and sanitize it with bleach
             clean_comment = bleach.clean(
-                markdown(comment, output_format="html"),
+                markdown_to_html(comment),
                 tags=allowed_tags,
                 attributes=allowed_attributes,
             )
