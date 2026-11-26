@@ -52,11 +52,7 @@ describe('test JoinRequest list', () => {
     expect(testInstance.findAllByProps({ className: 'pr2 bg-red white' }).length).toBe(2);
   });
   it('no requests message is NOT present', () => {
-    expect(() =>
-      testInstance
-        .findByProps({ className: 'tc' })
-        .toThrow(new Error('No instances found with props: {className: "tc"}')),
-    );
+    expect(() => testInstance.findByProps({ className: 'tc' })).toThrow();
   });
 });
 
@@ -80,28 +76,12 @@ describe('test JoinRequest list without requests', () => {
     );
   });
   it('number of UserAvatar components is correct', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(UserAvatar)
-        .toThrow(new Error('No instances found with node type: "UserAvatar"')),
-    );
+    expect(testInstance.findAllByType(UserAvatar)).toHaveLength(0);
   });
-  it('Accept and Deny buttons are present', () => {
-    expect(() =>
-      testInstance
-        .findAllByType(Button)
-        .toThrow(new Error('No instances found with node type: "Button"')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 blue-dark bg-white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 blue-dark bg-white"}')),
-    );
-    expect(() =>
-      testInstance
-        .findAllByProps({ className: 'pr2 bg-red white' })
-        .toThrow(new Error('No instances found with props: {className: "pr2 bg-red white"}')),
-    );
+  it('Accept and Deny buttons are not present', () => {
+    expect(testInstance.findAllByType(Button)).toHaveLength(0);
+    expect(testInstance.findAllByProps({ className: 'pr2 blue-dark bg-white' })).toHaveLength(0);
+    expect(testInstance.findAllByProps({ className: 'pr2 bg-red white' })).toHaveLength(0);
   });
   it('no requests message is present', () => {
     expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
