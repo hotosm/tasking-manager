@@ -125,11 +125,12 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
           <form onSubmit={handleSubmit} className="blue-grey">
             <fieldset className="bn ph0 pt0 mh0" disabled={submitting || !userDetails.username}>
               <div className="cf">
-                <label className={labelClasses}>
+                <label className={labelClasses} htmlFor="user-name">
                   <FormattedMessage {...messages.name} />
                   <RequiredIndicator />
                 </label>
                 <Field
+                  id="user-name"
                   name="name"
                   component="input"
                   type="text"
@@ -139,7 +140,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                 />
               </div>
               <div className="cf">
-                <label className={labelClasses}>
+                <label className={labelClasses} htmlFor="user-email">
                   <FormattedMessage {...messages.email} />
                   <RequiredIndicator />
                   <InfoIcon
@@ -154,6 +155,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                     <div>
                       <input
                         {...input}
+                        id="user-email"
                         type="email"
                         className={fieldClasses}
                         pattern="^([a-zA-Z0-9+_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"
@@ -193,14 +195,20 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
 
               <div className="flex-two-items-row">
                 <div>
-                  <label className={labelClasses}>
+                  <label className={labelClasses} htmlFor="user-country">
                     <FormattedMessage {...messages.country} />
                   </label>
-                  <UserCountrySelect className={fieldClasses} isDisabled={submitting} />
+                  <UserCountrySelect
+                    inputId="user-country"
+                    className={fieldClasses}
+                    isDisabled={submitting}
+                  />
                 </div>
                 {textInputFields.map((field) => (
                   <div key={field.name}>
-                    <label className={labelClasses}>{field.label}</label>
+                    <label className={labelClasses} htmlFor={`user-${field.name}`}>
+                      {field.label}
+                    </label>
                     <Field
                       name={field.name}
                       component="input"
@@ -210,7 +218,12 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                     >
                       {({ input, meta }) => (
                         <div>
-                          <input {...input} type="text" className={fieldClasses} />
+                          <input
+                            {...input}
+                            id={`user-${field.name}`}
+                            type="text"
+                            className={fieldClasses}
+                          />
                           {meta.error && meta.touched && (
                             <div className="mt1 red">{meta.error}</div>
                           )}
@@ -231,10 +244,10 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   <Tooltip place="bottom" className="mw6" id={'genderPrivacyTooltip'} />
                 </label>
                 {genderOptions.map((option) => (
-                  <div className="pv2" key={option.value}>
+                  <label className="db pv2 pointer" key={option.value}>
                     <RadioField name="gender" value={option.value} />
                     {option.label}
-                  </div>
+                  </label>
                 ))}
                 <Field name="gender" subscription={{ value: true }}>
                   {({ input: { value } }) =>
