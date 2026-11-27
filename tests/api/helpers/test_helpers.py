@@ -63,32 +63,20 @@ async def create_mapping_levels(db):
     # Ensure clean slate (important for repeated test runs)
     await db.execute(sa.text("DELETE FROM mapping_levels"))
 
-    await db.execute(
-        sa.text(
-            """
+    await db.execute(sa.text("""
             INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
             VALUES (1, 'BEGINNER', 1, true, 0)
-            """
-        )
-    )
+            """))
 
-    await db.execute(
-        sa.text(
-            """
+    await db.execute(sa.text("""
             INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
             VALUES (2, 'INTERMEDIATE', 2, false, 0)
-            """
-        )
-    )
+            """))
 
-    await db.execute(
-        sa.text(
-            """
+    await db.execute(sa.text("""
             INSERT INTO mapping_levels (id, name, ordering, is_beginner, approvals_required)
             VALUES (3, 'ADVANCED', 3, false, 0)
-            """
-        )
-    )
+            """))
 
 
 def get_canned_osm_user_details():

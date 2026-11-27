@@ -113,16 +113,14 @@ async def _fetch_users_only_missing(conn) -> List[SimpleNamespace]:
     """
     Return lightweight objects (id, username) for users missing user_stats entries.
     """
-    users = await conn.fetch_all(
-        query="""
+    users = await conn.fetch_all(query="""
         SELECT u.id, u.username
         FROM users u
         WHERE NOT EXISTS (
             SELECT 1 FROM user_stats s WHERE s.user_id = u.id
         )
         ORDER BY u.id
-        """
-    )
+        """)
     return users
 
 
