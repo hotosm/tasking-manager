@@ -152,8 +152,10 @@ export const ProjectsMap = ({ mapResults, fullProjectsQuery, setQuery, className
       map.on('load', () => maplibreLayerDefn(map, mapResults, clickOnProjectID));
     }
 
-    /* refill the source on mapResults changes */
-    if (map !== null && map.getSource('projects') !== undefined && someResultsReady) {
+    /* refill the source on mapResults changes. An empty result has to go
+     * through too, otherwise the previous search's markers stay on the map. */
+    const resultsLoaded = mapResults && Array.isArray(mapResults.features);
+    if (map !== null && map.getSource('projects') !== undefined && resultsLoaded) {
       map.getSource('projects').setData(mapResults);
     }
   }, [map, mapResults, clickOnProjectID]);
