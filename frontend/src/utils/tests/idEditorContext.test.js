@@ -1,4 +1,20 @@
-import { removeUnavailableImagerySources, setBackgroundHashParam } from '../idEditorContext';
+import {
+  normalizeIdLocale,
+  removeUnavailableImagerySources,
+  setBackgroundHashParam,
+} from '../idEditorContext';
+
+describe('normalizeIdLocale', () => {
+  it.each([
+    ['nl_NL', 'nl-NL'],
+    ['zh_TW', 'zh-TW'],
+    ['pt-BR', 'pt-BR'],
+    ['cs', 'cs'],
+  ])('converts %s to the iD locale %s', (locale, expected) => {
+    expect(normalizeIdLocale(locale)).toBe(expected);
+    expect(() => new Intl.Locale(expected)).not.toThrow();
+  });
+});
 
 describe('removeUnavailableImagerySources', () => {
   it('removes the unavailable Kontur imagery source', () => {
