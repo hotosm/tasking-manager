@@ -249,7 +249,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         const loadingState = isDownloadingState?.isDownloading;
         return (
           <div
-            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-start justify-start  "
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex items-start justify-start  "
             style={{
               width: '800px',
               gap: '16px',
@@ -270,28 +270,32 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                 style={{ height: '56px' }}
               />
             </div>
-            <div className="flex-column">
+            {/* flex-auto lets this column shrink beside the icon instead of wrapping below it */}
+            <div className="flex-auto">
               <div
-                className="file-list flex barlow-condensed f3 items-center "
-                style={{ display: 'flex', gap: '12px' }}
+                className="file-list flex flex-wrap barlow-condensed f3 items-center "
+                style={{ columnGap: '12px' }}
               >
                 <p className="fw5 ttc">{type.label || type.title}</p>
-                <FileFormatCard
-                  title={type.title}
-                  fileFormats={type.formats}
-                  downloadS3Data={downloadS3File}
-                  isDownloadingState={isDownloadingState}
-                  selectedCategoryFormat={selectedCategoryFormat}
-                  setSelectedCategoryFormat={setSelectedCategoryFormat}
-                />
+                {/* Keeps the formats together when a long name pushes them to the next line */}
+                <div className="flex items-center" style={{ gap: '12px' }}>
+                  <FileFormatCard
+                    title={type.title}
+                    fileFormats={type.formats}
+                    downloadS3Data={downloadS3File}
+                    isDownloadingState={isDownloadingState}
+                    selectedCategoryFormat={selectedCategoryFormat}
+                    setSelectedCategoryFormat={setSelectedCategoryFormat}
+                  />
+                </div>
               </div>
               <div
-                className={`flex flex-row ${
+                className={`flex flex-wrap ${
                   selectedCategoryFormat && selectedCategoryFormat.title === type.title
                     ? 'fade-in active'
                     : 'fade-in'
                 } `}
-                style={{ gap: '20px' }}
+                style={{ columnGap: '20px' }}
               >
                 {selectedCategoryFormat &&
                   selectedCategoryFormat.title === type.title &&
