@@ -766,14 +766,14 @@ wheels = [
 
 [[package]]
 name = "pg-nearest-city"
-version = "2.0.0"
+version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "psycopg" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/43/e01d67392300de0650a305b553f6cb2bb842fb89996d214a4709d982e704/pg_nearest_city-2.0.0.tar.gz", hash = "sha256:43b9a729ab1e230073734f2034d151593ae3aa075128852fd33755c2f01999f8", size = 6619548 }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/67/922342b2277507aa7575628afc235802a8d5890c2a5ba9866071effd757a/pg_nearest_city-3.0.0.tar.gz", hash = "sha256:0d716f513037391a57ef774eb813bce76fd6042befbe64a43dcc117c41107e99", size = 8176693 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/84/88f907e44be18048d77080ed1a67fb678edcf24fe93cefa094bd2cce974e/pg_nearest_city-2.0.0-py3-none-any.whl", hash = "sha256:51df615e5ffe080e0fce2ec2b251b852e9e08855852c2e29796a65aa0346b21a", size = 6549112 },
+    { url = "https://files.pythonhosted.org/packages/f5/92/c4800a75a29bc0966c5d1b40836c2a0ea76c620485610cc98423eb85e479/pg_nearest_city-3.0.0-py3-none-any.whl", hash = "sha256:60817147cc1b1397f45284a30b2f09dabd57ebc69a56c1f8caf3e2fa2348b69b", size = 8021918 },
 ]
 
 [[package]]
@@ -1295,7 +1295,7 @@ requires-dist = [
     { name = "numpy", specifier = "==1.26.4" },
     { name = "oauthlib", specifier = "==3.2.2" },
     { name = "pandas", specifier = "==2.2.2" },
-    { name = "pg-nearest-city", specifier = ">=2.0.0" },
+    { name = "pg-nearest-city", specifier = ">=3.0.0" },
     { name = "pydantic", specifier = "==2.5.3" },
     { name = "pydantic-settings", specifier = "==2.1.0" },
     { name = "pyinstrument", specifier = "==4.6.2" },
