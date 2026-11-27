@@ -16,6 +16,17 @@ improving their skills as well. Mentoring of course requires an
 ability to communicate mistakes with empathy and understanding, as we
 all make mistakes...
 
+## Reviewing adjacent building footprints
+
+If two separate buildings share a wall, their footprints can share nodes
+along that wall. If there is a gap between the buildings, preserve it in
+the map. If project instructions are unclear or the available imagery does
+not show whether the buildings touch, check the local OpenStreetMap
+community's guidance or ask the project manager before changing the outlines.
+
+Project managers can make these cases explicit when writing or reusing
+building instructions. See the [OpenStreetMap example building instructions](https://wiki.openstreetmap.org/wiki/OSM_Tasking_Manager/Default_roads,_buildings,_waterways_instructions#Buildings).
+
 ## References
 
 There are multiple good sources for information on validation for more detail.
@@ -24,7 +35,7 @@ There are multiple good sources for information on validation for more detail.
 correcting other contributors work. [/MissingMaps_validation_faq_en.pdf](https://www.missingmaps.org/assets/downloads/MissingMaps_validation_faq_en.pdf)
 
 * Before validating the work of others, you should be an experienced
-  mapper yourself. [Validating_Data_EN.pdf](https://www.missingmaps.org/assets/downloads/Validating_Data_EN.pdf)
+  mapper yourself. [Missing Maps: Learn to Validate](https://missingmaps.github.io/validate/)
 
 * Mappers wishing to become validators should take time to become
   experienced at mapping and learn what validation entails before
