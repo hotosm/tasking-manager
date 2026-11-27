@@ -118,3 +118,12 @@ class TestProject:
             await test_project.set_country_info()
         # Assert
         assert not test_project.country
+
+    async def test_get_order_by_column_returns_column_for_allowed_value(self):
+        assert Project.get_order_by_column("priority") == "p.priority"
+        assert Project.get_order_by_column("last_updated") == "p.last_updated"
+
+    async def test_get_order_by_column_raises_for_value_not_allowed(self):
+        for order_by in ["not_a_column", "PRIORITY", "p.priority", ""]:
+            with pytest.raises(ValueError):
+                Project.get_order_by_column(order_by)

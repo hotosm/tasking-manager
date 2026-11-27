@@ -1067,9 +1067,14 @@ async def get_my_projects(
 
     search_dto = setup_search_dto(request)
     preferred_locale = request.headers.get("accept-language", "en")
-    admin_projects = await ProjectAdminService.get_projects_for_admin(
-        authenticated_user_id, preferred_locale, search_dto, db
-    )
+    try:
+        admin_projects = await ProjectAdminService.get_projects_for_admin(
+            authenticated_user_id, preferred_locale, search_dto, db
+        )
+    except ValueError as e:
+        return JSONResponse(
+            content={"Error": str(e), "SubCode": "InvalidData"}, status_code=400
+        )
     return admin_projects
 
 

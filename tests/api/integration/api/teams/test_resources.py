@@ -261,6 +261,22 @@ class TestTeamsAllAPI:
         assert resp.status_code == 403
         assert resp.json() == {"detail": "Not authenticated"}
 
+    async def test_team_name_filter_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        team_obj = await return_canned_team(
+            self.db, name=TEST_TEAM_NAME, org_name=self.test_org.name
+        )
+        await create_canned_team(self.db, team_obj)
+
+        resp = await client.get(
+            self.endpoint_url,
+            headers={"Authorization": self.admin_token},
+            params={"team_name": "%"},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["teams"] == []
+
 
 @pytest.mark.anyio
 class TestTeamJoinRequestsCSV:

@@ -94,6 +94,17 @@ project_allowed_users = Table(
     Column("user_id", BigInteger, ForeignKey("users.id")),
 )
 
+# Columns projects can be sorted by through the orderBy parameter. Request values are
+# only used to look up a column here, so they never become part of the SQL itself.
+PROJECT_ORDER_BY_COLUMNS = {
+    "id": "p.id",
+    "difficulty": "p.difficulty",
+    "priority": "p.priority",
+    "status": "p.status",
+    "last_updated": "p.last_updated",
+    "due_date": "p.due_date",
+}
+
 
 class ProjectTeams(Base):
     __tablename__ = "project_teams"
@@ -1054,6 +1065,13 @@ class Project(Base):
             return False
 
     @staticmethod
+    def get_order_by_column(order_by: str) -> str:
+        """Maps an orderBy value to the column it sorts by. Raises ValueError if not allowed."""
+        if order_by not in PROJECT_ORDER_BY_COLUMNS:
+            raise ValueError("Invalid orderBy value")
+        return PROJECT_ORDER_BY_COLUMNS[order_by]
+
+    @staticmethod
     async def get_projects_for_admin(
         admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO, db: Database
     ) -> PMDashboardDTO:
@@ -1106,7 +1124,7 @@ class Project(Base):
         params = {"admin_id": admin_id}
 
         if search_dto.order_by:
-            query += f" ORDER BY p.{search_dto.order_by} "
+            query += f" ORDER BY {Project.get_order_by_column(search_dto.order_by)} "
             if search_dto.order_by_type == "DESC":
                 query += "DESC"
 

@@ -1443,10 +1443,7 @@ class Task(Base):
                     ORDER BY CAST(ta.properties->>'building_area_diff' AS FLOAT) ASC
                 """
         elif order_by:
-            if order_by_type == "DESC":
-                query += f" ORDER BY {order_by} DESC"
-            else:
-                query += f" ORDER BY {order_by} ASC"
+            raise ValueError("Invalid order_by value")
 
         # Execute the query
         rows = await db.fetch_all(query, values=filters)

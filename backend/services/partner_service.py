@@ -81,7 +81,7 @@ class PartnerService:
 
     @staticmethod
     async def update_partner(partner_id: int, data: dict, db: Database) -> dict:
-        await Partner.get_by_id(partner_id, db)
+        partner = await Partner.get_by_id(partner_id, db)
         # Handle dynamic website links from name_* and url_*
         website_links = []
         for key, value in data.items():
@@ -98,6 +98,9 @@ class PartnerService:
             # Exclude name_* and url_* fields from direct update
             if key.startswith("name_") or key.startswith("url_"):
                 continue
+            # Only partner columns other than id can be updated; other keys are ignored
+            if key == "id" or key not in Partner.__table__.columns:
+                continue
             set_clauses.append(f"{key} = :{key}")
             params[key] = value
 
@@ -113,7 +116,7 @@ class PartnerService:
         RETURNING *
         """
 
-        updated_partner = await db.fetch_one(query, params)
+        updated_partner = await db.fetch_one(query, params) if set_clauses else partner
         if not updated_partner:
             raise PartnerServiceError(f"Failed to update Partner with ID {partner_id}.")
         partner_dict = dict(updated_partner)

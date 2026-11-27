@@ -1219,6 +1219,40 @@ class TestProjectsAllAPIAsync:
             ::-1
         ]
 
+    async def test_returns_projects_for_every_supported_sort_option(
+        self, client: AsyncClient
+    ):
+        for order_by in [
+            "id",
+            "difficulty",
+            "priority",
+            "status",
+            "last_updated",
+            "due_date",
+            "percent_mapped",
+            "percent_validated",
+        ]:
+            for order_by_type in ["ASC", "DESC"]:
+                resp = await client.get(
+                    self.url,
+                    params={"orderBy": order_by, "orderByType": order_by_type},
+                )
+                assert resp.status_code == 200
+                assert [r["projectId"] for r in resp.json()["results"]] == [
+                    self.test_project_1_id
+                ]
+
+    async def test_returns_400_if_order_by_is_not_a_supported_sort_option(
+        self, client: AsyncClient
+    ):
+        resp = await client.get(self.url, params={"orderBy": "not_a_column"})
+        assert resp.status_code == 400
+
+        resp = await client.get(
+            self.url, params={"orderBy": "not_a_column", "downloadAsCSV": "true"}
+        )
+        assert resp.status_code == 400
+
     async def test_returns_projects_filter_by_statuses(self, client: AsyncClient):
         # change statuses via SQL
         await self.db.execute(
@@ -1501,6 +1535,14 @@ class TestProjectsAllAPIAsync:
         assert resp_id.status_code == 200
         assert len(resp_id.json()["results"]) == 1
         assert resp_id.json()["results"][0]["projectId"] == int(self.test_project_1_id)
+
+    async def test_search_matches_wildcard_characters_literally(
+        self, client: AsyncClient
+    ):
+        # Unescaped, "%" would match every project name
+        resp = await client.get(self.url, params={"textSearch": "%"})
+        assert resp.status_code == 200
+        assert resp.json()["results"] == []
 
     async def test_returns_projects_filtered_by_country(self, client: AsyncClient):
         # update country column (assuming JSON/array column)
@@ -2190,6 +2232,30 @@ class TestProjectsQueriesOwnerAPI:
         )
         assert resp.status_code == 200
         assert len(resp.json()["activeProjects"]) == 1
+
+    async def test_returns_200_if_order_by_is_a_supported_sort_option(
+        self, client: AsyncClient
+    ):
+        await add_manager_to_organisation(self.org_record, self.test_author, self.db)
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.author_session_token}"},
+            params={"orderBy": "last_updated", "orderByType": "DESC"},
+        )
+        assert resp.status_code == 200
+        assert len(resp.json()["activeProjects"]) == 1
+
+    async def test_returns_400_if_order_by_is_not_a_supported_sort_option(
+        self, client: AsyncClient
+    ):
+        await add_manager_to_organisation(self.org_record, self.test_author, self.db)
+        resp = await client.get(
+            self.url,
+            headers={"Authorization": f"Token {self.author_session_token}"},
+            params={"orderBy": "not_a_column"},
+        )
+        assert resp.status_code == 400
+        assert resp.json()["SubCode"] == "InvalidData"
 
 
 @pytest.mark.anyio

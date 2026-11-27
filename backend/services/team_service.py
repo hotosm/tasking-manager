@@ -28,6 +28,7 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
 )
 from backend.models.postgis.team import Team, TeamMembers
+from backend.models.postgis.utils import escape_like
 from backend.services.messaging.message_service import MessageService
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
@@ -307,7 +308,7 @@ class TeamService:
 
         if search_dto.team_name:
             query_parts.append("t.name ILIKE :team_name")
-            params["team_name"] = f"%{search_dto.team_name}%"
+            params["team_name"] = f"%{escape_like(search_dto.team_name)}%"
 
         if search_dto.team_role:
             try:
