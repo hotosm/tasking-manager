@@ -31,7 +31,7 @@ from sqlalchemy import (
     text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relationship
 
@@ -203,6 +203,7 @@ class Project(Base):
 
     # Tags
     mapping_types = Column(ARRAY(Integer), index=True)
+    custom_mapping_types = Column(JSONB(none_as_null=True))
 
     # Editors
     mapping_editors = Column(
@@ -585,9 +586,14 @@ class Project(Base):
 
         # Return the new project data
         new_project_query = "SELECT * FROM projects WHERE id = :new_project_id"
-        new_project = await db.fetch_one(
-            new_project_query, {"new_project_id": new_project_id}
+        new_project = dict(
+            await db.fetch_one(new_project_query, {"new_project_id": new_project_id})
         )
+        # Raw SQL returns JSONB as text, which save() would encode a second time
+        if new_project["custom_mapping_types"]:
+            new_project["custom_mapping_types"] = json.loads(
+                new_project["custom_mapping_types"]
+            )
         return Project(**new_project)
 
     @staticmethod
@@ -688,6 +694,15 @@ class Project(Base):
         for mapping_type in project_dto.mapping_types:
             type_array.append(MappingTypes[mapping_type].value)
         self.mapping_types = type_array
+
+        self.custom_mapping_types = (
+            [
+                custom_type.model_dump()
+                for custom_type in project_dto.custom_mapping_types
+            ]
+            if project_dto.custom_mapping_types
+            else None
+        )
 
         # Cast Editor strings to int array
         mapping_editors_array = []
@@ -1707,7 +1722,8 @@ class Project(Base):
                 TO_CHAR(p.last_updated, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as last_updated,
                 u.username as author,
                 p.total_tasks, p.tasks_mapped, p.tasks_validated, p.tasks_bad_imagery, p.task_creation_mode,
-                p.mapping_types, p.mapping_editors, p.validation_editors, p.organisation_id
+                p.mapping_types, p.custom_mapping_types, p.mapping_editors, p.validation_editors,
+                p.organisation_id
             FROM projects p
             LEFT JOIN users u ON p.author_id = u.id
             WHERE p.id = :project_id
@@ -1783,6 +1799,11 @@ class Project(Base):
                     for mapping_type in record.mapping_types
                 ]
                 if record.mapping_types is not None
+                else []
+            ),
+            custom_mapping_types=(
+                json.loads(record.custom_mapping_types)
+                if record.custom_mapping_types
                 else []
             ),
             mapping_editors=(

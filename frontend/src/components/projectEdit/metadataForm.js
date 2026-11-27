@@ -9,6 +9,7 @@ import { StateContext, styleClasses } from '../../views/projectEdit';
 import { CheckBox } from '../formInputs';
 import { ProjectInterests } from './projectInterests';
 import { ExtraIdParams } from './extraIdParams';
+import { CustomMappingTypes } from './customMappingTypes';
 import { Code } from '../code';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { ID_PRESETS } from '../../config/presets';
@@ -146,6 +147,10 @@ export const MetadataForm = () => {
           />
         </div>
       </div>
+      <CustomMappingTypes
+        customMappingTypes={projectInfo.customMappingTypes}
+        setProjectInfo={setProjectInfo}
+      />
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.extraIdParams} />

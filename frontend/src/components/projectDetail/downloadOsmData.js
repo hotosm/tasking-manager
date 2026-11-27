@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon } from '../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, DownloadIcon, MapIcon } from '../svgIcons';
 import FileFormatCard from './fileFormatCard';
 import Popup from 'reactjs-popup';
 import { EXPORT_TOOL_S3_URL } from '../../config';
@@ -39,6 +39,23 @@ export const TITLED_ICONS = [
     formats: ['GeoJSON', 'shp', 'kml'],
   },
 ];
+
+// The folder the data export publishes a custom mapping type under.
+export const customMappingTypeSlug = (name) =>
+  name
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .toLowerCase()
+    .replace(/^_+|_+$/g, '');
+
+// The data export writes every geometry a custom mapping type has features in.
+export const customDownloadOptions = (customMappingTypes = []) =>
+  customMappingTypes.map(({ name }) => ({
+    Icon: MapIcon,
+    title: customMappingTypeSlug(name),
+    label: name,
+    featuretype: [{ type: 'points' }, { type: 'lines' }, { type: 'polygons' }],
+    formats: ['GeoJSON', 'shp', 'kml'],
+  }));
 
 /**
  * Renders a list of download options for OSM data based on the project mapping types.
@@ -109,12 +126,15 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
     }
   };
   useEffect(() => {
-    const filteredMappingTypes = downloadDataList?.filter((icon) =>
+    const filteredMappingTypes = TITLED_ICONS.filter((icon) =>
       projectMappingTypes?.includes(icon.value),
     );
-    setDownloadDataList(filteredMappingTypes);
+    setDownloadDataList([
+      ...filteredMappingTypes,
+      ...customDownloadOptions(project.customMappingTypes),
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectMappingTypes]);
+  }, [projectMappingTypes, project.customMappingTypes]);
 
   useEffect(() => {
     if (!selectedCategoryFormat) return;
@@ -229,7 +249,7 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
         const loadingState = isDownloadingState?.isDownloading;
         return (
           <div
-            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex flex-wrap items-start justify-start  "
+            className="osm-card bg-white pa3 mr4 mt4 w-auto-m flex items-start justify-start  "
             style={{
               width: '800px',
               gap: '16px',
@@ -250,28 +270,32 @@ export const DownloadOsmData = ({ projectMappingTypes, project }) => {
                 style={{ height: '56px' }}
               />
             </div>
-            <div className="flex-column">
+            {/* flex-auto lets this column shrink beside the icon instead of wrapping below it */}
+            <div className="flex-auto">
               <div
-                className="file-list flex barlow-condensed f3 items-center "
-                style={{ display: 'flex', gap: '12px' }}
+                className="file-list flex flex-wrap barlow-condensed f3 items-center "
+                style={{ columnGap: '12px' }}
               >
-                <p className="fw5 ttc">{type.title}</p>
-                <FileFormatCard
-                  title={type.title}
-                  fileFormats={type.formats}
-                  downloadS3Data={downloadS3File}
-                  isDownloadingState={isDownloadingState}
-                  selectedCategoryFormat={selectedCategoryFormat}
-                  setSelectedCategoryFormat={setSelectedCategoryFormat}
-                />
+                <p className="fw5 ttc">{type.label || type.title}</p>
+                {/* Keeps the formats together when a long name pushes them to the next line */}
+                <div className="flex items-center" style={{ gap: '12px' }}>
+                  <FileFormatCard
+                    title={type.title}
+                    fileFormats={type.formats}
+                    downloadS3Data={downloadS3File}
+                    isDownloadingState={isDownloadingState}
+                    selectedCategoryFormat={selectedCategoryFormat}
+                    setSelectedCategoryFormat={setSelectedCategoryFormat}
+                  />
+                </div>
               </div>
               <div
-                className={`flex flex-row ${
+                className={`flex flex-wrap ${
                   selectedCategoryFormat && selectedCategoryFormat.title === type.title
                     ? 'fade-in active'
                     : 'fade-in'
                 } `}
-                style={{ gap: '20px' }}
+                style={{ columnGap: '20px' }}
               >
                 {selectedCategoryFormat &&
                   selectedCategoryFormat.title === type.title &&
